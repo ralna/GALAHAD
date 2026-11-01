@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 10:20 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-26 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -340,13 +340,13 @@
 
 !   if %balance_initial_complentarity is true, the initial complemetarity
 !    is required to be balanced
-!
+
         LOGICAL :: balance_initial_complentarity = .FALSE.
-!
+
 !  if %crossover is true, cross over the solution to one defined by
-!   linearly-independent constraints if possible
-!
-        LOGICAL :: crossover = .TRUE.
+!   linearly-independent constraints if possible (**not yet implemented**)
+
+        LOGICAL :: crossover = .FALSE.
 
 !  if %reduced_pounce_system is true, eliminate fixed variables when
 !  solving the linear system required by the attempted pounce to the solution
@@ -1541,6 +1541,7 @@
 !  initialize counts
 
       inform%status = GALAHAD_ok
+      inform%CRO_inform%status = GALAHAD_not_yet_implemented
       inform%alloc_status = 0 ; inform%bad_alloc = ''
       inform%factorization_status = 0
       inform%iter = - 1 ; inform%nfacts = - 1 ; inform%nbacts = 0

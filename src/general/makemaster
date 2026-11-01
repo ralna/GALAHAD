@@ -585,49 +585,49 @@ mpi_silent:
 
 bpmpd_silent:
 	( cd ../external/bpmpd ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) bpmpd_silent \
+           $(GALAHAD)/makefiles/$(VERSION) bpmpd_dum_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/bpmpd )
 
 #  bqpd package
 
 bqpd_silent:
 	( cd ../external/bqpd ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) bqpd_silent \
+           $(GALAHAD)/makefiles/$(VERSION) bqpd_dum_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/bqpd )
 
 #  highs package
 
 highs_silent:
 	( cd ../external/highs ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) highs_silent \
+           $(GALAHAD)/makefiles/$(VERSION) highs_dum_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/highs )
 
 #  naglib package
 
 naglib_silent:
 	( cd ../external/naglib ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) naglib_silent \
+           $(GALAHAD)/makefiles/$(VERSION) naglib_dum_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/naglib )
-
-#  qpalm package
-
-qpalm_silent:
-	( cd ../external/qpalm ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) qpalm_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../external/qpalm )
 
 #  osqp package
 
 osqp_silent:
 	( cd ../external/osqp ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) osqp_silent \
+           $(GALAHAD)/makefiles/$(VERSION) osqp_dum_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/osqp )
+
+#  qpalm package
+
+qpalm_silent:
+	( cd ../external/qpalm ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) qpalm_dum_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/qpalm )
 
 #  qpoases package
 
 qpoases_silent:
 	( cd ../external/qpoases ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) qpoases_silent \
+           $(GALAHAD)/makefiles/$(VERSION) qpoases_dum_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/qpoases )
 
 #  pastix package

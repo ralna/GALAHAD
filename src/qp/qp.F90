@@ -124,9 +124,9 @@
       USE GALAHAD_BQPD_precision, ONLY: BQPD_data_type, BQPD_control_type,     &
                                         BQPD_inform_type, BQPD_initialize,     &
                                         BQPD_solve, BQPD_terminate
-      USE GALAHAD_OSQP_precision, ONLY: OSQP_data_type, OSQP_control_type,     &
-                                        OSQP_inform_type, OSQP_initialize,     &
-                                        OSQP_solve, OSQP_terminate
+      USE GALAHAD_HIGHS_precision, ONLY: HIGHS_data_type, HIGHS_control_type,  &
+                                         HIGHS_inform_type, HIGHS_initialize,  &
+                                         HIGHS_solve, HIGHS_terminate
       USE GALAHAD_NAGLIB_precision, ONLY: E04NQF_control_type,                 &
                                           E04NQF_inform_type,                  &
                                           E04NQF_data_type, E04NQF_initialize, &
@@ -134,6 +134,9 @@
 !                                          E04NPF, E04NQF, E04NRF, E04NTF,     &
 !                                          X04AAF, X04ACF, X04ADF,             &
 !                                          E04NQF_transfer_control
+      USE GALAHAD_OSQP_precision, ONLY: OSQP_data_type, OSQP_control_type,     &
+                                        OSQP_inform_type, OSQP_initialize,     &
+                                        OSQP_solve, OSQP_terminate
 
       IMPLICIT NONE ( TYPE, EXTERNAL )
 
@@ -271,13 +274,17 @@
 
         TYPE ( BQPD_control_type ) :: BQPD_control
 
-!  control parameters for OSQP
-
-        TYPE ( OSQP_control_type ) :: OSQP_control
-
 !  control parameters for E04NQF
 
         TYPE ( E04NQF_control_type ) :: E04NQF_control
+
+!  control parameters for HIGHS
+
+        TYPE ( HIGHS_control_type ) :: HIGHS_control
+
+!  control parameters for OSQP
+
+        TYPE ( OSQP_control_type ) :: OSQP_control
 
       END TYPE QP_control_type
 
@@ -408,6 +415,10 @@
 
         TYPE ( E04NQF_inform_type ) :: E04NQF_inform
 
+!  inform parameters for HiGHS
+
+        TYPE ( HIGHS_inform_type ) :: HIGHS_inform
+
 !  inform parameters for OSQP
 
         TYPE ( OSQP_inform_type ) :: OSQP_inform
@@ -423,31 +434,6 @@
         LOGICAL :: new_structure = .TRUE.
         TYPE ( SMT_type ) :: A, H
       END TYPE QP_CLARABEL_data_type
-
-!  - - - - - - - - - - - - - - - - - - - -
-!   extended data derived type for E04NQF
-!  - - - - - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: QP_E04NQF_data_type
-        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: HELAST, HS
-        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: I_w, I_user
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, R_w, R_user
-        CHARACTER ( LEN = 8 ), ALLOCATABLE, DIMENSION( : )  :: C_w, C_user
-        LOGICAL :: original_a, original_h
-        LOGICAL :: new_structure = .TRUE.
-        TYPE ( SMT_type ) :: A, H
-      END TYPE QP_E04NQF_data_type
-
-!  - - - - - - - - - - - - - - - - - - -
-!   extended data derived type for HIGHS
-!  - - - - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: QP_HIGHS_data_type
-        LOGICAL :: original_a, original_h
-        LOGICAL :: new_structure = .TRUE.
-        TYPE ( SMT_type ) :: A, H
-      END TYPE QP_HIGHS_data_type
 
 !  - - - - - - - - - - - - - - - - - - -
 !   extended data derived type for QPALM
@@ -495,6 +481,7 @@
         TYPE ( QPD_data_type ) :: QPD_data
         TYPE ( BPMPD_data_type ) :: BPMPD_data
         TYPE ( BQPD_data_type ) :: BQPD_data
+        TYPE ( HIGHS_data_type ) :: HIGHS_data
         TYPE ( OSQP_data_type ) :: OSQP_data
         TYPE ( E04NQF_data_type ) :: E04NQF_data
       END TYPE QP_data_type
@@ -593,6 +580,12 @@
       CASE ( 'e04nqf', 'E04NQF' )
         CALL E04NQF_initialize( data%E04NQF_data, control%E04NQF_control,      &
                                 inform%E04NQF_inform )
+
+!  == HIGHS ==
+
+      CASE ( 'highs', 'HIGHS', 'HiGHS' )
+        CALL HIGHS_initialize( data%HIGHS_data, control%HIGHS_control,         &
+                              inform%HIGHS_inform )
 
 !  == OSQP ==
 
@@ -1685,6 +1678,22 @@
 
         CASE ( 'highs', 'HIGHS', 'HiGHS' )
 
+          IF ( printi ) WRITE( control%out,                                    &
+              "( A, ' ** HIGHS solver used **' )" ) prefix
+          CALL HIGHS_solve( prob, data%HIGHS_data, control%HIGHS_control,      &
+                           inform%HIGHS_inform )
+          inform%status = inform%HIGHS_inform%status
+          inform%iter = inform%HIGHS_inform%iter
+          inform%obj = inform%HIGHS_inform%obj
+          inform%primal_infeasibility = inform%HIGHS_inform%primal_infeasibility
+          inform%dual_infeasibility = inform%HIGHS_inform%dual_infeasibility
+!         inform%complementary_slackness = inform%HIGHS_inform%info%duality_gap
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            IF ( printi ) WRITE( control%out, "( A,                            &
+           &  ' HIGHS solve error status = ', I0 )" ) prefix, inform%status
+            GO TO 800
+          END IF
+
 !  == OSQP ==
 
         CASE ( 'osqp', 'OSQP' )
@@ -1930,32 +1939,6 @@
 !!$
 !!$      END SUBROUTINE QP_clarabel_solve
 
-!-*-*-*-*-*-*-   Q P _ H i G H S _ S O L V E   S U B R O U T I N E   -*-*-*-*-
-
-!!$      SUBROUTINE QP_HiGHS_solve( prob, data, settings, info, out )
-!!$
-!!$!  solve the quadratic program using the HiGHS ASM and HiPo packages
-!!$
-!!$!  A - by columns, zero based
-!!$!  H - lower triangle by columns, zero based
-!!$
-!!$!  dummy arguments
-!!$
-!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-!!$      TYPE ( QP_HiGHS_data_type ), INTENT( INOUT ) :: data
-!!$      TYPE ( HiGHS_control_type ), INTENT( IN ) :: control
-!!$      TYPE ( HiGHS_inform_type ), INTENT( OUT ) :: inform
-!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-!!$
-!!$!  local variables
-!!$
-!!$      RETURN
-!!$
-!!$!  End of QP_HiGHS_solve
-!!$
-!!$      END SUBROUTINE QP_HiGHS_solve
-
-
 !-*-*-*-*-*-*-   Q P _ Q P A L M _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
 
 !!$      SUBROUTINE QP_QPALM_solve( prob, data, settings, info, out )
@@ -2189,6 +2172,13 @@
 !  == HiGHS ==
 
       CASE ( 'highs', 'HIGHS', 'HiGHS' )
+        CALL HIGHS_terminate( data%HIGHS_data, control%HIGHS_control,          &
+                              inform%HIGHS_inform )
+        IF ( inform%HIGHS_inform%status == GALAHAD_error_deallocate ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%HIGHS_inform%alloc_status
+          inform%bad_alloc = inform%HIGHS_inform%bad_alloc
+        END IF
 
 !  == OSQP ==
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-09-01 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-09-26 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -45,19 +45,66 @@
 
       PRIVATE
       PUBLIC :: CONVERT_read_specfile,                                         &
-                CONVERT_between_matrix_formats, CONVERT_to_sparse_row_format,  &
-                CONVERT_to_sparse_column_format, CONVERT_to_coordinate_format, &
-                CONVERT_to_dense_row_format, CONVERT_to_dense_column_format,   &
+                CONVERT_between_matrix_formats,                                &
+                CONVERT_to_sparse_row_format,                                  &
+                CONVERT_to_sparse_column_format,                               &
+                CONVERT_to_coordinate_format,                                  &
+                CONVERT_to_dense_row_format,                                   &
+                CONVERT_to_dense_column_format,                                &
                 CONVERT_between_symmetric_formats,                             &
-                CONVERT_to_sparse_symmetric_row_format,                        &
-                CONVERT_to_sparse_symmetric_column_format,                     &
+                CONVERT_to_symmetric_sparse_row_format,                        &
+                CONVERT_to_symmetric_sparse_column_format,                     &
                 CONVERT_to_symmetric_coordinate_format,                        &
-                CONVERT_to_dense_symmetric_row_format,                         &
-                CONVERT_to_dense_symmetric_column_format,                      &
+                CONVERT_to_symmetric_dense_row_format,                         &
+                CONVERT_to_symmetric_dense_column_format,                      &
                 CONVERT_transpose, CONVERT_order, CONVERT_information,         &
                 CONVERT_map_values, CONVERT_increasing_order,                  &
                 CONVERT_compress_duplicates,                                   &
                 SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE CONVERT_to_sparse_row_format
+       MODULE PROCEDURE CONVERT_to_CSR, CONVERT_to_CSR_main
+     END INTERFACE CONVERT_to_sparse_row_format
+
+     INTERFACE CONVERT_to_sparse_column_format
+       MODULE PROCEDURE CONVERT_to_CSC, CONVERT_to_CSC_main
+     END INTERFACE CONVERT_to_sparse_column_format
+
+     INTERFACE CONVERT_to_coordinate_format
+       MODULE PROCEDURE CONVERT_to_CC, CONVERT_to_CC_main
+     END INTERFACE CONVERT_to_coordinate_format
+
+     INTERFACE CONVERT_to_dense_row_format
+       MODULE PROCEDURE CONVERT_to_DR, CONVERT_to_DR_main
+     END INTERFACE CONVERT_to_dense_row_format
+
+     INTERFACE CONVERT_to_dense_column_format
+       MODULE PROCEDURE CONVERT_to_DC, CONVERT_to_DC_main
+     END INTERFACE CONVERT_to_dense_column_format
+
+     INTERFACE CONVERT_to_symmetric_sparse_row_format
+       MODULE PROCEDURE CONVERT_to_SCSR, CONVERT_to_SCSR_main
+     END INTERFACE CONVERT_to_symmetric_sparse_row_format
+
+     INTERFACE CONVERT_to_symmetric_sparse_column_format
+       MODULE PROCEDURE CONVERT_to_SCSC, CONVERT_to_SCSC_main
+     END INTERFACE CONVERT_to_symmetric_sparse_column_format
+
+     INTERFACE CONVERT_to_symmetric_coordinate_format
+       MODULE PROCEDURE CONVERT_to_SCC, CONVERT_to_SCC_main
+     END INTERFACE CONVERT_to_symmetric_coordinate_format
+
+     INTERFACE CONVERT_to_symmetric_dense_row_format
+       MODULE PROCEDURE CONVERT_to_SDR, CONVERT_to_SDR_main
+     END INTERFACE CONVERT_to_symmetric_dense_row_format
+
+     INTERFACE CONVERT_to_symmetric_dense_column_format
+       MODULE PROCEDURE CONVERT_to_SDC, CONVERT_to_SDC_main
+     END INTERFACE CONVERT_to_symmetric_dense_column_format
 
 !----------------------
 !   P a r a m e t e r s
@@ -460,1957 +507,12 @@
 
       END SUBROUTINE CONVERT_between_matrix_formats
 
-!-*-  C O N V E R T _ T O _ C O L U M N _ F O R M A T   S U B R O U T I N E  -*-
-
-      SUBROUTINE CONVERT_to_sparse_column_format( A, A_out, control, inform,   &
-                                                  MAP )
-
-!  convert the input matrix or its transpose to sparse-column format.
-!
-!  Arguments:
-!
-!   A is a structure of type SMT_type used to hold the input matrix A.
-!    (see CONVERT_to_sparse_column_format above)
-!
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!    (or its transpose, as desired) stored as a sparse matrix by columns.
-!
-!    The following values will be set:
-!
-!       A_out%m   the number of rows of the output A
-!       A_out%n   the number of columns of the output A
-!       A_out%type( 1 : 17 ) = 'SPARSE_BY_COLUMNS'
-!       A_out%val( : )   the values of the components of A, stored
-!                            column by columns
-!       A_out%row( : )   the row indices of the components of A
-!       A_out%ptr( : )   pointers to the start of each column, and past
-!                            the end of the last column
-!
-!   control, inform and the optional arguments as above
-
-!  Dummy arguments
-
-      TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
-      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
-      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
-                                        DIMENSION( SIZE( A%val ) ) :: MAP
-
-!  Local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
-      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
-      LOGICAL :: order_cols, sum_duplicates, map_vals
-      CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK, INV
-      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
-
-!  prefix for all output
-
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  initialize time
-
-      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
-
-!  ensure that input parameters are within allowed ranges
-
-      IF ( A%n < 1 .OR. A%m < 0 ) THEN
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
-            prefix
-        RETURN
-      END IF
-
-!  set the output type
-
-      CALL SMT_put( A_out%type, 'SPARSE_BY_COLUMNS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
-
-!  ensure that all values are recorded if MAP is present
-
-      map_vals = PRESENT( MAP )
-
-!  discover the array size
-
-      order_cols = .FALSE.
-      IF ( A%m > 0 ) THEN
-        sum_duplicates = control%sum_duplicates 
-      ELSE
-        sum_duplicates = .FALSE.
-      END IF
-      SELECT CASE( SMT_get( A%type ) )
-      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
-        ne = A%m * A%n
-      CASE ( 'SPARSE_BY_ROWS' )
-        ne = A%ptr( A%m + 1 ) - 1
-        IF ( control%transpose ) order_cols = .TRUE.
-      CASE ( 'SPARSE_BY_COLUMNS' )
-        ne = A%ptr( A%n + 1 ) - 1
-        IF ( .NOT. control%transpose ) order_cols = .TRUE.
-      CASE ( 'COORDINATE' )
-        ne = A%ne
-        IF ( A%m > 0 ) order_cols = .TRUE.
-
-!  type of A unknown
-
-      CASE DEFAULT
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
-        GO TO 900
-      END SELECT
-
-!  set initial values
-
-      IF ( control%transpose ) THEN
-        m = A%n ; n = A%m
-      ELSE
-        m = A%m ; n = A%n
-      END IF
-
-!  store A column-wise in A_out, perhaps with the row entries within
-!  each column in increasing order
-
-      A_out%m = m ; A_out%n = n ; A_out%ne = ne
-
-      array_name = 'CONVERT: A_out%ptr'
-      CALL SPACE_resize_array( A_out%n + 1, A_out%ptr,                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%row'
-      CALL SPACE_resize_array( ne, A_out%row,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  special case - m = 0
-
-      IF ( A%m == 0 ) THEN
-        A_out%ptr( : A_out%n + 1 ) = 1
-        inform%status = GALAHAD_ok ; GO TO 890
-      END IF
-
-!  copy the data to A
-
-!  the transpose is required
-
-      IF ( control%transpose ) THEN
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          k = 0 ; l = 1
-          DO j = 1, n
-            A_out%ptr( j ) = l
-            DO i = 1, m
-              k = k + 1
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%row( l ) = i ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-            END DO
-          END DO
-          A_out%ptr( n + 1 ) = l
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          l = 1
-          DO j = 1, n
-            k = j
-            A_out%ptr( j ) = l
-            DO i = 1, m
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%row( l ) = i ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-              k = k + n
-            END DO
-          END DO
-          A_out%ptr( n + 1 ) = l
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          A_out%ptr( : n + 1 ) = A%ptr( : n + 1 )
-          A_out%row( : A_out%ne ) = A%col( : A_out%ne )
-          A_out%val( : A_out%ne ) = A%val( : A_out%ne )
-          IF ( map_vals ) MAP( : A_out%ne ) = [ ( i, i = 1, A_out%ne ) ]
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          CALL CONVERT_transpose( A%m, A%n, ne, A%ptr, A%row, A%val,           &
-                                  A_out%ptr, A_out%row, A_out%val, MAP = MAP )
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%ptr( : n ) = 0
-          DO l = 1, A%ne
-            j= A%row( l )
-            A_out%ptr( j ) = A_out%ptr( j ) + 1
-          END DO
-          l = 1
-          DO j = 1, n
-            i = A_out%ptr( j ) + l
-            A_out%ptr( j ) = l
-            l = i
-          END DO
-          DO l = 1, A%ne
-            j = A%row( l ) ; i = A_out%ptr( j )
-            A_out%row( i ) = A%col( l ) ; A_out%val( i ) = A%val( l )
-            A_out%ptr( j ) = i + 1
-            IF ( map_vals ) MAP( l ) = i
-          END DO
-          DO j = n, 1, - 1
-            A_out%ptr( j + 1 ) = A_out%ptr( j )
-          END DO
-          A_out%ptr( 1 ) = 1
-        END SELECT
-
-!  the transpose is not required
-
-      ELSE
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          l = 1
-          DO j = 1, n
-            k = j
-            A_out%ptr( j ) = l
-            DO i = 1, m
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%row( l ) = i ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-              k = k + n
-            END DO
-          END DO
-          A_out%ptr( n + 1 ) = l
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          k = 0 ; l = 1
-          DO j = 1, n
-            A_out%ptr( j ) = l
-            DO i = 1, m
-              k = k + 1
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%row( l ) = i ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-            END DO
-          END DO
-          A_out%ptr( n + 1 ) = l
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          CALL CONVERT_transpose( A%n, A%m, ne, A%ptr, A%col, A%val,           &
-                                  A_out%ptr, A_out%row, A_out%val, MAP = MAP )
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          A_out%ptr( : n + 1 ) = A%ptr( : n + 1 )
-          A_out%row( : A_out%ne ) = A%row( : A_out%ne )
-          A_out%val( : A_out%ne ) = A%val( : A_out%ne )
-          IF ( map_vals ) MAP( : A_out%ne ) = [ ( i, i = 1, A_out%ne ) ]
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%ptr( : n ) = 0
-          DO l = 1, A%ne
-            j = A%col( l )
-            A_out%ptr( j ) = A_out%ptr( j ) + 1
-          END DO
-          l = 1
-          DO j = 1, n
-            i = A_out%ptr( j ) + l
-            A_out%ptr( j ) = l
-            l = i
-          END DO
-          DO l = 1, A%ne
-            j = A%col( l ) ; i = A_out%ptr( j )
-            A_out%row( i ) = A%row( l ) ; A_out%val( i ) = A%val( l )
-            A_out%ptr( j ) = i + 1
-            IF ( map_vals ) MAP( l ) = i
-          END DO
-          DO j = n, 1, - 1
-            A_out%ptr( j + 1 ) = A_out%ptr( j )
-          END DO
-          A_out%ptr( 1 ) = 1
-        END SELECT
-      END IF
-
-!  if the mapping array is present, make sure that it is adjusted if
-!  the matrix is to be stored so that the row indices in each column appear
-!  in increasing order or if the matrix is to be squeezed to sum duplicate 
-!  entries
-
-      IF ( map_vals ) THEN
-
-!  compute the inverse, INV, to the map array, MAP, and workspace IWORK, 
-!  and initialize INV
-
-        array_name = 'CONVERT: INV'
-        CALL SPACE_resize_array( ne, INV,                                      &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'CONVERT: IWORK'
-        CALL SPACE_resize_array( m, IWORK,                                     &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        DO i = 1, ne
-          INV( MAP( i ) ) = i 
-        END DO
-
-!  if required, reorder so that the row indices in each column appear
-!  in increasing order 
-
-        IF ( control%order .AND. order_cols ) THEN
-          CALL CONVERT_increasing_order( n, A_out%ne, A_out%ptr, A_out%row,    &
-                                         A_out%val, MAP, INV )
-        END IF
-
-!  sum duplicate entries and squeeze the storage space
-
-        CALL CONVERT_compress_duplicates( m, n, A_out%ne, A_out%ptr,           &
-                                          A_out%row, A_out%val, MAP, INV,      &
-                                          IWORK )
-        A_out%ne = A_out%ptr( n + 1 ) - 1
-
-!  deallocate workspace
-
-        CALL SPACE_dealloc_array( INV, inform%status, inform%alloc_status )
-
-!  skip to the exit if there is no need to order rows within columns or to
-!  sum dupicates
-
-      ELSE 
-        IF ( .NOT. ( sum_duplicates .OR.                                       &
-                    ( control%order .AND. order_cols ) ) ) GO TO 890
-
-!  if the matrix is to be stored so that the row indices in each column appear
-!  in increasing order or if the matrix is to be squeezed to sum duplicate 
-!  entries, but no mapping s required, the arrays IWORK and WORK of length m 
-!  (n when the transpose is sought) are used, with IWORK initialised as 0
-
-        array_name = 'CONVERT: IWORK'
-        CALL SPACE_resize_array( m, IWORK,                                     &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-        IWORK( : m ) = 0
-
-!  sum duplicate entries and squeeze the storage space
-
-        IF ( sum_duplicates ) THEN
-
-!  consider each column one at a time
-
-          k = 1 ; inform%duplicates = 0
-          DO i = 1, n
-            ll = k
-
-!  loop over the rows j in the ith column
-
-            DO l = A_out%ptr( i ), A_out%ptr( i + 1 ) - 1
-              j = A_out%row( l )
-
-!  if iwork(j) = 0, the entry is not a duplicate, so record the row and value,
-!  and flag in iwork(j) the location where the value is stored in A_out%val
-
-              IF ( IWORK( j ) == 0 ) THEN
-                A_out%row( k ) = A_out%row( l )
-                A_out%val( k ) = A_out%val( l )
-                IWORK( j ) = k
-                k = k + 1
-
-!  if iwork(j) /= 0, the entry is a duplicate, and its value should be added
-!  to A_out%val(iwork(j))
-
-              ELSE
-                inform%duplicates = inform%duplicates + 1
-                j = IWORK( j )
-                A_out%val( j ) = A_out%val( j ) + A_out%val( l )
-              END IF
-            END DO
-
-!  reset IWORK to zero
-
-            DO l = ll, k - 1
-              IWORK( A_out%row( l ) ) = 0
-            END DO
-
-!  reset the pointer to the start of the column
-
-            A_out%ptr( i ) = ll
-          END DO
-          A_out%ptr( n + 1 ) = k
-          A_out%ne = k - 1
-        END IF
-
-!  order the row entries within each column in increasing row order
-
-        inform%status = GALAHAD_ok
-        IF ( control%order .AND. order_cols ) THEN
-          array_name = 'CONVERT: WORK'
-          CALL SPACE_resize_array( m, WORK,                                    &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-          DO i = 1, n
-            ll =  A_out%ptr( i ) ; lu = A_out%ptr( i + 1 ) - 1
-            IF ( lu > ll ) THEN
-              CALL CONVERT_order( m, lu - ll + 1, A_out%row( ll : lu ),        &
-                                  A_out%val( ll : lu ), order_status,          &
-                                  IWORK, WORK )
-              IF ( order_status == GALAHAD_warning_repeated_entry )            &
-                inform%status = order_status
-            END IF
-          END DO
-          CALL SPACE_dealloc_array( WORK, inform%status, inform%alloc_status )
-        END IF
-      END IF
-
-!  deallocate workspace
-
-      CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
-
-!  record the total time taken
-
-  890 CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      RETURN
-
-!  error returns
-
- 900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
-        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
-       &  ' from CONVERT ' )" ) prefix, inform%status
-      RETURN
-
-!  end of subroutine CONVERT_to_sparse_column_format
-
-      END SUBROUTINE CONVERT_to_sparse_column_format
-
-!- C O N V E R T _ T O _ S P A R S E _ R O W _ F O R M A T  S U B R O U T I N E
-
-      SUBROUTINE CONVERT_to_sparse_row_format( A, A_out, control, inform, MAP )
-
-!  convert the input matrix or its transpose to sparse-row format.
-!
-!  If the matrix is to be stored so that the column indices in each row
-!  appear in increasing order or if the matrix is to be squeezed to sum
-!  duplicate entries, the optional arrays IWORK and WORK of length at
-!  least m (n when the transpose is sought) must be provided, with all
-!  entries of IWORK set to 0; IWORK will have been reset to 0 on exit.
-!
-!  Arguments:
-!
-!   A is a structure of type SMT_type used to hold the input matrix A.
-!   (see CONVERT_between_matrix_formats above)
-!
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!    (or its transpose, as desired) stored as a sparse matrix by columns.
-!
-!    The following values will be set:
-!
-!       A_out%m   the number of rows of the output A
-!       A_out%n   the number of columns of the output A
-!       A_out%type( 1 : 17 ) = 'SPARSE_BY_COLUMNS'
-!       A_out%val( : )   the values of the components of A, stored
-!                            column by columns
-!       A_out%col( : )   the column indices of the components of A
-!       A_out%ptr( : )   pointers to the start of each row, and past
-!                            the end of the last row
-!
-!   control, inform and the optional arguments as above
-
-!  Dummy arguments
-
-      TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
-      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
-      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
-                                        DIMENSION( SIZE( A%val ) ) :: MAP
-
-!  Local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
-      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
-      LOGICAL :: order_cols, sum_duplicates, map_vals
-      CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK, INV
-      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
-
-!  prefix for all output
-
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  initialize time
-
-      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
-
-!  ensure that input parameters are within allowed ranges
-
-      IF ( A%n < 1 .OR. A%m < 0 ) THEN
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
-            prefix
-        RETURN
-      END IF
-
-!  ensure that all values are recorded if MAP is present
-
-      map_vals = PRESENT( MAP )
-
-!  discover the array size
-
-      order_cols = .FALSE.
-      IF ( A%m > 0 ) THEN
-        sum_duplicates = control%sum_duplicates 
-      ELSE
-        sum_duplicates = .FALSE.
-      END IF
-      SELECT CASE( SMT_get( A%type ) )
-      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
-        ne = A%m * A%n
-      CASE ( 'SPARSE_BY_ROWS' )
-        ne = A%ptr( A%m + 1 ) - 1
-        IF ( control%transpose ) order_cols = .TRUE.
-      CASE ( 'SPARSE_BY_COLUMNS' )
-        ne = A%ptr( A%n + 1 ) - 1
-        IF ( .NOT. control%transpose ) order_cols = .TRUE.
-      CASE ( 'COORDINATE' )
-        ne = A%ne
-        IF ( A%m > 0 ) order_cols = .TRUE.
-
-!  type of A unknown
-
-      CASE DEFAULT
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
-        GO TO 900
-      END SELECT
-
-!  set initial values
-
-      IF ( control%transpose ) THEN
-        m = A%n ; n = A%m
-      ELSE
-        m = A%m ; n = A%n
-      END IF
-
-!  store A row-wise in A_out, perhaps with the column entries within
-!  each row in increasing order
-
-      A_out%m = m ; A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'SPARSE_BY_ROWS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
-
-      array_name = 'CONVERT: A_out%ptr'
-      CALL SPACE_resize_array( A_out%m + 1, A_out%ptr,                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%col'
-      CALL SPACE_resize_array( ne, A_out%col,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  special case - m = 0
-
-      IF ( A%m == 0 ) THEN
-        A_out%ptr( : A_out%m + 1 ) = 1
-        inform%status = GALAHAD_ok ; GO TO 890
-      END IF
-
-!  copy the data to A
-
-!  the transpose is required
-
-      IF ( control%transpose ) THEN
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          l = 1
-          DO i = 1, m
-            k = i
-            A_out%ptr( i ) = l
-            DO j = 1, n
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%col( l ) = j ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-              k = k + m
-            END DO
-          END DO
-          A_out%ptr( m + 1 ) = l
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          k = 0 ; l = 1
-          DO i = 1, m
-            A_out%ptr( i ) = l
-            DO j = 1, n
-              k = k + 1
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%col( l ) = j ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-            END DO
-          END DO
-          A_out%ptr( m + 1 ) = l
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          CALL CONVERT_transpose( A%n, A%m, ne, A%ptr, A%col, A%val,           &
-                                  A_out%ptr, A_out%col, A_out%val, MAP = MAP )
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          A_out%ptr( : m + 1 ) = A%ptr( : m + 1 )
-          A_out%col( : A_out%ne ) = A%row( : A_out%ne )
-          A_out%val( : A_out%ne ) = A%val( : A_out%ne )
-          IF ( map_vals ) MAP( : A_out%ne ) = [ ( i, i = 1, A_out%ne ) ]
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%ptr( : m ) = 0
-          DO l = 1, A%ne
-            i = A%col( l )
-            A_out%ptr( i ) = A_out%ptr( i ) + 1
-          END DO
-          l = 1
-          DO i = 1, m
-            j = A_out%ptr( i ) + l
-            A_out%ptr( i ) = l
-            l = j
-          END DO
-          DO l = 1, A%ne
-            i = A%col( l ) ; j = A_out%ptr( i )
-            A_out%col( j ) = A%row( l ) ; A_out%val( j ) = A%val( l )
-            A_out%ptr( i ) = j + 1
-            IF ( map_vals ) MAP( l ) = j
-          END DO
-          DO i = m, 1, - 1
-            A_out%ptr( i + 1 ) = A_out%ptr( i )
-          END DO
-          A_out%ptr( 1 ) = 1
-        END SELECT
-
-!  the transpose is not required
-
-      ELSE
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          k = 0 ; l = 1
-          DO i = 1, m
-            A_out%ptr( i ) = l
-            DO j = 1, n
-              k = k + 1
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%col( l ) = j ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-            END DO
-          END DO
-          A_out%ptr( m + 1 ) = l
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          l = 1
-          DO i = 1, m
-            k = i
-            A_out%ptr( i ) = l
-            DO j = 1, n
-              val = A%val( k )
-              IF ( map_vals ) MAP( k ) = l
-              IF ( val /= zero .OR. map_vals ) THEN
-                A_out%col( l ) = j ; A_out%val( l ) = val
-                l = l + 1
-              END IF
-              k = k + m
-            END DO
-          END DO
-          A_out%ptr( m + 1 ) = l
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          A_out%ptr( : m + 1 ) = A%ptr( : m + 1 )
-          A_out%col( : A_out%ne ) = A%col( : A_out%ne )
-          A_out%val( : A_out%ne ) = A%val( : A_out%ne )
-          IF ( map_vals ) MAP( : A_out%ne ) = [ ( i, i = 1, A_out%ne ) ]
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          CALL CONVERT_transpose( A%m, A%n, ne, A%ptr, A%row, A%val,           &
-                                  A_out%ptr, A_out%col, A_out%val, MAP = MAP )
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%ptr( : m ) = 0
-          DO l = 1, A%ne
-            i = A%row( l )
-            A_out%ptr( i ) = A_out%ptr( i ) + 1
-          END DO
-          l = 1
-          DO i = 1, m
-            j = A_out%ptr( i ) + l
-            A_out%ptr( i ) = l
-            l = j
-          END DO
-          DO l = 1, A%ne
-            i = A%row( l ) ; j = A_out%ptr( i )
-            A_out%col( j ) = A%col( l ) ; A_out%val( j ) = A%val( l )
-            A_out%ptr( i ) = j + 1
-            IF ( map_vals ) MAP( l ) = j
-          END DO
-          DO i = m, 1, - 1
-            A_out%ptr( i + 1 ) = A_out%ptr( i )
-          END DO
-          A_out%ptr( 1 ) = 1
-        END SELECT
-      END IF
-
-!  if the mapping array is present, make sure that it is adjusted if the matrix
-!  is to be stored so that the column indices in each row appear in increasing 
-!  order or if the matrix is to be squeezed to sum duplicate  entries
-
-      IF ( map_vals ) THEN
-
-!  compute the inverse, INV, to the map array, MAP, and workspace IWORK, 
-!  and initialize INV
-
-        array_name = 'CONVERT: INV'
-        CALL SPACE_resize_array( ne, INV,                                      &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'CONVERT: IWORK'
-        CALL SPACE_resize_array( n, IWORK,                                     &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        DO i = 1, ne
-          INV( MAP( i ) ) = i 
-        END DO
-
-!  if required, reorder so that the column indices in each row appear
-!  in increasing order 
-
-        IF ( control%order .AND. order_cols ) THEN
-          CALL CONVERT_increasing_order( m, A_out%ne, A_out%ptr, A_out%col,    &
-                                         A_out%val, MAP, INV )
-        END IF
-
-!  sum duplicate entries and squeeze the storage space
-
-        CALL CONVERT_compress_duplicates( n, m, A_out%ne, A_out%ptr,           &
-                                          A_out%col, A_out%val, MAP, INV,      &
-                                          IWORK )
-        A_out%ne = A_out%ptr( m + 1 ) - 1
-
-!  deallocate workspace
-
-        CALL SPACE_dealloc_array( INV, inform%status, inform%alloc_status )
-
-!  skip to the exit if there is no need to order rows within columns or to
-!  sum dupicates
-
-      ELSE 
-        IF ( .NOT. ( sum_duplicates .OR.                                       &
-                    ( control%order .AND. order_cols ) ) ) GO TO 890
-
-!  if the matrix is to be stored so that the column indices in each row appear
-!  in increasing order or if the matrix is to be squeezed to sum duplicate 
-!  entries, but no mapping is required, the arrays IWORK and WORK of length m 
-!  (n when the transpose is sought) are used, with IWORK initialised as 0
-
-        array_name = 'CONVERT: IWORK'
-        CALL SPACE_resize_array( n, IWORK,                                     &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-        IWORK( : n ) = 0
-
-!  sum duplicate entries and squeeze the storage space
-
-        IF ( sum_duplicates ) THEN
-
-!  consider each row one at a time
-
-          k = 1 ; inform%duplicates = 0
-          DO i = 1, m
-            ll = k
-
-!  loop over the columns j in the ith row
-
-            DO l = A_out%ptr( i ), A_out%ptr( i + 1 ) - 1
-              j = A_out%col( l )
-
-!  if iwork(j) = 0, the entry is not a duplicate, so record the column and value
-!  and flag in iwork(j) the location where the value is stored in A_out%val
-
-              IF ( IWORK( j ) == 0 ) THEN
-                A_out%col( k ) = A_out%col( l )
-                A_out%val( k ) = A_out%val( l )
-                IWORK( j ) = k
-                k = k + 1
-
-!  if iwork(j) /= 0, the entry is a duplicate, and its value should be added
-!  to A_out%val(iwork(j))
-
-              ELSE
-                inform%duplicates = inform%duplicates + 1
-                j = IWORK( j )
-                A_out%val( j ) = A_out%val( j ) + A_out%val( l )
-              END IF
-            END DO
-
-!  reset IWORK to zero
-
-            DO l = ll, k - 1
-              IWORK( A_out%col( l ) ) = 0
-            END DO
-
-!  reset the pointer to the start of the row
-
-            A_out%ptr( i ) = ll
-          END DO
-          A_out%ptr( m + 1 ) = k
-          A_out%ne = k - 1
-        END IF
-
-!  order the row entries within each column in increasing row order
-
-        inform%status = GALAHAD_ok
-        IF ( control%order .AND. order_cols ) THEN
-          array_name = 'CONVERT: WORK'
-          CALL SPACE_resize_array( n, WORK,                                    &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-          DO i = 1, m
-            ll =  A_out%ptr( i ) ; lu = A_out%ptr( i + 1 ) - 1
-            IF ( lu > ll ) THEN
-              CALL CONVERT_order( n, lu - ll + 1, A_out%col( ll : lu ),        &
-                                  A_out%val( ll : lu ), order_status,          &
-                                  IWORK, WORK )
-              IF ( order_status == GALAHAD_warning_repeated_entry )            &
-                inform%status = order_status
-            END IF
-          END DO
-          CALL SPACE_dealloc_array( WORK, inform%status, inform%alloc_status )
-        END IF
-      END IF
-
-!  deallocate workspace
-
-      CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
-
-!  record the total time taken
-
-  890 CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      RETURN
-
-!  error returns
-
-  900 CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
-        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
-       &  ' from CONVERT ' )" ) prefix, inform%status
-      RETURN
-
-!  end of subroutine CONVERT_to_sparse_row_format
-
-      END SUBROUTINE CONVERT_to_sparse_row_format
-
-!- C O N V E R T _ T O _ C O O R D I N A T E _ F O R M A T  S U B R O U T I N E
-
-      SUBROUTINE CONVERT_to_coordinate_format( A, A_out, control, inform, MAP )
-
-!  convert the input matrix or its transpose to sparse co-ordinate format.
-
-!  Arguments:
-!
-!   A is a structure of type SMT_type used to hold the input matrix A.
-!   (see CONVERT_between_matrix_formats above)
-!
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!   (or its transpose, as desired) stored as a sparse matrix in co-ordinate form
-!
-!    The following values will be set:
-!
-!       A_out%m   the number of rows of the output A
-!       A_out%n   the number of columns of the output A
-!       A_out%ne  the number of nonzeros used to store the output A
-!       A_out%type( 1 : 10 ) = 'COORDINATE'
-!       A_out%val( : )   the values of the components of A, stored
-!                            column by columns
-!       A_out%row( : )   the row indices of the components of A
-!       A_out%col( : )   the column indices of the components of A
-!
-!   control, inform and MAP as above
-
-!  Dummy arguments
-
-      TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
-      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
-      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
-                                        DIMENSION( SIZE( A%val ) ) :: MAP
-
-!  Local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
-      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
-      LOGICAL :: map_vals
-      CHARACTER ( LEN = 80 ) :: array_name
-!     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INV
-
-!  prefix for all output
-
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  initialize time
-
-      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
-
-!  ensure that input parameters are within allowed ranges
-
-      IF ( A%n < 1 .OR. A%m < 0 ) THEN
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
-            prefix
-        RETURN
-      END IF
-
-!  if it required to sum duplicates, first convert to sparse column format 
-
-      IF ( A%m > 0 .AND. control%sum_duplicates ) THEN
-        CALL CONVERT_to_sparse_column_format( A, A_out, control, inform,       &
-                                              MAP = MAP )
-
-!  now provide space for and extract the column number for each component
-
-        ne = A_out%ptr( A_out%n + 1 ) - 1
-        array_name = 'CONVERT: A_out%col'
-        CALL SPACE_resize_array( ne, A_out%col,                                &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        DO j = 1, A_out%n
-          A_out%col( A_out%ptr( j ) : A_out%ptr( j + 1 ) - 1 ) = j
-        END DO
-
-!  deallocate the column pointers
-
-        CALL SPACE_dealloc_array( A_out%ptr, inform%status,                    &
-                                  inform%alloc_status )
-      END IF
-
-!  ensure that all values are recorded if MAP is present
-
-      map_vals = PRESENT( MAP )
-
-!  discover the array size
-
-      SELECT CASE( SMT_get( A%type ) )
-      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
-        ne = A%m * A%n
-      CASE ( 'SPARSE_BY_ROWS' )
-        ne = A%ptr( A%m + 1 ) - 1
-      CASE ( 'SPARSE_BY_COLUMNS' )
-        ne = A%ptr( A%n + 1 ) - 1
-      CASE ( 'COORDINATE' )
-        ne = A%ne
-
-!  type of A unknown
-
-      CASE DEFAULT
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
-        GO TO 900
-      END SELECT
-
-!  set initial values
-
-      IF ( control%transpose ) THEN
-        m = A%n ; n = A%m
-      ELSE
-        m = A%m ; n = A%n
-      END IF
-
-!  store A row-wise in A_out, perhaps with the column entries within
-!  each row in increasing order
-
-      A_out%m = m ; A_out%n = n
-      CALL SMT_put( A_out%type, 'COORDINATE', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
-
-      array_name = 'CONVERT: A_out%row'
-      CALL SPACE_resize_array( ne, A_out%row,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%col'
-      CALL SPACE_resize_array( ne, A_out%col,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  copy the data to A
-
-!  the transpose is required
-
-      IF ( control%transpose ) THEN
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          l = 0 ; k = 0
-          DO i = 1, A%m
-            DO j = 1, A%n
-              l = l + 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = j ; A_out%col( k ) = i
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          l = 0 ; k = 0
-          DO j = 1, A%n
-            DO i = 1, A%m
-              l = l + 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = j ; A_out%col( k ) = i
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          k = 0
-          DO i = 1, A%m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = A%col( l ) ; A_out%col( k ) = i
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          k = 0
-          DO j = 1, A%n
-            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = j ; A_out%col( k ) = A%row( l )
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          k = 0
-          DO l = 1, A%ne
-            val = A%val( l )
-            IF ( val /= zero .OR. map_vals ) THEN
-              k = k + 1
-              A_out%row( k ) = A%col( l ) ; A_out%col( k ) = A%row( l )
-              A_out%val( k ) = val
-            END IF
-            IF ( map_vals ) MAP( l ) = k
-          END DO
-          A_out%ne = k
-        END SELECT
-
-!  the transpose is not required
-
-      ELSE
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          l = 0 ; k = 0
-          DO i = 1, A%m
-            DO j = 1, A%n
-              l = l + 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = i ; A_out%col( k ) = j
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          l = 0 ; k = 0
-          DO j = 1, A%n
-            DO i = 1, A%m
-              l = l + 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = i ; A_out%col( k ) = j
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          k = 0
-          DO i = 1, A%m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = i ; A_out%col( k ) = A%col( l )
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          k = 0
-          DO j = 1, A%n
-            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-              val = A%val( l )
-              IF ( val /= zero .OR. map_vals ) THEN
-                k = k + 1
-                A_out%row( k ) = A%row( l ) ; A_out%col( k ) = j
-                A_out%val( k ) = val
-              END IF
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-          A_out%ne = k
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          k = 0
-          DO l = 1, A%ne
-            val = A%val( l )
-            IF ( val /= zero .OR. map_vals ) THEN
-              k = k + 1
-              A_out%row( k ) = A%row( l ) ; A_out%col( k ) = A%col( l )
-              A_out%val( k ) = val
-            END IF
-            IF ( map_vals ) MAP( l ) = k
-          END DO
-          A_out%ne = k
-        END SELECT
-      END IF
-
-!  order the row entries within each row in increasing column order
-
-      inform%status = GALAHAD_ok
-
-!  record the total time taken
-
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      RETURN
-
-!  error returns
-
- 900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
-        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
-       &  ' from CONVERT ' )" ) prefix, inform%status
-      RETURN
-
-!  end of subroutine CONVERT_to_coordinate_format
-
-      END SUBROUTINE CONVERT_to_coordinate_format
-
-!- C O N V E R T _ T O _ D E N S E _ R O W _ F O R M A T  S U B R O U T I N E
-
-      SUBROUTINE CONVERT_to_dense_row_format( A, A_out, control, inform, MAP )
-
-!  convert the input matrix or its transpose to dense-row format.
-
-!  Arguments:
-!
-!   A is a structure of type SMT_type used to hold the input matrix A.
-!   (see CONVERT_between_matrix_formats above)
-!
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!    (or its transpose, as desired) stored as a dense matrix by columns.
-!
-!    The following values will be set:
-!
-!       A_out%m   the number of rows of the output A
-!       A_out%n   the number of columns of the output A
-!       A_out%type( 1 : 13 ) = 'DENSE_BY_ROWS'
-!       A_out%val( : )   the values of the components of A, stored
-!                            as a dense matrix row by row
-!
-!   control, inform and MAP as above
-
-!  Dummy arguments
-
-      TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
-      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
-      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
-                                        DIMENSION( SIZE( A%val ) ) :: MAP
-
-!  Local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
-      REAL ( KIND = rp_ ) :: time_start, time_now, clock_start, clock_now
-      LOGICAL :: map_vals
-      CHARACTER ( LEN = 80 ) :: array_name
-!     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INV
-
-!  prefix for all output
-
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  initialize time
-
-      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
-
-!  ensure that input parameters are within allowed ranges
-
-      IF ( A%n < 1 .OR. A%m < 1 ) THEN
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
-            prefix
-        RETURN
-      END IF
-
-!  ensure that all values are recorded if MAP is present
-
-      map_vals = PRESENT( MAP )
-
-!  discover the array size
-
-      SELECT CASE( SMT_get( A%type ) )
-      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',                     &
-             'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' )
-
-!  type of A unknown
-
-      CASE DEFAULT
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
-        GO TO 900
-      END SELECT
-
-!  set initial values
-
-      IF ( control%transpose ) THEN
-        m = A%n ; n = A%m
-      ELSE
-        m = A%m ; n = A%n
-      END IF
-      ne = m * n
-
-!  store A row-wise in A_out, perhaps with the column entries within
-!  each row in increasing order
-
-      A_out%m = m ; A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'DENSE_BY_ROWS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
-
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  copy the data to A
-
-!  the transpose is required
-
-      IF ( control%transpose ) THEN
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          l = 0
-          DO i = 1, A%m
-            DO j = 1, A%n
-              l = l + 1
-              k = A%m * ( j - 1 ) + i
-              A_out%val( k ) = A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          l = 0
-          DO j = 1, A%n
-            DO i = 1, A%m
-              l = l + 1
-              k = A%m * ( j - 1 ) + i
-              A_out%val( k ) = A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          A_out%val = zero
-          DO i = 1, A%m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              j = A%col( l )
-              k = A%m * ( j - 1 ) + i
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          A_out%val = zero
-          DO j = 1, A%n
-            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-              i = A%row( l )
-              k = A%m * ( j - 1 ) + i
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%val = zero
-          DO l = 1, A%ne
-            i = A%row( l )
-            j = A%col( l )
-            k = A%m * ( j - 1 ) + i
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
-            IF ( map_vals ) MAP( l ) = k
-          END DO
-        END SELECT
-
-!  the transpose is not required
-
-      ELSE
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          A_out%val( 1 : ne ) = A%val( 1 : ne )
-          IF ( map_vals ) MAP( 1 : ne ) = [ ( i, i = 1, ne ) ]
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          l = 0
-          DO j = 1, A%n
-            DO i = 1, A%m
-              l = l + 1
-              k = A%n * ( i - 1 ) + j
-              A_out%val( k ) = A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          A_out%val = zero
-          DO i = 1, A%m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              j = A%col( l )
-              k = A%n * ( i - 1 ) + j
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          A_out%val = zero
-          DO j = 1, A%n
-            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-              i = A%row( l )
-              k = A%n * ( i - 1 ) + j
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%val = zero
-          DO l = 1, A%ne
-            i = A%row( l )
-            j = A%col( l )
-            k = A%n * ( i - 1 ) + j
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
-            IF ( map_vals ) MAP( l ) = k
-          END DO
-        END SELECT
-      END IF
-
-!  order the row entries within each row in increasing column order
-
-      inform%status = GALAHAD_ok
-
-!  record the total time taken
-
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      RETURN
-
-!  error returns
-
- 900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
-        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
-       &  ' from CONVERT ' )" ) prefix, inform%status
-      RETURN
-
-!  end of subroutine CONVERT_to_dense_row_format
-
-      END SUBROUTINE CONVERT_to_dense_row_format
-
-!-*-*- C O N V E R T _ T O _ D E N S E _ C O L U M N   S U B R O U T I N E -*-*-
-
-      SUBROUTINE CONVERT_to_dense_column_format( A, A_out, control, inform,    &
-                                                 MAP )
-
-!  convert the input matrix or its transpose to dense-column format.
-
-!  Arguments:
-!
-!   A is a structure of type SMT_type used to hold the input matrix A.
-!   (see CONVERT_between_matrix_formats above)
-!
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!    (or its transpose, as desired) stored as a dense matrix by columns.
-!
-!    The following values will be set:
-!
-!       A_out%m   the number of rows of the output A
-!       A_out%n   the number of columns of the output A
-!       A_out%type( 1 : 16 ) = 'DENSE_BY_COLUMNS'
-!       A_out%val( : )   the values of the components of A, stored
-!                            as a dense matrix column by column
-!
-!   control, inform and MAP as above
-
-!  Dummy arguments
-
-      TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
-      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
-      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
-                                        DIMENSION( SIZE( A%val ) ) :: MAP
-
-!  Local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
-      REAL ( KIND = rp_ ) :: time_start, time_now, clock_start, clock_now
-      LOGICAL :: map_vals
-      CHARACTER ( LEN = 80 ) :: array_name
-!     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INV
-
-!  prefix for all output
-
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  initialize time
-
-      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
-
-!  ensure that input parameters are within allowed ranges
-
-      IF ( A%n < 1 .OR. A%m < 1 ) THEN
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
-            prefix
-        RETURN
-      END IF
-
-!  ensure that all values are recorded if MAP is present
-
-      map_vals = PRESENT( MAP )
-
-!  discover the array size
-
-      SELECT CASE( SMT_get( A%type ) )
-      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',                     &
-             'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' )
-
-!  type of A unknown
-
-      CASE DEFAULT
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
-        GO TO 900
-      END SELECT
-
-!  set initial values
-
-      IF ( control%transpose ) THEN
-        m = A%n ; n = A%m
-      ELSE
-        m = A%m ; n = A%n
-      END IF
-      ne = m * n
-
-!  store A row-wise in A_out, perhaps with the column entries within
-!  each row in increasing order
-
-      A_out%m = m ; A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'DENSE_BY_COLUMNS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
-
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  copy the data to A
-
-!  the transpose is required
-
-      IF ( control%transpose ) THEN
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          l = 0
-          DO i = 1, A%m
-            DO j = 1, A%n
-              l = l + 1
-              k = A%n * ( i - 1 ) + j
-              A_out%val( k ) = A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          l = 0
-          DO j = 1, A%n
-            DO i = 1, A%m
-              l = l + 1
-              k = A%n * ( i - 1 ) + j
-              A_out%val( k ) = A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          A_out%val = zero
-          DO i = 1, A%m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              j = A%col( l )
-              k = A%n * ( i - 1 ) + j
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          A_out%val = zero
-          DO j = 1, A%n
-            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-              i = A%row( l )
-              k = A%n * ( i - 1 ) + j
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%val = zero
-          DO l = 1, A%ne
-            i = A%row( l )
-            j = A%col( l )
-            k = A%n * ( i - 1 ) + j
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
-            IF ( map_vals ) MAP( l ) = k
-          END DO
-        END SELECT
-
-!  the transpose is not required
-
-      ELSE
-
-!  consider the input storage scheme
-
-        SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-          l = 0
-          DO i = 1, A%m
-            DO j = 1, A%n
-              l = l + 1
-              k = A%m * ( j - 1 ) + i
-              A_out%val( k ) = A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a dense matrix stored by columns
-
-        CASE ( 'DENSE_BY_COLUMNS' )
-          A_out%val( 1 : ne ) = A%val( 1 : ne )
-          IF ( map_vals ) MAP( 1 : ne ) = [ ( i, i = 1, ne ) ]
-
-!  A is a sparse matrix stored by rows
-
-        CASE ( 'SPARSE_BY_ROWS' )
-          A_out%val = zero
-          DO i = 1, A%m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              j = A%col( l )
-              k = A%m * ( j - 1 ) + i
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by columns
-
-        CASE ( 'SPARSE_BY_COLUMNS' )
-          A_out%val = zero
-          DO j = 1, A%n
-            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-              i = A%row( l )
-              k = A%m * ( j - 1 ) + i
-              A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-            END DO
-          END DO
-
-!  A is a sparse matrix stored by its co-ordinates
-
-        CASE ( 'COORDINATE' )
-          A_out%val = zero
-          DO l = 1, A%ne
-            i = A%row( l )
-            j = A%col( l )
-            k = A%m * ( j - 1 ) + i
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
-              IF ( map_vals ) MAP( l ) = k
-          END DO
-        END SELECT
-      END IF
-
-!  order the row entries within each row in increasing column order
-
-      inform%status = GALAHAD_ok
-
-!  record the total time taken
-
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      RETURN
-
-!  error returns
-
- 900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
-        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
-       &  ' from CONVERT ' )" ) prefix, inform%status
-      RETURN
-
-!  end of subroutine CONVERT_to_dense_column_format
-
-      END SUBROUTINE CONVERT_to_dense_column_format
-
 !-*-  C O N V E R T _ B E T W E E N _ S _ F O R M A T S  S U B R O U T I N E -*-
 
       SUBROUTINE CONVERT_between_symmetric_formats( A, output_format, A_out,   &
                                                     control, inform, MAP )
 
 !  convert the input SYMMETRIC matrix to a specified output format.
-!
-!  If the matrix is to be stored so that the row indices in each column
-!  appear in increasing order or if the matrix is to be squeezed to sum
-!  duplicate entries, the optional arrays IWORK and WORK of length at
-!  least m (n when the transpose is sought) must be provided, with all
-!  entries of IWORK set to 0; IWORK will have been reset to 0 on exit.
 !
 !  Arguments:
 !
@@ -2521,13 +623,13 @@
 !  output A as a dense matrix (stored by rows)
 
       CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-        CALL CONVERT_to_dense_symmetric_row_format( A, A_out, control,         &
+        CALL CONVERT_to_symmetric_dense_row_format( A, A_out, control,         &
                                                     inform, MAP = MAP )
 
 !  output A as a dense matrix (stored by columns)
 
       CASE ( 'DENSE_BY_COLUMNS' )
-        CALL CONVERT_to_dense_symmetric_column_format( A, A_out, control,      &
+        CALL CONVERT_to_symmetric_dense_column_format( A, A_out, control,      &
                                                        inform, MAP = MAP )
 
 !  output A as a sparse matrix (stored by rows)
@@ -2536,7 +638,7 @@
 
 !  provide workspace if necessary
 
-        CALL CONVERT_to_sparse_symmetric_row_format( A, A_out, control,        &
+        CALL CONVERT_to_symmetric_sparse_row_format( A, A_out, control,        &
                                                      inform, MAP = MAP )
 
 !  output A as a sparse matrix (stored by columns)
@@ -2545,7 +647,7 @@
 
 !  provide workspace if necessary
 
-        CALL CONVERT_to_sparse_symmetric_column_format( A, A_out, control,     &
+        CALL CONVERT_to_symmetric_sparse_column_format( A, A_out, control,     &
                                                         inform, MAP = MAP )
 
 !  output A as a sparse matrix (stored by coordinates)
@@ -2569,17 +671,393 @@
 
       END SUBROUTINE CONVERT_between_symmetric_formats
 
-! - C O N V E R T _ T O _ S _ C O L U M N _ F O R M A T   S U B R O U T I N E  -
+!-*-*-*-*-*-*-*- C O N V E R T _ T O _ C S R  S U B R O U T I N E -*-*-*-*-*-*-
 
-      SUBROUTINE CONVERT_to_sparse_symmetric_column_format( A, A_out, control, &
-                                                            inform, MAP )
+      SUBROUTINE CONVERT_to_CSR( A, A_out, control, inform, MAP )
+
+!  convert the input matrix or its transpose to sparse-row format.
+!
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!    (or its transpose, as desired) stored as a sparse matrix by columns.
+!
+!    The following values will be set:
+!
+!       A_out%m   the number of rows of the output A
+!       A_out%n   the number of columns of the output A
+!       A_out%type( 1 : 17 ) = 'SPARSE_BY_ROWS'
+!       A_out%val( : )   the values of the components of A, stored
+!                            column by columns
+!       A_out%col( : )   the column indices of the components of A
+!       A_out%ptr( : )   pointers to the start of each row, and past
+!                            the end of the last row
+!
+!   control, inform and the optional arguments as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  employ the sophisticated main conversion
+
+      CALL CONVERT_to_CSR_main( A, A_out%m, A_out%n, A_out%ne, A_out%val,      &
+                                A_out%col, A_out%ptr, control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'SPARSE_BY_ROWS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+
+      RETURN
+
+!  end of subroutine CONVERT_to_CSR
+
+      END SUBROUTINE CONVERT_to_CSR
+
+!-*-*-*-*-*-*-  C O N V E R T _ T O _ C S C   S U B R O U T I N E  -*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_CSC( A, A_out, control, inform, MAP )
+
+!  convert the input matrix or its transpose to sparse-column format.
+!
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!    (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!    (or its transpose, as desired) stored as a sparse matrix by columns.
+!
+!    The following values will be set:
+!
+!       A_out%m   the number of rows of the output A
+!       A_out%n   the number of columns of the output A
+!       A_out%type( 1 : 17 ) = 'SPARSE_BY_COLUMNS'
+!       A_out%val( : )   the values of the components of A, stored
+!                            column by columns
+!       A_out%row( : )   the row indices of the components of A
+!       A_out%ptr( : )   pointers to the start of each column, and past
+!                            the end of the last column
+!
+!   control, inform and the optional arguments as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_CSC_main( A, A_out%m, A_out%n, A_out%ne, A_out%val,      &
+                                A_out%row, A_out%ptr, control, inform, MAP )
+
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'SPARSE_BY_COLUMNS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+
+      RETURN
+
+!  end of subroutine CONVERT_to_CSC
+
+      END SUBROUTINE CONVERT_to_CSC
+
+!-*-*-*-*-*-*-*- C O N V E R T _ T O _ C C  S U B R O U T I N E -*-*-*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_CC( A, A_out, control, inform, MAP )
+
+!  convert the input matrix or its transpose to sparse co-ordinate format.
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!   (or its transpose, as desired) stored as a sparse matrix in co-ordinate form
+!
+!    The following values will be set:
+!
+!       A_out%m   the number of rows of the output A
+!       A_out%n   the number of columns of the output A
+!       A_out%ne  the number of nonzeros used to store the output A
+!       A_out%type( 1 : 10 ) = 'COORDINATE'
+!       A_out%val( : )   the values of the components of A, stored
+!                            column by columns
+!       A_out%row( : )   the row indices of the components of A
+!       A_out%col( : )   the column indices of the components of A
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_CC_main( A, A_out%m, A_out%n, A_out%ne, A_out%val,      &
+                                A_out%row, A_out%col, control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'COORDINATE', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+
+      RETURN
+
+!  end of subroutine CONVERT_to_CC
+
+      END SUBROUTINE CONVERT_to_CC
+
+!-*-*-*-*-*-*-*- C O N V E R T _ T O _ D R   S U B R O U T I N E -*-*-*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_DR( A, A_out, control, inform, MAP )
+
+!  convert the input matrix or its transpose to dense-row format.
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!    (or its transpose, as desired) stored as a dense matrix by columns.
+!
+!    The following values will be set:
+!
+!       A_out%m   the number of rows of the output A
+!       A_out%n   the number of columns of the output A
+!       A_out%type( 1 : 13 ) = 'DENSE_BY_ROWS'
+!       A_out%val( : )   the values of the components of A, stored
+!                            as a dense matrix row by row
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_DR_main( A, A_out%m, A_out%n, A_out%ne, A_out%val,       &
+                               control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'DENSE_BY_ROWS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+
+      RETURN
+
+!  end of subroutine CONVERT_to_DR
+
+      END SUBROUTINE CONVERT_to_DR
+
+!-*-*-*-*-*-*-*- C O N V E R T _ T O _ D C   S U B R O U T I N E -*-*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_DC( A, A_out, control, inform, MAP )
+
+!  convert the input matrix or its transpose to dense-column format.
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!    (or its transpose, as desired) stored as a dense matrix by columns.
+!
+!    The following values will be set:
+!
+!       A_out%m   the number of rows of the output A
+!       A_out%n   the number of columns of the output A
+!       A_out%type( 1 : 16 ) = 'DENSE_BY_COLUMNS'
+!       A_out%val( : )   the values of the components of A, stored
+!                            as a dense matrix column by column
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_DC_main( A, A_out%m, A_out%n, A_out%ne, A_out%val,       &
+                               control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'DENSE_BY_COLUMNS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+
+      RETURN
+
+!  end of subroutine CONVERT_to_DC
+
+      END SUBROUTINE CONVERT_to_DC
+
+! -*-*-*-*-*-*- C O N V E R T _ T O _ S C S R  S U B R O U T I N E -*-*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_SCSR( A, A_out, control, inform, MAP )
+
+!  convert the input symmetric matrix to sparse-row format.
+!
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!    stored as a sparse matrix by columns.
+!
+!    The following values will be set:
+!
+!       A_out%n   the number of rows/columns of the output A
+!       A_out%type( 1 : 17 ) = 'SPARSE_BY_ROWS'
+!       A_out%val( : )   the values of the components of A, stored
+!                            column by columns
+!       A_out%col( : )   the column indices of the components of A
+!       A_out%ptr( : )   pointers to the start of each row, and past
+!                            the end of the last row
+!
+!   control, inform and the optional arguments as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_SCSR_main( A, A_out%n, A_out%ne, A_out%val,              &
+                                 A_out%col, A_out%ptr, control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'SPARSE_BY_ROWS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+      RETURN
+
+!  end of subroutine CONVERT_to_SCSR
+
+      END SUBROUTINE CONVERT_to_SCSR
+
+! -*-*-*-*-*-*- C O N V E R T _ T O _ S C S C   S U B R O U T I N E  -*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_SCSC( A, A_out, control, inform, MAP )
 
 !  convert the input symmetric matrix to sparse-column format
 !
 !  Arguments:
 !
 !   A is a structure of type SMT_type used to hold the input matrix A.
-!   (see CONVERT_to_sparse_column_format above)
+!   (see CONVERT_to_CSC above)
 !
 !   A_out is a structure of type SMT_type used to hold the output matrix A
 !    stored as a sparse matrix by columns.
@@ -2600,6 +1078,2576 @@
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_SCSC_main( A, A_out%n, A_out%ne, A_out%val,              &
+                                 A_out%row, A_out%ptr, control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'SPARSE_BY_COLUMNS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+      RETURN
+
+!  end of subroutine CONVERT_to_SCSC
+
+      END SUBROUTINE CONVERT_to_SCSC
+
+! -*-*-*-*-*-*-*- C O N V E R T _ T O _ S C C  S U B R O U T I N E -*-*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_SCC( A, A_out, control, inform, MAP )
+
+!  convert the input symmetric matrix to sparse co-ordinate format.
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!   stored as a sparse matrix in co-ordinate form
+!
+!    The following values will be set:
+!
+!       A_out%n   the number of rows/columns of the output A
+!       A_out%ne  the number of nonzeros used to store the output A
+!       A_out%type( 1 : 10 ) = 'COORDINATE'
+!       A_out%val( : )   the values of the components of A, stored
+!                            column by columns
+!       A_out%row( : )   the row indices of the components of A
+!       A_out%col( : )   the column indices of the components of A
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_SCC_main( A, A_out%n, A_out%ne, A_out%val,               &
+                                 A_out%row, A_out%col, control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'COORDINATE', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+      RETURN
+
+!  end of subroutine CONVERT_to_SCC
+
+      END SUBROUTINE CONVERT_to_SCC
+
+! -*-*-*-*-*-*-*- C O N V E R T _ T O _ S D R  S U B R O U T I N E -*-*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_SDR( A, A_out, control, inform, MAP )
+
+!  convert the input symmetric matrix to dense-row format.
+
+!  if the lower trangular part of a symmetric matrix is stored as a vector 
+!  by rows, the (i,j)th entry is in position 
+!    i(i-1)/2 + j
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!    stored as a dense matrix by columns.
+!
+!    The following values will be set:
+!
+!       A_out%n   the number of rows/columns of the output A
+!       A_out%type( 1 : 13 ) = 'DENSE_BY_ROWS'
+!       A_out%val( : )   the values of the components of A, stored
+!                            as a dense matrix row by row
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_SDR_main( A, A_out%n, A_out%ne, A_out%val,               &
+                                control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'DENSE_BY_ROWS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+      RETURN
+
+!  end of subroutine CONVERT_to_SDR
+
+      END SUBROUTINE CONVERT_to_SDR
+
+! -*-*-*-*-*-*-*- C O N V E R T _ T O _ S D C  S U B R O U T I N E -*-*-*-*-*-*-
+
+      SUBROUTINE CONVERT_to_SDC( A, A_out, control, inform, MAP )
+
+!  convert the input matrix to dense-column format.
+
+!  if the lower trangular part of a symmetric matrix is stored as a vector 
+!  by columns, the (i,j)th entry is in position i(i-1)/2+j
+!    n(j-1) - j(j-1)/2 + i
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out is a structure of type SMT_type used to hold the output matrix A
+!    stored as a dense matrix by columns.
+!
+!    The following values will be set:
+!
+!       A_out%n   the number of rows/columns of the output A
+!       A_out%type( 1 : 16 ) = 'DENSE_BY_COLUMNS'
+!       A_out%val( : )   the values of the components of A, stored
+!                            as a dense matrix column by column
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  call the sophisticated main conversion
+
+      CALL CONVERT_to_SDC_main( A, A_out%n, A_out%ne, A_out%val,               &
+                                control, inform, MAP )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  record the output matrix type
+
+      CALL SMT_put( A_out%type, 'DENSE_BY_COLUMNS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,      &
+         &  ' from CONVERT ' )" ) prefix, inform%status
+      END IF
+      RETURN
+
+!  end of subroutine CONVERT_to_SDC
+
+      END SUBROUTINE CONVERT_to_SDC
+
+!-*-*-*-*- C O N V E R T _ T O _ C S R _ M A I N   S U B R O U T I N E -*-*-*-*-
+
+      SUBROUTINE CONVERT_to_CSR_main( A, A_out_m, A_out_n, A_out_ne, A_out_val,&
+                                      A_out_col, A_out_ptr, control, inform,   &
+                                      MAP )
+
+!  convert the input matrix or its transpose to sparse-row format.
+!
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out_m   the number of rows of the output A
+!   A_out_n   the number of columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                        column by columns
+!   A_out_col( : )   the column indices of the components of A
+!   A_out_ptr( : )   pointers to the start of each row, and past
+!                        the end of the last row
+!
+!   control, inform and the optional arguments as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                DIMENSION( : ) :: A_out_col, A_out_ptr
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
+      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
+      LOGICAL :: order_cols, sum_duplicates, map_vals
+      CHARACTER ( LEN = 80 ) :: array_name
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK, INV
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+      IF ( A%n < 1 .OR. A%m < 0 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
+            prefix
+        RETURN
+      END IF
+
+!  ensure that all values are recorded if MAP is present
+
+      map_vals = PRESENT( MAP )
+
+!  discover the array size
+
+      order_cols = .FALSE.
+      IF ( A%m > 0 ) THEN
+        sum_duplicates = control%sum_duplicates 
+      ELSE
+        sum_duplicates = .FALSE.
+      END IF
+      SELECT CASE( SMT_get( A%type ) )
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+        ne = A%m * A%n
+      CASE ( 'SPARSE_BY_ROWS' )
+        ne = A%ptr( A%m + 1 ) - 1
+        IF ( control%transpose ) order_cols = .TRUE.
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        ne = A%ptr( A%n + 1 ) - 1
+        IF ( .NOT. control%transpose ) order_cols = .TRUE.
+      CASE ( 'COORDINATE' )
+        ne = A%ne
+        IF ( A%m > 0 ) order_cols = .TRUE.
+
+!  type of A unknown
+
+      CASE DEFAULT
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
+        GO TO 900
+      END SELECT
+
+!  set initial values
+
+      IF ( control%transpose ) THEN
+        m = A%n ; n = A%m
+      ELSE
+        m = A%m ; n = A%n
+      END IF
+
+!  store A row-wise in A_out, perhaps with the column entries within
+!  each row in increasing order
+
+      A_out_m = m ; A_out_n = n ; A_out_ne = ne
+
+      array_name = 'CONVERT: A_out_ptr'
+      CALL SPACE_resize_array( A_out_m + 1, A_out_ptr,                         &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_col'
+      CALL SPACE_resize_array( ne, A_out_col,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  special case - m = 0
+
+      IF ( A%m == 0 ) THEN
+        A_out_ptr( : A_out_m + 1 ) = 1
+        inform%status = GALAHAD_ok ; GO TO 890
+      END IF
+
+!  copy the data to A
+
+!  the transpose is required
+
+      IF ( control%transpose ) THEN
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          l = 1
+          DO i = 1, m
+            k = i
+            A_out_ptr( i ) = l
+            DO j = 1, n
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_col( l ) = j ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+              k = k + m
+            END DO
+          END DO
+          A_out_ptr( m + 1 ) = l
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          k = 0 ; l = 1
+          DO i = 1, m
+            A_out_ptr( i ) = l
+            DO j = 1, n
+              k = k + 1
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_col( l ) = j ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+            END DO
+          END DO
+          A_out_ptr( m + 1 ) = l
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          CALL CONVERT_transpose( A%n, A%m, ne, A%ptr, A%col, A%val,           &
+                                  A_out_ptr, A_out_col, A_out_val, MAP = MAP )
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          A_out_ptr( : m + 1 ) = A%ptr( : m + 1 )
+          A_out_col( : A_out_ne ) = A%row( : A_out_ne )
+          A_out_val( : A_out_ne ) = A%val( : A_out_ne )
+          IF ( map_vals ) MAP( : A_out_ne ) = [ ( i, i = 1, A_out_ne ) ]
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_ptr( : m ) = 0
+          DO l = 1, A%ne
+            i = A%col( l )
+            A_out_ptr( i ) = A_out_ptr( i ) + 1
+          END DO
+          l = 1
+          DO i = 1, m
+            j = A_out_ptr( i ) + l
+            A_out_ptr( i ) = l
+            l = j
+          END DO
+          DO l = 1, A%ne
+            i = A%col( l ) ; j = A_out_ptr( i )
+            A_out_col( j ) = A%row( l ) ; A_out_val( j ) = A%val( l )
+            A_out_ptr( i ) = j + 1
+            IF ( map_vals ) MAP( l ) = j
+          END DO
+          DO i = m, 1, - 1
+            A_out_ptr( i + 1 ) = A_out_ptr( i )
+          END DO
+          A_out_ptr( 1 ) = 1
+        END SELECT
+
+!  the transpose is not required
+
+      ELSE
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          k = 0 ; l = 1
+          DO i = 1, m
+            A_out_ptr( i ) = l
+            DO j = 1, n
+              k = k + 1
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_col( l ) = j ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+            END DO
+          END DO
+          A_out_ptr( m + 1 ) = l
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          l = 1
+          DO i = 1, m
+            k = i
+            A_out_ptr( i ) = l
+            DO j = 1, n
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_col( l ) = j ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+              k = k + m
+            END DO
+          END DO
+          A_out_ptr( m + 1 ) = l
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          A_out_ptr( : m + 1 ) = A%ptr( : m + 1 )
+          A_out_col( : A_out_ne ) = A%col( : A_out_ne )
+          A_out_val( : A_out_ne ) = A%val( : A_out_ne )
+          IF ( map_vals ) MAP( : A_out_ne ) = [ ( i, i = 1, A_out_ne ) ]
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          CALL CONVERT_transpose( A%m, A%n, ne, A%ptr, A%row, A%val,           &
+                                  A_out_ptr, A_out_col, A_out_val, MAP = MAP )
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_ptr( : m ) = 0
+          DO l = 1, A%ne
+            i = A%row( l )
+            A_out_ptr( i ) = A_out_ptr( i ) + 1
+          END DO
+          l = 1
+          DO i = 1, m
+            j = A_out_ptr( i ) + l
+            A_out_ptr( i ) = l
+            l = j
+          END DO
+          DO l = 1, A%ne
+            i = A%row( l ) ; j = A_out_ptr( i )
+            A_out_col( j ) = A%col( l ) ; A_out_val( j ) = A%val( l )
+            A_out_ptr( i ) = j + 1
+            IF ( map_vals ) MAP( l ) = j
+          END DO
+          DO i = m, 1, - 1
+            A_out_ptr( i + 1 ) = A_out_ptr( i )
+          END DO
+          A_out_ptr( 1 ) = 1
+        END SELECT
+      END IF
+
+!  if the mapping array is present, make sure that it is adjusted if the matrix
+!  is to be stored so that the column indices in each row appear in increasing 
+!  order or if the matrix is to be squeezed to sum duplicate  entries
+
+      IF ( map_vals ) THEN
+
+!  compute the inverse, INV, to the map array, MAP, and workspace IWORK, 
+!  and initialize INV
+
+        array_name = 'CONVERT: INV'
+        CALL SPACE_resize_array( ne, INV,                                      &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'CONVERT: IWORK'
+        CALL SPACE_resize_array( n, IWORK,                                     &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        DO i = 1, ne
+          INV( MAP( i ) ) = i 
+        END DO
+
+!  if required, reorder so that the column indices in each row appear
+!  in increasing order 
+
+        IF ( control%order .AND. order_cols ) THEN
+          CALL CONVERT_increasing_order( m, A_out_ne, A_out_ptr, A_out_col,    &
+                                         A_out_val, MAP, INV )
+        END IF
+
+!  sum duplicate entries and squeeze the storage space
+
+        CALL CONVERT_compress_duplicates( n, m, A_out_ne, A_out_ptr,           &
+                                          A_out_col, A_out_val, MAP, INV,      &
+                                          IWORK )
+        A_out_ne = A_out_ptr( m + 1 ) - 1
+
+!  deallocate workspace
+
+        CALL SPACE_dealloc_array( INV, inform%status, inform%alloc_status )
+
+!  skip to the exit if there is no need to order rows within columns or to
+!  sum dupicates
+
+      ELSE 
+        IF ( .NOT. ( sum_duplicates .OR.                                       &
+                    ( control%order .AND. order_cols ) ) ) GO TO 890
+
+!  if the matrix is to be stored so that the column indices in each row appear
+!  in increasing order or if the matrix is to be squeezed to sum duplicate 
+!  entries, but no mapping is required, the arrays IWORK and WORK of length m 
+!  (n when the transpose is sought) are used, with IWORK initialised as 0
+
+        array_name = 'CONVERT: IWORK'
+        CALL SPACE_resize_array( n, IWORK,                                     &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        IWORK( : n ) = 0
+
+!  sum duplicate entries and squeeze the storage space
+
+        IF ( sum_duplicates ) THEN
+
+!  consider each row one at a time
+
+          k = 1 ; inform%duplicates = 0
+          DO i = 1, m
+            ll = k
+
+!  loop over the columns j in the ith row
+
+            DO l = A_out_ptr( i ), A_out_ptr( i + 1 ) - 1
+              j = A_out_col( l )
+
+!  if iwork(j) = 0, the entry is not a duplicate, so record the column and value
+!  and flag in iwork(j) the location where the value is stored in A_out_val
+
+              IF ( IWORK( j ) == 0 ) THEN
+                A_out_col( k ) = A_out_col( l )
+                A_out_val( k ) = A_out_val( l )
+                IWORK( j ) = k
+                k = k + 1
+
+!  if iwork(j) /= 0, the entry is a duplicate, and its value should be added
+!  to A_out_val(iwork(j))
+
+              ELSE
+                inform%duplicates = inform%duplicates + 1
+                j = IWORK( j )
+                A_out_val( j ) = A_out_val( j ) + A_out_val( l )
+              END IF
+            END DO
+
+!  reset IWORK to zero
+
+            DO l = ll, k - 1
+              IWORK( A_out_col( l ) ) = 0
+            END DO
+
+!  reset the pointer to the start of the row
+
+            A_out_ptr( i ) = ll
+          END DO
+          A_out_ptr( m + 1 ) = k
+          A_out_ne = k - 1
+        END IF
+
+!  order the row entries within each column in increasing row order
+
+        inform%status = GALAHAD_ok
+        IF ( control%order .AND. order_cols ) THEN
+          array_name = 'CONVERT: WORK'
+          CALL SPACE_resize_array( n, WORK,                                    &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          DO i = 1, m
+            ll =  A_out_ptr( i ) ; lu = A_out_ptr( i + 1 ) - 1
+            IF ( lu > ll ) THEN
+              CALL CONVERT_order( n, lu - ll + 1, A_out_col( ll : lu ),        &
+                                  A_out_val( ll : lu ), order_status,          &
+                                  IWORK, WORK )
+              IF ( order_status == GALAHAD_warning_repeated_entry )            &
+                inform%status = order_status
+            END IF
+          END DO
+          CALL SPACE_dealloc_array( WORK, inform%status, inform%alloc_status )
+        END IF
+      END IF
+
+!  deallocate workspace
+
+      CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
+
+!  record the total time taken
+
+  890 CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      RETURN
+
+!  error returns
+
+  900 CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
+        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
+       &  ' from CONVERT ' )" ) prefix, inform%status
+      RETURN
+
+!  end of subroutine CONVERT_to_CSR_main
+
+      END SUBROUTINE CONVERT_to_CSR_main
+
+!-*-*-*-*- C O N V E R T _ T O _ C S C _ M A I N   S U B R O U T I N E -*-*-*-*-
+
+      SUBROUTINE CONVERT_to_CSC_main( A, A_out_m, A_out_n, A_out_ne, A_out_val,&
+                                      A_out_row, A_out_ptr, control, inform,   &
+                                      MAP )
+
+!  convert the input matrix or its transpose to sparse-column format.
+!
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!    (see CONVERT_between_matrix_formats above)
+!
+!   A_out_m   the number of rows of the output A
+!   A_out_n   the number of columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                        column by columns
+!   A_out_row( : )   the row indices of the components of A
+!   A_out_ptr( : )   pointers to the start of each column, and past
+!                        the end of the last column
+!
+!   control, inform and the optional arguments as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                DIMENSION( : ) :: A_out_row, A_out_ptr
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
+      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
+      LOGICAL :: order_cols, sum_duplicates, map_vals
+      CHARACTER ( LEN = 80 ) :: array_name
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK, INV
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+      IF ( A%n < 1 .OR. A%m < 0 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
+            prefix
+        RETURN
+      END IF
+
+!  ensure that all values are recorded if MAP is present
+
+      map_vals = PRESENT( MAP )
+
+!  discover the array size
+
+      order_cols = .FALSE.
+      IF ( A%m > 0 ) THEN
+        sum_duplicates = control%sum_duplicates 
+      ELSE
+        sum_duplicates = .FALSE.
+      END IF
+      SELECT CASE( SMT_get( A%type ) )
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+        ne = A%m * A%n
+      CASE ( 'SPARSE_BY_ROWS' )
+        ne = A%ptr( A%m + 1 ) - 1
+        IF ( control%transpose ) order_cols = .TRUE.
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        ne = A%ptr( A%n + 1 ) - 1
+        IF ( .NOT. control%transpose ) order_cols = .TRUE.
+      CASE ( 'COORDINATE' )
+        ne = A%ne
+        IF ( A%m > 0 ) order_cols = .TRUE.
+
+!  type of A unknown
+
+      CASE DEFAULT
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
+        GO TO 900
+      END SELECT
+
+!  set initial values
+
+      IF ( control%transpose ) THEN
+        m = A%n ; n = A%m
+      ELSE
+        m = A%m ; n = A%n
+      END IF
+
+!  store A column-wise in A_out, perhaps with the row entries within
+!  each column in increasing order
+
+      A_out_m = m ; A_out_n = n ; A_out_ne = ne
+
+      array_name = 'CONVERT: A_out_ptr'
+      CALL SPACE_resize_array( A_out_n + 1, A_out_ptr,                         &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_row'
+      CALL SPACE_resize_array( ne, A_out_row,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  special case - m = 0
+
+      IF ( A%m == 0 ) THEN
+        A_out_ptr( : A_out_n + 1 ) = 1
+        inform%status = GALAHAD_ok ; GO TO 890
+      END IF
+
+!  copy the data to A
+
+!  the transpose is required
+
+      IF ( control%transpose ) THEN
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          k = 0 ; l = 1
+          DO j = 1, n
+            A_out_ptr( j ) = l
+            DO i = 1, m
+              k = k + 1
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_row( l ) = i ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+            END DO
+          END DO
+          A_out_ptr( n + 1 ) = l
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          l = 1
+          DO j = 1, n
+            k = j
+            A_out_ptr( j ) = l
+            DO i = 1, m
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_row( l ) = i ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+              k = k + n
+            END DO
+          END DO
+          A_out_ptr( n + 1 ) = l
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          A_out_ptr( : n + 1 ) = A%ptr( : n + 1 )
+          A_out_row( : A_out_ne ) = A%col( : A_out_ne )
+          A_out_val( : A_out_ne ) = A%val( : A_out_ne )
+          IF ( map_vals ) MAP( : A_out_ne ) = [ ( i, i = 1, A_out_ne ) ]
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          CALL CONVERT_transpose( A%m, A%n, ne, A%ptr, A%row, A%val,           &
+                                  A_out_ptr, A_out_row, A_out_val, MAP = MAP )
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_ptr( : n ) = 0
+          DO l = 1, A%ne
+            j= A%row( l )
+            A_out_ptr( j ) = A_out_ptr( j ) + 1
+          END DO
+          l = 1
+          DO j = 1, n
+            i = A_out_ptr( j ) + l
+            A_out_ptr( j ) = l
+            l = i
+          END DO
+          DO l = 1, A%ne
+            j = A%row( l ) ; i = A_out_ptr( j )
+            A_out_row( i ) = A%col( l ) ; A_out_val( i ) = A%val( l )
+            A_out_ptr( j ) = i + 1
+            IF ( map_vals ) MAP( l ) = i
+          END DO
+          DO j = n, 1, - 1
+            A_out_ptr( j + 1 ) = A_out_ptr( j )
+          END DO
+          A_out_ptr( 1 ) = 1
+        END SELECT
+
+!  the transpose is not required
+
+      ELSE
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          l = 1
+          DO j = 1, n
+            k = j
+            A_out_ptr( j ) = l
+            DO i = 1, m
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_row( l ) = i ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+              k = k + n
+            END DO
+          END DO
+          A_out_ptr( n + 1 ) = l
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          k = 0 ; l = 1
+          DO j = 1, n
+            A_out_ptr( j ) = l
+            DO i = 1, m
+              k = k + 1
+              val = A%val( k )
+              IF ( map_vals ) MAP( k ) = l
+              IF ( val /= zero .OR. map_vals ) THEN
+                A_out_row( l ) = i ; A_out_val( l ) = val
+                l = l + 1
+              END IF
+            END DO
+          END DO
+          A_out_ptr( n + 1 ) = l
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          CALL CONVERT_transpose( A%n, A%m, ne, A%ptr, A%col, A%val,           &
+                                  A_out_ptr, A_out_row, A_out_val, MAP = MAP )
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          A_out_ptr( : n + 1 ) = A%ptr( : n + 1 )
+          A_out_row( : A_out_ne ) = A%row( : A_out_ne )
+          A_out_val( : A_out_ne ) = A%val( : A_out_ne )
+          IF ( map_vals ) MAP( : A_out_ne ) = [ ( i, i = 1, A_out_ne ) ]
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_ptr( : n ) = 0
+          DO l = 1, A%ne
+            j = A%col( l )
+            A_out_ptr( j ) = A_out_ptr( j ) + 1
+          END DO
+          l = 1
+          DO j = 1, n
+            i = A_out_ptr( j ) + l
+            A_out_ptr( j ) = l
+            l = i
+          END DO
+          DO l = 1, A%ne
+            j = A%col( l ) ; i = A_out_ptr( j )
+            A_out_row( i ) = A%row( l ) ; A_out_val( i ) = A%val( l )
+            A_out_ptr( j ) = i + 1
+            IF ( map_vals ) MAP( l ) = i
+          END DO
+          DO j = n, 1, - 1
+            A_out_ptr( j + 1 ) = A_out_ptr( j )
+          END DO
+          A_out_ptr( 1 ) = 1
+        END SELECT
+      END IF
+
+!  if the mapping array is present, make sure that it is adjusted if
+!  the matrix is to be stored so that the row indices in each column appear
+!  in increasing order or if the matrix is to be squeezed to sum duplicate 
+!  entries
+
+      IF ( map_vals ) THEN
+
+!  compute the inverse, INV, to the map array, MAP, and workspace IWORK, 
+!  and initialize INV
+
+        array_name = 'CONVERT: INV'
+        CALL SPACE_resize_array( ne, INV,                                      &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'CONVERT: IWORK'
+        CALL SPACE_resize_array( m, IWORK,                                     &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        DO i = 1, ne
+          INV( MAP( i ) ) = i 
+        END DO
+
+!  if required, reorder so that the row indices in each column appear
+!  in increasing order 
+
+        IF ( control%order .AND. order_cols ) THEN
+          CALL CONVERT_increasing_order( n, A_out_ne, A_out_ptr, A_out_row,    &
+                                         A_out_val, MAP, INV )
+        END IF
+
+!  sum duplicate entries and squeeze the storage space
+
+        CALL CONVERT_compress_duplicates( m, n, A_out_ne, A_out_ptr,           &
+                                          A_out_row, A_out_val, MAP, INV,      &
+                                          IWORK )
+        A_out_ne = A_out_ptr( n + 1 ) - 1
+
+!  deallocate workspace
+
+        CALL SPACE_dealloc_array( INV, inform%status, inform%alloc_status )
+
+!  skip to the exit if there is no need to order rows within columns or to
+!  sum dupicates
+
+      ELSE 
+        IF ( .NOT. ( sum_duplicates .OR.                                       &
+                    ( control%order .AND. order_cols ) ) ) GO TO 890
+
+!  if the matrix is to be stored so that the row indices in each column appear
+!  in increasing order or if the matrix is to be squeezed to sum duplicate 
+!  entries, but no mapping s required, the arrays IWORK and WORK of length m 
+!  (n when the transpose is sought) are used, with IWORK initialised as 0
+
+        array_name = 'CONVERT: IWORK'
+        CALL SPACE_resize_array( m, IWORK,                                     &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        IWORK( : m ) = 0
+
+!  sum duplicate entries and squeeze the storage space
+
+        IF ( sum_duplicates ) THEN
+
+!  consider each column one at a time
+
+          k = 1 ; inform%duplicates = 0
+          DO i = 1, n
+            ll = k
+
+!  loop over the rows j in the ith column
+
+            DO l = A_out_ptr( i ), A_out_ptr( i + 1 ) - 1
+              j = A_out_row( l )
+
+!  if iwork(j) = 0, the entry is not a duplicate, so record the row and value,
+!  and flag in iwork(j) the location where the value is stored in A_out_val
+
+              IF ( IWORK( j ) == 0 ) THEN
+                A_out_row( k ) = A_out_row( l )
+                A_out_val( k ) = A_out_val( l )
+                IWORK( j ) = k
+                k = k + 1
+
+!  if iwork(j) /= 0, the entry is a duplicate, and its value should be added
+!  to A_out_val(iwork(j))
+
+              ELSE
+                inform%duplicates = inform%duplicates + 1
+                j = IWORK( j )
+                A_out_val( j ) = A_out_val( j ) + A_out_val( l )
+              END IF
+            END DO
+
+!  reset IWORK to zero
+
+            DO l = ll, k - 1
+              IWORK( A_out_row( l ) ) = 0
+            END DO
+
+!  reset the pointer to the start of the column
+
+            A_out_ptr( i ) = ll
+          END DO
+          A_out_ptr( n + 1 ) = k
+          A_out_ne = k - 1
+        END IF
+
+!  order the row entries within each column in increasing row order
+
+        inform%status = GALAHAD_ok
+        IF ( control%order .AND. order_cols ) THEN
+          array_name = 'CONVERT: WORK'
+          CALL SPACE_resize_array( m, WORK,                                    &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          DO i = 1, n
+            ll =  A_out_ptr( i ) ; lu = A_out_ptr( i + 1 ) - 1
+            IF ( lu > ll ) THEN
+              CALL CONVERT_order( m, lu - ll + 1, A_out_row( ll : lu ),        &
+                                  A_out_val( ll : lu ), order_status,          &
+                                  IWORK, WORK )
+              IF ( order_status == GALAHAD_warning_repeated_entry )            &
+                inform%status = order_status
+            END IF
+          END DO
+          CALL SPACE_dealloc_array( WORK, inform%status, inform%alloc_status )
+        END IF
+      END IF
+
+!  deallocate workspace
+
+      CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
+
+!  record the total time taken
+
+  890 CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      RETURN
+
+!  error returns
+
+ 900  CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
+        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
+       &  ' from CONVERT ' )" ) prefix, inform%status
+      RETURN
+
+!  end of subroutine CONVERT_to_CSC_main
+
+      END SUBROUTINE CONVERT_to_CSC_main
+
+!-*-*-*-*-*- C O N V E R T _ T O _ C C _ M A I N   S U B R O U T I N E -*-*-*-*-
+
+      SUBROUTINE CONVERT_to_CC_main( A, A_out_m, A_out_n, A_out_ne, A_out_val, &
+                                     A_out_row, A_out_col, control, inform,    &
+                                     MAP )
+
+!  convert the input matrix or its transpose to sparse co-ordinate format.
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out_m   the number of rows of the output A
+!   A_out_n   the number of columns of the output A
+!   A_out_ne  the number of nonzeros used to store the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                        column by columns
+!   A_out_row( : )   the row indices of the components of A
+!   A_out_col( : )   the column indices of the components of A
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                DIMENSION( : ) :: A_out_row, A_out_col
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
+      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
+      LOGICAL :: map_vals
+      CHARACTER ( LEN = 80 ) :: array_name
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_out_ptr
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+      IF ( A%n < 1 .OR. A%m < 0 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
+            prefix
+        RETURN
+      END IF
+
+!  if it required to sum duplicates, first convert to sparse column format 
+
+      IF ( A%m > 0 .AND. control%sum_duplicates ) THEN
+        CALL CONVERT_to_CSC_main( A, A_out_m, A_out_n, A_out_ne, A_out_val,    &
+                                  A_out_row, A_out_ptr, control, inform,       &
+                                  MAP = MAP )
+
+!  now provide space for and extract the column number for each component
+
+        ne = A_out_ptr( A_out_n + 1 ) - 1
+        array_name = 'CONVERT: A_out_col'
+        CALL SPACE_resize_array( ne, A_out_col,                                &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        DO j = 1, A_out_n
+          A_out_col( A_out_ptr( j ) : A_out_ptr( j + 1 ) - 1 ) = j
+        END DO
+
+!  deallocate the column pointers
+
+        CALL SPACE_dealloc_array( A_out_ptr, inform%status,                    &
+                                  inform%alloc_status )
+      END IF
+
+!  ensure that all values are recorded if MAP is present
+
+      map_vals = PRESENT( MAP )
+
+!  discover the array size
+
+      SELECT CASE( SMT_get( A%type ) )
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+        ne = A%m * A%n
+      CASE ( 'SPARSE_BY_ROWS' )
+        ne = A%ptr( A%m + 1 ) - 1
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        ne = A%ptr( A%n + 1 ) - 1
+      CASE ( 'COORDINATE' )
+        ne = A%ne
+
+!  type of A unknown
+
+      CASE DEFAULT
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
+        GO TO 900
+      END SELECT
+
+!  set initial values
+
+      IF ( control%transpose ) THEN
+        m = A%n ; n = A%m
+      ELSE
+        m = A%m ; n = A%n
+      END IF
+
+!  store A row-wise in A_out, perhaps with the column entries within
+!  each row in increasing order
+
+      A_out_m = m ; A_out_n = n
+
+      array_name = 'CONVERT: A_out_row'
+      CALL SPACE_resize_array( ne, A_out_row,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_col'
+      CALL SPACE_resize_array( ne, A_out_col,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  copy the data to A
+
+!  the transpose is required
+
+      IF ( control%transpose ) THEN
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          l = 0 ; k = 0
+          DO i = 1, A%m
+            DO j = 1, A%n
+              l = l + 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = j ; A_out_col( k ) = i
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          l = 0 ; k = 0
+          DO j = 1, A%n
+            DO i = 1, A%m
+              l = l + 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = j ; A_out_col( k ) = i
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          k = 0
+          DO i = 1, A%m
+            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = A%col( l ) ; A_out_col( k ) = i
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          k = 0
+          DO j = 1, A%n
+            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = j ; A_out_col( k ) = A%row( l )
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          k = 0
+          DO l = 1, A%ne
+            val = A%val( l )
+            IF ( val /= zero .OR. map_vals ) THEN
+              k = k + 1
+              A_out_row( k ) = A%col( l ) ; A_out_col( k ) = A%row( l )
+              A_out_val( k ) = val
+            END IF
+            IF ( map_vals ) MAP( l ) = k
+          END DO
+          A_out_ne = k
+        END SELECT
+
+!  the transpose is not required
+
+      ELSE
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          l = 0 ; k = 0
+          DO i = 1, A%m
+            DO j = 1, A%n
+              l = l + 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = i ; A_out_col( k ) = j
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          l = 0 ; k = 0
+          DO j = 1, A%n
+            DO i = 1, A%m
+              l = l + 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = i ; A_out_col( k ) = j
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          k = 0
+          DO i = 1, A%m
+            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = i ; A_out_col( k ) = A%col( l )
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          k = 0
+          DO j = 1, A%n
+            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+              val = A%val( l )
+              IF ( val /= zero .OR. map_vals ) THEN
+                k = k + 1
+                A_out_row( k ) = A%row( l ) ; A_out_col( k ) = j
+                A_out_val( k ) = val
+              END IF
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+          A_out_ne = k
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          k = 0
+          DO l = 1, A%ne
+            val = A%val( l )
+            IF ( val /= zero .OR. map_vals ) THEN
+              k = k + 1
+              A_out_row( k ) = A%row( l ) ; A_out_col( k ) = A%col( l )
+              A_out_val( k ) = val
+            END IF
+            IF ( map_vals ) MAP( l ) = k
+          END DO
+          A_out_ne = k
+        END SELECT
+      END IF
+
+!  order the row entries within each row in increasing column order
+
+      inform%status = GALAHAD_ok
+
+!  record the total time taken
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      RETURN
+
+!  error returns
+
+ 900  CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
+        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
+       &  ' from CONVERT ' )" ) prefix, inform%status
+      RETURN
+
+!  end of subroutine CONVERT_to_CC_main
+
+      END SUBROUTINE CONVERT_to_CC_main
+
+!-*-*-*-*-*- C O N V E R T _ T O _ D R _ M A I N   S U B R O U T I N E -*-*-*-*-
+
+      SUBROUTINE CONVERT_to_DR_main( A, A_out_m, A_out_n, A_out_ne, A_out_val, &
+                                     control, inform, MAP )
+
+!  convert the input matrix or its transpose to dense-row format.
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out_m   the number of rows of the output A
+!   A_out_n   the number of columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                        as a dense matrix row by row
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
+      REAL ( KIND = rp_ ) :: time_start, time_now, clock_start, clock_now
+      LOGICAL :: map_vals
+      CHARACTER ( LEN = 80 ) :: array_name
+!     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INV
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+      IF ( A%n < 1 .OR. A%m < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
+            prefix
+        RETURN
+      END IF
+
+!  ensure that all values are recorded if MAP is present
+
+      map_vals = PRESENT( MAP )
+
+!  discover the array size
+
+      SELECT CASE( SMT_get( A%type ) )
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',                     &
+             'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' )
+
+!  type of A unknown
+
+      CASE DEFAULT
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
+        GO TO 900
+      END SELECT
+
+!  set initial values
+
+      IF ( control%transpose ) THEN
+        m = A%n ; n = A%m
+      ELSE
+        m = A%m ; n = A%n
+      END IF
+      ne = m * n
+
+!  store A row-wise in A_out, perhaps with the column entries within
+!  each row in increasing order
+
+      A_out_m = m ; A_out_n = n ; A_out_ne = ne
+
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  copy the data to A
+
+!  the transpose is required
+
+      IF ( control%transpose ) THEN
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          l = 0
+          DO i = 1, A%m
+            DO j = 1, A%n
+              l = l + 1
+              k = A%m * ( j - 1 ) + i
+              A_out_val( k ) = A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          l = 0
+          DO j = 1, A%n
+            DO i = 1, A%m
+              l = l + 1
+              k = A%m * ( j - 1 ) + i
+              A_out_val( k ) = A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          A_out_val = zero
+          DO i = 1, A%m
+            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+              j = A%col( l )
+              k = A%m * ( j - 1 ) + i
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          A_out_val = zero
+          DO j = 1, A%n
+            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+              i = A%row( l )
+              k = A%m * ( j - 1 ) + i
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_val = zero
+          DO l = 1, A%ne
+            i = A%row( l )
+            j = A%col( l )
+            k = A%m * ( j - 1 ) + i
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
+            IF ( map_vals ) MAP( l ) = k
+          END DO
+        END SELECT
+
+!  the transpose is not required
+
+      ELSE
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          A_out_val( 1 : ne ) = A%val( 1 : ne )
+          IF ( map_vals ) MAP( 1 : ne ) = [ ( i, i = 1, ne ) ]
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          l = 0
+          DO j = 1, A%n
+            DO i = 1, A%m
+              l = l + 1
+              k = A%n * ( i - 1 ) + j
+              A_out_val( k ) = A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          A_out_val = zero
+          DO i = 1, A%m
+            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+              j = A%col( l )
+              k = A%n * ( i - 1 ) + j
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          A_out_val = zero
+          DO j = 1, A%n
+            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+              i = A%row( l )
+              k = A%n * ( i - 1 ) + j
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_val = zero
+          DO l = 1, A%ne
+            i = A%row( l )
+            j = A%col( l )
+            k = A%n * ( i - 1 ) + j
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
+            IF ( map_vals ) MAP( l ) = k
+          END DO
+        END SELECT
+      END IF
+
+!  order the row entries within each row in increasing column order
+
+      inform%status = GALAHAD_ok
+
+!  record the total time taken
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      RETURN
+
+!  error returns
+
+ 900  CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
+        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
+       &  ' from CONVERT ' )" ) prefix, inform%status
+      RETURN
+
+!  end of subroutine CONVERT_to_DR_main
+
+      END SUBROUTINE CONVERT_to_DR_main
+
+!-*-*-*-*-*- C O N V E R T _ T O _ D C _ M A I N   S U B R O U T I N E -*-*-*-*-
+
+      SUBROUTINE CONVERT_to_DC_main( A, A_out_m, A_out_n, A_out_ne, A_out_val, &
+                                     control, inform, MAP )
+
+!  convert the input matrix or its transpose to dense-column format.
+
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out_m   the number of rows of the output A
+!   A_out_n   the number of columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                    as a dense matrix column by column
+!
+!   control, inform and MAP as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
+      REAL ( KIND = rp_ ) :: time_start, time_now, clock_start, clock_now
+      LOGICAL :: map_vals
+      CHARACTER ( LEN = 80 ) :: array_name
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+      IF ( A%n < 1 .OR. A%m < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
+            prefix
+        RETURN
+      END IF
+
+!  ensure that all values are recorded if MAP is present
+
+      map_vals = PRESENT( MAP )
+
+!  discover the array size
+
+      SELECT CASE( SMT_get( A%type ) )
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',                     &
+             'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' )
+
+!  type of A unknown
+
+      CASE DEFAULT
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
+        GO TO 900
+      END SELECT
+
+!  set initial values
+
+      IF ( control%transpose ) THEN
+        m = A%n ; n = A%m
+      ELSE
+        m = A%m ; n = A%n
+      END IF
+      ne = m * n
+
+!  store A row-wise in A_out, perhaps with the column entries within
+!  each row in increasing order
+
+      A_out_m = m ; A_out_n = n ; A_out_ne = ne
+
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  copy the data to A
+
+!  the transpose is required
+
+      IF ( control%transpose ) THEN
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          l = 0
+          DO i = 1, A%m
+            DO j = 1, A%n
+              l = l + 1
+              k = A%n * ( i - 1 ) + j
+              A_out_val( k ) = A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          l = 0
+          DO j = 1, A%n
+            DO i = 1, A%m
+              l = l + 1
+              k = A%n * ( i - 1 ) + j
+              A_out_val( k ) = A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          A_out_val = zero
+          DO i = 1, A%m
+            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+              j = A%col( l )
+              k = A%n * ( i - 1 ) + j
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          A_out_val = zero
+          DO j = 1, A%n
+            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+              i = A%row( l )
+              k = A%n * ( i - 1 ) + j
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_val = zero
+          DO l = 1, A%ne
+            i = A%row( l )
+            j = A%col( l )
+            k = A%n * ( i - 1 ) + j
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
+            IF ( map_vals ) MAP( l ) = k
+          END DO
+        END SELECT
+
+!  the transpose is not required
+
+      ELSE
+
+!  consider the input storage scheme
+
+        SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+        CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+          l = 0
+          DO i = 1, A%m
+            DO j = 1, A%n
+              l = l + 1
+              k = A%m * ( j - 1 ) + i
+              A_out_val( k ) = A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a dense matrix stored by columns
+
+        CASE ( 'DENSE_BY_COLUMNS' )
+          A_out_val( 1 : ne ) = A%val( 1 : ne )
+          IF ( map_vals ) MAP( 1 : ne ) = [ ( i, i = 1, ne ) ]
+
+!  A is a sparse matrix stored by rows
+
+        CASE ( 'SPARSE_BY_ROWS' )
+          A_out_val = zero
+          DO i = 1, A%m
+            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+              j = A%col( l )
+              k = A%m * ( j - 1 ) + i
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by columns
+
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          A_out_val = zero
+          DO j = 1, A%n
+            DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+              i = A%row( l )
+              k = A%m * ( j - 1 ) + i
+              A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+            END DO
+          END DO
+
+!  A is a sparse matrix stored by its co-ordinates
+
+        CASE ( 'COORDINATE' )
+          A_out_val = zero
+          DO l = 1, A%ne
+            i = A%row( l )
+            j = A%col( l )
+            k = A%m * ( j - 1 ) + i
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
+              IF ( map_vals ) MAP( l ) = k
+          END DO
+        END SELECT
+      END IF
+
+!  order the row entries within each row in increasing column order
+
+      inform%status = GALAHAD_ok
+
+!  record the total time taken
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      RETURN
+
+!  error returns
+
+ 900  CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
+        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
+       &  ' from CONVERT ' )" ) prefix, inform%status
+      RETURN
+
+!  end of subroutine CONVERT_to_DC_main
+
+      END SUBROUTINE CONVERT_to_DC_main
+
+!-*-*-*-*- C O N V E R T _ T O _ S C S R _ M A I N   S U B R O U T I N E -*-*-*-
+
+      SUBROUTINE CONVERT_to_SCSR_main( A, A_out_n, A_out_ne, A_out_val,        &
+                                       A_out_col, A_out_ptr, control, inform,  &
+                                       MAP )
+
+!  convert the input symmetric matrix to sparse-row format.
+!
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_between_matrix_formats above)
+!
+!   A_out_n   the number of rows/columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                    column by columns
+!   A_out_col( : )   the column indices of the components of A
+!   A_out_ptr( : )   pointers to the start of each row, and past
+!                    the end of the last row
+!
+!   control, inform and the optional arguments as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                DIMENSION( : ) :: A_out_col, A_out_ptr
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
+      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
+      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
+                                        DIMENSION( SIZE( A%val ) ) :: MAP
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, n, ne, order_status
+      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
+      LOGICAL :: order_cols, sum_duplicates, map_vals
+      CHARACTER ( LEN = 80 ) :: array_name
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK, INV
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+      IF ( A%n < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%n must be +ve' )" )       &
+            prefix
+        RETURN
+      END IF
+
+!  ensure that all values are recorded if MAP is present
+
+      map_vals = PRESENT( MAP )
+
+!  discover the array size
+
+      order_cols = .FALSE.
+      sum_duplicates = control%sum_duplicates
+      SELECT CASE( SMT_get( A%type ) )
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+        ne = ( A%n * ( A%n + 1 ) ) / 2
+      CASE ( 'SPARSE_BY_ROWS' )
+        ne = A%ptr( A%n + 1 ) - 1
+        order_cols = .TRUE.
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        ne = A%ptr( A%n + 1 ) - 1
+        order_cols = .TRUE.
+      CASE ( 'COORDINATE' )
+        ne = A%ne
+        order_cols = .TRUE.
+      CASE ( 'DIAGONAL' )
+        ne = A%n
+        sum_duplicates = .FALSE.
+      CASE ( 'SCALED-IDENTITY' )
+        ne = A%n
+        sum_duplicates = .FALSE.
+      CASE ( 'IDENTITY' )
+        ne = A%n
+        sum_duplicates = .FALSE.
+      CASE ( 'ZERO', 'NONE' )
+        ne = 0
+        sum_duplicates = .FALSE.
+
+!  type of A unknown
+
+      CASE DEFAULT
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
+        GO TO 900
+      END SELECT
+
+!  set initial values
+
+      n = A%n
+
+!  store A row-wise in A_out, perhaps with the column entries within
+!  each row in increasing order
+
+      A_out_n = n ; A_out_ne = ne
+
+      array_name = 'CONVERT: A_out_ptr'
+      CALL SPACE_resize_array( A_out_n + 1, A_out_ptr,                         &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_col'
+      CALL SPACE_resize_array( ne, A_out_col,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        deallocate_error_fatal = control%deallocate_error_fatal,               &
+        exact_size = control%space_critical,                                   &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  copy the data to A. Consider the input storage scheme
+
+      SELECT CASE( SMT_get( A%type ) )
+
+!  A is a dense matrix (stored by rows)
+
+      CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+        k = 0 ; l = 1
+        DO i = 1, n
+          A_out_ptr( i ) = l
+          DO j = 1, i
+            k = k + 1
+            val = A%val( k )
+            IF ( map_vals ) MAP( k ) = l
+            IF ( val /= zero .OR. map_vals ) THEN
+              A_out_col( l ) = j ; A_out_val( l ) = val
+              l = l + 1
+            END IF
+          END DO
+        END DO
+        A_out_ptr( n + 1 ) = l
+
+!  A is a dense matrix stored by columns
+
+      CASE ( 'DENSE_BY_COLUMNS' )
+        k = 0 ; l = 1
+        A_out_ptr( 2 : n + 1 ) = 0
+        DO j = 1, n
+          DO i = j, n
+            k = k + 1
+            val = A%val( k )
+            IF ( map_vals ) MAP( k ) = l
+            IF ( val /= zero .OR. map_vals ) THEN
+              A_out_col( l ) = j ; A_out_val( l ) = val
+              A_out_ptr( i + 1 ) = A_out_ptr( i + 1 ) + 1
+              l = l + 1
+            END IF
+          END DO
+        END DO
+        A_out_ptr( 1 ) = 1
+        DO i = 2, n + 1
+          A_out_ptr( i ) = A_out_ptr( i ) + A_out_ptr( i - 1 )
+        END DO
+
+!  A is a sparse matrix stored by rows
+
+      CASE ( 'SPARSE_BY_ROWS' )
+        A_out_ptr( : n + 1 ) = A%ptr( : n + 1 )
+        A_out_col( : A_out_ne ) = A%col( : A_out_ne )
+        A_out_val( : A_out_ne ) = A%val( : A_out_ne )
+        IF ( map_vals ) MAP( : A_out_ne ) = [ ( i, i = 1, A_out_ne ) ]
+
+!  A is a sparse matrix stored by columns
+
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        CALL CONVERT_transpose( A%n, A%n, ne, A%ptr, A%row, A%val,             &
+                                A_out_ptr, A_out_col, A_out_val, MAP = MAP )
+
+!  A is a sparse matrix stored by its co-ordinates
+
+      CASE ( 'COORDINATE' )
+        A_out_ptr( : n ) = 0
+        DO l = 1, A%ne
+          i = A%row( l )
+          A_out_ptr( i ) = A_out_ptr( i ) + 1
+        END DO
+        l = 1
+        DO i = 1, n
+          j = A_out_ptr( i ) + l
+          A_out_ptr( i ) = l
+          l = j
+        END DO
+        DO l = 1, A%ne
+          i = A%row( l ) ; j = A_out_ptr( i )
+          A_out_col( j ) = A%col( l ) ; A_out_val( j ) = A%val( l )
+          A_out_ptr( i ) = j + 1
+          IF ( map_vals ) MAP( l ) = j
+        END DO
+        DO i = n, 1, - 1
+          A_out_ptr( i + 1 ) = A_out_ptr( i )
+        END DO
+        A_out_ptr( 1 ) = 1
+
+!  A is a diagonal matrix
+
+      CASE ( 'DIAGONAL' )
+        A_out_ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = A%val( 1 : n )
+        IF ( map_vals ) MAP( : n ) = [ ( i, i = 1, n ) ]
+      CASE ( 'SCALED-IDENTITY' )
+        A_out_ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = A%val( 1 )
+        IF ( map_vals ) MAP( : n ) = n + 1
+      CASE ( 'IDENTITY' )
+        A_out_ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = 1.0_rp_
+        IF ( map_vals ) MAP( : n ) = n + 1
+      CASE ( 'ZERO', 'NONE' )
+        A_out_ptr( 1 : n + 1 ) = 1
+      END SELECT
+
+!  if the mapping array is present, make sure that it is adjusted if the matrix
+!  is to be stored so that the column indices in each row appear in increasing 
+!  order or if the matrix is to be squeezed to sum duplicate  entries
+
+      IF ( map_vals ) THEN
+
+!  compute the inverse, INV, to the map array, MAP, and workspace IWORK, 
+!  and initialize INV
+
+        array_name = 'CONVERT: INV'
+        CALL SPACE_resize_array( ne, INV,                                      &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'CONVERT: IWORK'
+        CALL SPACE_resize_array( n, IWORK,                                     &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        DO i = 1, ne
+          INV( MAP( i ) ) = i 
+        END DO
+
+!  if required, reorder so that the column indices in each row appear
+!  in increasing order 
+
+        IF ( control%order .AND. order_cols ) THEN
+          CALL CONVERT_increasing_order( n, A_out_ne, A_out_ptr, A_out_col,    &
+                                         A_out_val, MAP, INV )
+        END IF
+
+!  sum duplicate entries and squeeze the storage space
+
+        CALL CONVERT_compress_duplicates( n, n, A_out_ne, A_out_ptr,           &
+                                          A_out_col, A_out_val, MAP, INV,      &
+                                          IWORK )
+        A_out_ne = A_out_ptr( n + 1 ) - 1
+
+!  deallocate workspace
+
+        CALL SPACE_dealloc_array( INV, inform%status, inform%alloc_status )
+
+!  skip to the exit if there is no need to order rows within columns or to
+!  sum dupicates
+
+      ELSE 
+        IF ( .NOT. ( sum_duplicates .OR.                                       &
+                    ( control%order .AND. order_cols ) ) ) GO TO 890
+
+!  if the matrix is to be stored so that the column indices in each row appear
+!  in increasing order or if the matrix is to be squeezed to sum duplicate 
+!  entries, but no mapping is required, the arrays IWORK and WORK of length n
+!  are used, with IWORK initialised as 0
+
+        array_name = 'CONVERT: IWORK'
+        CALL SPACE_resize_array( n, IWORK,                                     &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        IWORK( : n ) = 0
+
+!  sum duplicate entries and squeeze the storage space
+
+        IF ( sum_duplicates ) THEN
+
+!  consider each row one at a time
+
+          k = 1 ; inform%duplicates = 0
+          DO i = 1, n
+            ll = k
+
+!  loop over the columns j in the ith row
+
+            DO l = A_out_ptr( i ), A_out_ptr( i + 1 ) - 1
+              j = A_out_col( l )
+
+!  if iwork(j) = 0, the entry is not a duplicate, so record the column and value
+!  and flag in iwork(j) the location where the value is stored in A_out_val
+
+              IF ( IWORK( j ) == 0 ) THEN
+                A_out_col( k ) = A_out_col( l )
+                A_out_val( k ) = A_out_val( l )
+                IWORK( j ) = k
+                k = k + 1
+
+!  if iwork(j) /= 0, the entry is a duplicate, and its value should be added
+!  to A_out_val(iwork(j))
+
+              ELSE
+                inform%duplicates = inform%duplicates + 1
+                j = IWORK( j )
+                A_out_val( j ) = A_out_val( j ) + A_out_val( l )
+              END IF
+            END DO
+
+!  reset IWORK to zero
+
+            DO l = ll, k - 1
+              IWORK( A_out_col( l ) ) = 0
+            END DO
+
+!  reset the pointer to the start of the row
+
+            A_out_ptr( i ) = ll
+          END DO
+          A_out_ptr( n + 1 ) = k
+          A_out_ne = k - 1
+        END IF
+
+!  order the row entries within each column in increasing row order
+
+        inform%status = GALAHAD_ok
+        IF ( control%order .AND. order_cols ) THEN
+          array_name = 'CONVERT: WORK'
+          CALL SPACE_resize_array( n, WORK,                                    &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          DO i = 1, n
+            ll =  A_out_ptr( i ) ; lu = A_out_ptr( i + 1 ) - 1
+            IF ( lu > ll ) THEN
+              CALL CONVERT_order( n, lu - ll + 1, A_out_col( ll : lu ),        &
+                                  A_out_val( ll : lu ), order_status,          &
+                                  IWORK, WORK )
+              IF ( order_status == GALAHAD_warning_repeated_entry )            &
+                inform%status = order_status
+            END IF
+          END DO
+          CALL SPACE_dealloc_array( WORK, inform%status, inform%alloc_status )
+        END IF
+      END IF
+
+!  deallocate workspace
+
+      CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
+
+!  record the total time taken
+
+ 890  CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      RETURN
+
+!  error returns
+
+ 900  CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total                                                  &
+        = inform%time%clock_total + clock_now - clock_start
+
+      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
+        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
+       &  ' from CONVERT ' )" ) prefix, inform%status
+      RETURN
+
+!  end of subroutine CONVERT_to_SCSR_main
+
+      END SUBROUTINE CONVERT_to_SCSR_main
+
+!-*-*-*-*- C O N V E R T _ T O _ S C S C _ M A I N   S U B R O U T I N E -*-*-*-
+
+      SUBROUTINE CONVERT_to_SCSC_main( A, A_out_n, A_out_ne, A_out_val,        &
+                                       A_out_row, A_out_ptr, control, inform,  &
+                                       MAP )
+
+!  convert the input symmetric matrix to sparse-column format
+!
+!  Arguments:
+!
+!   A is a structure of type SMT_type used to hold the input matrix A.
+!   (see CONVERT_to_CSC_main above)
+!
+!   A_out_n   the number of rows/columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                        column by columns
+!   A_out_row( : )   the row indices of the components of A
+!   A_out_ptr( : )   pointers to the start of each column, and past
+!                        the end of the last column
+!
+!   control, inform and the optional arguments as above
+
+!  Dummy arguments
+
+      TYPE ( SMT_type ), INTENT( IN ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                DIMENSION( : ) :: A_out_row, A_out_ptr
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
@@ -2682,31 +3730,26 @@
 !  store A column-wise in A_out, perhaps with the row entries within
 !  each column in increasing order
 
-      A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'SPARSE_BY_COLUMNS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
+      A_out_n = n ; A_out_ne = ne
 
-      array_name = 'CONVERT: A_out%ptr'
-      CALL SPACE_resize_array( A_out%n + 1, A_out%ptr,                         &
+      array_name = 'CONVERT: A_out_ptr'
+      CALL SPACE_resize_array( A_out_n + 1, A_out_ptr,                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
         bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'CONVERT: A_out%row'
-      CALL SPACE_resize_array( ne, A_out%row,                                  &
+      array_name = 'CONVERT: A_out_row'
+      CALL SPACE_resize_array( ne, A_out_row,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
         bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
@@ -2721,22 +3764,22 @@
 
       CASE ( 'DENSE', 'DENSE_BY_ROWS' )
         k = 0 ; l = 1
-        A_out%ptr( 2 : n + 1 ) = 0
+        A_out_ptr( 2 : n + 1 ) = 0
         DO i = 1, n
           DO j = 1, i
             k = k + 1
             val = A%val( k )
             IF ( map_vals ) MAP( k ) = l
             IF ( val /= zero .OR. map_vals ) THEN
-              A_out%row( l ) = i ; A_out%val( l ) = val
-              A_out%ptr( j + 1 ) = A_out%ptr( j + 1 ) + 1
+              A_out_row( l ) = i ; A_out_val( l ) = val
+              A_out_ptr( j + 1 ) = A_out_ptr( j + 1 ) + 1
               l = l + 1
             END IF
           END DO
         END DO
-        A_out%ptr( 1 ) = 1
+        A_out_ptr( 1 ) = 1
         DO i = 2, n + 1
-          A_out%ptr( i ) = A_out%ptr( i ) + A_out%ptr( i - 1 )
+          A_out_ptr( i ) = A_out_ptr( i ) + A_out_ptr( i - 1 )
         END DO
 
 !  A is a dense matrix stored by columns
@@ -2744,77 +3787,77 @@
       CASE ( 'DENSE_BY_COLUMNS' )
         k = 0 ; l = 1
         DO j = 1, n
-          A_out%ptr( j ) = l
+          A_out_ptr( j ) = l
           DO i = j, n
             k = k + 1
             val = A%val( k )
             IF ( map_vals ) MAP( k ) = l
             IF ( val /= zero .OR. map_vals ) THEN
-              A_out%row( l ) = i ; A_out%val( l ) = val
+              A_out_row( l ) = i ; A_out_val( l ) = val
               l = l + 1
             END IF
           END DO
         END DO
-        A_out%ptr( n + 1 ) = l
+        A_out_ptr( n + 1 ) = l
 
 !  A is a sparse matrix stored by rows
 
       CASE ( 'SPARSE_BY_ROWS' )
         CALL CONVERT_transpose( A%n, A%n, ne, A%ptr, A%col, A%val,             &
-                                A_out%ptr, A_out%row, A_out%val, MAP = MAP )
+                                A_out_ptr, A_out_row, A_out_val, MAP = MAP )
 
 !  A is a sparse matrix stored by columns
 
       CASE ( 'SPARSE_BY_COLUMNS' )
-        A_out%ptr( : n + 1 ) = A%ptr( : n + 1 )
-        A_out%row( : A_out%ne ) = A%row( : A_out%ne )
-        A_out%val( : A_out%ne ) = A%val( : A_out%ne )
-        IF ( map_vals ) MAP( : A_out%ne ) = [ ( i, i = 1, A_out%ne ) ]
+        A_out_ptr( : n + 1 ) = A%ptr( : n + 1 )
+        A_out_row( : A_out_ne ) = A%row( : A_out_ne )
+        A_out_val( : A_out_ne ) = A%val( : A_out_ne )
+        IF ( map_vals ) MAP( : A_out_ne ) = [ ( i, i = 1, A_out_ne ) ]
 
 !  A is a sparse matrix stored by its co-ordinates
 
       CASE ( 'COORDINATE' )
-        A_out%ptr( : n ) = 0
+        A_out_ptr( : n ) = 0
         DO l = 1, A%ne
           j = A%col( l )
-          A_out%ptr( j ) = A_out%ptr( j ) + 1
+          A_out_ptr( j ) = A_out_ptr( j ) + 1
         END DO
         l = 1
         DO j = 1, n
-          i = A_out%ptr( j ) + l
-          A_out%ptr( j ) = l
+          i = A_out_ptr( j ) + l
+          A_out_ptr( j ) = l
           l = i
         END DO
         DO l = 1, A%ne
-          j = A%col( l ) ; i = A_out%ptr( j )
-          A_out%row( i ) = A%row( l ) ; A_out%val( i ) = A%val( l )
-          A_out%ptr( j ) = i + 1
+          j = A%col( l ) ; i = A_out_ptr( j )
+          A_out_row( i ) = A%row( l ) ; A_out_val( i ) = A%val( l )
+          A_out_ptr( j ) = i + 1
           IF ( map_vals ) MAP( l ) = i
         END DO
         DO j = n, 1, - 1
-          A_out%ptr( j + 1 ) = A_out%ptr( j )
+          A_out_ptr( j + 1 ) = A_out_ptr( j )
         END DO
-        A_out%ptr( 1 ) = 1
+        A_out_ptr( 1 ) = 1
 
 !  A is a diagonal matrix
 
       CASE ( 'DIAGONAL' )
-        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
-        A_out%row( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = A%val( 1 : n )
+        A_out_ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = A%val( 1 : n )
         IF ( map_vals ) MAP( : n ) = [ ( i, i = 1, n ) ]
       CASE ( 'SCALED-IDENTITY' )
-        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
-        A_out%row( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = A%val( 1 )
+        A_out_ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = A%val( 1 )
         IF ( map_vals ) MAP( : n ) = n + 1
       CASE ( 'IDENTITY' )
-        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
-        A_out%row( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = 1.0_rp_
+        A_out_ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = 1.0_rp_
         IF ( map_vals ) MAP( : n ) = n + 1
       CASE ( 'ZERO', 'NONE' )
-        A_out%ptr( 1 : n + 1 ) = 1
+        A_out_ptr( 1 : n + 1 ) = 1
       END SELECT
 
 !  if the mapping array is present, make sure that it is adjusted if
@@ -2851,16 +3894,16 @@
 !  in increasing order 
 
         IF ( control%order .AND. order_cols ) THEN
-          CALL CONVERT_increasing_order( n, A_out%ne, A_out%ptr, A_out%row,    &
-                                         A_out%val, MAP, INV )
+          CALL CONVERT_increasing_order( n, A_out_ne, A_out_ptr, A_out_row,    &
+                                         A_out_val, MAP, INV )
         END IF
 
 !  sum duplicate entries and squeeze the storage space
 
-        CALL CONVERT_compress_duplicates( n, n, A_out%ne, A_out%ptr,           &
-                                          A_out%row, A_out%val, MAP, INV,      &
+        CALL CONVERT_compress_duplicates( n, n, A_out_ne, A_out_ptr,           &
+                                          A_out_row, A_out_val, MAP, INV,      &
                                           IWORK )
-        A_out%ne = A_out%ptr( n + 1 ) - 1
+        A_out_ne = A_out_ptr( n + 1 ) - 1
 
 !  deallocate workspace
 
@@ -2899,40 +3942,40 @@
 
 !  loop over the rows j in the ith column
 
-            DO l = A_out%ptr( i ), A_out%ptr( i + 1 ) - 1
-              j = A_out%row( l )
+            DO l = A_out_ptr( i ), A_out_ptr( i + 1 ) - 1
+              j = A_out_row( l )
 
 !  if iwork(j) = 0, the entry is not a duplicate, so record the row and value,
-!  and flag in iwork(j) the location where the value is stored in A_out%val
+!  and flag in iwork(j) the location where the value is stored in A_out_val
 
               IF ( IWORK( j ) == 0 ) THEN
-                A_out%row( k ) = A_out%row( l )
-                A_out%val( k ) = A_out%val( l )
+                A_out_row( k ) = A_out_row( l )
+                A_out_val( k ) = A_out_val( l )
                 IWORK( j ) = k
                 k = k + 1
 
 !  if iwork(j) /= 0, the entry is a duplicate, and its value should be added
-!  to A_out%val(iwork(j))
+!  to A_out_val(iwork(j))
 
               ELSE
                 inform%duplicates = inform%duplicates + 1
                 j = IWORK( j )
-                A_out%val( j ) = A_out%val( j ) + A_out%val( l )
+                A_out_val( j ) = A_out_val( j ) + A_out_val( l )
               END IF
             END DO
 
 !  reset IWORK to zero
 
             DO l = ll, k - 1
-              IWORK( A_out%row( l ) ) = 0
+              IWORK( A_out_row( l ) ) = 0
             END DO
 
 !  reset the pointer to the start of the column
 
-            A_out%ptr( i ) = ll
+            A_out_ptr( i ) = ll
           END DO
-          A_out%ptr( n + 1 ) = k
-          A_out%ne = k - 1
+          A_out_ptr( n + 1 ) = k
+          A_out_ne = k - 1
         END IF
 
 !  order the row entries within each column in increasing row order
@@ -2948,10 +3991,10 @@
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
           DO i = 1, n
-            ll =  A_out%ptr( i ) ; lu = A_out%ptr( i + 1 ) - 1
+            ll =  A_out_ptr( i ) ; lu = A_out_ptr( i + 1 ) - 1
             IF ( lu > ll ) THEN
-              CALL CONVERT_order( n, lu - ll + 1, A_out%row( ll : lu ),        &
-                                  A_out%val( ll : lu ), order_status,          &
+              CALL CONVERT_order( n, lu - ll + 1, A_out_row( ll : lu ),        &
+                                  A_out_val( ll : lu ), order_status,          &
                                   IWORK, WORK )
               IF ( order_status == GALAHAD_warning_repeated_entry )            &
                 inform%status = order_status
@@ -2988,443 +4031,15 @@
        &  ' from CONVERT ' )" ) prefix, inform%status
       RETURN
 
-!  end of subroutine CONVERT_to_sparse_symmetric_column_format
+!  end of subroutine CONVERT_to_SCSC_main
 
-      END SUBROUTINE CONVERT_to_sparse_symmetric_column_format
+      END SUBROUTINE CONVERT_to_SCSC_main
 
-! C O N V E R T _ T O _ S P A R S E _ S _ R O W _ F O R M A T  S U B R O U T INE
+!-*-*-*-*- C O N V E R T _ T O _ S C C _ M A I N   S U B R O U T I N E -*-*-*-*-
 
-      SUBROUTINE CONVERT_to_sparse_symmetric_row_format( A, A_out, control,    &
-                                                         inform, MAP )
-
-!  convert the input symmetric matrix to sparse-row format.
-!
-!  If the matrix is to be stored so that the column indices in each row
-!  appear in increasing order or if the matrix is to be squeezed to sum
-!  duplicate entries, the optional arrays IWORK and WORK of length at
-!  least n must be provided, with all entries of IWORK set to 0; IWORK 
-!  will have been reset to 0 on exit.
-!
-!  Arguments:
-!
-!   A is a structure of type SMT_type used to hold the input matrix A.
-!   (see CONVERT_between_matrix_formats above)
-!
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!    stored as a sparse matrix by columns.
-!
-!    The following values will be set:
-!
-!       A_out%n   the number of rows/columns of the output A
-!       A_out%type( 1 : 17 ) = 'SPARSE_BY_COLUMNS'
-!       A_out%val( : )   the values of the components of A, stored
-!                            column by columns
-!       A_out%col( : )   the column indices of the components of A
-!       A_out%ptr( : )   pointers to the start of each row, and past
-!                            the end of the last row
-!
-!   control, inform and the optional arguments as above
-
-!  Dummy arguments
-
-      TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
-      TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
-      TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
-                                        DIMENSION( SIZE( A%val ) ) :: MAP
-
-!  Local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, n, ne, order_status
-      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
-      LOGICAL :: order_cols, sum_duplicates, map_vals
-      CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK, INV
-      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
-
-!  prefix for all output
-
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  initialize time
-
-      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
-
-!  ensure that input parameters are within allowed ranges
-
-      IF ( A%n < 1 ) THEN
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%n must be +ve' )" )       &
-            prefix
-        RETURN
-      END IF
-
-!  ensure that all values are recorded if MAP is present
-
-      map_vals = PRESENT( MAP )
-
-!  discover the array size
-
-      order_cols = .FALSE.
-      sum_duplicates = control%sum_duplicates
-      SELECT CASE( SMT_get( A%type ) )
-      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
-        ne = ( A%n * ( A%n + 1 ) ) / 2
-      CASE ( 'SPARSE_BY_ROWS' )
-        ne = A%ptr( A%n + 1 ) - 1
-        order_cols = .TRUE.
-      CASE ( 'SPARSE_BY_COLUMNS' )
-        ne = A%ptr( A%n + 1 ) - 1
-        order_cols = .TRUE.
-      CASE ( 'COORDINATE' )
-        ne = A%ne
-        order_cols = .TRUE.
-      CASE ( 'DIAGONAL' )
-        ne = A%n
-        sum_duplicates = .FALSE.
-      CASE ( 'SCALED-IDENTITY' )
-        ne = A%n
-        sum_duplicates = .FALSE.
-      CASE ( 'IDENTITY' )
-        ne = A%n
-        sum_duplicates = .FALSE.
-      CASE ( 'ZERO', 'NONE' )
-        ne = 0
-        sum_duplicates = .FALSE.
-
-!  type of A unknown
-
-      CASE DEFAULT
-        inform%status = GALAHAD_error_restrictions
-        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, "( ' ', /, A, ' ** A%type unknown' )" ) prefix
-        GO TO 900
-      END SELECT
-
-!  set initial values
-
-      n = A%n
-
-!  store A row-wise in A_out, perhaps with the column entries within
-!  each row in increasing order
-
-      A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'SPARSE_BY_ROWS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
-
-      array_name = 'CONVERT: A_out%ptr'
-      CALL SPACE_resize_array( A_out%n + 1, A_out%ptr,                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%col'
-      CALL SPACE_resize_array( ne, A_out%col,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  copy the data to A. Consider the input storage scheme
-
-      SELECT CASE( SMT_get( A%type ) )
-
-!  A is a dense matrix (stored by rows)
-
-      CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-        k = 0 ; l = 1
-        DO i = 1, n
-          A_out%ptr( i ) = l
-          DO j = 1, i
-            k = k + 1
-            val = A%val( k )
-            IF ( map_vals ) MAP( k ) = l
-            IF ( val /= zero .OR. map_vals ) THEN
-              A_out%col( l ) = j ; A_out%val( l ) = val
-              l = l + 1
-            END IF
-          END DO
-        END DO
-        A_out%ptr( n + 1 ) = l
-
-!  A is a dense matrix stored by columns
-
-      CASE ( 'DENSE_BY_COLUMNS' )
-        k = 0 ; l = 1
-        A_out%ptr( 2 : n + 1 ) = 0
-        DO j = 1, n
-          DO i = j, n
-            k = k + 1
-            val = A%val( k )
-            IF ( map_vals ) MAP( k ) = l
-            IF ( val /= zero .OR. map_vals ) THEN
-              A_out%col( l ) = j ; A_out%val( l ) = val
-              A_out%ptr( i + 1 ) = A_out%ptr( i + 1 ) + 1
-              l = l + 1
-            END IF
-          END DO
-        END DO
-        A_out%ptr( 1 ) = 1
-        DO i = 2, n + 1
-          A_out%ptr( i ) = A_out%ptr( i ) + A_out%ptr( i - 1 )
-        END DO
-
-!  A is a sparse matrix stored by rows
-
-      CASE ( 'SPARSE_BY_ROWS' )
-        A_out%ptr( : n + 1 ) = A%ptr( : n + 1 )
-        A_out%col( : A_out%ne ) = A%col( : A_out%ne )
-        A_out%val( : A_out%ne ) = A%val( : A_out%ne )
-        IF ( map_vals ) MAP( : A_out%ne ) = [ ( i, i = 1, A_out%ne ) ]
-
-!  A is a sparse matrix stored by columns
-
-      CASE ( 'SPARSE_BY_COLUMNS' )
-        CALL CONVERT_transpose( A%n, A%n, ne, A%ptr, A%row, A%val,             &
-                                A_out%ptr, A_out%col, A_out%val, MAP = MAP )
-
-!  A is a sparse matrix stored by its co-ordinates
-
-      CASE ( 'COORDINATE' )
-        A_out%ptr( : n ) = 0
-        DO l = 1, A%ne
-          i = A%row( l )
-          A_out%ptr( i ) = A_out%ptr( i ) + 1
-        END DO
-        l = 1
-        DO i = 1, n
-          j = A_out%ptr( i ) + l
-          A_out%ptr( i ) = l
-          l = j
-        END DO
-        DO l = 1, A%ne
-          i = A%row( l ) ; j = A_out%ptr( i )
-          A_out%col( j ) = A%col( l ) ; A_out%val( j ) = A%val( l )
-          A_out%ptr( i ) = j + 1
-          IF ( map_vals ) MAP( l ) = j
-        END DO
-        DO i = n, 1, - 1
-          A_out%ptr( i + 1 ) = A_out%ptr( i )
-        END DO
-        A_out%ptr( 1 ) = 1
-
-!  A is a diagonal matrix
-
-      CASE ( 'DIAGONAL' )
-        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
-        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = A%val( 1 : n )
-        IF ( map_vals ) MAP( : n ) = [ ( i, i = 1, n ) ]
-      CASE ( 'SCALED-IDENTITY' )
-        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
-        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = A%val( 1 )
-        IF ( map_vals ) MAP( : n ) = n + 1
-      CASE ( 'IDENTITY' )
-        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
-        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = 1.0_rp_
-        IF ( map_vals ) MAP( : n ) = n + 1
-      CASE ( 'ZERO', 'NONE' )
-        A_out%ptr( 1 : n + 1 ) = 1
-      END SELECT
-
-!  if the mapping array is present, make sure that it is adjusted if the matrix
-!  is to be stored so that the column indices in each row appear in increasing 
-!  order or if the matrix is to be squeezed to sum duplicate  entries
-
-      IF ( map_vals ) THEN
-
-!  compute the inverse, INV, to the map array, MAP, and workspace IWORK, 
-!  and initialize INV
-
-        array_name = 'CONVERT: INV'
-        CALL SPACE_resize_array( ne, INV,                                      &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'CONVERT: IWORK'
-        CALL SPACE_resize_array( n, IWORK,                                     &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        DO i = 1, ne
-          INV( MAP( i ) ) = i 
-        END DO
-
-!  if required, reorder so that the column indices in each row appear
-!  in increasing order 
-
-        IF ( control%order .AND. order_cols ) THEN
-          CALL CONVERT_increasing_order( n, A_out%ne, A_out%ptr, A_out%col,    &
-                                         A_out%val, MAP, INV )
-        END IF
-
-!  sum duplicate entries and squeeze the storage space
-
-        CALL CONVERT_compress_duplicates( n, n, A_out%ne, A_out%ptr,           &
-                                          A_out%col, A_out%val, MAP, INV,      &
-                                          IWORK )
-        A_out%ne = A_out%ptr( n + 1 ) - 1
-
-!  deallocate workspace
-
-        CALL SPACE_dealloc_array( INV, inform%status, inform%alloc_status )
-
-!  skip to the exit if there is no need to order rows within columns or to
-!  sum dupicates
-
-      ELSE 
-        IF ( .NOT. ( sum_duplicates .OR.                                       &
-                    ( control%order .AND. order_cols ) ) ) GO TO 890
-
-!  if the matrix is to be stored so that the column indices in each row appear
-!  in increasing order or if the matrix is to be squeezed to sum duplicate 
-!  entries, but no mapping is required, the arrays IWORK and WORK of length n
-!  are used, with IWORK initialised as 0
-
-        array_name = 'CONVERT: IWORK'
-        CALL SPACE_resize_array( n, IWORK,                                     &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-        IWORK( : n ) = 0
-
-!  sum duplicate entries and squeeze the storage space
-
-        IF ( sum_duplicates ) THEN
-
-!  consider each row one at a time
-
-          k = 1 ; inform%duplicates = 0
-          DO i = 1, n
-            ll = k
-
-!  loop over the columns j in the ith row
-
-            DO l = A_out%ptr( i ), A_out%ptr( i + 1 ) - 1
-              j = A_out%col( l )
-
-!  if iwork(j) = 0, the entry is not a duplicate, so record the column and value
-!  and flag in iwork(j) the location where the value is stored in A_out%val
-
-              IF ( IWORK( j ) == 0 ) THEN
-                A_out%col( k ) = A_out%col( l )
-                A_out%val( k ) = A_out%val( l )
-                IWORK( j ) = k
-                k = k + 1
-
-!  if iwork(j) /= 0, the entry is a duplicate, and its value should be added
-!  to A_out%val(iwork(j))
-
-              ELSE
-                inform%duplicates = inform%duplicates + 1
-                j = IWORK( j )
-                A_out%val( j ) = A_out%val( j ) + A_out%val( l )
-              END IF
-            END DO
-
-!  reset IWORK to zero
-
-            DO l = ll, k - 1
-              IWORK( A_out%col( l ) ) = 0
-            END DO
-
-!  reset the pointer to the start of the row
-
-            A_out%ptr( i ) = ll
-          END DO
-          A_out%ptr( n + 1 ) = k
-          A_out%ne = k - 1
-        END IF
-
-!  order the row entries within each column in increasing row order
-
-        inform%status = GALAHAD_ok
-        IF ( control%order .AND. order_cols ) THEN
-          array_name = 'CONVERT: WORK'
-          CALL SPACE_resize_array( n, WORK,                                    &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-          DO i = 1, n
-            ll =  A_out%ptr( i ) ; lu = A_out%ptr( i + 1 ) - 1
-            IF ( lu > ll ) THEN
-              CALL CONVERT_order( n, lu - ll + 1, A_out%col( ll : lu ),        &
-                                  A_out%val( ll : lu ), order_status,          &
-                                  IWORK, WORK )
-              IF ( order_status == GALAHAD_warning_repeated_entry )            &
-                inform%status = order_status
-            END IF
-          END DO
-          CALL SPACE_dealloc_array( WORK, inform%status, inform%alloc_status )
-        END IF
-      END IF
-
-!  deallocate workspace
-
-      CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
-
-!  record the total time taken
-
- 890  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      RETURN
-
-!  error returns
-
- 900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total                                                  &
-        = inform%time%clock_total + clock_now - clock_start
-
-      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
-        WRITE( control%error, "( ' ', /, A, '    ** Error return ', I0,        &
-       &  ' from CONVERT ' )" ) prefix, inform%status
-      RETURN
-
-!  end of subroutine CONVERT_to_sparse_symmetric_row_format
-
-      END SUBROUTINE CONVERT_to_sparse_symmetric_row_format
-
-! C O N V E R T _ T O _ S _ C O O R D I N A T E _ F O R M A T  S U B R O U T INE
-
-      SUBROUTINE CONVERT_to_symmetric_coordinate_format( A, A_out, control,    &
-                                                         inform, MAP )
+      SUBROUTINE CONVERT_to_SCC_main( A, A_out_n, A_out_ne, A_out_val,         &
+                                      A_out_row, A_out_col, control, inform,   &
+                                      MAP )
 
 !  convert the input symmetric matrix to sparse co-ordinate format.
 
@@ -3433,25 +4048,23 @@
 !   A is a structure of type SMT_type used to hold the input matrix A.
 !   (see CONVERT_between_matrix_formats above)
 !
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!   stored as a sparse matrix in co-ordinate form
-!
-!    The following values will be set:
-!
-!       A_out%n   the number of rows/columns of the output A
-!       A_out%ne  the number of nonzeros used to store the output A
-!       A_out%type( 1 : 10 ) = 'COORDINATE'
-!       A_out%val( : )   the values of the components of A, stored
-!                            column by columns
-!       A_out%row( : )   the row indices of the components of A
-!       A_out%col( : )   the column indices of the components of A
+!   A_out_n   the number of rows/columns of the output A
+!   A_out_ne  the number of nonzeros used to store the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                        column by columns
+!   A_out_row( : )   the row indices of the components of A
+!   A_out_col( : )   the column indices of the components of A
 !
 !   control, inform and MAP as above
 
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                DIMENSION( : ) :: A_out_row, A_out_col
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
@@ -3463,6 +4076,7 @@
       REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
       LOGICAL :: map_vals
       CHARACTER ( LEN = 80 ) :: array_name
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_out_ptr
 !     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK, INV
 !     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
 
@@ -3489,27 +4103,28 @@
 !  if it required to sum duplicates, first convert to sparse column format 
 
       IF ( control%sum_duplicates ) THEN
-        CALL CONVERT_to_sparse_symmetric_column_format( A, A_out, control,     &
-                                                        inform, MAP = MAP )
+        CALL CONVERT_to_SCSC_main( A, A_out_n, A_out_ne, A_out_val,            &
+                                   A_out_row, A_out_ptr, control,              &
+                                   inform, MAP = MAP )
 
 !  now provide space for and extract the column number for each component
 
-        ne = A_out%ptr( A_out%n + 1 ) - 1
-        array_name = 'CONVERT: A_out%col'
-        CALL SPACE_resize_array( ne, A_out%col,                                &
+        ne = A_out_ptr( A_out_n + 1 ) - 1
+        array_name = 'CONVERT: A_out_col'
+        CALL SPACE_resize_array( ne, A_out_col,                                &
           inform%status, inform%alloc_status, array_name = array_name,         &
           deallocate_error_fatal = control%deallocate_error_fatal,             &
           exact_size = control%space_critical,                                 &
           bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-        DO j = 1, A_out%n
-          A_out%col( A_out%ptr( j ) : A_out%ptr( j + 1 ) - 1 ) = j
+        DO j = 1, A_out_n
+          A_out_col( A_out_ptr( j ) : A_out_ptr( j + 1 ) - 1 ) = j
         END DO
 
 !  deallocate the column pointers
 
-        CALL SPACE_dealloc_array( A_out%ptr, inform%status,                    &
+        CALL SPACE_dealloc_array( A_out_ptr, inform%status,                    &
                                   inform%alloc_status )
       END IF
 
@@ -3553,31 +4168,26 @@
 !  store A row-wise in A_out, perhaps with the column entries within
 !  each row in increasing order
 
-      A_out%n = n
-      CALL SMT_put( A_out%type, 'COORDINATE', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
+      A_out_n = n
 
-      array_name = 'CONVERT: A_out%row'
-      CALL SPACE_resize_array( ne, A_out%row,                                  &
+      array_name = 'CONVERT: A_out_row'
+      CALL SPACE_resize_array( ne, A_out_row,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
         bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'CONVERT: A_out%col'
-      CALL SPACE_resize_array( ne, A_out%col,                                  &
+      array_name = 'CONVERT: A_out_col'
+      CALL SPACE_resize_array( ne, A_out_col,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
         bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
@@ -3598,13 +4208,13 @@
             val = A%val( l )
             IF ( val /= zero .OR. map_vals ) THEN
               k = k + 1
-              A_out%row( k ) = i ; A_out%col( k ) = j
-              A_out%val( k ) = val
+              A_out_row( k ) = i ; A_out_col( k ) = j
+              A_out_val( k ) = val
             END IF
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
-        A_out%ne = k
+        A_out_ne = k
 
 !  A is a dense matrix stored by columns
 
@@ -3616,13 +4226,13 @@
             val = A%val( l )
             IF ( val /= zero .OR. map_vals ) THEN
               k = k + 1
-              A_out%row( k ) = i ; A_out%col( k ) = j
-              A_out%val( k ) = val
+              A_out_row( k ) = i ; A_out_col( k ) = j
+              A_out_val( k ) = val
             END IF
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
-        A_out%ne = k
+        A_out_ne = k
 
 !  A is a sparse matrix stored by rows
 
@@ -3633,13 +4243,13 @@
             val = A%val( l )
             IF ( val /= zero .OR. map_vals ) THEN
               k = k + 1
-              A_out%row( k ) = i ; A_out%col( k ) = A%col( l )
-              A_out%val( k ) = val
+              A_out_row( k ) = i ; A_out_col( k ) = A%col( l )
+              A_out_val( k ) = val
             END IF
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
-        A_out%ne = k
+        A_out_ne = k
 
 !  A is a sparse matrix stored by columns
 
@@ -3650,13 +4260,13 @@
             val = A%val( l )
             IF ( val /= zero .OR. map_vals ) THEN
               k = k + 1
-              A_out%row( k ) = A%row( l ) ; A_out%col( k ) = j
-              A_out%val( k ) = val
+              A_out_row( k ) = A%row( l ) ; A_out_col( k ) = j
+              A_out_val( k ) = val
             END IF
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
-        A_out%ne = k
+        A_out_ne = k
 
 !  A is a sparse matrix stored by its co-ordinates
 
@@ -3666,32 +4276,32 @@
           val = A%val( l )
           IF ( val /= zero .OR. map_vals ) THEN
             k = k + 1
-            A_out%row( k ) = A%row( l ) ; A_out%col( k ) = A%col( l )
-            A_out%val( k ) = val
+            A_out_row( k ) = A%row( l ) ; A_out_col( k ) = A%col( l )
+            A_out_val( k ) = val
           END IF
           IF ( map_vals ) MAP( l ) = k
         END DO
-        A_out%ne = k
+        A_out_ne = k
 
 !  A is a diagonal matrix
 
       CASE ( 'DIAGONAL' )
-        A_out%row( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = A%val( 1 : n )
+        A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = A%val( 1 : n )
         MAP( 1 : n ) = [ ( i, i = 1, n ) ]
       CASE ( 'SCALED-IDENTITY' )
-        A_out%row( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = A%val( 1 )
+        A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = A%val( 1 )
         IF ( map_vals ) MAP( : n ) = n + 1
       CASE ( 'IDENTITY' )
-        A_out%row( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
-        A_out%val( 1 : n ) = 1.0_rp_
+        A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out_val( 1 : n ) = 1.0_rp_
         IF ( map_vals ) MAP( : n ) = n + 1
       CASE ( 'ZERO', 'NONE' )
-        A_out%ptr( 1 : n + 1 ) = 1
+!       A_out_ptr( 1 : n + 1 ) = 1
       END SELECT
 
 !  order the row entries within each row in increasing column order
@@ -3720,14 +4330,14 @@
        &  ' from CONVERT ' )" ) prefix, inform%status
       RETURN
 
-!  end of subroutine CONVERT_to_symmetric_coordinate_format
+!  end of subroutine CONVERT_to_SCC_main
 
-      END SUBROUTINE CONVERT_to_symmetric_coordinate_format
+      END SUBROUTINE CONVERT_to_SCC_main
 
-! C O N V E R T _ T O _ D E N S E _ S _ R O W _ F O R M A T  S U B R O U T I N E
+!-*-*-*-*- C O N V E R T _ T O _ S D R _ M A I N   S U B R O U T I N E -*-*-*-*-
 
-      SUBROUTINE CONVERT_to_dense_symmetric_row_format( A, A_out, control,     &
-                                                        inform, MAP )
+      SUBROUTINE CONVERT_to_SDR_main( A, A_out_n, A_out_ne, A_out_val,         &
+                                      control, inform, MAP )
 
 !  convert the input symmetric matrix to dense-row format.
 
@@ -3740,22 +4350,19 @@
 !   A is a structure of type SMT_type used to hold the input matrix A.
 !   (see CONVERT_between_matrix_formats above)
 !
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!    stored as a dense matrix by columns.
-!
-!    The following values will be set:
-!
-!       A_out%n   the number of rows/columns of the output A
-!       A_out%type( 1 : 13 ) = 'DENSE_BY_ROWS'
-!       A_out%val( : )   the values of the components of A, stored
-!                            as a dense matrix row by row
+!   A_out_n   the number of rows/columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                    as a dense matrix row by row
 !
 !   control, inform and MAP as above
 
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
@@ -3815,15 +4422,10 @@
 !  store A row-wise in A_out, perhaps with the column entries within
 !  each row in increasing order
 
-      A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'DENSE_BY_ROWS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
+      A_out_n = n ; A_out_ne = ne
 
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
@@ -3837,7 +4439,7 @@
 !  A is a dense matrix (stored by rows)
 
       CASE ( 'DENSE', 'DENSE_BY_ROWS' )
-        A_out%val( 1 : ne ) = A%val( 1 : ne )
+        A_out_val( 1 : ne ) = A%val( 1 : ne )
         IF ( map_vals ) MAP( 1 : ne ) = [ ( i, i = 1, ne ) ]
 
 !  A is a dense matrix stored by columns
@@ -3848,7 +4450,7 @@
           DO i = j, n
             l = l + 1
             k = ( i * ( i - 1 ) ) / 2 + j
-            A_out%val( k ) = A%val( l )
+            A_out_val( k ) = A%val( l )
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
@@ -3856,12 +4458,12 @@
 !  A is a sparse matrix stored by rows
 
       CASE ( 'SPARSE_BY_ROWS' )
-        A_out%val = zero
+        A_out_val = zero
         DO i = 1, n
           DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
             j = A%col( l )
             k = ( i * ( i - 1 ) ) / 2 + j
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
@@ -3869,12 +4471,12 @@
 !  A is a sparse matrix stored by columns
 
       CASE ( 'SPARSE_BY_COLUMNS' )
-        A_out%val = zero
+        A_out_val = zero
         DO j = 1, A%n
           DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
             i = A%row( l )
             k = ( i * ( i - 1 ) ) / 2 + j
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
@@ -3882,43 +4484,43 @@
 !  A is a sparse matrix stored by its co-ordinates
 
       CASE ( 'COORDINATE' )
-        A_out%val = zero
+        A_out_val = zero
         DO l = 1, A%ne
           i = A%row( l )
           j = A%col( l )
           k = ( i * ( i - 1 ) ) / 2 + j
-          A_out%val( k ) = A_out%val( k ) + A%val( l )
+          A_out_val( k ) = A_out_val( k ) + A%val( l )
           IF ( map_vals ) MAP( l ) = k
         END DO
 
 !  A is a diagonal matrix
 
       CASE ( 'DIAGONAL' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO j = 1, n
           k = ( j * ( j - 1 ) ) / 2 + j
-          A_out%val( k ) = A%val( j )
+          A_out_val( k ) = A%val( j )
           IF ( map_vals ) MAP( j ) = k
         END DO
       CASE ( 'SCALED-IDENTITY' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO j = 1, n
           k = ( j * ( j - 1 ) ) / 2 + j
-          A_out%val( k ) = A%val( 1 )
+          A_out_val( k ) = A%val( 1 )
           IF ( map_vals ) MAP( j ) = n + 1
         END DO
       CASE ( 'IDENTITY' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO j = 1, n
           k = ( j * ( j - 1 ) ) / 2 + j
-          A_out%val( k ) = 1.0_rp_
+          A_out_val( k ) = 1.0_rp_
           IF ( map_vals ) MAP( j ) = 0
         END DO
       CASE ( 'ZERO', 'NONE' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO j = 1, n
           k = ( j * ( j - 1 ) ) / 2 + j
-          A_out%val( k ) = 0.0_rp_
+          A_out_val( k ) = 0.0_rp_
           IF ( map_vals ) MAP( j ) = 0
         END DO
       END SELECT
@@ -3949,14 +4551,14 @@
        &  ' from CONVERT ' )" ) prefix, inform%status
       RETURN
 
-!  end of subroutine CONVERT_to_dense_symmetric_row_format
+!  end of subroutine CONVERT_to_SDR_main
 
-      END SUBROUTINE CONVERT_to_dense_symmetric_row_format
+      END SUBROUTINE CONVERT_to_SDR_main
 
-!-*- C O N V E R T _ T O _ D E N S E _ S _ C O L U M N   S U B R O U T I N E -*-
+!-*-*-*-*- C O N V E R T _ T O _ S D C _ M A I N   S U B R O U T I N E -*-*-*-*-
 
-      SUBROUTINE CONVERT_to_dense_symmetric_column_format( A, A_out, control,  &
-                                                           inform, MAP )
+      SUBROUTINE CONVERT_to_SDC_main( A, A_out_n, A_out_ne, A_out_val,         &
+                                      control, inform, MAP )
 
 !  convert the input matrix to dense-column format.
 
@@ -3969,22 +4571,19 @@
 !   A is a structure of type SMT_type used to hold the input matrix A.
 !   (see CONVERT_between_matrix_formats above)
 !
-!   A_out is a structure of type SMT_type used to hold the output matrix A
-!    stored as a dense matrix by columns.
-!
-!    The following values will be set:
-!
-!       A_out%n   the number of rows/columns of the output A
-!       A_out%type( 1 : 16 ) = 'DENSE_BY_COLUMNS'
-!       A_out%val( : )   the values of the components of A, stored
-!                            as a dense matrix column by column
+!   A_out_n   the number of rows/columns of the output A
+!   A_out_ne  the number of nonzros in the output A
+!   A_out_val( : )   the values of the components of A, stored
+!                    as a dense matrix column by column
 !
 !   control, inform and MAP as above
 
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+                                DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ),                       &
@@ -4044,15 +4643,10 @@
 !  store A row-wise in A_out, perhaps with the column entries within
 !  each row in increasing order
 
-      A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'DENSE_BY_COLUMNS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
+      A_out_n = n ; A_out_ne = ne
 
-      array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                                  &
+      array_name = 'CONVERT: A_out_val'
+      CALL SPACE_resize_array( ne, A_out_val,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
@@ -4071,7 +4665,7 @@
           DO j = 1, i
             l = l + 1
             k = n * ( j - 1 ) - ( j * ( j - 1 ) ) / 2 + i
-            A_out%val( k ) = A%val( l )
+            A_out_val( k ) = A%val( l )
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
@@ -4079,19 +4673,19 @@
 !  A is a dense matrix stored by columns
 
       CASE ( 'DENSE_BY_COLUMNS' )
-        A_out%val( 1 : ne ) = A%val( 1 : ne )
+        A_out_val( 1 : ne ) = A%val( 1 : ne )
         IF ( map_vals ) MAP( 1 : ne ) = [ ( i, i = 1, ne ) ]
 
 !  A is a sparse matrix stored by rows
 
       CASE ( 'SPARSE_BY_ROWS' )
-        A_out%val = zero
+        A_out_val = zero
         DO i = 1, n
           DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
             j = A%col( l )
             k = n * ( j - 1 ) - ( j * ( j - 1 ) ) / 2 + i
 !           k = n * ( j - 1 ) + i
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
@@ -4099,13 +4693,13 @@
 !  A is a sparse matrix stored by columns
 
       CASE ( 'SPARSE_BY_COLUMNS' )
-        A_out%val = zero
+        A_out_val = zero
         DO j = 1, n
           DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
             i = A%row( l )
             k = n * ( j - 1 ) - ( j * ( j - 1 ) ) / 2 + i
 !           k = n * ( j - 1 ) + i
-            A_out%val( k ) = A_out%val( k ) + A%val( l )
+            A_out_val( k ) = A_out_val( k ) + A%val( l )
             IF ( map_vals ) MAP( l ) = k
           END DO
         END DO
@@ -4113,43 +4707,43 @@
 !  A is a sparse matrix stored by its co-ordinates
 
       CASE ( 'COORDINATE' )
-        A_out%val = zero
+        A_out_val = zero
         DO l = 1, A%ne
           i = A%row( l )
           j = A%col( l )
           k = n * ( j - 1 ) - ( j * ( j - 1 ) ) / 2 + i
-          A_out%val( k ) = A_out%val( k ) + A%val( l )
+          A_out_val( k ) = A_out_val( k ) + A%val( l )
           IF ( map_vals ) MAP( l ) = k
         END DO
 
 !  A is a diagonal matrix
 
       CASE ( 'DIAGONAL' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO i = 1, n
           k = n * ( i - 1 ) - ( i * ( i - 1 ) ) / 2 + i
-          A_out%val( k ) = A%val( i )
+          A_out_val( k ) = A%val( i )
           IF ( map_vals ) MAP( i ) = k
         END DO
       CASE ( 'SCALED-IDENTITY' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO j = 1, n
           k = ( j * ( j - 1 ) ) / 2 + j
-          A_out%val( k ) = A%val( 1 )
+          A_out_val( k ) = A%val( 1 )
           IF ( map_vals ) MAP( j ) = n + 1
         END DO
       CASE ( 'IDENTITY' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO j = 1, n
           k = ( j * ( j - 1 ) ) / 2 + j
-          A_out%val( k ) = 1.0_rp_
+          A_out_val( k ) = 1.0_rp_
           IF ( map_vals ) MAP( j ) = 0
         END DO
       CASE ( 'ZERO', 'NONE' )
-        A_out%val( : ne ) = zero
+        A_out_val( : ne ) = zero
         DO j = 1, n
           k = ( j * ( j - 1 ) ) / 2 + j
-          A_out%val( k ) = 0.0_rp_
+          A_out_val( k ) = 0.0_rp_
           IF ( map_vals ) MAP( j ) = 0
         END DO
       END SELECT
@@ -4180,9 +4774,9 @@
        &  ' from CONVERT ' )" ) prefix, inform%status
       RETURN
 
-!  end of subroutine CONVERT_to_dense_symmetric_column_format
+!  end of subroutine CONVERT_to_SDC_main
 
-      END SUBROUTINE CONVERT_to_dense_symmetric_column_format
+      END SUBROUTINE CONVERT_to_SDC_main
 
 !-*-*-*-*-  C O N V E R T _ T R A N S P O S E   S U B R O U T I N E  -*-*-*-*-
 

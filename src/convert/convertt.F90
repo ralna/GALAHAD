@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-14 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-26 AT 09:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CONVERT_TEST
    USE GALAHAD_KINDS_precision
@@ -8,8 +8,6 @@
    TYPE ( CONVERT_control_type ) :: control
    TYPE ( CONVERT_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i, j, l, mode, s, status, type
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP
    LOGICAL :: testdc, testdr, testsc, testsr, testco
 
@@ -338,7 +336,7 @@
    DO type = 1, 5
      CALL SET_H( type, H )
      ALLOCATE( MAP( SIZE( H%val ) ) )
-     CALL CONVERT_to_sparse_symmetric_column_format( H, H_out, control,        &
+     CALL CONVERT_to_symmetric_sparse_column_format( H, H_out, control,        &
                                                      inform, MAP = MAP )
      WRITE( 6, "( /, ' convert from ', A, ' to column format ')" )             &
        SMT_get( H%type )
@@ -372,7 +370,7 @@
    DO type = 1, 5
      CALL SET_H( type, H )
      ALLOCATE( MAP( SIZE( H%val ) ) )
-     CALL CONVERT_to_sparse_symmetric_row_format( H, H_out, control, inform,   &
+     CALL CONVERT_to_symmetric_sparse_row_format( H, H_out, control, inform,   &
                                                   MAP = MAP )
      WRITE( 6, "( /, ' convert from ', A, ' to row format ')" )                &
        SMT_get( H%type )
@@ -430,7 +428,7 @@
    control%order = .TRUE.
    DO type = 1, 5
      CALL SET_H( type, H )
-     CALL CONVERT_to_dense_symmetric_row_format( H, H_out, control, inform )
+     CALL CONVERT_to_symmetric_dense_row_format( H, H_out, control, inform )
      WRITE( 6, "( /, ' convert from ', A, ' to dense-row format ')" )          &
        SMT_get( H%type )
      IF ( inform%status == 0 ) THEN
@@ -451,7 +449,7 @@
    control%order = .TRUE.
    DO type = 1, 5
      CALL SET_H( type, H )
-     CALL CONVERT_to_dense_symmetric_column_format( H, H_out, control, inform )
+     CALL CONVERT_to_symmetric_dense_column_format( H, H_out, control, inform )
      WRITE( 6, "( /, ' convert from ', A, ' to dense-column format ')" )       &
        SMT_get( H%type )
      IF ( inform%status == 0 ) THEN
@@ -630,26 +628,26 @@
      END IF
 
      IF ( testdr ) THEN
-       CALL CONVERT_to_dense_symmetric_row_format( H, H_out, control, inform )
+       CALL CONVERT_to_symmetric_dense_row_format( H, H_out, control, inform )
        WRITE( 6, "( ' dr status = ', I0 )" ) inform%status
      END IF
      IF ( testdc ) THEN
-       CALL CONVERT_to_dense_symmetric_column_format( H, H_out, control,       &
+       CALL CONVERT_to_symmetric_dense_column_format( H, H_out, control,       &
                                                       inform )
        WRITE( 6, "( ' dc status = ', I0 )" ) inform%status
      END IF
      IF ( testsc ) THEN
-       CALL CONVERT_to_sparse_symmetric_column_format( H, H_out, control,      &
+       CALL CONVERT_to_symmetric_sparse_column_format( H, H_out, control,      &
                                                        inform )
        WRITE( 6, "( ' sc status = ', I0 )" ) inform%status
      END IF
      IF ( testsr ) THEN
-       CALL CONVERT_to_sparse_symmetric_row_format( H, H_out, control,         &
+       CALL CONVERT_to_symmetric_sparse_row_format( H, H_out, control,         &
                                                     inform )
        WRITE( 6, "( ' sr status = ', I0 )" ) inform%status
      END IF
      IF ( testco ) THEN
-       CALL CONVERT_to_coordinate_format( H, H_out, control, inform )
+       CALL CONVERT_to_symmetric_coordinate_format( H, H_out, control, inform )
        WRITE( 6, "( ' co status = ', I0 )" ) inform%status
      END IF
    END DO

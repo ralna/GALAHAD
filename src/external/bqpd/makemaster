@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional BQPD procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-10-04
+#  This version: 2026-10-28
 
 #  include standard GALAHAD makefile definitions
 
@@ -16,12 +16,19 @@ NLIBS = $(LIBS) -lgalahad_problem
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-BQPDS = $(BASICSZ) $(BQLGS)(bqpd.o) $(LGS)(bqpd.o) $(LGS)(bqpd_gdotx.o)
-BQPDD = $(BASICSZ) $(BQLGD)(bqpd.o) $(LGD)(bqpd.o) $(LGD)(bqpd_gdotx.o)
-BQPDQ = $(BASICSZ) $(BQLGQ)(bqpd.o) $(LGQ)(bqpd.o) $(LGQ)(bqpd_gdotx.o)
-BQPDS64 = $(BASICSZ) $(BQLGS64)(bqpd.o) $(LGS64)(bqpd.o) $(LGS64)(bqpd_gdotx.o)
-BQPDD64 = $(BASICSZ) $(BQLGD64)(bqpd.o) $(LGD64)(bqpd.o) $(LGD64)(bqpd_gdotx.o)
-BQPDQ64 = $(BASICSZ) $(BQLGQ64)(bqpd.o) $(LGQ64)(bqpd.o) $(LGQ64)(bqpd_gdotx.o)
+BQPD_DUMS = $(BASICSZ) $(BQLGS)(bqpd.o)
+BQPD_DUMD = $(BASICSZ) $(BQLGD)(bqpd.o)
+BQPD_DUMQ = $(BASICSZ) $(BQLGQ)(bqpd.o)
+BQPD_DUMS64 = $(BASICSZ) $(BQLGS64)(bqpd.o)
+BQPD_DUMD64 = $(BASICSZ) $(BQLGD64)(bqpd.o)
+BQPD_DUMQ64 = $(BASICSZ) $(BQLGQ64)(bqpd.o)
+
+BQPDS = $(BQPD_DUMS) $(LGS)(bqpd.o) $(LGS)(bqpd_gdotx.o)
+BQPDD = $(BQPD_DUMD) $(LGD)(bqpd.o) $(LGD)(bqpd_gdotx.o)
+BQPDQ = $(BQPD_DUMQ) $(LGQ)(bqpd.o) $(LGQ)(bqpd_gdotx.o)
+BQPDS64 = $(BQPD_DUMS64) $(LGS64)(bqpd.o) $(LGS64)(bqpd_gdotx.o)
+BQPDD64 = $(BQPD_DUMD64) $(LGD64)(bqpd.o) $(LGD64)(bqpd_gdotx.o)
+BQPDQ64 = $(BQPD_DUMQ64) $(LGQ64)(bqpd.o) $(LGQ64)(bqpd_gdotx.o)
 
 BQPDST = $(BQPDS) $(OBJ)/bqpdt.o
 BQPDDT = $(BQPDD) $(OBJ)/bqpdt.o
@@ -37,11 +44,29 @@ RBQPDS64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
 RBQPDD64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
 RBQPQD64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
 
+#  bqpd_dum
+
+bqpd_dum_silent: bqpd_dum_$(PRECIS)
+bqpd_dum: bqpd_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: bqpd_dum ($(PRECIS) $(SUCC)"
+bqpd_dum_single: $(BQPD_DUMS)
+	$(RANLIB) $(BQLGS)
+bqpd_dum_double: $(BQPD_DUMD)
+	$(RANLIB) $(BQLGD)
+bqpd_dum_quadruple: $(BQPD_DUMQ)
+	$(RANLIB) $(BQLGQ)
+bqpd_dum_single_64: $(BQPD_DUMS64)
+	$(RANLIB) $(BQLGS64)
+bqpd_dum_double_64: $(BQPD_DUMD64)
+	$(RANLIB) $(BQLGD64)
+bqpd_dum_quadruple_64: $(BQPD_DUMQ64)
+	$(RANLIB) $(BQLGQ64)
+
 #  bqpd
 
 bqpd_silent: bqpd_$(PRECIS)
 bqpd: bqpd_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(BQPD) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: bqpd ($(PRECIS) $(SUCC)"
 bqpd_single: $(BQPDS)
 	$(RANLIB) $(BQLGS)
 bqpd_double: $(BQPDD)
@@ -118,7 +143,7 @@ $(BQLG)(bqpd.o): ../../dum/bqpd.F90
 	cd $(OBJ); $(FORTRAN) -o bqpd.o $(FFLAGS) bqpd.F90
 	cd $(OBJ); $(BQARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o
 	$(RANLIB) $(BQLG)
-	$(MVMODS)
+#	$(MVMODS)
 	@printf '[ OK ]\n'
 
 bqpd.o: $(LG)(bqpd.o)
@@ -142,7 +167,7 @@ $(LG)(bqpd_gdotx.o): ../bqpd/bqpd_gdotx.F90
 	cd $(OBJ); $(ARR) bqpd_gdotx.o ; $(RM) bqpd_gdotx.F90 bqpd_gdotx.o
 	$(RMOBFILE) qp_$(PRECIS).o
 	$(RMOBFILE) qpt_$(PRECIS).o
-	$(MVMODS)
+#	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  test programs

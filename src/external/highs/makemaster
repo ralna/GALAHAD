@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional HiGHS procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-06-30
+#  This version: 2026-10-28
 
 #  include standard GALAHAD makefile definitions
 
@@ -9,19 +9,26 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(HIGHS) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(HIGHS) $(LAPACK) $(BLAS)
 NLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-HIGHSS = $(BASICSZ) $(HILGS)(highs_c_api.o) $(LGS)(highs_interface.o)
-HIGHSD = $(BASICSZ) $(HILGD)(highs_c_api.o) $(LGD)(highs_interface.o)
-HIGHSQ = $(BASICSZ) $(HILGQ)(highs_c_api.o) $(LGQ)(highs_interface.o)
-HIGHSS64 = $(BASICSZ) $(HILGS64)(highs_c_api.o) $(LGS64)(highs_interface.o)
-HIGHSD64 = $(BASICSZ) $(HILGD64)(highs_c_api.o) $(LGD64)(highs_interface.o)
-HIGHSQ64 = $(BASICSZ) $(HILGQ64)(highs_c_api.o) $(LGQ64)(highs_interface.o)
+HIGHS_DUMS = $(BASICSZ) $(HILGS)(highs_c_api.o)
+HIGHS_DUMD = $(BASICSZ) $(HILGD)(highs_c_api.o)
+HIGHS_DUMQ = $(BASICSZ) $(HILGQ)(highs_c_api.o)
+HIGHS_DUMS64 = $(BASICSZ) $(HILGS64)(highs_c_api.o)
+HIGHS_DUMD64 = $(BASICSZ) $(HILGD64)(highs_c_api.o)
+HIGHS_DUMQ64 = $(BASICSZ) $(HILGQ64)(highs_c_api.o)
+
+HIGHSS = $(HIGHS_DUMS) $(LGS)(highs_interface.o) $(LGS)(highs.o)
+HIGHSD = $(HIGHS_DUMD) $(LGD)(highs_interface.o) $(LGD)(highs.o)
+HIGHSQ = $(HIGHS_DUMQ) $(LGQ)(highs_interface.o) $(LGQ)(highs.o)
+HIGHSS64 = $(HIGHS_DUMS64) $(LGS64)(highs_interface.o) $(LGS64)(highs.o)
+HIGHSD64 = $(HIGHS_DUMD64) $(LGD64)(highs_interface.o) $(LGD64)(highs.o)
+HIGHSQ64 = $(HIGHS_DUMQ64) $(LGQ64)(highs_interface.o) $(LGQ64)(highs.o)
 
 HIGHSST = $(HIGHSS) $(OBJ)/highst.o
 HIGHSDT = $(HIGHSD) $(OBJ)/highst.o
@@ -30,6 +37,13 @@ HIGHSS64T = $(HIGHSS64) $(OBJ)/highst.o
 HIGHSD64T = $(HIGHSD64) $(OBJ)/highst.o
 HIGHSQ64T = $(HIGHSQ64) $(OBJ)/highst.o
 
+OLDHIGHSST = $(HIGHSS) $(OBJ)/old_highst.o
+OLDHIGHSDT = $(HIGHSD) $(OBJ)/old_highst.o
+OLDHIGHSQT = $(HIGHSQ) $(OBJ)/old_highst.o
+OLDHIGHSS64T = $(HIGHSS64) $(OBJ)/old_highst.o
+OLDHIGHSD64T = $(HIGHSD64) $(OBJ)/old_highst.o
+OLDHIGHSQ64T = $(HIGHSQ64) $(OBJ)/old_highst.o
+
 RHIGHSST = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
 RHIGHSDT = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
 RHIGHSQT = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
@@ -37,11 +51,36 @@ RHIGHSS64T = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
 RHIGHSD64T = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
 RHIGHSQ64T = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
 
+ROLDHIGHSST = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
+ROLDHIGHSDT = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
+ROLDHIGHSQT = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
+ROLDHIGHSS64T = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
+ROLDHIGHSD64T = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
+ROLDHIGHSQ64T = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
+
+#  highs_dum
+
+highs_dum_silent: highs_dum_$(PRECIS)
+highs_dum: highs_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: highs_dum ($(PRECIS) $(SUCC)"
+highs_dum_single: $(HIGHS_DUMS)
+	$(RANLIB) $(HILGS)
+highs_dum_double: $(HIGHS_DUMD)
+	$(RANLIB) $(HILGD)
+highs_dum_quadruple: $(HIGHS_DUMQ)
+	$(RANLIB) $(HILGQ)
+highs_dum_single_64: $(HIGHS_DUMS64)
+	$(RANLIB) $(HILGS64)
+highs_dum_double_64: $(HIGHS_DUMD64)
+	$(RANLIB) $(HILGD64)
+highs_dum_quadruple_64: $(HIGHS_DUMQ64)
+	$(RANLIB) $(HILGQ64)
+
 #  highs
 
 highs_silent: highs_$(PRECIS)
 highs: highs_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(HIGHS) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: highs ($(PRECIS) $(SUCC)"
 highs_single: $(HIGHSS)
 	$(RANLIB) $(HILGS)
 highs_double: $(HIGHSD)
@@ -66,6 +105,15 @@ highsdt: $(HIGHSDT)
 	- ../highs/run_highs
 	rm ../highs/run_highs
 
+old_highsdt: $(OLDHIGHSDT)
+	echo " Exhaustive old test of subroutine interface to old_highs"
+	cd ../highs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_highs \
+                         $(ROLDHIGHSDT)
+#	- ../highs/run_highs > ../highs/highsdt.output 2>&1
+#	cat ../highs/highsdt.output
+	- ../highs/run_highs
+	rm ../highs/run_highs
+
 highsst: $(HIGHSST)
 	echo " Exhaustive test of subroutine interface to highs"
 	cd ../highs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_highs \
@@ -81,6 +129,18 @@ highssq: $(HIGHSQT)
 	- ../highs/run_highs > ../highs/highsqt.output 2>&1
 	cat ../highs/highsqt.output
 	rm ../highs/run_highs
+
+highs.o: $(LG)(highs.o)
+
+$(LG)(highs.o): ../highs/highs.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "highs  "
+	$(CP) ../highs/highs.F90 $(OBJ)/highs.F90
+	cd $(OBJ); $(FORTRAN) -o highs.o $(FFLAGS) highs.F90
+	cd $(OBJ); $(ARR) highs.o ; $(RM) highs.F90 highs.o
+	$(RMOBFILE) qp_$(PRECIS).o
+	$(RMOBFILE) qpt_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
 
 #  blas and lapack generic packages and interfaces
 
@@ -134,6 +194,17 @@ $(LG)(highs_interface.o): ../highs/highs_interface.F90
           $(RM) highs_interface.F90 highs_interface.o
 	@printf '[ OK ]\n'
 
+osqp.o: $(LG)(osqp.o)
+
+$(LG)(osqp.o): ../osqp/osqp.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "osqp"
+	$(CP) ../osqp/osqp.F90 $(OBJ)/osqp.F90
+	cd $(OBJ); $(FORTRAN) -o osqp.o $(FFLAGS) osqp.F90
+	cd $(OBJ); $(ARR) osqp.o ; $(RM) osqp.F90 osqp.o
+	$(RANLIB) $(LG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 #  test programs
 
 highst.o: $(OBJ)/highst.o
@@ -144,11 +215,19 @@ $(OBJ)/highst.o: ../highs/highst.F90
 	cd $(OBJ) ; $(FORTRAN) -o highst.o $(FFLAGSS) highst.F90
 	@printf '[ OK ]\n'
 
+old_highst.o: $(OBJ)/old_highst.o
+
+$(OBJ)/old_highst.o: ../highs/old_highst.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "old_highst  "
+	$(SED) -f $(SEDS) ../highs/old_highst.F90 > $(OBJ)/old_highst.F90
+	cd $(OBJ) ; $(FORTRAN) -o old_highst.o $(FFLAGSS) old_highst.F90
+	@printf '[ OK ]\n'
+
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(HILG) $(OBJ)/highss.o $(OBJ)/highst.o
+	$(RM) $(HILG) $(OBJ)/highss.o $(OBJ)/highst.o  $(OBJ)/old_highst.o
 	@printf '[ OK ]\n'
 
 cleanall:

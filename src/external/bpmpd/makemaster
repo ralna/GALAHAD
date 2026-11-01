@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional BPMPD procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-07-26
+#  This version: 2026-10-28
 
 #  include standard GALAHAD makefile definitions
 
@@ -16,12 +16,19 @@ NLIBS = $(LIBS) -lgalahad_problem
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-BPMPDS = $(BASICSZ) $(BPLGS)(bpmpd.o) $(LGS)(bpmpd.o)
-BPMPDD = $(BASICSZ) $(BPLGD)(bpmpd.o) $(LGD)(bpmpd.o)
-BPMPDQ = $(BASICSZ) $(BPLGQ)(bpmpd.o) $(LGQ)(bpmpd.o)
-BPMPDS64 = $(BASICSZ) $(BPLGS64)(bpmpd.o) $(LGS64)(bpmpd.o)
-BPMPDD64 = $(BASICSZ) $(BPLGD64)(bpmpd.o) $(LGD64)(bpmpd.o)
-BPMPDQ64 = $(BASICSZ) $(BPLGQ64)(bpmpd.o) $(LGQ64)(bpmpd.o)
+BPMPD_DUMS = $(BASICSZ) $(BPLGS)(bpmpd.o)
+BPMPD_DUMD = $(BASICSZ) $(BPLGD)(bpmpd.o)
+BPMPD_DUMQ = $(BASICSZ) $(BPLGQ)(bpmpd.o)
+BPMPD_DUMS64 = $(BASICSZ) $(BPLGS64)(bpmpd.o)
+BPMPD_DUMD64 = $(BASICSZ) $(BPLGD64)(bpmpd.o)
+BPMPD_DUMQ64 = $(BASICSZ) $(BPLGQ64)(bpmpd.o)
+
+BPMPDS = $(BPMPD_DUMS) $(LGS)(bpmpd.o)
+BPMPDD = $(BPMPD_DUMD) $(LGD)(bpmpd.o)
+BPMPDQ = $(BPMPD_DUMQ) $(LGQ)(bpmpd.o)
+BPMPDS64 = $(BPMPD_DUMS64) $(LGS64)(bpmpd.o)
+BPMPDD64 = $(BPMPD_DUMD64) $(LGD64)(bpmpd.o)
+BPMPDQ64 = $(BPMPD_DUMQ64) $(LGQ64)(bpmpd.o)
 
 BPMPDST = $(BPMPDS) $(OBJ)/bpmpdt.o
 BPMPDDT = $(BPMPDD) $(OBJ)/bpmpdt.o
@@ -37,11 +44,29 @@ RBPMPDS64T = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
 RBPMPDD64T = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
 RBPMPDQ64T = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
 
+#  bpmpd_dum
+
+bpmpd_dum_silent: bpmpd_dum_$(PRECIS)
+bpmpd_dum: bpmpd_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: bpmpd_dum ($(PRECIS) $(SUCC)"
+bpmpd_dum_single: $(BPMPD_DUMS)
+	$(RANLIB) $(BPLGS)
+bpmpd_dum_double: $(BPMPD_DUMD)
+	$(RANLIB) $(BPLGD)
+bpmpd_dum_quadruple: $(BPMPD_DUMQ)
+	$(RANLIB) $(BPLGQ)
+bpmpd_dum_single_64: $(BPMPD_DUMS64)
+	$(RANLIB) $(BPLGS64)
+bpmpd_dum_double_64: $(BPMPD_DUMD64)
+	$(RANLIB) $(BPLGD64)
+bpmpd_dum_quadruple_64: $(BPMP_DUMDQ64)
+	$(RANLIB) $(BPLGQ64)
+
 #  bpmpd
 
 bpmpd_silent: bpmpd_$(PRECIS)
 bpmpd: bpmpd_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(BPMPD) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: bpmpd ($(PRECIS) $(SUCC)"
 bpmpd_single: $(BPMPDS)
 	$(RANLIB) $(BPLGS)
 bpmpd_double: $(BPMPDD)
@@ -118,7 +143,7 @@ $(BPLG)(bpmpd.o): ../../dum/bpmpd.F90
 	cd $(OBJ); $(FORTRAN) -o bpmpd.o $(FFLAGS) bpmpd.F90
 	cd $(OBJ); $(BPARR) bpmpd.o ; $(RM) bpmpd.F90 bpmpd.o
 	$(RANLIB) $(BPLG)
-	$(MVMODS)
+#	$(MVMODS)
 	@printf '[ OK ]\n'
 
 bpmpd.o: $(LG)(bpmpd.o)

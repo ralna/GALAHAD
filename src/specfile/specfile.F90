@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-04 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-31 AT 11:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -219,6 +219,7 @@
 
       USE GALAHAD_KINDS_precision
       USE GALAHAD_SYMBOLS  ! to make the symbols known for translation
+      USE ISO_C_BINDING
 
 !-------------------------------------------------------------------------------
 !   A c c e s s
@@ -235,11 +236,13 @@
       PUBLIC :: SPECFILE_read         , SPECFILE_assign_integer,               &
                 SPECFILE_assign_real  , SPECFILE_assign_logical,               &
                 SPECFILE_assign_symbol, SPECFILE_assign_string,                &
-                SPECFILE_assign_value , SPECFILE_assign_long
+                SPECFILE_assign_value , SPECFILE_assign_long,                  &
+                SPECFILE_assign_bool
 
       INTERFACE SPECFILE_assign_value
         MODULE PROCEDURE SPECFILE_assign_integer, SPECFILE_assign_real,        &
-                         SPECFILE_assign_logical, SPECFILE_assign_string
+                         SPECFILE_assign_logical, SPECFILE_assign_bool,        &
+                         SPECFILE_assign_string
       END INTERFACE
 
 !-------------------------------------------------------------------------------
@@ -624,7 +627,7 @@
 
       SUBROUTINE SPECFILE_assign_logical( specitem, lparam, errout )
 
-!     Translate the string value of an real control parameter into
+!     Translate the string value of a logical control parameter into
 !     its proper value
 
       TYPE( SPECFILE_item_type ), INTENT( IN ):: specitem
@@ -675,6 +678,63 @@
       RETURN
 
       END SUBROUTINE SPECFILE_assign_logical
+
+!==============================================================================
+!==============================================================================
+
+      SUBROUTINE SPECFILE_assign_bool( specitem, lparam, errout )
+
+!     Translate the string value of a bool control parameter into
+!     its proper value
+
+      TYPE( SPECFILE_item_type ), INTENT( IN ):: specitem
+
+!        The specification item
+
+      LOGICAL ( KIND = c_bool ), INTENT( INOUT ) :: lparam
+
+!        The control parameter to be assigned.
+
+      INTEGER ( KIND = ip_ ), INTENT ( IN ) :: errout
+
+!        The error output device number
+
+!     Programming: Ph. Toint, December 2001, modified Nick Gould, October 2026
+!
+!===============================================================================
+
+!     Local variables
+
+      CHARACTER( LEN = 30 ) :: tmp
+      INTEGER ( KIND = ip_ ) :: len_trim_tmp
+
+      IF ( specitem%line > 0 ) THEN
+         tmp = TRIM( specitem%value )
+         len_trim_tmp = LEN_TRIM( tmp )
+         CALL SPECFILE_upper_case( tmp, len_trim_tmp  )
+         IF (      tmp == 'ON'     .OR. tmp == 'T'       .OR. &
+                   tmp == 'YES'    .OR. tmp == 'Y'       .OR. &
+                   tmp == '.TRUE.' .OR. tmp == 'TRUE'    .OR. &
+                   tmp == ''                                  ) THEN
+            lparam = .TRUE.
+         ELSE IF ( tmp == 'OFF'    .OR. tmp == 'F'       .OR. &
+                   tmp == 'NO'     .OR. tmp == 'N'       .OR. &
+                   tmp == 'FALSE'  .OR. tmp == '.FALSE.'      ) THEN
+            lparam = .FALSE.
+         ELSE
+            WRITE( errout, * ) ' *** SPECFILE WARNING: bool value ',           &
+                    TRIM( specitem%value )
+            WRITE( errout, * ) '     not recognized in line',                  &
+                    specitem%line, 'of the specification file.'
+            WRITE( errout, * ) '     Corresponding assignment skipped.'
+            RETURN
+         END IF
+
+      END IF
+
+      RETURN
+
+      END SUBROUTINE SPECFILE_assign_bool
 
 !==============================================================================
 !==============================================================================

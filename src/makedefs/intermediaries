@@ -57,6 +57,11 @@ make_bnls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bnls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bnls )
 
+make_bpmpd:
+	( cd $(GALAHAD)/src/external/bpmpd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bpmpd.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/bpmpd )
+
 make_bqp:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp.o \
@@ -66,6 +71,11 @@ make_bqpb:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+
+make_bqpd:
+	( cd $(GALAHAD)/src/external/bqpd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpd.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/bqpd )
 
 make_bsc:
 	( cd $(GALAHAD)/src/bsc ; \
@@ -250,6 +260,11 @@ make_hash:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hash.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hash )
 
+make_highs:
+	( cd $(GALAHAD)/src/external/highs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) highs.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/highs )
+
 make_hw:
 	( cd $(GALAHAD)/src/hw ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hw.o \
@@ -407,6 +422,11 @@ make_nlpt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nlpt.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nlpt )
 
+make_naglib:
+	( cd $(GALAHAD)/src/external/naglib ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) naglib_interface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/naglib )
+
 make_nls:
 	( cd $(GALAHAD)/src/nls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls.o \
@@ -432,6 +452,11 @@ make_opt:
 	( cd $(GALAHAD)/src/opt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) opt.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/opt )
+
+make_osqp:
+	( cd $(GALAHAD)/src/external/osqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) osqp.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/osqp )
 
 make_pdqp:
 	( cd $(GALAHAD)/src/forthcoming/pdqp ; \
@@ -471,6 +496,11 @@ make_qpa:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
 
+make_qpalm:
+	( cd $(GALAHAD)/src/external/qpalm ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpalm.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/qpalm )
+
 make_qpb:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb.o \
@@ -496,6 +526,11 @@ make_qpf:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpf.o \
           PRECIS=$(PRECIS) \
           PWD=$(GALAHAD)/src/forthcoming/qpf )
+
+make_qpoases:
+	( cd $(GALAHAD)/src/external/qpoases ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpoases.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/qpoases )
 
 make_qpp:
 	( cd $(GALAHAD)/src/qpp ; \

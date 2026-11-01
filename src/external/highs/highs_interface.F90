@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-06-30 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-29 AT 11:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,10 +15,12 @@
 
   MODULE HIGHS_INTERFACE_precision
 
-!   USE GALAHAD_KINDS_precision
+!   USE, INTRINSIC :: iso_c_binding, ONLY: c_ptr, c_char, c_bool, c_null_char
     USE, INTRINSIC :: iso_c_binding
-    IMPLICIT NONE
-    PUBLIC :: ipc_, rpc_, c_ptr, c_char, c_bool
+
+    IMPLICIT NONE ( TYPE, EXTERNAL )
+
+    PUBLIC :: ipc_, rpc_, c_ptr, c_char, c_bool, c_null_char, c_associated
 
 !  integer (HIGHSINT64) and real (double) kinds chosen by C-preprocessor
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-10-17 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-27 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -54,7 +54,7 @@
       USE GALAHAD_CONVERT_precision, ONLY: CONVERT_control_type,               &
                                        CONVERT_inform_type,                    &
                                        CONVERT_to_sparse_column_format,        &
-                                       CONVERT_to_sparse_symmetric_column_format
+                                       CONVERT_to_symmetric_sparse_column_format
 
       IMPLICIT NONE ( TYPE, EXTERNAL )
 
@@ -1372,7 +1372,7 @@ write(6,*) ' in bpmpdx'
       prob%A%m = m ; prob%A%n = n ; prob%H%m = n ; prob%H%n = n
       CALL CONVERT_to_sparse_column_format( prob%A, data%A, control_convert,   &
                                             inform_convert )
-      CALL CONVERT_to_sparse_symmetric_column_format( prob%H, data%H,          &
+      CALL CONVERT_to_symmetric_sparse_column_format( prob%H, data%H,          &
                                                       control_convert,         &
                                                       inform_convert )
 
@@ -1714,121 +1714,115 @@ write(6,*) ' in bpmpdx'
 
 !  deallocate any internal problem arrays
 
-     array_name = 'cqp: data%prob%X'
+     array_name = 'bpmpd: data%prob%X'
      CALL SPACE_dealloc_array( data%prob%X,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%X_l'
+     array_name = 'bpmpd: data%prob%X_l'
      CALL SPACE_dealloc_array( data%prob%X_l,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%X_u'
+     array_name = 'bpmpd: data%prob%X_u'
      CALL SPACE_dealloc_array( data%prob%X_u,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%G'
+     array_name = 'bpmpd: data%prob%G'
      CALL SPACE_dealloc_array( data%prob%G,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%Y'
+     array_name = 'bpmpd: data%prob%Y'
      CALL SPACE_dealloc_array( data%prob%Y,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%Z'
+     array_name = 'bpmpd: data%prob%Z'
      CALL SPACE_dealloc_array( data%prob%Z,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%C'
+     array_name = 'bpmpd: data%prob%C'
      CALL SPACE_dealloc_array( data%prob%C,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%C_l'
+     array_name = 'bpmpd: data%prob%C_l'
      CALL SPACE_dealloc_array( data%prob%C_l,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%C_u'
+     array_name = 'bpmpd: data%prob%C_u'
      CALL SPACE_dealloc_array( data%prob%C_u,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%WEIGHT'
-     CALL SPACE_dealloc_array( data%prob%WEIGHT,                               &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'cqp: data%prob%H%type'
+     array_name = 'bpmpd: data%prob%H%type'
      CALL SPACE_dealloc_array( data%prob%H%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%H%ptr'
+     array_name = 'bpmpd: data%prob%H%ptr'
      CALL SPACE_dealloc_array( data%prob%H%ptr,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%H%row'
+     array_name = 'bpmpd: data%prob%H%row'
      CALL SPACE_dealloc_array( data%prob%H%row,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%H%col'
+     array_name = 'bpmpd: data%prob%H%col'
      CALL SPACE_dealloc_array( data%prob%H%col,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%H%val'
+     array_name = 'bpmpd: data%prob%H%val'
      CALL SPACE_dealloc_array( data%prob%H%val,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%A%type'
+     array_name = 'bpmpd: data%prob%A%type'
      CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%A%ptr'
+     array_name = 'bpmpd: data%prob%A%ptr'
      CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%A%row'
+     array_name = 'bpmpd: data%prob%A%row'
      CALL SPACE_dealloc_array( data%prob%A%row,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%A%col'
+     array_name = 'bpmpd: data%prob%A%col'
      CALL SPACE_dealloc_array( data%prob%A%col,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'cqp: data%prob%A%val'
+     array_name = 'bpmpd: data%prob%A%val'
      CALL SPACE_dealloc_array( data%prob%A%val,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-10-12 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-26 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -35,7 +35,7 @@
     USE GALAHAD_CONVERT_precision, ONLY: CONVERT_control_type,                 &
                                          CONVERT_inform_type,                  &
                                          CONVERT_to_sparse_column_format,      &
-                                         CONVERT_to_sparse_symmetric_row_format
+                                         CONVERT_to_symmetric_sparse_row_format
 
     IMPLICIT NONE ( TYPE, EXTERNAL )
 
@@ -1062,7 +1062,7 @@
         END IF
       ELSE
         prob%H%m = n ; prob%H%n = n
-        CALL CONVERT_to_sparse_symmetric_row_format( prob%H, data%H,           &
+        CALL CONVERT_to_symmetric_sparse_row_format( prob%H, data%H,           &
                                                      control_convert,          &
                                                      inform_convert )
 !write(6,*) ' h_ptr ', data%H%ptr

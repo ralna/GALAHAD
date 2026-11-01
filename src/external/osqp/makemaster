@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional OSQP procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-06-26
+#  This version: 2026-10-28
 
 #  include standard GALAHAD makefile definitions
 
@@ -16,12 +16,19 @@ NLIBS = $(LIBS) -lgalahad_problem
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-OSQPS = $(BASICSZ) $(OSLGS)(osqp.o) $(LGS)(osqp.o)
-OSQPD = $(BASICSZ) $(OSLGD)(osqp.o) $(LGD)(osqp.o)
-OSQPQ = $(BASICSZ) $(OSLGQ)(osqp.o) $(LGQ)(osqp.o)
-OSQPS64 = $(BASICSZ) $(OSLGS64)(osqp.o) $(LGS64)(osqp.o)
-OSQPD64 = $(BASICSZ) $(OSLGD64)(osqp.o) $(LGD64)(osqp.o)
-OSQPQ64 = $(BASICSZ) $(OSLGQ64)(osqp.o) $(LGQ64)(osqp.o)
+OSQP_DUMS = $(BASICSZ) $(OSLGS)(osqp.o)
+OSQP_DUMD = $(BASICSZ) $(OSLGD)(osqp.o)
+OSQP_DUMQ = $(BASICSZ) $(OSLGQ)(osqp.o)
+OSQP_DUMS64 = $(BASICSZ) $(OSLGS64)(osqp.o)
+OSQP_DUMD64 = $(BASICSZ) $(OSLGD64)(osqp.o)
+OSQP_DUMQ64 = $(BASICSZ) $(OSLGQ64)(osqp.o)
+
+OSQPS = $(OSQP_DUMS) $(LGS)(osqp.o)
+OSQPD = $(OSQP_DUMD) $(LGD)(osqp.o)
+OSQPQ = $(OSQP_DUMQ) $(LGQ)(osqp.o)
+OSQPS64 = $(OSQP_DUMS64) $(LGS64)(osqp.o)
+OSQPD64 = $(OSQP_DUMD64) $(LGD64)(osqp.o)
+OSQPQ64 = $(OSQP_DUMQ64) $(LGQ64)(osqp.o)
 
 OSQPST = $(OSQPS) $(OBJ)/osqpt.o
 OSQPDT = $(OSQPD) $(OBJ)/osqpt.o
@@ -51,11 +58,29 @@ ROLDOSQPS64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
 ROLDOSQPD64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
 ROLDOSQPQ64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
 
+#  osqp_dum
+
+osqp_dum_silent: osqp_dum_$(PRECIS)
+osqp_dum: osqp_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: osqp_dum ($(PRECIS) $(SUCC)"
+osqp_dum_single: $(OSQP_DUMS)
+	$(RANLIB) $(OSLGS)
+osqp_dum_double: $(OSQP_DUMD)
+	$(RANLIB) $(OSLGD)
+osqp_dum_quadruple: $(OSQP_DUMQ)
+	$(RANLIB) $(OSLGQ)
+osqp_dum_single_64: $(OSQP_DUMS64)
+	$(RANLIB) $(OSLGS64)
+osqp_dum_double_64: $(OSQP_DUMD64)
+	$(RANLIB) $(OSLGD64)
+osqp_dum_quadruple_64: $(OSQP_DUMQ64)
+	$(RANLIB) $(OSLGQ64)
+
 #  osqp
 
 osqp_silent: osqp_$(PRECIS)
 osqp: osqp_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(OSQP) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: osqp ($(PRECIS) $(SUCC)"
 osqp_single: $(OSQPS)
 	$(RANLIB) $(OSLGS)
 osqp_double: $(OSQPD)
@@ -81,7 +106,7 @@ osqpdt: $(OSQPDT)
 	rm ../osqp/run_osqp
 
 old_osqpdt: $(OLDOSQPDT)
-	echo " Exhaustive test of subroutine interface to osqp"
+	echo " Exhaustive old test of subroutine interface to osqp"
 	cd ../osqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_osqp \
                          $(ROLDOSQPDT)
 #	- ../osqp/run_osqp > ../osqp/old_osqpdt.output 2>&1
@@ -186,7 +211,7 @@ $(OBJ)/old_osqpt.o: ../osqp/old_osqpt.F90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(OSLG) $(OBJ)/osqpt.o
+	$(RM) $(OSLG) $(OBJ)/osqpt.o $(OBJ)/old_osqpt.o
 	@printf '[ OK ]\n'
 
 cleanall:

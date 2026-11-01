@@ -12,8 +12,9 @@
    INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 !  CHARACTER ( LEN = 20 ) :: solver = "cqp" // REPEAT( ' ', 17 )
-   CHARACTER ( LEN = 20 ) :: solver = "bpmpd" // REPEAT( ' ', 15 )
+!  CHARACTER ( LEN = 20 ) :: solver = "bpmpd" // REPEAT( ' ', 15 )
 !  CHARACTER ( LEN = 20 ) :: solver = "bqpd" // REPEAT( ' ', 16 )
+   CHARACTER ( LEN = 20 ) :: solver = "highs" // REPEAT( ' ', 15 )
 !  CHARACTER ( LEN = 20 ) :: solver = "osqp" // REPEAT( ' ', 16 )
 !  CHARACTER ( LEN = 20 ) :: solver = "e04nqf" // REPEAT( ' ', 14 )
 ! start problem data

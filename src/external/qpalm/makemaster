@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional QPALM procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-06-26
+#  This version: 2026-10-28
 
 #  include standard GALAHAD makefile definitions
 
@@ -16,12 +16,19 @@ NLIBS = $(LIBS) -lgalahad_problem
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-QPALMS = $(BASICSZ) $(QALGS)(qpalm.o)
-QPALMD = $(BASICSZ) $(QALGD)(qpalm.o)
-QPALMQ = $(BASICSZ) $(QALGQ)(qpalm.o)
-QPALMS64 = $(BASICSZ) $(QALGS64)(qpalm.o)
-QPALMD64 = $(BASICSZ) $(QALGD64)(qpalm.o)
-QPALMQ64 = $(BASICSZ) $(QALGQ64)(qpalm.o)
+QPALM_DUMS = $(BASICSZ) $(QALGS)(qpalm.o)
+QPALM_DUMD = $(BASICSZ) $(QALGD)(qpalm.o)
+QPALM_DUMQ = $(BASICSZ) $(QALGQ)(qpalm.o)
+QPALM_DUMS64 = $(BASICSZ) $(QALGS64)(qpalm.o)
+QPALM_DUMD64 = $(BASICSZ) $(QALGD64)(qpalm.o)
+QPALM_DUMQ64 = $(BASICSZ) $(QALGQ64)(qpalm.o)
+
+QPALMS = $(QPALM_DUMS) $(LGS)(qpalm.o)
+QPALMD = $(QPALM_DUMD) $(LGD)(qpalm.o)
+QPALMQ = $(QPALM_DUMQ) $(LGQ)(qpalm.o)
+QPALMS64 = $(QPALM_DUMS64) $(LGS64)(qpalm.o)
+QPALMD64 = $(QPALM_DUMD64) $(LGD64)(qpalm.o)
+QPALMQ64 = $(QPALM_DUMQ64) $(LGQ64)(qpalm.o)
 
 QPALMST = $(QPALMS) $(OBJ)/qpalmt.o
 QPALMDT = $(QPALMD) $(OBJ)/qpalmt.o
@@ -37,11 +44,29 @@ RQPALMS64T = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 RQPALMD64T = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 RQPALMDQ64 = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 
+#  qpalm_dum
+
+qpalm_dum_silent: qpalm_dum_$(PRECIS)
+qpalm_dum: qpalm_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: qpalm_dum ($(PRECIS) $(SUCC)"
+qpalm_dum_single: $(QPALM_DUMS)
+	$(RANLIB) $(QALGS)
+qpalm_dum_double: $(QPALM_DUMD)
+	$(RANLIB) $(QALGD)
+qpalm_dum_quadruple: $(QPALM_DUMQ)
+	$(RANLIB) $(QALGQ)
+qpalm_dum_single_64: $(QPALM_DUMS64)
+	$(RANLIB) $(QALGS64)
+qpalm_dum_double_64: $(QPALM_DUMD64)
+	$(RANLIB) $(QALGD64)
+qpalm_dum_quadruple_64: $(QPALM_DUMQ64)
+	$(RANLIB) $(QALGQ64)
+
 #  qpalm
 
 qpalm_silent: qpalm_$(PRECIS)
 qpalm: qpalm_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(QPALM) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: qpalm ($(PRECIS) $(SUCC)"
 qpalm_single: $(QPALMS)
 	$(RANLIB) $(QALGS)
 qpalm_double: $(QPALMD)
