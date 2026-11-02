@@ -280,6 +280,13 @@
 !  small to be accepted).
 
       REAL( rp_ ) :: small = 1e-20_rp_
+
+!  relative pivot threshold used for stability. Any value in the range
+!  [EPSILON( 1.0_rp_ ), 0.5] may be used, with the understanding that very
+!  small values can cause large growth in the factors. Values smaller than
+!  EPSILON( 1.0_rp_ ), including zero and negative values, are replaced by
+!  EPSILON( 1.0_rp_ ), and values larger than 0.5 are replaced by 0.5
+
       REAL( rp_ ) :: u = 0.01
 
 !  options to control node nested dissection ordering

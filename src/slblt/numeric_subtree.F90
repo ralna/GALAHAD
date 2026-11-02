@@ -221,8 +221,12 @@
       else
          nb = MAX( 1_ip_, control%block_size )
       end if
+      ! the pivot threshold u is restricted to [EPSILON, 0.5]; values outside
+      ! this range are replaced by the nearer end point
       CALL factor_subtree_delay( fac%fnode, this%nnodes, this%n, control%action, &
-                                 control%u, control%small, nb, posdef, ok,       &
+                                 MIN( 0.5_rp_, MAX( control%u,                   &
+                                                    EPSILON( 1.0_rp_ ) ) ),      &
+                                 control%small, nb, posdef, ok,                  &
                                  contribs,                                       &
                                  small_subtree_threshold                         &
                                    = control%small_subtree_threshold,            &
