@@ -242,7 +242,7 @@
 !  -------------------------
 
      TYPE numeric_subtree_ptr
-       CLASS( numeric_subtree_base ), POINTER :: ptr
+       CLASS( numeric_subtree_base ), POINTER :: ptr => NULL( )
      END TYPE numeric_subtree_ptr
 
 !  type for data generated in factorise phase
@@ -551,16 +551,28 @@
       IF ( check ) THEN
         CALL NODEND_half_order( n, akeep%ptr, akeep%row, order2,               &
                                 control%nodend_control, inform%nodend_inform )
-        inform%flag = inform%nodend_inform%status
         st = inform%nodend_inform%alloc_status
-        IF ( inform%flag < 0 ) GO TO 490
+
+        !  only an error from the ordering replaces the current flag, so that any
+        !  warning raised while cleaning the matrix is preserved
+
+        IF ( inform%nodend_inform%status < 0 ) THEN
+          inform%flag = inform%nodend_inform%status
+          GO TO 490
+        END IF
         CALL expand_pattern( n, nz, akeep%ptr, akeep%row, ptr2, row2 )
       ELSE
         CALL NODEND_half_order( n, ptr, row, order2,                           &
                                 control%nodend_control, inform%nodend_inform )
-        inform%flag = inform%nodend_inform%status
         st = inform%nodend_inform%alloc_status
-        IF ( inform%flag < 0 ) GO TO 490
+
+        !  only an error from the ordering replaces the current flag, so that any
+        !  warning raised while cleaning the matrix is preserved
+
+        IF ( inform%nodend_inform%status < 0 ) THEN
+          inform%flag = inform%nodend_inform%status
+          GO TO 490
+        END IF
         CALL expand_pattern( n, nz, ptr, row, ptr2, row2 )
       END IF
       flag = inform%flag
@@ -897,9 +909,15 @@
     CASE( 1 )
       CALL NODEND_half_order( n, akeep%ptr, akeep%row, order2,                 &
                               control%nodend_control, inform%nodend_inform )
-      inform%flag = inform%nodend_inform%status
       st = inform%nodend_inform%alloc_status
-      IF ( inform%flag < 0 ) GO TO 490
+
+      !  only an error from the ordering replaces the current flag, so that any
+      !  warning raised while cleaning the matrix is preserved
+
+      IF ( inform%nodend_inform%status < 0 ) THEN
+        inform%flag = inform%nodend_inform%status
+        GO TO 490
+      END IF
       CALL expand_pattern( n, nz, akeep%ptr, akeep%row, ptr2, row2 )
 
 !  matching-based ordering required
@@ -4465,10 +4483,24 @@
       END DO
       DEALLOCATE( akeep%subtree, STAT = st )
     END IF
-    DEALLOCATE( akeep%contrib_ptr, akeep%contrib_idx, akeep%invp,              &
-                akeep%nlist, akeep%nptr,  akeep%rlist, akeep%rptr,             &
-                akeep%sparent, akeep%sptr, akeep%ptr, akeep%row,               &
-                akeep%map, akeep%scaling, akeep%topology, STAT = st )
+!  deallocate each component separately: in a single multi-object DEALLOCATE,
+!  an unallocated component raises an error that may leave the remaining
+!  components allocated (as gfortran does), so a later analyse would fail
+
+    DEALLOCATE( akeep%contrib_ptr, STAT = st )
+    DEALLOCATE( akeep%contrib_idx, STAT = st )
+    DEALLOCATE( akeep%invp, STAT = st )
+    DEALLOCATE( akeep%nlist, STAT = st )
+    DEALLOCATE( akeep%nptr, STAT = st )
+    DEALLOCATE( akeep%rlist, STAT = st )
+    DEALLOCATE( akeep%rptr, STAT = st )
+    DEALLOCATE( akeep%sparent, STAT = st )
+    DEALLOCATE( akeep%sptr, STAT = st )
+    DEALLOCATE( akeep%ptr, STAT = st )
+    DEALLOCATE( akeep%row, STAT = st )
+    DEALLOCATE( akeep%map, STAT = st )
+    DEALLOCATE( akeep%scaling, STAT = st )
+    DEALLOCATE( akeep%topology, STAT = st )
     RETURN
 
     END SUBROUTINE free_akeep
