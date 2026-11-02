@@ -1245,7 +1245,6 @@
 
         IF ( PRESENT( map ) ) THEN
           DO WHILE ( associated( duphead ) )
-            idup = idup + 1
             map( lmap + 1 ) = duphead%dest
             map( lmap + 2 ) = duphead%src
             lmap = lmap + 2
@@ -1692,7 +1691,6 @@
 
         IF ( PRESENT( map ) ) THEN
           DO WHILE ( associated( duphead ) )
-            idup = idup + 1
             map( lmap + 1 ) = duphead%dest
             map( lmap + 2 ) = duphead%src
             lmap = lmap + 2
