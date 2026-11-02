@@ -1313,8 +1313,9 @@
        WRITE( lab, "( 'pivot_method = ', I0, ', u = ', ES8.1 )" ) pm, uu( k )
        IF ( uu( k ) < 1.0E-5_rp_ ) THEN
 
-!  (almost) no pivoting: accurate on a diagonally dominant indefinite matrix;
-!  on the KKT matrix, at least the solution must stay finite
+!  (almost) no pivoting (u <= 0 is replaced by EPSILON): accurate on a
+!  diagonally dominant indefinite matrix; on the KKT matrix, at least the
+!  solution must stay finite
 
          CALL full_solve( TRIM( lab ) // ', diag dominant', 160_ip_, ptrd,    &
                           rowd, vald, control, .FALSE., .TRUE. )
@@ -1323,7 +1324,8 @@
                           finite_only = .TRUE. )
        ELSE
 
-!  u > 0.5 is outside the documented range; expect it to behave like 0.5
+!  moderate and large u (u > 0.5 is replaced by 0.5): expect an accurate
+!  solution
 
          CALL full_solve( TRIM( lab ) // ', KKT', 160_ip_, ptr, row, val,     &
                           control, .FALSE., .TRUE. )
