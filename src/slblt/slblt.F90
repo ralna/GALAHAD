@@ -4760,6 +4760,15 @@
          CALL fkeep%subtree( part )%ptr%solve_fwd( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100
        END DO
+
+!  a positive-definite factor is stored as L D L^T with unit L; the forward
+!  partial solve is with the Cholesky factor L D^{1/2}, so also apply D^{-1/2}
+
+       IF ( fkeep%pos_def .AND. local_job == SLBLT_SOLVE_JOB_FWD ) THEN
+         DO part = 1, akeep%nparts
+           CALL fkeep%subtree( part )%ptr%solve_sqrt_diag( nrhs, x2, n, inform )
+         END DO
+       END IF
      END IF
 
      IF ( local_job == SLBLT_SOLVE_JOB_DIAG ) THEN
@@ -4770,6 +4779,15 @@
      END IF
 
      IF ( local_job == SLBLT_SOLVE_JOB_BWD ) THEN
+
+!  similarly, the backward partial solve with ( L D^{1/2} )^T first applies
+!  D^{-1/2} in the positive-definite case
+
+       IF ( fkeep%pos_def ) THEN
+         DO part = 1, akeep%nparts
+           CALL fkeep%subtree( part )%ptr%solve_sqrt_diag( nrhs, x2, n, inform )
+         END DO
+       END IF
        DO part = akeep%nparts, 1, -1
          CALL fkeep%subtree( part )%ptr%solve_bwd( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100
