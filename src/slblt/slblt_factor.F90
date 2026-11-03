@@ -405,6 +405,11 @@
                CALL swap_cols(t, nelim,   m, perm, a, lda, nleft, aleft, ldleft)
                CALL swap_cols(p, nelim+1, m, perm, a, lda, nleft, aleft, ldleft)
                CALL apply_2x2(nelim, m, a, lda, ld, ldld, d)
+
+!  update the trailing block, if any; when it is empty, a(nelim+3,.) may lie
+!  beyond the array, so DGEMM is skipped
+
+               IF ( m-nelim-2 > 0 .AND. n-nelim-2 > 0 ) &
                CALL DGEMM('N', 'T', m-nelim-2, n-nelim-2, 2_ip_, -1.0_rp_, &
                     a(nelim+3, nelim+1), lda, ld(nelim+3, 1), ldld, 1.0_rp_, &
                     a(nelim+3, nelim+3), lda)
@@ -420,6 +425,10 @@
                d(2*nelim+1) = 1.0_rp_ / a(nelim+1, nelim+1)
                d(2*nelim+2) = 0.0_rp_
                CALL apply_1x1(nelim, m, a, lda, ld, ldld, d)
+
+!  update the trailing block, if any (see the 2x2 case above)
+
+               IF ( m-nelim-1 > 0 .AND. n-nelim-1 > 0 ) &
                CALL DGEMM('N', 'T', m-nelim-1, n-nelim-1, 1_ip_, -1.0_rp_, &
                     a(nelim+2, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
                     a(nelim+2, nelim+2), lda)
@@ -439,13 +448,14 @@
                d(2*nelim+1) = 1.0_rp_ / a(nelim+1, nelim+1)
                d(2*nelim+2) = 0.0_rp_
                CALL apply_1x1(nelim, m, a, lda, ld, ldld, d)
-!write(6,*) m-nelim-1, nelim+1, a(nelim+1, nelim+1)
+!  update the trailing block exactly as for the 1x1 pivot above. The guard
+!  skips the (empty) update for the last column, where a(nelim+2,.) would lie
+!  beyond the array if m = lda
+
                IF ( nelim < n - 1 ) &
                CALL DGEMM('N', 'T', m-nelim-1, n-nelim-1, 1_ip_, -1.0_rp_, &
-                    a(nelim+1, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
-                    a(nelim+1, nelim+2), lda)
-!                   a(nelim+2, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
-!                   a(nelim+2, nelim+2), lda)
+                    a(nelim+2, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
+                    a(nelim+2, nelim+2), lda)
                nelim = nelim + 1
             ELSE
 
