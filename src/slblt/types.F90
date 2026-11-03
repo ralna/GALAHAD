@@ -282,8 +282,10 @@
 
       INTEGER( ip_ ) :: pivot_method = PIVOT_METHOD_APP_BLOCK
 
-!  minimum pivot size (absolute value of a pivot must be of size at least 
-!  small to be accepted).
+!  minimum pivot size (absolute value of a pivot must be of size at least
+!  small to be accepted). Values smaller than TINY( 1.0_rp_ ), including zero
+!  and negative values, are replaced by TINY( 1.0_rp_ ), so that a zero
+!  pivot is never accepted
 
       REAL( rp_ ) :: small = 1e-20_rp_
 

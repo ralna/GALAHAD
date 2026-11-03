@@ -653,7 +653,11 @@
     p = from
     DO WHILE (p < bs)
       CALL bk_find_maxloc(p, a, lda, bs, bestv, t, m)
-      IF (ABS(bestv) < small) THEN
+      ! the remaining block is (effectively) zero. bestv == 0 must be caught
+      ! even when small <= 0: it includes the case where bk_find_maxloc finds
+      ! no candidate and returns t = m = bs, an index beyond the block whose
+      ! use would corrupt perm, lperm and the next block's data
+      IF (ABS(bestv) < small .OR. bestv == 0.0_rp_) THEN
         IF (.NOT. action) THEN
           flag = FLAG_SINGULAR; RETURN ! singular pivot, action=.FALSE., abort
         END IF
