@@ -75,6 +75,7 @@
    CALL case_nemin( )
    CALL case_scalings( )
    CALL case_pivot_methods( )
+   CALL case_failed_pivot_method( )
    CALL case_threshold_u( )
    CALL case_tpp_emergency_4x4( )
    CALL case_small( )
@@ -1370,6 +1371,44 @@
    CALL full_solve( 'pivot_method = 99', n, ptr, row, val, control, .FALSE.,  &
                     .TRUE. )
    END SUBROUTINE case_pivot_methods
+
+!  failed_pivot_method <= 1 retries failed pivots with a TPP pass before
+!  delaying them, and >= 2 passes them straight to the parent. On this KKT
+!  matrix the TPP pass eliminates some failed pivots (not_second_pass > 0
+!  counts those it could not), so it gives fewer delays than passing them on
+
+   SUBROUTINE case_failed_pivot_method( )
+   TYPE( SLBLT_akeep_type ) :: akeep
+   TYPE( SLBLT_fkeep_type ) :: fkeep
+   TYPE( SLBLT_control_type ) :: control
+   TYPE( SLBLT_inform_type ) :: inform
+   INTEGER( i8_ ), ALLOCATABLE :: ptr( : )
+   INTEGER( ip_ ), ALLOCATABLE :: row( : )
+   REAL( rp_ ), ALLOCATABLE :: val( : )
+   INTEGER( ip_ ), PARAMETER :: n = 500
+   INTEGER( ip_ ), PARAMETER :: methods( 5 ) = (/ - 1, 0, 1, 2, 3 /)
+   INTEGER( ip_ ) :: delays( 5 ), second( 5 ), k, flag
+   LOGICAL :: ok
+   CALL quiet( control )
+   CALL kkt( 300_ip_, 200_ip_, ptr, row, val )
+   control%nemin = 64
+   CALL SLBLT_analyse( .TRUE., n, ptr, row, akeep, control, inform )
+   ok = inform%flag >= 0
+   DO k = 1, 5
+     control%failed_pivot_method = methods( k )
+     CALL SLBLT_factor( .FALSE., val, akeep, fkeep, control, inform )
+     ok = ok .AND. inform%flag >= 0
+     delays( k ) = inform%num_delay
+     second( k ) = inform%not_second_pass
+   END DO
+   CALL SLBLT_free( akeep, fkeep, flag )
+   CALL report( ok .AND. ALL( delays( 1 : 3 ) == delays( 3 ) ) .AND.           &
+                ALL( second( 1 : 3 ) == second( 3 ) ) .AND. second( 3 ) > 0,   &
+                'failed_pivot_method <= 1 (-1, 0, 1) uses the TPP pass' )
+   CALL report( ok .AND. ALL( second( 4 : 5 ) == 0 ) .AND.                     &
+                ALL( delays( 4 : 5 ) > delays( 3 ) ),                          &
+                'failed_pivot_method >= 2 (2, 3) passes failed pivots on' )
+   END SUBROUTINE case_failed_pivot_method
 
    SUBROUTINE case_threshold_u( )
    TYPE( SLBLT_control_type ) :: control
