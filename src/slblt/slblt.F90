@@ -47,7 +47,7 @@
                                                symbolic_subtree_base
     USE GALAHAD_SLBLT_numeric_subtree_precision, ONLY:                     &
                                        construct_symbolic_subtree, &
-                                       numeric_subtree
+                                       numeric_subtree, free_contrib
 
     IMPLICIT NONE
 
@@ -4695,9 +4695,16 @@
 !$omp end parallel
      END IF
 
-!  cleanup and exit
+!  cleanup and exit. Each child contribution block (made by get_contrib) has
+!  been copied by its parent subtree, so all of them can now be released;
+!  entries never set have null pointers and are skipped by free_contrib
 
  100 CONTINUE
+     IF ( ALLOCATED( child_contrib ) ) THEN
+       DO i = 1, SIZE( child_contrib )
+         CALL free_contrib( child_contrib( i ) )
+       END DO
+     END IF
 
      RETURN
 

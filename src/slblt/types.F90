@@ -378,12 +378,12 @@
     TYPE, PUBLIC :: contrib_type
       LOGICAL :: ready = .FALSE.
       INTEGER( ip_ ) :: n ! size of block
-      REAL( C_RP_ ), DIMENSION( : ), POINTER :: val ! nxn lwr triangular matrix
+      REAL( C_RP_ ), DIMENSION( : ), POINTER :: val => NULL( ) ! nxn lwr tri.
       INTEGER( C_IP_ ) :: ldval
-      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: rlist ! row list
+      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: rlist => NULL( ) ! row list
       INTEGER( ip_ ) :: ndelay
-      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm
-      REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val
+      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm => NULL( )
+      REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val => NULL( )
       INTEGER( ip_ ) :: lddelay
 
 !  the following is used by the CPU cleanup routine
