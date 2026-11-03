@@ -436,7 +436,7 @@ jobs:
           LAPACK=""
           BLAS_PATH="$DEPS/deps/$LIBDIR"
           LAPACK_PATH="$DEPS/deps/$LIBDIR"
-          PYTHON_INTERFACE="true"
+          PYTHON_INTERFACE="false"
           SHARED_STATIC="shared"
           CUTEST_SINGLE="cutest_single"
           CUTEST_DOUBLE="cutest_double"
