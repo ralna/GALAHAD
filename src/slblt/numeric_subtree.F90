@@ -68,6 +68,7 @@
       PROCEDURE :: solve_diag
       PROCEDURE :: solve_diag_bwd
       PROCEDURE :: solve_bwd
+      PROCEDURE :: solve_sqrt_diag
       PROCEDURE :: enquire_posdef
       PROCEDURE :: enquire_indef
       PROCEDURE :: alter
@@ -420,6 +421,33 @@
       TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
       CALL subtree_solve_bwd_delay( this%fnode, this%nnodes, nrhs, x, ldx )
    END SUBROUTINE solve_bwd
+
+   !> positive-definite factors are stored as L D L^T with unit L, where
+   !! d(2i-1) = 1 / L_ii^2 holds D^{-1} (see chol_factor_node). The Cholesky
+   !! factor is L D^{1/2}, so a forward or backward partial solve with it
+   !! needs an extra multiplication by D^{-1/2} = sqrt( d(2i-1) ), applied
+   !! here to each eliminated variable (indexed through perm, as in the
+   !! diagonal solve)
+   SUBROUTINE solve_sqrt_diag( this, nrhs, x, ldx, inform )
+      CLASS( numeric_subtree ), INTENT( INOUT ) :: this
+      INTEGER( ip_ ), INTENT( IN ) :: nrhs
+      REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
+      INTEGER( ip_ ), INTENT( IN ) :: ldx
+      TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
+      INTEGER( ip_ ) :: li, i, r, k
+      REAL( rp_ ) :: s
+      DO li = 1, this%nnodes
+         ASSOCIATE( fn => this%fnode( li ) )
+         DO i = 1, fn%nelim
+            s = SQRT( fn%d( 2*i-1 ) )
+            k = fn%perm( i )
+            DO r = 0, nrhs - 1
+               x( r*ldx + k ) = s * x( r*ldx + k )
+            END DO
+         END DO
+         END ASSOCIATE
+      END DO
+   END SUBROUTINE solve_sqrt_diag
 
    SUBROUTINE enquire_posdef( this, d )
       CLASS( numeric_subtree ), INTENT( IN ) :: this

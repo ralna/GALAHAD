@@ -56,6 +56,7 @@
    CALL case_call_sequence( )
    CALL case_nocheck_needs_ptr_row( )
    CALL case_solve_args( )
+   CALL case_posdef_partial_solves( )
    CALL case_enquire_mismatch( )
    CALL case_no_saved_scaling( )
 
@@ -778,6 +779,79 @@
                 'posdef partial solves job = 1, 3' )
    CALL SLBLT_free( akeep, fkeep, flag )
    END SUBROUTINE case_solve_args
+
+!  partial solves with a positive-definite factor A = L L^T: job = 1 must
+!  apply L^{-1} on its own, which is checked through the identity
+!  || L^{-1} b ||^2 = b^T A^{-1} b (also valid with scaling, since then
+!  S A S = L L^T), and job = 1 then job = 3 must solve A x = b. Checked for
+!  3 right-hand sides, with and without scaling, and with the tree in one
+!  or several subtrees
+
+   SUBROUTINE case_posdef_partial_solves( )
+   INTEGER( ip_ ), PARAMETER :: n = 500, nrhs = 3
+   INTEGER( ip_ ), PARAMETER :: scalings( 3 ) = (/ 0, 1, 4 /)
+   REAL, PARAMETER :: imbalance( 2 ) = (/ 1.2, 1.0 /)
+   TYPE( SLBLT_akeep_type ) :: akeep
+   TYPE( SLBLT_fkeep_type ) :: fkeep
+   TYPE( SLBLT_control_type ) :: control
+   TYPE( SLBLT_inform_type ) :: inform
+   INTEGER( i8_ ), ALLOCATABLE :: ptr( : )
+   INTEGER( ip_ ), ALLOCATABLE :: row( : )
+   REAL( rp_ ), ALLOCATABLE :: val( : )
+   REAL( rp_ ) :: xs( n ), b( n, nrhs ), x( n, nrhs ), y( n, nrhs )
+   REAL( rp_ ) :: yy, bx, be
+   INTEGER( ip_ ) :: flag, is, ii, r
+   LOGICAL :: ok
+   CHARACTER( LEN = 60 ) :: lab
+   CALL quiet( control )
+   CALL tridiag( n, 4.0_rp_, - one, .FALSE., ptr, row, val )
+   CALL make_solution( n, xs )
+   DO r = 1, nrhs
+     CALL symv( n, ptr, row, val, xs * REAL( r, rp_ ), b( :, r ) )
+   END DO
+   control%nemin = 128
+   DO ii = 1, 2
+     control%max_load_inbalance = imbalance( ii )
+     DO is = 1, 3
+       control%scaling = scalings( is )
+       WRITE( lab, "( 'posdef partial solves, scaling = ', I0, ', ', A )" )    &
+         scalings( is ), TRIM( MERGE( 'one subtree', 'split tree ', ii == 1 ) )
+       CALL SLBLT_analyse( .TRUE., n, ptr, row, akeep, control, inform )
+       IF ( ii == 2 .AND. is == 1 )                                           &
+         CALL report( inform%nparts > 1, TRIM( lab ) // ': tree is split' )
+       CALL SLBLT_factor( .TRUE., val, akeep, fkeep, control, inform )
+       ok = inform%flag == 0
+
+!  full solve, and job = 1 alone
+
+       x = b
+       CALL SLBLT_solve( nrhs, x, n, akeep, fkeep, control, inform )
+       ok = ok .AND. inform%flag == 0
+       y = b
+       CALL SLBLT_solve( nrhs, y, n, akeep, fkeep, control, inform,            &
+                         job = 1_ip_ )
+       ok = ok .AND. inform%flag == 0
+       DO r = 1, nrhs
+         yy = DOT_PRODUCT( y( :, r ), y( :, r ) )
+         bx = DOT_PRODUCT( b( :, r ), x( :, r ) )
+         ok = ok .AND. ABS( yy - bx ) <= tol * bx
+       END DO
+       CALL report( ok, TRIM( lab ) // ': job = 1' )
+
+!  job = 3 applied to the result of job = 1
+
+       CALL SLBLT_solve( nrhs, y, n, akeep, fkeep, control, inform,            &
+                         job = 3_ip_ )
+       ok = inform%flag == 0
+       DO r = 1, nrhs
+         be = backward_error( n, ptr, row, val, y( :, r ), b( :, r ) )
+         ok = ok .AND. be <= tol
+       END DO
+       CALL report( ok, TRIM( lab ) // ': job = 1, 3' )
+       CALL SLBLT_free( akeep, fkeep, flag )
+     END DO
+   END DO
+   END SUBROUTINE case_posdef_partial_solves
 
    SUBROUTINE case_enquire_mismatch( )
    TYPE( SLBLT_akeep_type ) :: akeep
