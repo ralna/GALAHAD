@@ -78,6 +78,7 @@
    CALL case_threshold_u( )
    CALL case_tpp_emergency_4x4( )
    CALL case_small( )
+   CALL case_small_nonpositive( )
    CALL case_blocking_and_threads( )
    CALL case_printing( )
    CALL case_refactor_reuse( )
@@ -1495,6 +1496,49 @@
                 'small < 0: full rank' )
    CALL SLBLT_free( akeep, fkeep, flag )
    END SUBROUTINE case_small
+
+!  small <= 0 is replaced by TINY, so exact zero pivots are still rejected.
+!  For a zero matrix factorized as one large front (nemin = 128), the blocked
+!  kernels meet an all-zero block: with small <= 0 this used to select a pivot
+!  column beyond the block, corrupting the pivot permutation (seen as wrong
+!  results or a segmentation fault), or to divide by zero pivots
+
+   SUBROUTINE case_small_nonpositive( )
+   INTEGER( ip_ ), PARAMETER :: n = 64
+   REAL( rp_ ), PARAMETER :: smalls( 2 ) = (/ 0.0_rp_, - 1.0_rp_ /)
+   TYPE( SLBLT_akeep_type ) :: akeep
+   TYPE( SLBLT_fkeep_type ) :: fkeep
+   TYPE( SLBLT_control_type ) :: control
+   TYPE( SLBLT_inform_type ) :: inform
+   INTEGER( i8_ ), ALLOCATABLE :: ptr( : )
+   INTEGER( ip_ ), ALLOCATABLE :: row( : )
+   REAL( rp_ ), ALLOCATABLE :: val( : )
+   REAL( rp_ ) :: x( n )
+   INTEGER( ip_ ) :: flag, is, pm
+   LOGICAL :: ok
+   CHARACTER( LEN = 60 ) :: lab
+   CALL quiet( control )
+   CALL tridiag( n, zero, zero, .FALSE., ptr, row, val )
+   control%nemin = 128
+   control%action = .TRUE.
+   DO is = 1, 2
+     DO pm = 1, 3
+       control%small = smalls( is )
+       control%pivot_method = pm
+       WRITE( lab, "( 'zero matrix, small = ', F4.1, ', pivot_method = ', I0 )" )&
+         smalls( is ), pm
+       CALL SLBLT_analyse( .TRUE., n, ptr, row, akeep, control, inform )
+       CALL SLBLT_factor( .FALSE., val, akeep, fkeep, control, inform )
+       ok = inform%flag == SLBLT_WARNING_FACT_SINGULAR .AND.                   &
+            inform%matrix_rank == 0
+       x = one
+       CALL SLBLT_solve( x, akeep, fkeep, control, inform )
+       ok = ok .AND. inform%flag >= 0 .AND. ALL( x == zero )
+       CALL report( ok, TRIM( lab ) )
+       CALL SLBLT_free( akeep, fkeep, flag )
+     END DO
+   END DO
+   END SUBROUTINE case_small_nonpositive
 
    SUBROUTINE case_blocking_and_threads( )
    TYPE( SLBLT_control_type ) :: control
