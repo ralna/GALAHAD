@@ -75,6 +75,7 @@
    CALL case_scalings( )
    CALL case_pivot_methods( )
    CALL case_threshold_u( )
+   CALL case_tpp_emergency_4x4( )
    CALL case_small( )
    CALL case_blocking_and_threads( )
    CALL case_printing( )
@@ -1335,6 +1336,58 @@
      END DO
    END DO
    END SUBROUTINE case_threshold_u
+
+!  the "emergency" 1x1 pivot of threshold partial pivoting, used when no
+!  pivot passes the threshold test, on the 4x4 KKT matrix
+!
+!      [  4  -1   0   1 ]
+!  A = [ -1   4  -1   1 ]
+!      [  0  -1   4   0 ]
+!      [  1   1   0   0 ]
+!
+!  with pivot_method = 3 (TPP), u = 0.5, nemin = 1. Each of the three
+!  elimination orders below reaches the emergency pivot; its trailing update
+!  was once applied one row too high, giving errors of about 0.4
+
+   SUBROUTINE case_tpp_emergency_4x4( )
+   INTEGER( ip_ ), PARAMETER :: n = 4
+   INTEGER( i8_ ) :: ptr( n + 1 ) = (/ 1_i8_, 4_i8_, 7_i8_, 8_i8_, 9_i8_ /)
+   INTEGER( ip_ ) :: row( 8 ) = (/ 1, 2, 4, 2, 3, 4, 3, 4 /)
+   REAL( rp_ ) :: val( 8 ) = (/ 4.0_rp_, - 1.0_rp_, 1.0_rp_, 4.0_rp_,          &
+                                - 1.0_rp_, 1.0_rp_, 4.0_rp_, 0.0_rp_ /)
+   REAL( rp_ ), PARAMETER :: xs( n ) = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+   INTEGER( ip_ ), PARAMETER :: orders( n, 3 ) =                               &
+     RESHAPE( (/ 1, 3, 4, 2,   1, 4, 2, 3,   2, 4, 1, 3 /), (/ n, 3_ip_ /) )
+   TYPE( SLBLT_akeep_type ) :: akeep
+   TYPE( SLBLT_fkeep_type ) :: fkeep
+   TYPE( SLBLT_control_type ) :: control
+   TYPE( SLBLT_inform_type ) :: inform
+   INTEGER( ip_ ) :: order( n ), flag, k
+   REAL( rp_ ) :: x( n ), b( n )
+   CHARACTER( LEN = 60 ) :: lab
+   CALL quiet( control )
+   control%ordering = 0
+   control%nemin = 1
+   control%pivot_method = 3
+   control%u = 0.5_rp_
+   CALL symv( n, ptr, row, val, xs, b )
+   DO k = 1, 3
+     WRITE( lab, "( 'TPP emergency pivot 4x4, order ', 4I2 )" ) orders( :, k )
+     order = orders( :, k )       ! SLBLT_analyse overwrites order
+     CALL SLBLT_analyse( .TRUE., n, ptr, row, akeep, control, inform,          &
+                         order = order )
+     CALL SLBLT_factor( .FALSE., val, akeep, fkeep, control, inform )
+     IF ( inform%flag /= SLBLT_SUCCESS ) THEN
+       CALL report_flag( inform%flag, SLBLT_SUCCESS, TRIM( lab ) )
+     ELSE
+       x = b
+       CALL SLBLT_solve( x, akeep, fkeep, control, inform )
+       CALL report( inform%flag == 0 .AND. inform%num_neg == 1 .AND.           &
+                    MAXVAL( ABS( x - xs ) ) <= tol, TRIM( lab ) )
+     END IF
+     CALL SLBLT_free( akeep, fkeep, flag )
+   END DO
+   END SUBROUTINE case_tpp_emergency_4x4
 
    SUBROUTINE case_small( )
    TYPE( SLBLT_akeep_type ) :: akeep
