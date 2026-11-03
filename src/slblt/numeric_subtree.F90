@@ -232,7 +232,7 @@
                                  small_subtree_threshold                         &
                                    = control%small_subtree_threshold,            &
                                  failed_tpp = ( control%failed_pivot_method      &
-                                                == FAILED_PIVOT_METHOD_TPP ),   &
+                                                <= FAILED_PIVOT_METHOD_TPP ),   &
                                  alloc_ok = aok )
       IF ( .NOT. aok ) THEN
          inform%flag = SLBLT_ERROR_ALLOCATION      ! out of memory during factor
