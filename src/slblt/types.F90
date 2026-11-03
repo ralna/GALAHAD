@@ -257,7 +257,11 @@
 
       INTEGER( long_ ) :: small_subtree_threshold = 4*10**6 
 
-!  block size to use for task generation on larger nodes
+!  block size to use for task generation on larger nodes, with pivot methods
+!  1 and 2 (it is not used by method 3). Values smaller than 1 are replaced
+!  by 1. Warning: very small block sizes, such as 1, create a great many
+!  small tasks and can make the factorization very much slower; the default
+!  is a good choice, and values much below it are not recommended
 
       INTEGER( ip_ ) :: block_size = 256
 
@@ -270,9 +274,11 @@
       LOGICAL :: action = .TRUE.
 
 !  type of pivoting to use on CPU side:
-!   0 - A posteori pivoting, roll back entire front on pivot failure
-!   1 - A posteori pivoting, roll back on block column level for failure
-!   2 - Traditional threshold partial pivoting (serial, inefficient!)
+!   1 - A posteori pivoting, roll back entire front on pivot failure
+!   2 - A posteori pivoting, roll back on block column level for failure
+!       (the default)
+!   3 - Traditional threshold partial pivoting (serial, inefficient!)
+!  any other value is treated as 2
 
       INTEGER( ip_ ) :: pivot_method = PIVOT_METHOD_APP_BLOCK
 
