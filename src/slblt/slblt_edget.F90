@@ -79,7 +79,9 @@
    CALL case_blocking_and_threads( )
    CALL case_printing( )
    CALL case_refactor_reuse( )
-!  last, as a failure here has been seen to crash SLBLT_free
+!  subtree splitting, including delayed pivots that cross subtree boundaries
+!  (failures here used to crash SLBLT_free, so they are kept last)
+   CALL case_subtree_delay_3x3( )
    CALL case_subtree_partition( )
 
    WRITE( 6, "( /, '  ', I0, ' checks passed, ', I0, ' failed' )" )         &
@@ -1533,6 +1535,66 @@
    CALL SLBLT_free( akeep, fkeep, flag )
    CALL report_flag( flag, 0_ip_, 'final free' )
    END SUBROUTINE case_refactor_reuse
+
+!  minimal example of a delayed pivot crossing a subtree boundary:
+!
+!            x1   z    r
+!      x1 [   4   0   -1 ]
+!  A = z  [   0   0    1 ]      det( A ) = -4 (nonsingular)
+!      r  [  -1   1    4 ]
+!
+!  z has a zero diagonal and is coupled only to r, so it must be delayed to
+!  r's node and eliminated with r as a 2x2 pivot. With the natural order,
+!  nemin = 1 and max_load_inbalance = 1.0 the tree is split so that z and r
+!  lie in different subtrees, and the delay has to be passed from the child
+!  subtree to its parent. This used to fail with SLBLT_ERROR_SINGULAR
+
+   SUBROUTINE case_subtree_delay_3x3( )
+   INTEGER( ip_ ), PARAMETER :: n = 3
+   INTEGER( i8_ ) :: ptr( n + 1 ) = (/ 1_i8_, 3_i8_, 5_i8_, 6_i8_ /)
+   INTEGER( ip_ ) :: row( 5 ) = (/ 1, 3, 2, 3, 3 /)
+   REAL( rp_ ) :: val( 5 ) =                                                   &
+     (/ 4.0_rp_, - 1.0_rp_, 0.0_rp_, 1.0_rp_, 4.0_rp_ /)
+   REAL( rp_ ), PARAMETER :: xs( n ) = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_ /)
+   REAL( rp_ ), PARAMETER :: imbalance( 2 ) = (/ 1.0_rp_, 1.2_rp_ /)
+   TYPE( SLBLT_akeep_type ) :: akeep
+   TYPE( SLBLT_fkeep_type ) :: fkeep
+   TYPE( SLBLT_control_type ) :: control
+   TYPE( SLBLT_inform_type ) :: inform
+   INTEGER( ip_ ) :: order( n ), flag, k, nparts
+   REAL( rp_ ) :: x( n ), b( n )
+   CHARACTER( LEN = 60 ) :: lab
+   CALL quiet( control )
+   control%ordering = 0
+   control%nemin = 1
+   CALL symv( n, ptr, row, val, xs, b )
+   DO k = 1, 2
+     control%max_load_inbalance = REAL( imbalance( k ) )
+     WRITE( lab, "( '3x3 delay example, max_load_inbalance = ', F3.1 )" )      &
+       imbalance( k )
+
+!  SLBLT_analyse overwrites order with the pivot order used, so reset it
+
+     order = (/ 1, 2, 3 /)
+     CALL SLBLT_analyse( .TRUE., n, ptr, row, akeep, control, inform,          &
+                         order = order )
+     nparts = inform%nparts
+
+!  the split case only tests the cross-subtree path if a split happens
+
+     IF ( k == 1 ) CALL report( nparts == 2, TRIM( lab ) // ': 2 subtrees' )
+     CALL SLBLT_factor( .FALSE., val, akeep, fkeep, control, inform )
+     CALL report_flag( inform%flag, SLBLT_SUCCESS, TRIM( lab ) // ': factor' )
+     CALL report( inform%num_delay == 1 .AND. inform%num_neg == 1 .AND.        &
+                  inform%num_two == 1 .AND. inform%matrix_rank == n,           &
+                  TRIM( lab ) // ': delays, inertia, rank' )
+     x = b
+     CALL SLBLT_solve( x, akeep, fkeep, control, inform )
+     CALL report( inform%flag == 0 .AND. MAXVAL( ABS( x - xs ) ) <= tol,       &
+                  TRIM( lab ) // ': solution (1, 2, 3)' )
+     CALL SLBLT_free( akeep, fkeep, flag )
+   END DO
+   END SUBROUTINE case_subtree_delay_3x3
 
 !  subtree partitioning controls (NUMA handling and load imbalance)
 

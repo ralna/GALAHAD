@@ -2201,7 +2201,13 @@
             nd%nelim = nd%ncol  ! keep downstream indexing sane
          END IF
          nd%ndelay_out = nd%ncol - nd%nelim
-         IF (nd%parent == 0 .AND. nd%ndelay_out /= 0) node_ok = .FALSE.
+         ! delayed pivots can only be passed up if the node has an ancestor. A
+         ! node with no parent in this subtree (parent == 0) may still be the
+         ! root of a child subtree whose contribution, including any delays,
+         ! goes to a parent subtree; it has rows beyond its own columns. Only
+         ! a true root of the whole tree (no such rows) must not delay
+         IF (nd%parent == 0 .AND. nd%symb_nrow == nd%symb_ncol .AND.           &
+             nd%ndelay_out /= 0) node_ok = .FALSE.
          IF (ncc > 0) THEN
             DO c = 1, nnodes
                IF (node(c)%parent /= p) CYCLE
