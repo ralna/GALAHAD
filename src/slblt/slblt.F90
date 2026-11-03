@@ -4550,7 +4550,12 @@
      INTEGER( KIND = i4_ ) :: nth ! Number of threads within a region
      LOGICAL :: abort, all_region
      TYPE( contrib_type ), DIMENSION( : ), ALLOCATABLE :: child_contrib
-     TYPE( slblt_inform_type ), DIMENSION( : ), ALLOCATABLE :: thread_inform
+!  one inform per subtree: subtrees in the same NUMA region are factorized
+!  as concurrent tasks, so a shared per-region inform would be updated by
+!  several tasks at once and lose counts (e.g. num_neg). Each subtree task
+!  writes only its own entry, and all entries are reduced afterwards
+
+     TYPE( slblt_inform_type ), DIMENSION( : ), ALLOCATABLE :: subtree_inform
 
 !  begin profile trace (noop if not enabled)
 
@@ -4574,7 +4579,7 @@
 !  of subtrees
 
      to_launch = SIZE( akeep%topology )
-     ALLOCATE( thread_inform( to_launch ), STAT = inform%stat )
+     ALLOCATE( subtree_inform( akeep%nparts ), STAT = inform%stat )
      IF ( inform%stat /= 0 ) GO TO 200
      all_region = .FALSE.
 
@@ -4582,7 +4587,7 @@
 !$omp    default( none )                                                       &
 !$omp    private( abort, i, exec_loc, numa_region, my_loc, thread_num )        &
 !$omp    private( nth )                                                        &
-!$omp    shared( akeep, fkeep, val, control, thread_inform, child_contrib,     &
+!$omp    shared( akeep, fkeep, val, control, subtree_inform, child_contrib,    &
 !$omp           all_region )                                                   &
 !$omp    if ( to_launch.gt.1 )
 
@@ -4622,15 +4627,15 @@
            => akeep%subtree( i )%ptr%factor( fkeep%pos_def, val,               &
                 child_contrib( akeep%contrib_ptr( i ) :                        &
                                akeep%contrib_ptr( i + 1 ) - 1 ),               &
-                control, thread_inform( my_loc ), scaling = fkeep%scaling )
+                control, subtree_inform( i ), scaling = fkeep%scaling )
        ELSE
          fkeep%subtree( i )%ptr                                                &
            => akeep%subtree( i )%ptr%factor( fkeep%pos_def, val,               &
                 child_contrib( akeep%contrib_ptr( i ) :                        &
                                akeep%contrib_ptr( i + 1 ) - 1 ),               &
-                control, thread_inform( my_loc ) )
+                control, subtree_inform( i ) )
        END IF
-       IF ( thread_inform( my_loc )%flag < 0 ) THEN
+       IF ( subtree_inform( i )%flag < 0 ) THEN
          abort = .TRUE.
          GO TO 10
 ! !$omp    cancel taskgroup
@@ -4653,8 +4658,8 @@
 !$omp end parallel
 !$omp end parallel
 
-     DO i = 1, SIZE( thread_inform )
-       CALL inform%reduce( thread_inform( i ) )
+     DO i = 1, SIZE( subtree_inform )
+       CALL inform%reduce( subtree_inform( i ) )
      END DO
      IF ( inform%flag < 0 ) GO TO 100 ! cleanup and exit
 
