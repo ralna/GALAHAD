@@ -181,6 +181,19 @@
 !   P r o c e d u r e s
 !----------------------
 
+!  state passed by the C solve routines to the evaluation wrappers
+
+    TYPE, PUBLIC :: expo_wrap_context_type
+      TYPE ( C_PTR ) :: cuserdata = C_NULL_PTR
+      INTEGER ( KIND = ipc_ ) :: hne
+      INTEGER ( KIND = ipc_ ) :: jne
+      INTEGER ( KIND = ipc_ ) :: m
+      INTEGER ( KIND = ipc_ ) :: n
+      PROCEDURE( eval_fc ), POINTER, NOPASS :: feval_fc => NULL( )
+      PROCEDURE( eval_gj ), POINTER, NOPASS :: feval_gj => NULL( )
+      PROCEDURE( eval_hl ), POINTER, NOPASS :: feval_hl => NULL( )
+    END TYPE expo_wrap_context_type
+
   CONTAINS
 
 !  copy C control parameters to fortran
@@ -440,6 +453,56 @@
 
     END SUBROUTINE copy_inform_out
 
+!  ----------------------------------------------------------------------
+!  evaluation wrappers: these call the user's C functions, found
+!  through userdata%c_context, which points to a variable of type
+!  expo_wrap_context_type
+!  ----------------------------------------------------------------------
+
+    SUBROUTINE wrap_eval_fc( status, x, userdata, f, c )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: c
+    TYPE ( expo_wrap_context_type ), POINTER :: ctx
+
+!  Call C interoperable eval_fc
+    CALL C_F_POINTER( userdata%c_context, ctx )
+    status = ctx%feval_fc( ctx%n, ctx%m, x, f, c, ctx%cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_fc
+
+    SUBROUTINE wrap_eval_gj( status, x, userdata, g, jval )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: g
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: jval
+    TYPE ( expo_wrap_context_type ), POINTER :: ctx
+
+!  Call C interoperable eval_gj
+    CALL C_F_POINTER( userdata%c_context, ctx )
+    status = ctx%feval_gj( ctx%n, ctx%m, ctx%jne, x, g, jval, ctx%cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_gj
+
+    SUBROUTINE wrap_eval_hl( status, x, y, userdata, hval )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, y
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: hval
+    TYPE ( expo_wrap_context_type ), POINTER :: ctx
+
+!  Call C interoperable eval_h
+    CALL C_F_POINTER( userdata%c_context, ctx )
+    status = ctx%feval_hl( ctx%n, ctx%m, ctx%hne, x, y, hval, ctx%cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hl
+
   END MODULE GALAHAD_EXPO_precision_ciface
 
 !  -------------------------------------
@@ -678,6 +741,7 @@
 
 ! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
   TYPE ( f_galahad_userdata_type ) :: fuserdata
+  TYPE ( expo_wrap_context_type ), TARGET :: ctx
 
 !  associate data pointer
 
@@ -689,60 +753,25 @@
   CALL C_F_PROCPOINTER( ceval_gj, feval_gj )
   CALL C_F_PROCPOINTER( ceval_hl, feval_hl )
 
+!  pass the C callbacks and data to the evaluation wrappers through
+!  fuserdata (internal procedures would need an executable stack)
+
+  ctx%cuserdata = cuserdata
+  ctx%hne = hne
+  ctx%jne = jne
+  ctx%m = m
+  ctx%n = n
+  ctx%feval_fc => feval_fc
+  ctx%feval_gj => feval_gj
+  ctx%feval_hl => feval_hl
+  fuserdata%c_context = C_LOC( ctx )
+
 !  solve the problem when the Hessian is explicitly available
 
   CALL f_expo_solve_hessian_direct( fdata, fuserdata, status,                  &
                                     cl, cu, xl, xu, x, y, z, c, gl,            &
                                     wrap_eval_fc, wrap_eval_gj, wrap_eval_hl )
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_c wrapper
-
-    SUBROUTINE wrap_eval_fc( status, x, userdata, f, c )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: c
-
-!  Call C interoperable eval_fc
-    status = feval_fc( n, m, x, f, c, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_fc
-
-!  eval_j wrapper
-
-    SUBROUTINE wrap_eval_gj( status, x, userdata, g, jval )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: g
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: jval
-
-!  Call C interoperable eval_gj
-    status = feval_gj( n, m, jne, x, g, jval, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_gj
-
-!  eval_H wrapper
-
-    SUBROUTINE wrap_eval_hl( status, x, y, userdata, hval )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, y
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: hval
-
-!  Call C interoperable eval_h
-    status = feval_hl( n, m, hne, x, y, hval, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_hl
 
   END SUBROUTINE expo_solve_hessian_direct
 

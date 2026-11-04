@@ -106,6 +106,13 @@
 !   P r o c e d u r e s
 !----------------------
 
+!  state passed by the C solve routines to the evaluation wrappers
+
+    TYPE, PUBLIC :: ugo_wrap_context_type
+      TYPE ( C_PTR ) :: cuserdata = C_NULL_PTR
+      PROCEDURE( eval_fgh ), POINTER, NOPASS :: feval_fgh => NULL( )
+    END TYPE ugo_wrap_context_type
+
   CONTAINS
 
 !  copy C control parameters to fortran
@@ -270,6 +277,27 @@
     RETURN
 
     END SUBROUTINE copy_inform_out
+
+!  ----------------------------------------------------------------------
+!  evaluation wrappers: these call the user's C functions, found
+!  through userdata%c_context, which points to a variable of type
+!  ugo_wrap_context_type
+!  ----------------------------------------------------------------------
+
+    SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
+    TYPE ( ugo_wrap_context_type ), POINTER :: ctx
+
+!  call C interoperable eval_fgh
+
+    CALL C_F_POINTER( userdata%c_context, ctx )
+    status = ctx%feval_fgh( x, f, g, h, ctx%cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_fgh
 
   END MODULE GALAHAD_UGO_precision_ciface
 
@@ -457,6 +485,7 @@
 
 ! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
   TYPE ( f_galahad_userdata_type ) :: fuserdata
+  TYPE ( ugo_wrap_context_type ), TARGET :: ctx
 
 !  associate data pointer
 
@@ -466,29 +495,17 @@
 
   CALL C_F_PROCPOINTER( ceval_fgh, feval_fgh )
 
+!  pass the C callbacks and data to the evaluation wrappers through
+!  fuserdata (internal procedures would need an executable stack)
+
+  ctx%cuserdata = cuserdata
+  ctx%feval_fgh => feval_fgh
+  fuserdata%c_context = C_LOC( ctx )
+
 !  solve the problem using internal evaluations
 
   CALL f_ugo_solve_direct( fdata, fuserdata, status, x, f, g, h, wrap_eval_fgh )
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_FGH wrapper
-
-    SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
-
-!  call C interoperable eval_fgh
-
-    status = feval_fgh( x, f, g, h, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_fgh
 
   END SUBROUTINE ugo_solve_direct
 
