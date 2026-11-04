@@ -135,6 +135,14 @@
 !   P r o c e d u r e s
 !----------------------
 
+!  state passed by the C solve routines to the evaluation wrappers
+
+    TYPE, PUBLIC :: blls_wrap_context_type
+      TYPE ( C_PTR ) :: cuserdata = C_NULL_PTR
+      INTEGER ( KIND = ipc_ ) :: n
+      PROCEDURE( eval_prec ), POINTER, NOPASS :: feval_prec => NULL( )
+    END TYPE blls_wrap_context_type
+
   CONTAINS
 
 !  copy C control parameters to fortran
@@ -365,6 +373,27 @@
     RETURN
 
     END SUBROUTINE copy_inform_out
+
+!  ----------------------------------------------------------------------
+!  evaluation wrappers: these call the user's C functions, found
+!  through userdata%c_context, which points to a variable of type
+!  blls_wrap_context_type
+!  ----------------------------------------------------------------------
+
+    SUBROUTINE wrap_eval_prec( status, userdata, v, p )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
+    TYPE ( blls_wrap_context_type ), POINTER :: ctx
+
+!  call C interoperable eval_prec
+
+    CALL C_F_POINTER( userdata%c_context, ctx )
+    status = ctx%feval_prec( ctx%n, v, p, ctx%cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_prec
 
   END MODULE GALAHAD_BLLS_precision_ciface
 
@@ -610,7 +639,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( C_PTR ), INTENT( INOUT ) :: cuserdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, aone
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
@@ -634,6 +663,7 @@
 
 ! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
   TYPE ( f_galahad_userdata_type ) :: fuserdata
+  TYPE ( blls_wrap_context_type ), TARGET :: ctx
 
 !  associate data pointer
 
@@ -647,6 +677,14 @@
     NULLIFY( feval_prec )
   END IF
 
+!  pass the C callbacks and data to the evaluation wrappers through
+!  fuserdata (internal procedures would need an executable stack)
+
+  ctx%cuserdata = cuserdata
+  ctx%n = n
+  ctx%feval_prec => feval_prec
+  fuserdata%c_context = C_LOC( ctx )
+
 !  solve the bound-constrained least-squares problem
 
   CALL f_blls_solve_given_a( fdata, fuserdata, status, aoval, b,               &
@@ -655,25 +693,6 @@
                              eval_PREC = wrap_eval_prec )
 
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_PREC wrapper
-
-    SUBROUTINE wrap_eval_prec( status, userdata, v, p )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
-
-!  call C interoperable eval_prec
-
-    status = feval_prec( n, v, p, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_prec
 
   END SUBROUTINE blls_solve_given_a
 
