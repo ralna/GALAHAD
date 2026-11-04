@@ -13,3 +13,15 @@ leak:spmAlloc
 leak:solverRealloc
 leak:modelsInit
 leak:order_scotch
+
+# GCC's OpenMP runtime (libgomp, seen with GCC 14 and 15) leaks the small
+# dependency hash table (136 bytes) it allocates in GOMP_task for a parent
+# task when that parent is the implicit task of a worker thread, i.e. when a
+# worker thread executes a "single" block that creates tasks with depend
+# clauses (as SLBLT's factor_subtree_delay does). Which thread runs the
+# single is a matter of scheduling, so the report is intermittent. The leak
+# is reproducible with a stand-alone program using no GALAHAD code.
+# Note this suppresses any leak whose allocation stack contains GOMP_task,
+# which would also hide a leak in a task body run immediately (undeferred)
+# by GOMP_task.
+leak:GOMP_task
