@@ -278,7 +278,7 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     lvu = Ref{INT}(0)
     index = Ref{INT}(0)
     iv = Vector{INT}(undef, mrn)
-    ip = Vector{INT}(undef, m_r)
+    ip = Vector{INT}(undef, mrn)
     v = Vector{T}(undef, mrn)
     p = Vector{T}(undef, mrn)
     lp = zeros(INT, 1)
