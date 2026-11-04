@@ -1501,7 +1501,6 @@
 !  functions
 
 !!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
-!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
