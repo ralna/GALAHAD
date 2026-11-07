@@ -198,6 +198,12 @@ bool sls_update_control(struct sls_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "pastix_ordering") == 0){
+            if(!parse_int_option(value, "pastix_ordering",
+                                  &control->pastix_ordering))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "full_row_threshold") == 0){
             if(!parse_int_option(value, "full_row_threshold",
                                   &control->full_row_threshold))
@@ -439,6 +445,8 @@ PyObject* sls_make_options_dict(const struct sls_control_type *control){
                          PyLong_FromLong(control->pivot_control));
     PyDict_SetItemString(py_options, "ordering",
                          PyLong_FromLong(control->ordering));
+    PyDict_SetItemString(py_options, "pastix_ordering",
+                         PyLong_FromLong(control->pastix_ordering));
     PyDict_SetItemString(py_options, "full_row_threshold",
                          PyLong_FromLong(control->full_row_threshold));
     PyDict_SetItemString(py_options, "row_search_indefinite",
