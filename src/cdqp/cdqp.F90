@@ -1039,7 +1039,6 @@ MODULE GALAHAD_CDQP_precision
 
 !  functions
 
-!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 

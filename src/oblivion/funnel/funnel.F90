@@ -1510,7 +1510,6 @@
 
 !  functions
 
-!$   INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &

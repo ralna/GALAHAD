@@ -1535,7 +1535,6 @@
 
 !  functions
 
-!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -9451,7 +9450,6 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = i4_ ) :: OMP_GET_THREAD_NUM
 
       IF ( threads == 1 ) parallel = .FALSE.
       status = GALAHAD_ok
