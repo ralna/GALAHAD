@@ -172,7 +172,7 @@
   CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( SSLS_control_type ) :: control
-#include "galahad_sls_defaults_sls.h"
+#include "galahad_sls_defaults_ls.h"
      control%symmetric_linear_solver = symmetric_linear_solver
      END SUBROUTINE WHICH_sls
 

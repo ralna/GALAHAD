@@ -139,7 +139,7 @@
    CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( TREK_control_type ), INTENT( INOUT ) :: control
-#include "galahad_sls_defaults_dls.h"
+#include "galahad_sls_defaults_ls.h"
      control%linear_solver = definite_linear_solver
      control%linear_solver_for_S = definite_linear_solver
      END SUBROUTINE WHICH_sls
