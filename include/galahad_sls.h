@@ -474,6 +474,14 @@ struct sls_control_type {
     ipc_ ordering;
 
     /// \brief
+    /// controls the ordering used by the PaStiX solver (IPARM_ORDERING);
+    /// ignored by every other solver
+    /// \li <0  use PaStiX's own default ordering (the first one compiled in)
+    /// \li 0  SCOTCH ordering (PastixOrderScotch)
+    /// \li 1  METIS ordering (PastixOrderMetis)
+    ipc_ pastix_ordering;
+
+    /// \brief
     /// controls threshold for detecting full rows in analyse, registered as
     /// percentage of matrix order. If 100, only fully dense rows detected (defa
     ipc_ full_row_threshold;
