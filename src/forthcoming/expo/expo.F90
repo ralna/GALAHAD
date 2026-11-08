@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-09-02 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2026-11-08 AT 10:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -4760,6 +4760,43 @@ stop
        inform%bad_alloc = inform%BSC_inform%bad_alloc
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
+
+!  Deallocate all arrays allocated within SSLS
+
+     CALL SSLS_terminate( data%SSLS_data, data%control%SSLS_control,           &
+                          inform%SSLS_inform )
+     inform%status = inform%SSLS_inform%status
+     IF ( inform%status /= 0 ) THEN
+       inform%alloc_status = inform%SSLS_inform%alloc_status
+       inform%bad_alloc = inform%SSLS_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
+
+!  Deallocate all components of the remaining internal matrices
+
+     array_name = 'EXPO: data%JT'
+     CALL SPACE_dealloc_smt_type( data%JT,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%B_ssls'
+     CALL SPACE_dealloc_smt_type( data%B_ssls,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%C_ssls'
+     CALL SPACE_dealloc_smt_type( data%C_ssls,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%expo%H'
+     CALL SPACE_dealloc_smt_type( data%expo%H,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
 !  Close and delete 'alive' file
 

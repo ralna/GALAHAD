@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2026-11-08 AT 10:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -7160,6 +7160,12 @@ END DO
 
      array_name = 'lpb: data%prob%C_u'
      CALL SPACE_dealloc_array( data%prob%C_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpb: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

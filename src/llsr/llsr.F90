@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2026-11-08 AT 10:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -2655,6 +2655,18 @@
 
 !  Deallocate all internal arrays
 
+      array_name = 'llsr: data%H_sbls'
+      CALL SPACE_dealloc_smt_type( data%H_sbls,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'llsr: data%C_sbls'
+      CALL SPACE_dealloc_smt_type( data%C_sbls,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
       array_name = 'llsr: S_diag'
       CALL SPACE_dealloc_array( data%S_diag,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -2766,9 +2778,30 @@
       TYPE ( LLSR_control_type ), INTENT( IN ) :: control
       TYPE ( LLSR_inform_type ), INTENT( INOUT ) :: inform
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+      CHARACTER ( LEN = 80 ) :: array_name
+
 !  deallocate workspace
 
       CALL LLSR_terminate( data%llsr_data, control, inform )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+!  deallocate the components of the matrices A and S
+
+      array_name = 'llsr: data%A'
+      CALL SPACE_dealloc_smt_type( data%A,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'llsr: data%S'
+      CALL SPACE_dealloc_smt_type( data%S,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
       RETURN
 
 !  End of subroutine LLSR_full_terminate
