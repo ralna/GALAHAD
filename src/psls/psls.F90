@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:50 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:24 GMT
 
 #include "galahad_modules.h"
 
@@ -2417,6 +2417,17 @@
           CALL CPU_TIME( time_now )
           WRITE( out, "( /, A, ' time( PSLS_gmps ) = ', F0.2 )" )              &
             prefix, time_now - time_record
+        END IF
+
+!  the GMPS modification is not possible if the solver cannot provide the
+!  pivots and diagonal blocks of its factors
+
+        IF ( inform%SLS_inform%status /= GALAHAD_ok ) THEN
+          IF ( printi ) WRITE( out, "( /, A, ' GMPS preconditioner not ',      &
+         &  'available with solver ', A, ': status = ', I0 )" ) prefix,        &
+             TRIM( control%symmetric_linear_solver ),                          &
+             inform%SLS_inform%status
+          inform%status = inform%SLS_inform%status ; GO TO 930
         END IF
 
         IF ( printi ) WRITE( out, "( /, A,                                     &
@@ -5102,8 +5113,19 @@
      LOGICAL :: oneby1
 
      eigen_zero = EPSILON( one )
+     neg1 = 0 ; neg2 = 0
+
+!  the pivots and diagonal blocks are needed. Some solvers (e.g. PaStiX and
+!  MUMPS) cannot provide them, in which case SLS_enquire returns a negative
+!  status that is passed back to the caller
+
      CALL SLS_enquire( data, inform, PIVOTS = PERM, D = D )
-     D( 1, rank + 1 : n ) = zero
+     IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  zero the diagonals beyond the rank (a negative rank means that the solver
+!  did not report it, in which case the factors are taken to be nonsingular)
+
+     IF ( rank >= 0 ) D( 1, rank + 1 : n ) = zero
 
 !  neg1 and neg2 are the number of negative eigenvalues which arise
 !  from small or negative 1x1 and 2x2 block pivots
