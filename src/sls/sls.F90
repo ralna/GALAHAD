@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 15:10 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:04 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -7874,22 +7874,30 @@
 !  = MUMPS =
 
      CASE ( 'mumps' )
+
+!  if MUMPS could not be initialized (no MPI, or MUMPS unavailable), the JOB
+!  = -1 call did not set up the MUMPS instance, so there is nothing to free,
+!  and a JOB = -2 call would operate on an undefined MUMPS_STRUC (reported by
+!  MUMPS as INFO(1) = -3, INFO(2) = -2, and an abort on macOS)
+
+       IF ( .NOT. data%no_mumps ) THEN
 !write(6,*) ' mumps myid ', data%mumps_par%MYID
-       IF ( data%mumps_par%MYID == 0 ) THEN
-         CALL SPACE_dealloc_pointer( data%mumps_par%IRN, inform%status,        &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%JCN, inform%status,        &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%A, inform%status,          &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%PERM_IN, inform%status,    &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%RHS, inform%status,        &
-                                     inform%alloc_status )
+         IF ( data%mumps_par%MYID == 0 ) THEN
+           CALL SPACE_dealloc_pointer( data%mumps_par%IRN, inform%status,      &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%JCN, inform%status,      &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%A, inform%status,        &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%PERM_IN, inform%status,  &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%RHS, inform%status,      &
+                                       inform%alloc_status )
+         END IF
+         IF ( control%print_level_solver <= 0 ) data%mumps_par%ICNTL( 4 ) = 0
+         data%mumps_par%JOB = - 2
+         CALL MUMPS_precision( data%mumps_par )
        END IF
-       IF ( control%print_level_solver <= 0 ) data%mumps_par%ICNTL( 4 ) = 0
-       data%mumps_par%JOB = - 2
-       CALL MUMPS_precision( data%mumps_par )
        data%no_mumps = .FALSE. ; data%no_mpi = .FALSE.
 
 !  = POTR =
