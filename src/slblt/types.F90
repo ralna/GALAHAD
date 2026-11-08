@@ -257,7 +257,11 @@
 
       INTEGER( long_ ) :: small_subtree_threshold = 4*10**6 
 
-!  block size to use for task generation on larger nodes
+!  block size to use for task generation on larger nodes, with pivot methods
+!  1 and 2 (it is not used by method 3). Values smaller than 1 are replaced
+!  by 1. Warning: very small block sizes, such as 1, create a great many
+!  small tasks and can make the factorization very much slower; the default
+!  is a good choice, and values much below it are not recommended
 
       INTEGER( ip_ ) :: block_size = 256
 
@@ -270,16 +274,27 @@
       LOGICAL :: action = .TRUE.
 
 !  type of pivoting to use on CPU side:
-!   0 - A posteori pivoting, roll back entire front on pivot failure
-!   1 - A posteori pivoting, roll back on block column level for failure
-!   2 - Traditional threshold partial pivoting (serial, inefficient!)
+!   1 - A posteori pivoting, roll back entire front on pivot failure
+!   2 - A posteori pivoting, roll back on block column level for failure
+!       (the default)
+!   3 - Traditional threshold partial pivoting (serial, inefficient!)
+!  any other value is treated as 2
 
       INTEGER( ip_ ) :: pivot_method = PIVOT_METHOD_APP_BLOCK
 
-!  minimum pivot size (absolute value of a pivot must be of size at least 
-!  small to be accepted).
+!  minimum pivot size (absolute value of a pivot must be of size at least
+!  small to be accepted). Values smaller than TINY( 1.0_rp_ ), including zero
+!  and negative values, are replaced by TINY( 1.0_rp_ ), so that a zero
+!  pivot is never accepted
 
       REAL( rp_ ) :: small = 1e-20_rp_
+
+!  relative pivot threshold used for stability. Any value in the range
+!  [EPSILON( 1.0_rp_ ), 0.5] may be used, with the understanding that very
+!  small values can cause large growth in the factors. Values smaller than
+!  EPSILON( 1.0_rp_ ), including zero and negative values, are replaced by
+!  EPSILON( 1.0_rp_ ), and values larger than 0.5 are replaced by 0.5
+
       REAL( rp_ ) :: u = 0.01
 
 !  options to control node nested dissection ordering
@@ -365,12 +380,12 @@
     TYPE, PUBLIC :: contrib_type
       LOGICAL :: ready = .FALSE.
       INTEGER( ip_ ) :: n ! size of block
-      REAL( C_RP_ ), DIMENSION( : ), POINTER :: val ! nxn lwr triangular matrix
+      REAL( C_RP_ ), DIMENSION( : ), POINTER :: val => NULL( ) ! nxn lwr tri.
       INTEGER( C_IP_ ) :: ldval
-      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: rlist ! row list
+      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: rlist => NULL( ) ! row list
       INTEGER( ip_ ) :: ndelay
-      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm
-      REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val
+      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm => NULL( )
+      REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val => NULL( )
       INTEGER( ip_ ) :: lddelay
 
 !  the following is used by the CPU cleanup routine

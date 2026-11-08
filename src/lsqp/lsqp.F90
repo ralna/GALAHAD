@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2026-11-08 AT 10:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -5696,6 +5696,12 @@
 
      array_name = 'lsqp: data%prob%X0'
      CALL SPACE_dealloc_array( data%prob%X0,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lsqp: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
