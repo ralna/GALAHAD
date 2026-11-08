@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2026-11-08 AT 10:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -6687,6 +6687,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'wcp: data%A_sbls%type'
+      CALL SPACE_dealloc_array( data%A_sbls%type,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'wcp: data%A_sbls%row'
       CALL SPACE_dealloc_array( data%A_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -6703,6 +6710,13 @@
 
       array_name = 'wcp: data%A_sbls%val'
       CALL SPACE_dealloc_array( data%A_sbls%val,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'wcp: data%H_sbls%type'
+      CALL SPACE_dealloc_array( data%H_sbls%type,                              &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -6813,6 +6827,12 @@
 
      array_name = 'wcp: data%prob%C_u'
      CALL SPACE_dealloc_array( data%prob%C_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'wcp: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

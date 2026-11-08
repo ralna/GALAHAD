@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 10:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -2890,6 +2890,16 @@
       IF ( inform%SLS_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%bad_alloc = 'trek: data%SLS'
+        IF ( control%deallocate_error_fatal ) RETURN
+      END IF
+
+!  Deallocate all arrays allocated within SLS for the S-factorization
+
+      CALL SLS_terminate( data%SLS_S_data, control%SLS_S_control,              &
+                          inform%SLS_S_inform )
+      IF ( inform%SLS_S_inform%status /= 0 ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%bad_alloc = 'trek: data%SLS_S'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 

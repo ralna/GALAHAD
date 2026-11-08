@@ -47,7 +47,7 @@
                                                symbolic_subtree_base
     USE GALAHAD_SLBLT_numeric_subtree_precision, ONLY:                     &
                                        construct_symbolic_subtree, &
-                                       numeric_subtree
+                                       numeric_subtree, free_contrib
 
     IMPLICIT NONE
 
@@ -242,7 +242,7 @@
 !  -------------------------
 
      TYPE numeric_subtree_ptr
-       CLASS( numeric_subtree_base ), POINTER :: ptr
+       CLASS( numeric_subtree_base ), POINTER :: ptr => NULL( )
      END TYPE numeric_subtree_ptr
 
 !  type for data generated in factorise phase
@@ -551,16 +551,28 @@
       IF ( check ) THEN
         CALL NODEND_half_order( n, akeep%ptr, akeep%row, order2,               &
                                 control%nodend_control, inform%nodend_inform )
-        inform%flag = inform%nodend_inform%status
         st = inform%nodend_inform%alloc_status
-        IF ( inform%flag < 0 ) GO TO 490
+
+        !  only an error from the ordering replaces the current flag, so that any
+        !  warning raised while cleaning the matrix is preserved
+
+        IF ( inform%nodend_inform%status < 0 ) THEN
+          inform%flag = inform%nodend_inform%status
+          GO TO 490
+        END IF
         CALL expand_pattern( n, nz, akeep%ptr, akeep%row, ptr2, row2 )
       ELSE
         CALL NODEND_half_order( n, ptr, row, order2,                           &
                                 control%nodend_control, inform%nodend_inform )
-        inform%flag = inform%nodend_inform%status
         st = inform%nodend_inform%alloc_status
-        IF ( inform%flag < 0 ) GO TO 490
+
+        !  only an error from the ordering replaces the current flag, so that any
+        !  warning raised while cleaning the matrix is preserved
+
+        IF ( inform%nodend_inform%status < 0 ) THEN
+          inform%flag = inform%nodend_inform%status
+          GO TO 490
+        END IF
         CALL expand_pattern( n, nz, ptr, row, ptr2, row2 )
       END IF
       flag = inform%flag
@@ -897,9 +909,15 @@
     CASE( 1 )
       CALL NODEND_half_order( n, akeep%ptr, akeep%row, order2,                 &
                               control%nodend_control, inform%nodend_inform )
-      inform%flag = inform%nodend_inform%status
       st = inform%nodend_inform%alloc_status
-      IF ( inform%flag < 0 ) GO TO 490
+
+      !  only an error from the ordering replaces the current flag, so that any
+      !  warning raised while cleaning the matrix is preserved
+
+      IF ( inform%nodend_inform%status < 0 ) THEN
+        inform%flag = inform%nodend_inform%status
+        GO TO 490
+      END IF
       CALL expand_pattern( n, nz, akeep%ptr, akeep%row, ptr2, row2 )
 
 !  matching-based ordering required
@@ -4465,10 +4483,24 @@
       END DO
       DEALLOCATE( akeep%subtree, STAT = st )
     END IF
-    DEALLOCATE( akeep%contrib_ptr, akeep%contrib_idx, akeep%invp,              &
-                akeep%nlist, akeep%nptr,  akeep%rlist, akeep%rptr,             &
-                akeep%sparent, akeep%sptr, akeep%ptr, akeep%row,               &
-                akeep%map, akeep%scaling, akeep%topology, STAT = st )
+!  deallocate each component separately: in a single multi-object DEALLOCATE,
+!  an unallocated component raises an error that may leave the remaining
+!  components allocated (as gfortran does), so a later analyse would fail
+
+    DEALLOCATE( akeep%contrib_ptr, STAT = st )
+    DEALLOCATE( akeep%contrib_idx, STAT = st )
+    DEALLOCATE( akeep%invp, STAT = st )
+    DEALLOCATE( akeep%nlist, STAT = st )
+    DEALLOCATE( akeep%nptr, STAT = st )
+    DEALLOCATE( akeep%rlist, STAT = st )
+    DEALLOCATE( akeep%rptr, STAT = st )
+    DEALLOCATE( akeep%sparent, STAT = st )
+    DEALLOCATE( akeep%sptr, STAT = st )
+    DEALLOCATE( akeep%ptr, STAT = st )
+    DEALLOCATE( akeep%row, STAT = st )
+    DEALLOCATE( akeep%map, STAT = st )
+    DEALLOCATE( akeep%scaling, STAT = st )
+    DEALLOCATE( akeep%topology, STAT = st )
     RETURN
 
     END SUBROUTINE free_akeep
@@ -4518,7 +4550,12 @@
      INTEGER( KIND = i4_ ) :: nth ! Number of threads within a region
      LOGICAL :: abort, all_region
      TYPE( contrib_type ), DIMENSION( : ), ALLOCATABLE :: child_contrib
-     TYPE( slblt_inform_type ), DIMENSION( : ), ALLOCATABLE :: thread_inform
+!  one inform per subtree: subtrees in the same NUMA region are factorized
+!  as concurrent tasks, so a shared per-region inform would be updated by
+!  several tasks at once and lose counts (e.g. num_neg). Each subtree task
+!  writes only its own entry, and all entries are reduced afterwards
+
+     TYPE( slblt_inform_type ), DIMENSION( : ), ALLOCATABLE :: subtree_inform
 
 !  begin profile trace (noop if not enabled)
 
@@ -4542,7 +4579,7 @@
 !  of subtrees
 
      to_launch = SIZE( akeep%topology )
-     ALLOCATE( thread_inform( to_launch ), STAT = inform%stat )
+     ALLOCATE( subtree_inform( akeep%nparts ), STAT = inform%stat )
      IF ( inform%stat /= 0 ) GO TO 200
      all_region = .FALSE.
 
@@ -4550,7 +4587,7 @@
 !$omp    default( none )                                                       &
 !$omp    private( abort, i, exec_loc, numa_region, my_loc, thread_num )        &
 !$omp    private( nth )                                                        &
-!$omp    shared( akeep, fkeep, val, control, thread_inform, child_contrib,     &
+!$omp    shared( akeep, fkeep, val, control, subtree_inform, child_contrib,    &
 !$omp           all_region )                                                   &
 !$omp    if ( to_launch.gt.1 )
 
@@ -4590,15 +4627,15 @@
            => akeep%subtree( i )%ptr%factor( fkeep%pos_def, val,               &
                 child_contrib( akeep%contrib_ptr( i ) :                        &
                                akeep%contrib_ptr( i + 1 ) - 1 ),               &
-                control, thread_inform( my_loc ), scaling = fkeep%scaling )
+                control, subtree_inform( i ), scaling = fkeep%scaling )
        ELSE
          fkeep%subtree( i )%ptr                                                &
            => akeep%subtree( i )%ptr%factor( fkeep%pos_def, val,               &
                 child_contrib( akeep%contrib_ptr( i ) :                        &
                                akeep%contrib_ptr( i + 1 ) - 1 ),               &
-                control, thread_inform( my_loc ) )
+                control, subtree_inform( i ) )
        END IF
-       IF ( thread_inform( my_loc )%flag < 0 ) THEN
+       IF ( subtree_inform( i )%flag < 0 ) THEN
          abort = .TRUE.
          GO TO 10
 ! !$omp    cancel taskgroup
@@ -4621,8 +4658,8 @@
 !$omp end parallel
 !$omp end parallel
 
-     DO i = 1, SIZE( thread_inform )
-       CALL inform%reduce( thread_inform( i ) )
+     DO i = 1, SIZE( subtree_inform )
+       CALL inform%reduce( subtree_inform( i ) )
      END DO
      IF ( inform%flag < 0 ) GO TO 100 ! cleanup and exit
 
@@ -4658,9 +4695,16 @@
 !$omp end parallel
      END IF
 
-!  cleanup and exit
+!  cleanup and exit. Each child contribution block (made by get_contrib) has
+!  been copied by its parent subtree, so all of them can now be released;
+!  entries never set have null pointers and are skipped by free_contrib
 
  100 CONTINUE
+     IF ( ALLOCATED( child_contrib ) ) THEN
+       DO i = 1, SIZE( child_contrib )
+         CALL free_contrib( child_contrib( i ) )
+       END DO
+     END IF
 
      RETURN
 
@@ -4723,6 +4767,15 @@
          CALL fkeep%subtree( part )%ptr%solve_fwd( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100
        END DO
+
+!  a positive-definite factor is stored as L D L^T with unit L; the forward
+!  partial solve is with the Cholesky factor L D^{1/2}, so also apply D^{-1/2}
+
+       IF ( fkeep%pos_def .AND. local_job == SLBLT_SOLVE_JOB_FWD ) THEN
+         DO part = 1, akeep%nparts
+           CALL fkeep%subtree( part )%ptr%solve_sqrt_diag( nrhs, x2, n, inform )
+         END DO
+       END IF
      END IF
 
      IF ( local_job == SLBLT_SOLVE_JOB_DIAG ) THEN
@@ -4733,6 +4786,15 @@
      END IF
 
      IF ( local_job == SLBLT_SOLVE_JOB_BWD ) THEN
+
+!  similarly, the backward partial solve with ( L D^{1/2} )^T first applies
+!  D^{-1/2} in the positive-definite case
+
+       IF ( fkeep%pos_def ) THEN
+         DO part = 1, akeep%nparts
+           CALL fkeep%subtree( part )%ptr%solve_sqrt_diag( nrhs, x2, n, inform )
+         END DO
+       END IF
        DO part = akeep%nparts, 1, -1
          CALL fkeep%subtree( part )%ptr%solve_bwd( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100

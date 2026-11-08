@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 10:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -6329,6 +6329,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'qpa: data%prob%H%type'
+     CALL SPACE_dealloc_array( data%prob%H%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'qpa: data%prob%H%ptr'
      CALL SPACE_dealloc_array( data%prob%H%ptr,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -6349,6 +6355,12 @@
 
      array_name = 'qpa: data%prob%H%val'
      CALL SPACE_dealloc_array( data%prob%H%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'qpa: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
