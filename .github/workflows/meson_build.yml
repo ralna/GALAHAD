@@ -558,7 +558,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: ${{ inputs.os }}_${{ inputs.compiler }}-v${{ inputs.version }}_Int${{ inputs.int }}_meson-log.txt
+          name: ${{ inputs.os }}_${{ inputs.compiler }}-v${{ inputs.version }}_Int${{ inputs.int }}${{ inputs.symmetric_solver && format('_SLS-{0}_DLS-{1}', inputs.symmetric_solver, inputs.definite_solver) || '' }}_meson-log.txt
           path: builddir/meson-logs/meson-log.txt
 
       - name: Install GALAHAD
@@ -569,7 +569,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: ${{ inputs.os }}_${{ inputs.compiler }}-v${{ inputs.version }}_Int${{ inputs.int }}_install-log.txt
+          name: ${{ inputs.os }}_${{ inputs.compiler }}-v${{ inputs.version }}_Int${{ inputs.int }}${{ inputs.symmetric_solver && format('_SLS-{0}_DLS-{1}', inputs.symmetric_solver, inputs.definite_solver) || '' }}_install-log.txt
           path: builddir/meson-logs/install-log.txt
 
       # Uncomment this section to obtain ssh access to VM
@@ -585,7 +585,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: ${{ inputs.os }}_${{ inputs.compiler }}-v${{ inputs.version }}_Int${{ inputs.int }}_testlog.txt
+          name: ${{ inputs.os }}_${{ inputs.compiler }}-v${{ inputs.version }}_Int${{ inputs.int }}${{ inputs.symmetric_solver && format('_SLS-{0}_DLS-{1}', inputs.symmetric_solver, inputs.definite_solver) || '' }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
 
       - name: Install Julia
