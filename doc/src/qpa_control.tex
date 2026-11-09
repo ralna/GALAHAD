@@ -191,7 +191,8 @@ The default is {\tt infinity =} $10^{19}$.
 \itt{feas\_tol} is a scalar variable of type \realdp, that specifies the
 maximum amount by which a constraint may be violated and yet still be
 considered to be satisfied.
-The default is {\tt feas\_tol =} $u^{3/4}$,
+The default is {\tt feas\_tol =} $u^{3/4}$ ($u^{0.65}$ in
+single precision),
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_dou\-ble}).
 
@@ -267,10 +268,12 @@ The default is {\tt pivot\_tol\_for\_dependencies = 0.5}.
 %{\tt \fullpackagename\_dou\-ble}).
 
 \itt{multiplier\_tol} is a scalar variable of type \realdp.
-Any dual variable or Lagrange multiplier which is less than
-{\tt multiplier\_tol} outside its optimal interval will be regarded
+Any dual variable or Lagrange multiplier which lies outside its
+optimal interval by less than {\tt multiplier\_tol} times the largest
+of $\|g\|_{\infty}$, $\|H x\|_{\infty}$ and the largest multiplier in
+absolute value will be regarded
 as being acceptable when checking for optimality.
-The default is {\tt zero\_pivot =} $\sqrt{u}$,
+The default is {\tt multiplier\_tol =} $\sqrt{u}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_dou\-ble}).
 

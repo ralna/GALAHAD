@@ -321,9 +321,10 @@
         REAL ( KIND = rp_ ) :: inner_stop_relative = point01
         REAL ( KIND = rp_ ) :: inner_stop_absolute = epsmch
 
-!   any dual variable or Lagrange multiplier which is less than multiplier_tol
-!    outside its optimal interval will be regarded as being acceptable when
-!    checking for optimality
+!   any dual variable or Lagrange multiplier which lies outside its optimal
+!    interval by less than multiplier_tol times the largest of ||g||_inf,
+!    ||H x||_inf and the largest multiplier in absolute value will be
+!    regarded as being acceptable when checking for optimality
 
         REAL ( KIND = rp_ ) :: multiplier_tol = epsmch
 
@@ -586,9 +587,16 @@
 
       CALL RAND_initialize( data%seed )
 
-!  Real parameters
+!  Real parameters. In single precision, the feasibility tolerance is
+!  relatively larger, so that the bound perturbation that remains after
+!  the randomization is removed (a tenth of feas_tol) stays well clear of
+!  rounding errors
 
+#ifdef REAL_32
+      control%feas_tol = epsmch ** 0.65
+#else
       control%feas_tol = epsmch ** 0.75
+#endif
       control%obj_unbounded = - epsmch ** ( - 2.0 )
       control%pivot_tol = point1 * epsmch ** 0.5
       control%zero_pivot = epsmch ** 0.75
@@ -4696,6 +4704,15 @@
 !  as appropriate
 
 !  Pick the appropriate deletion strategy
+
+!  A multiplier is only considered to lie outside its interval if it does
+!  so by more than multiplier_tol relative to the sizes of g, H x and the
+!  multipliers (GRAD = g + H x, and the multipliers are in S( n + 1 : ))
+
+            mult_zero = - control%multiplier_tol *                             &
+              MAX( zero, MAXVAL( ABS( G( : n ) ) ),                            &
+                   MAXVAL( ABS( GRAD( : n ) - G( : n ) ) ),                    &
+                   MAXVAL( ABS( S( n + 1 : n_all ) ) ) )
 
             SELECT CASE( control%deletion_strategy )
 

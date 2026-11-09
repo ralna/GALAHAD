@@ -207,9 +207,11 @@ functions
           inner_stop_absolute : float
              see inner_stop_relative.
           multiplier_tol : float
-             any dual variable or Lagrange multiplier which is less
-             than multiplier_t outside its optimal interval will be
-             regarded as being acceptable when checking for optimality.
+             any dual variable or Lagrange multiplier which lies
+             outside its optimal interval by less than multiplier_tol
+             times the largest of ||g||_inf, ||H x||_inf and the
+             largest multiplier in absolute value will be regarded as
+             being acceptable when checking for optimality.
           cpu_time_limit : float
              the maximum CPU time allowed (-ve means infinite).
           clock_time_limit : float
