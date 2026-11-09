@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2026-11-09 AT 10:03 GMT.
 
 #include "galahad_modules.h"
 
@@ -585,9 +585,20 @@
       INTEGER ( KIND = ip_ ) :: d_free, o_free, d_nonneg, o_nonneg, d_lower
       INTEGER ( KIND = ip_ ) :: o_lower, d_range, d_fixed, o_fixed
       INTEGER ( KIND = ip_ ) :: o_range, d_upper, o_upper, d_nonpos, o_nonpos
-      REAL ( KIND = rp_ ) :: xl, xu, cl, cu, val
+      REAL ( KIND = rp_ ) :: xl, xu, cl, cu, val, tol
       LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
       CHARACTER ( LEN = 80 ) :: array_name
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_fx_abs
+
+!  constraints whose variables are all fixed are checked for consistency
+!  relative to small_tol * epsmch * the size of the terms removed
+
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( 1.0_rp_ )
+#ifdef REAL_32
+      REAL ( KIND = rp_ ), PARAMETER :: small_tol = 2.0_rp_
+#else
+      REAL ( KIND = rp_ ), PARAMETER :: small_tol = 10.0_rp_
+#endif
 
 !  check that Y or Y_l/Y_u and Z or Z_l/Z_u has been allocated
 
@@ -788,7 +799,15 @@
         map%IW( : map%n ) = 0
       END IF
 
-!  subtract A_fx x_fx from constraint bounds
+!  subtract A_fx x_fx from constraint bounds, recording in A_fx_abs(i) the
+!  sum of the absolute values of the terms removed from constraint i
+
+      array_name = 'qpp: A_fx_abs'
+      CALL SPACE_resize_array( map%m, A_fx_abs,                                &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+      A_fx_abs( : map%m ) = zero
 
 !  original co-ordinate storage
 
@@ -797,6 +816,7 @@
           j = prob%A%col( l ) ; xl = prob%X_l( j )
           IF ( xl == prob%X_u( j ) ) THEN
             i = prob%A%row( l ) ; val = prob%A%val( l ) * xl
+            A_fx_abs( i ) = A_fx_abs( i ) + ABS( val )
             IF ( prob%C_l( i ) > - control%infinity )                          &
               prob%C_l( i ) = prob%C_l( i ) - val
             IF ( prob%C_u( i ) < control%infinity )                            &
@@ -812,6 +832,7 @@
             j = prob%A%col( l ) ; xl = prob%X_l( j )
             IF ( xl == prob%X_u( j ) ) THEN
               val = prob%A%val( l ) * xl
+              A_fx_abs( i ) = A_fx_abs( i ) + ABS( val )
               IF (prob%C_l( i ) > - control%infinity )                         &
                 prob%C_l( i ) = prob%C_l( i )- val
               IF ( prob%C_u( i ) < control%infinity )                          &
@@ -829,6 +850,7 @@
             DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
               i = prob%A%row( l )
                 val = prob%A%val( l ) * xl
+                A_fx_abs( i ) = A_fx_abs( i ) + ABS( val )
                 IF (prob%C_l( i ) > - control%infinity )                       &
                   prob%C_l( i ) = prob%C_l( i )- val
                 IF ( prob%C_u( i ) < control%infinity )                        &
@@ -848,6 +870,7 @@
             xl = prob%X_l( j )
             IF ( xl == prob%X_u( j ) ) THEN
               val = prob%A%val( l ) * xl
+              A_fx_abs( i ) = A_fx_abs( i ) + ABS( val )
               IF (prob%C_l( i ) > - control%infinity )                         &
                 prob%C_l( i ) = prob%C_l( i )- val
               IF ( prob%C_u( i ) < control%infinity )                          &
@@ -866,6 +889,7 @@
             DO i = 1, map%m
               l = l + 1
               val = prob%A%val( l ) * xl
+              A_fx_abs( i ) = A_fx_abs( i ) + ABS( val )
               IF (prob%C_l( i ) > - control%infinity )                         &
                 prob%C_l( i ) = prob%C_l( i )- val
               IF ( prob%C_u( i ) < control%infinity )                          &
@@ -1531,9 +1555,12 @@
             END IF
           ELSE
 
-!  deal with null equality constraint
+!  deal with null equality constraint (allowing for the rounding errors in
+!  removing the fixed variables)
 
-            IF ( cu == zero ) THEN
+            tol = small_tol * epsmch * ( ABS( cu ) + A_fx_abs( i ) )
+            IF ( ABS( cu ) <= tol ) THEN
+              prob%C_l( i ) = zero ; prob%C_u( i ) = zero
               free = free + 1
               IF ( get_y ) THEN
                 IF ( apy ) prob%Y( i ) = zero
@@ -1572,7 +1599,9 @@
 
 !  deal with null upper bounded constraint
 
-              IF ( cu >= zero ) THEN
+              tol = small_tol * epsmch * ( ABS( cu ) + A_fx_abs( i ) )
+              IF ( cu >= - tol ) THEN
+                prob%C_u( i ) = MAX( cu, zero )
                 free = free + 1
                 IF ( get_y ) THEN
                   IF ( apy ) prob%Y( i ) = zero
@@ -1608,7 +1637,11 @@
 
 !  deal with null range bounded constraint
 
-                IF ( cl <= zero .AND. cu >= zero ) THEN
+                tol = small_tol * epsmch                                       &
+                        * ( MAX( ABS( cl ), ABS( cu ) ) + A_fx_abs( i ) )
+                IF ( cl <= tol .AND. cu >= - tol ) THEN
+                  prob%C_l( i ) = MIN( cl, zero )
+                  prob%C_u( i ) = MAX( cu, zero )
                   free = free + 1
                   IF ( get_y ) THEN
                     IF ( apy ) prob%Y( i ) = zero
@@ -1636,7 +1669,9 @@
 
 !  deal with null lower bounded constraint
 
-              IF ( cl <= zero ) THEN
+              tol = small_tol * epsmch * ( ABS( cl ) + A_fx_abs( i ) )
+              IF ( cl <= tol ) THEN
+                prob%C_l( i ) = MIN( cl, zero )
                 free = free + 1
                 IF ( get_y ) THEN
                   IF ( apy ) prob%Y( i ) = zero
