@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 10:16 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:24 GMT.
 
 #include "galahad_modules.h"
 
@@ -7929,6 +7929,7 @@
       REAL ( KIND = rp_ ) :: u, tolerance, scale, res, res_max, a_abs
       LOGICAL ::  twobytwo, scale_a, rhs
       CHARACTER ( LEN = 80 ) :: array_name
+      CHARACTER ( LEN = LEN( control%symmetric_linear_solver ) ) :: solver
 
       out = control%out
 
@@ -8099,7 +8100,12 @@
       SLS_control%relative_pivot_tolerance = control%pivot_tol_for_dependencies
       SLS_control%zero_tolerance = epsmch ** 2
 
-      CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
+!  the dependency check needs the pivots and diagonal blocks of the factors.
+!  If the chosen solver cannot provide them, sytr is used instead (see below)
+
+      solver = control%symmetric_linear_solver
+  100 CONTINUE
+      CALL SLS_initialize_solver( solver,                                      &
                                   SLS_data, SLS_control%error,                 &
                                   inform%SLS_inform, check = .TRUE. )
       IF ( inform%SLS_inform%status < 0 ) THEN
@@ -8182,6 +8188,28 @@
 !  Determine the block diagonal part of the factors and the pivot order
 
       CALL SLS_enquire( SLS_data, inform%SLS_inform, PIVOTS = P, D = D )
+
+!  some solvers (e.g. PaStiX and MUMPS) cannot provide the pivots and diagonal
+!  blocks. If so, release that solver's data and refactorize using sytr
+
+      IF ( inform%SLS_inform%status == GALAHAD_error_access_pivots .OR.        &
+           inform%SLS_inform%status == GALAHAD_error_access_diagonal ) THEN
+        IF ( TRIM( solver ) /= 'sytr' ) THEN
+          IF ( out > 0 .AND. control%print_level >= 1 ) WRITE( out,            &
+            "( A, ' solver ', A, ' cannot provide the pivots needed to',       &
+         &     ' find dependent constraints, using sytr instead' )" )          &
+              prefix, TRIM( solver )
+          CALL SLS_terminate( SLS_data, SLS_control, inform%SLS_inform )
+          solver = 'sytr'
+          GO TO 100
+        END IF
+        inform%status = inform%SLS_inform%status ; GO TO 990
+      END IF
+
+!  a negative rank means that the solver did not report it; the factors are
+!  then taken to be nonsingular
+
+      IF ( inform%SLS_inform%rank < 0 ) inform%SLS_inform%rank = K%n
 !write(6,"( ' P ', ( 20I4 ) )" ) P( : K%n )
 !write(6,"( ' dia ', 4ES12.4 )" ) D( 1, 1 : K%n )
 !write(6,"( ' off ', 4ES12.4 )" ) D( 2, 1 : K%n-1 )
@@ -11373,6 +11401,21 @@ main: DO
                           prefix, inform%SLS_inform%status, 'SLS_factorize'
         END IF
 
+!  the test for convexity below needs the inertia of the factors. Some
+!  solvers (e.g. PaStiX) do not report it, so their factorizations are not
+!  suitable for QPA
+
+        IF ( inform%SLS_inform%negative_eigenvalues < 0 ) THEN
+          IF ( printi ) WRITE( control%out, "( /, A, ' solver ', A,           &
+         &  ' does not provide the inertia required by QPA' )" ) prefix,       &
+            TRIM( control%symmetric_linear_solver )
+          inform%status = GALAHAD_unsuitable_option ; jumpto = 1 ; RETURN
+        END IF
+
+!  a negative rank means that the solver did not report it; the factors are
+!  then taken to be nonsingular
+
+        IF ( inform%SLS_inform%rank < 0 ) inform%SLS_inform%rank = K%n
         zeig = K%n - inform%SLS_inform%rank
         IF ( zeig > 0 .AND. printt ) WRITE( control%out,                       &
           "( A, ' ** Matrix has ', I0, ' zero eigenvalues ' )" ) prefix, zeig
@@ -11408,6 +11451,14 @@ main: DO
 !  Determine the block diagonal part of the factors
 
           CALL SLS_enquire( SLS_data, inform%SLS_inform, D = DIAG )
+
+!  some solvers (e.g. PaStiX and MUMPS) cannot provide the diagonal blocks,
+!  in which case this precautionary check is skipped
+
+          IF ( inform%SLS_inform%status /= GALAHAD_ok ) THEN
+            inform%SLS_inform%status = GALAHAD_ok
+            GO TO 40
+          END IF
 !write(6,"( ' dia ', 4ES12.4 )" ) DIAG( 1, 1 : K%n )
 !write(6,"( ' off ', 4ES12.4 )" ) DIAG( 2, 1 : K%n-1 )
 
@@ -11466,6 +11517,7 @@ main: DO
           IF ( printt .AND. modify_k ) WRITE( control%out,                     &
             "( A, ' ** Matrix has at least one zero eigenvalue ' )" ) prefix
         END IF
+  40    CONTINUE
 
         IF ( modify_k ) THEN
           IF ( mo == ' ' ) THEN

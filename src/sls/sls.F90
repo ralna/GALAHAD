@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:04 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 08:56 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -5766,10 +5766,13 @@
          inform%pastix_info = INT( pastix_info )
          IF ( pastix_info == PASTIX_SUCCESS ) THEN
            inform%status = GALAHAD_ok
-!  PaStiX performs a full-rank factorization and does not detect rank
-!  deficiency, so record the rank as the matrix order (leaving it at its
-!  default of -1 corrupts callers that slice arrays with inform%rank, e.g. PSLS)
+
+!  PaStiX does not detect rank deficiency, so a successful factorization is
+!  reported as having full rank. It does not report the inertia, which is
+!  flagged as unknown by setting negative_eigenvalues to - 1
+
            inform%rank = data%matrix%n
+           inform%negative_eigenvalues = - 1
          ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
            inform%status = GALAHAD_error_restrictions
          ELSE IF ( pastix_info == PASTIX_ERR_OUTOFMEMORY ) THEN
