@@ -3048,7 +3048,7 @@
       REAL ( KIND = rp_ ) :: last_infeas_g, last_infeas_b
       REAL ( KIND = rp_ ) :: a_x, mult_min, mult_max, ats, mult_zero, res_max
       REAL ( KIND = rp_ ) :: inner_stop_absolute, inner_stop_relative
-      REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s
+      REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s, h_max, a_max
       REAL :: time_record, time_now
       REAL ( KIND = rp_ ) :: clock_record, clock_now
       LOGICAL :: set_printt, set_printi, set_printm, set_printd, set_printe
@@ -3320,6 +3320,16 @@
 !     tiny_cosine = epsmch ** 0.75
       G_perturb = zero
       addel = '          '
+
+!  Record the largest entry of H and the largest norm of a row of the
+!  working-set matrix (a simple bound has a row of norm one), used to decide
+!  whether a search direction is simply the result of rounding errors
+
+      h_max = zero
+      IF ( H_ptr( n + 1 ) > 1 )                                                &
+        h_max = MAXVAL( ABS( H_val( : H_ptr( n + 1 ) - 1 ) ) )
+      a_max = one
+      IF ( m > 0 ) a_max = MAX( a_max, MAXVAL( A_norms( : m ) ) )
 
       SLS_control%relative_pivot_tolerance =                                   &
         control%SLS_control%relative_pivot_tolerance
@@ -4400,14 +4410,16 @@
                 prefix, time_now
             END IF
 
-! If the search direction is essentially rounding errors, reset it to zero
+! If the search direction is essentially rounding errors, reset it to zero.
+! The test compares the sizes of H s and A^T y, so that it is unaffected by
+! the scaling of the problem; it is skipped when H is zero
 
             s_norm = SQRT( DOT_PRODUCT( S( : n ), S( : n ) ) )
             IF ( printt ) WRITE( out, "( A, ' s vs y ', 2ES12.4 )" ) prefix,   &
                s_norm, SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-            IF ( s_norm /= zero ) THEN
+            IF ( s_norm /= zero .AND. h_max > zero ) THEN
               y_norm = SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-              IF ( s_norm <= y_norm * epsmch ** 0.66 ) THEN
+              IF ( s_norm * h_max <= y_norm * a_max * epsmch ** 0.66 ) THEN
                 IF ( printt ) WRITE( out, "( ' tiny S = ', ES10.4, ' (',       &
                & 'compared with Y = ', ES10.4, ') has been reset to zero' )" ) &
                   s_norm, y_norm
