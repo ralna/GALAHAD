@@ -1,7 +1,7 @@
 //* \file galahad_qpa.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2026-11-09 AT 10:08 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_QPA C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -657,6 +657,15 @@ struct qpa_control_type {
     ipc_ infeas_check_interval;
 
     /// \brief
+    /// when solve_qp or solve_within_bounds (see below) is .TRUE., the
+    /// problem will be declared infeasible if its infeasibility has failed
+    /// to decrease by the factor relative_decrease_required (see below) over
+    /// ncrit consecutive increases of the penalty parameters. Likewise, ncrit
+    /// consecutive feasible but unbounded subproblems will cause the problem
+    /// to be declared unbounded
+    ipc_ ncrit;
+
+    /// \brief
     /// the maximum number of CG iterations allowed. If cg_maxit < 0,
     /// this number will be reset to the dimension of the system + 1
     ipc_ cg_maxit;
@@ -759,6 +768,12 @@ struct qpa_control_type {
     /// iterations, the current corresponding penalty parameter will be increase
     ///
     rpc_ infeas_b_improved_by_factor;
+
+    /// \brief
+    /// the infeasibility will be regarded as having decreased (see ncrit
+    /// above) if it is smaller than relative_decrease_required times its
+    /// value before the penalty parameters were last increased
+    rpc_ relative_decrease_required;
 
     /// \brief
     /// the threshold pivot used by the matrix factorization.

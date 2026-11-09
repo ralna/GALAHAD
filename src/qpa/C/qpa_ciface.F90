@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2026-11-09 AT 10:08 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -61,6 +61,7 @@
       INTEGER ( KIND = ipc_ ) :: valmin
       INTEGER ( KIND = ipc_ ) :: itref_max
       INTEGER ( KIND = ipc_ ) :: infeas_check_interval
+      INTEGER ( KIND = ipc_ ) :: ncrit
       INTEGER ( KIND = ipc_ ) :: cg_maxit
       INTEGER ( KIND = ipc_ ) :: precon
       INTEGER ( KIND = ipc_ ) :: nsemib
@@ -77,6 +78,7 @@
       REAL ( KIND = rpc_ ) :: infeas_g_improved_by_factor
       REAL ( KIND = rpc_ ) :: increase_rho_b_factor
       REAL ( KIND = rpc_ ) :: infeas_b_improved_by_factor
+      REAL ( KIND = rpc_ ) :: relative_decrease_required
       REAL ( KIND = rpc_ ) :: pivot_tol
       REAL ( KIND = rpc_ ) :: pivot_tol_for_dependencies
       REAL ( KIND = rpc_ ) :: zero_pivot
@@ -166,6 +168,7 @@
     fcontrol%valmin = ccontrol%valmin
     fcontrol%itref_max = ccontrol%itref_max
     fcontrol%infeas_check_interval = ccontrol%infeas_check_interval
+    fcontrol%ncrit = ccontrol%ncrit
     fcontrol%cg_maxit = ccontrol%cg_maxit
     fcontrol%precon = ccontrol%precon
     fcontrol%nsemib = ccontrol%nsemib
@@ -184,6 +187,7 @@
     fcontrol%infeas_g_improved_by_factor = ccontrol%infeas_g_improved_by_factor
     fcontrol%increase_rho_b_factor = ccontrol%increase_rho_b_factor
     fcontrol%infeas_b_improved_by_factor = ccontrol%infeas_b_improved_by_factor
+    fcontrol%relative_decrease_required = ccontrol%relative_decrease_required
     fcontrol%pivot_tol = ccontrol%pivot_tol
     fcontrol%pivot_tol_for_dependencies = ccontrol%pivot_tol_for_dependencies
     fcontrol%zero_pivot = ccontrol%zero_pivot
@@ -252,6 +256,7 @@
     ccontrol%valmin = fcontrol%valmin
     ccontrol%itref_max = fcontrol%itref_max
     ccontrol%infeas_check_interval = fcontrol%infeas_check_interval
+    ccontrol%ncrit = fcontrol%ncrit
     ccontrol%cg_maxit = fcontrol%cg_maxit
     ccontrol%precon = fcontrol%precon
     ccontrol%nsemib = fcontrol%nsemib
@@ -270,6 +275,7 @@
     ccontrol%infeas_g_improved_by_factor = fcontrol%infeas_g_improved_by_factor
     ccontrol%increase_rho_b_factor = fcontrol%increase_rho_b_factor
     ccontrol%infeas_b_improved_by_factor = fcontrol%infeas_b_improved_by_factor
+    ccontrol%relative_decrease_required = fcontrol%relative_decrease_required
     ccontrol%pivot_tol = fcontrol%pivot_tol
     ccontrol%pivot_tol_for_dependencies = fcontrol%pivot_tol_for_dependencies
     ccontrol%zero_pivot = fcontrol%zero_pivot

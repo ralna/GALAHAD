@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:24 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 10:08 GMT.
 
 #include "galahad_modules.h"
 
@@ -179,6 +179,15 @@
 
         INTEGER ( KIND = ip_ ) :: infeas_check_interval = 100
 
+!   when solve_qp or solve_within_bounds (see below) is .TRUE., the problem
+!    will be declared infeasible if its infeasibility has failed to decrease
+!    by the factor relative_decrease_required (see below) over ncrit
+!    consecutive increases of the penalty parameters. Likewise, ncrit
+!    consecutive feasible but unbounded subproblems will cause the problem
+!    to be declared unbounded
+
+        INTEGER ( KIND = ip_ ) :: ncrit = 100
+
 !   the maximum number of CG iterations allowed. If cg_maxit < 0,
 !     this number will be reset to the dimension of the system + 1
 !
@@ -281,6 +290,12 @@
 !    iterations, the current corresponding penalty parameter will be increased
 !
         REAL ( KIND = rp_ ) :: infeas_b_improved_by_factor = 0.75_rp_
+
+!   the infeasibility will be regarded as having decreased (see ncrit above)
+!    if it is smaller than relative_decrease_required times its value
+!    before the penalty parameters were last increased
+
+        REAL ( KIND = rp_ ) :: relative_decrease_required = 0.99_rp_
 
 !   the threshold pivot used by the matrix factorization.
 !    See the documentation for SLS for details                        (OBSOLETE)
@@ -652,6 +667,7 @@
 !  initial-real-workspace                            1000
 !  maximum-refinements                               1
 !  maximum-infeasible-iterations-before-rho-increase 100
+!  maximum-non-decreasing-penalty-increases          100
 !  maximum-number-of-cg-iterations                   -1
 !  preconditioner-used                               0
 !  semi-bandwidth-for-band-preconditioner            5
@@ -668,6 +684,7 @@
 !  increase-rho-b-factor                             2.0
 !  infeasible-g-required-improvement-factor          0.75
 !  infeasible-b-required-improvement-factor          0.75
+!  relative-decrease-in-infeasibility-required       0.99
 !  pivot-tolerance-used                              1.0D-8
 !  pivot-tolerance-used-for-dependencies             0.5
 !  zero-pivot-tolerance                              1.0D-12
@@ -696,7 +713,7 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 45
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 47
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'QPA'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -726,6 +743,7 @@
       spec( 20 )%keyword = 'residual-monitor-interval'
       spec( 21 )%keyword = 'cold-start-strategy'
       spec( 41 )%keyword = 'sif-file-device'
+      spec( 46 )%keyword = 'maximum-non-decreasing-penalty-increases'
 
 !  Real key-words
 
@@ -736,6 +754,7 @@
       spec( 26 )%keyword = 'increase-rho-b-factor'
       spec( 27 )%keyword = 'infeasible-g-required-improvement-factor'
       spec( 28 )%keyword = 'infeasible-b-required-improvement-factor'
+      spec( 47 )%keyword = 'relative-decrease-in-infeasibility-required'
       spec( 29 )%keyword = 'pivot-tolerance-used'
       spec( 30 )%keyword = 'pivot-tolerance-used-for-dependencies'
       spec( 31 )%keyword = 'zero-pivot-tolerance'
@@ -797,6 +816,8 @@
                                   control%error )
       CALL SPECFILE_assign_value( spec( 13 ), control%infeas_check_interval,   &
                                   control%error )
+      CALL SPECFILE_assign_value( spec( 46 ), control%ncrit,                   &
+                                  control%error )
       CALL SPECFILE_assign_value( spec( 14 ), control%cg_maxit,                &
                                   control%error )
       CALL SPECFILE_assign_value( spec( 15 ), control%precon,                  &
@@ -830,6 +851,9 @@
                                   control%error )
       CALL SPECFILE_assign_value( spec( 27 ),                                  &
                                   control%infeas_g_improved_by_factor,         &
+                                  control%error )
+      CALL SPECFILE_assign_value( spec( 47 ),                                  &
+                                  control%relative_decrease_required,          &
                                   control%error )
       CALL SPECFILE_assign_value( spec( 28 ),                                  &
                                   control%infeas_b_improved_by_factor,         &
@@ -2320,7 +2344,7 @@
 !  Solution loop: gradually reduce any perturbations
 !  =============
 
-      pass = 0 ; icrit = 0 ; ncrit = 9
+      pass = 0 ; icrit = 0 ; ncrit = control%ncrit
       last_infeas_g = biginf / two ; last_infeas_b = biginf / two
       DO
         pass = pass + 1
@@ -2475,7 +2499,8 @@
 
             IF ( control%solve_qp ) THEN
               IF ( inform%infeas_g + inform%infeas_b                           &
-                   > 0.99_rp_ * ( last_infeas_g + last_infeas_b ) ) THEN
+                   > control%relative_decrease_required *                      &
+                       ( last_infeas_g + last_infeas_b ) ) THEN
                 icrit = icrit + 1
                 IF ( icrit >= ncrit ) THEN
                   IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2490,7 +2515,8 @@
               rho_g = control%increase_rho_g_factor * rho_g
               rho_b = control%increase_rho_b_factor * rho_b
             ELSE IF ( control%solve_within_bounds ) THEN
-              IF ( inform%infeas_b > 0.99_rp_ * last_infeas_b ) THEN
+              IF ( inform%infeas_b >                                           &
+                   control%relative_decrease_required * last_infeas_b ) THEN
                 icrit = icrit + 1
                 IF ( icrit >= ncrit ) THEN
                   IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2516,7 +2542,8 @@
               icrit = icrit + 1
               IF ( icrit >= ncrit ) EXIT
             ELSE IF ( inform%infeas_g + inform%infeas_b                        &
-                      > 0.99_rp_ * ( last_infeas_g + last_infeas_b ) ) THEN
+                      > control%relative_decrease_required *                   &
+                          ( last_infeas_g + last_infeas_b ) ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) THEN
                 IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2535,7 +2562,8 @@
                  inform%status == GALAHAD_error_unbounded ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) EXIT
-            ELSE IF ( inform%infeas_b > 0.99_rp_ * last_infeas_b ) THEN
+            ELSE IF ( inform%infeas_b >                                        &
+                      control%relative_decrease_required * last_infeas_b ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) THEN
                 IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix

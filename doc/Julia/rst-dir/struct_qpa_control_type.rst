@@ -26,6 +26,7 @@ qpa_control_type structure
           valmin::INT
           itref_max::INT
           infeas_check_interval::INT
+          ncrit::INT
           cg_maxit::INT
           precon::INT
           nsemib::INT
@@ -42,6 +43,7 @@ qpa_control_type structure
           infeas_g_improved_by_factor::T
           increase_rho_b_factor::T
           infeas_b_improved_by_factor::T
+          relative_decrease_required::T
           pivot_tol::T
           pivot_tol_for_dependencies::T
           zero_pivot::T
@@ -214,6 +216,16 @@ the maximum number of iterative refinements allowed (OBSOLETE)
 
 the infeasibility will be checked for improvement every infeas_check_interval iterations (see infeas_g_improved_by_factor and infeas_b_improved_by_factor below)
 
+.. index:: pair: variable; ncrit
+.. _doxid-structqpa__control__type_ncrit:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	INT ncrit
+
+when solve_qp or solve_within_bounds (see below) is .TRUE., the problem will be declared infeasible if its infeasibility has failed to decrease by the factor relative_decrease_required (see below) over ncrit consecutive increases of the penalty parameters. Likewise, ncrit consecutive feasible but unbounded subproblems will cause the problem to be declared unbounded
+
 .. index:: pair: variable; cg_maxit
 .. _doxid-structqpa__control__type_cg_maxit:
 
@@ -377,6 +389,16 @@ if the problem is currently infeasible and solve_qp or solve_within_boun (see be
 	T infeas_b_improved_by_factor
 
 if the infeasibility of the simple bounds has not dropped by a factor of infeas_b_improved_by_factor over the previous infeas_check_interval iterations, the current corresponding penalty parameter will be increase
+
+.. index:: pair: variable; relative_decrease_required
+.. _doxid-structqpa__control__type_relative_decrease_required:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	T relative_decrease_required
+
+the infeasibility will be regarded as having decreased (see ncrit above) if it is smaller than relative_decrease_required times its value before the penalty parameters were last increased
 
 .. index:: pair: variable; pivot_tol
 .. _doxid-structqpa__control__type_pivot_tol:

@@ -6724,6 +6724,7 @@ struct qpa_control_type {
     int32_t valmin;
     int32_t itref_max;
     int32_t infeas_check_interval;
+    int32_t ncrit;
     int32_t cg_maxit;
     int32_t precon;
     int32_t nsemib;
@@ -6740,6 +6741,7 @@ struct qpa_control_type {
     double infeas_g_improved_by_factor;
     double increase_rho_b_factor;
     double infeas_b_improved_by_factor;
+    double relative_decrease_required;
     double pivot_tol;
     double pivot_tol_for_dependencies;
     double zero_pivot;
@@ -6778,6 +6780,7 @@ struct qpa_control_type_64 {
     int64_t valmin;
     int64_t itref_max;
     int64_t infeas_check_interval;
+    int64_t ncrit;
     int64_t cg_maxit;
     int64_t precon;
     int64_t nsemib;
@@ -6794,6 +6797,7 @@ struct qpa_control_type_64 {
     double infeas_g_improved_by_factor;
     double increase_rho_b_factor;
     double infeas_b_improved_by_factor;
+    double relative_decrease_required;
     double pivot_tol;
     double pivot_tol_for_dependencies;
     double zero_pivot;
