@@ -2375,6 +2375,7 @@ struct sls_control_type {
     double array_decrease_factor;
     int32_t pivot_control;
     int32_t ordering;
+    int32_t pastix_ordering;
     int32_t full_row_threshold;
     int32_t row_search_indefinite;
     int32_t scaling;
@@ -2430,6 +2431,7 @@ struct sls_control_type_64 {
     double array_decrease_factor;
     int64_t pivot_control;
     int64_t ordering;
+    int64_t pastix_ordering;
     int64_t full_row_threshold;
     int64_t row_search_indefinite;
     int64_t scaling;
