@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 15:29 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 16:44 GMT.
 
 #include "galahad_modules.h"
 
@@ -89,8 +89,6 @@
       REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
-      REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
-      REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
       REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
@@ -3049,6 +3047,7 @@
       REAL ( KIND = rp_ ) :: a_x, mult_min, mult_max, ats, mult_zero, res_max
       REAL ( KIND = rp_ ) :: inner_stop_absolute, inner_stop_relative
       REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s, h_max, a_max
+      REAL ( KIND = rp_ ) :: g_scale, gzero, hzero
       REAL :: time_record, time_now
       REAL ( KIND = rp_ ) :: clock_record, clock_now
       LOGICAL :: set_printt, set_printi, set_printm, set_printd, set_printe
@@ -4528,6 +4527,17 @@
               g_s = DOT_PRODUCT( GRAD, S( : n ) )
               s_hs = DOT_PRODUCT( S( : n ), H_s )
 
+!  The slope and curvature of the penalty function along s are regarded as
+!  zero if they are smaller than ten times epsmch relative to the sizes of
+!  the data, i.e., to those of g, H x and A^T y for the slope, and of H for
+!  the curvature
+
+              g_scale = MAX( zero, MAXVAL( ABS( G( : n ) ) ),                  &
+                             MAXVAL( ABS( GRAD( : n ) - G( : n ) ) ),          &
+                             a_max * MAXVAL( ABS( S( n + 1 : n_all ) ) ) )
+              gzero = teneps * s_norm * g_scale
+              hzero = teneps * s_norm ** 2 * h_max
+
 !  Perform the linesearch
 
               CALL QPA_linesearch( dims, n, m, inform%obj, g_s, s_hs, s_norm,  &
@@ -4535,8 +4545,8 @@
                                   S( : n ), A_s, A_norms,                      &
                                   C_stat, B_stat, REF, IBREAK, BREAKP, lbreak, &
                                   m_link, out, printt, printm, printd, t_opt,  &
-                                  too_small_a_s * s_norm, active,              &
-                                  linesearch_inform )
+                                  too_small_a_s * s_norm, gzero, hzero,        &
+                                  active, linesearch_inform )
 
 !  The problem is unbounded from below
 
@@ -6612,8 +6622,8 @@
                                  X, X_l, X_u, RES_l, RES_u, S, A_s, A_norms,   &
                                  C_stat, B_stat, REF, IBREAK, BREAKP, lbreak,  &
                                  m_link, out, print_1line, print_detail,       &
-                                 print_debug, t_opt, too_small, active,        &
-                                 inform )
+                                 print_debug, t_opt, too_small, gzero, hzero,  &
+                                 active, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -6687,6 +6697,10 @@
 !   the cosine of the angle between s and the constraint normal is
 !   negligible
 !
+!  gzero and hzero are REAL variables, which must be set by the user to
+!   the values below which the absolute values of the slope and curvature
+!   of the penalty function along s are regarded as zero
+!
 !  C_stat, B_stat, REF are INTEGER arrays described in QPA_solve
 !
 !  IBREAK is an INTEGER workspace array of length lbreak
@@ -6731,6 +6745,7 @@
       LOGICAL, INTENT( IN ) :: print_1line, print_detail, print_debug
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, s_norm
       REAL ( KIND = rp_ ), INTENT( IN ) :: rho_g, rho_b, too_small
+      REAL ( KIND = rp_ ), INTENT( IN ) :: gzero, hzero
       REAL ( KIND = rp_ ), INTENT( OUT ) :: t_opt
       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_norms
@@ -7141,7 +7156,7 @@
 !  is positive, exit
 
         IF ( ABS( gradient ) <= gzero ) THEN
-          IF ( curv > - hzero ) THEN
+          IF ( curv >= - hzero ) THEN
             IF ( inform == 0 ) t_opt = t_break
             EXIT
           END IF
@@ -7437,7 +7452,7 @@
 !  is positive, exit
 
         IF ( ABS( gradient ) <= gzero ) THEN
-          IF ( curv > - hzero ) THEN
+          IF ( curv >= - hzero ) THEN
             IF ( inform == 0 ) t_opt = t_break
             EXIT
           END IF
