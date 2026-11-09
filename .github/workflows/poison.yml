@@ -63,7 +63,7 @@ jobs:
                              -Dint64=$INT64 \
                              -Dquadruple=true \
                              -Dtests=true \
-                             -Dciface=false \
+                             -Dciface=true \
                              -Dlibblas= \
                              -Dliblapack= \
                              -Db_sanitize=address \
