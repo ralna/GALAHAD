@@ -1,7 +1,7 @@
 //* \file qpa_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-11-09 AT 10:08 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_QPA PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -130,6 +130,12 @@ bool qpa_update_control(struct qpa_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "ncrit") == 0){
+            if(!parse_int_option(value, "ncrit",
+                                  &control->ncrit))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "cg_maxit") == 0){
             if(!parse_int_option(value, "cg_maxit",
                                   &control->cg_maxit))
@@ -223,6 +229,12 @@ bool qpa_update_control(struct qpa_control_type *control,
         if(strcmp(key_name, "infeas_b_improved_by_factor") == 0){
             if(!parse_double_option(value, "infeas_b_improved_by_factor",
                                   &control->infeas_b_improved_by_factor))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "relative_decrease_required") == 0){
+            if(!parse_double_option(value, "relative_decrease_required",
+                                  &control->relative_decrease_required))
                 return false;
             continue;
         }
@@ -397,6 +409,8 @@ PyObject* qpa_make_options_dict(const struct qpa_control_type *control){
                          PyLong_FromLong(control->itref_max));
     PyDict_SetItemString(py_options, "infeas_check_interval",
                          PyLong_FromLong(control->infeas_check_interval));
+    PyDict_SetItemString(py_options, "ncrit",
+                         PyLong_FromLong(control->ncrit));
     PyDict_SetItemString(py_options, "cg_maxit",
                          PyLong_FromLong(control->cg_maxit));
     PyDict_SetItemString(py_options, "precon",
@@ -429,6 +443,8 @@ PyObject* qpa_make_options_dict(const struct qpa_control_type *control){
                          PyFloat_FromDouble(control->increase_rho_b_factor));
     PyDict_SetItemString(py_options, "infeas_b_improved_by_factor",
                          PyFloat_FromDouble(control->infeas_b_improved_by_factor));
+    PyDict_SetItemString(py_options, "relative_decrease_required",
+                         PyFloat_FromDouble(control->relative_decrease_required));
     PyDict_SetItemString(py_options, "pivot_tol",
                          PyFloat_FromDouble(control->pivot_tol));
     PyDict_SetItemString(py_options, "pivot_tol_for_dependencies",

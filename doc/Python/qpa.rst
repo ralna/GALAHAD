@@ -72,6 +72,15 @@ functions
              infeas_check_interval iterations (see
              infeas_g_improved_by_factor and
              infeas_b_improved_by_factor below).
+          ncrit : int
+             when solve_qp or solve_within_bounds (see below) is True,
+             the problem will be declared infeasible if its
+             infeasibility has failed to decrease by the factor
+             relative_decrease_required (see below) over ncrit
+             consecutive increases of the penalty parameters.
+             Likewise, ncrit consecutive feasible but unbounded
+             subproblems will cause the problem to be declared
+             unbounded.
           cg_maxit : int
              the maximum number of CG iterations allowed. If cg_maxit <
              0, this number will be reset to the dimension of the
@@ -173,6 +182,11 @@ functions
              by a factor of infeas_b_improved_by_factor over the
              previous infeas_check_interval iterations, the current
              corresponding penalty parameter will be increase.
+          relative_decrease_required : float
+             the infeasibility will be regarded as having decreased
+             (see ncrit above) if it is smaller than
+             relative_decrease_required times its value before the
+             penalty parameters were last increased.
           pivot_tol : float
              the threshold pivot used by the matrix factorization. See
              the documentation for SLS for details (OBSOLETE).

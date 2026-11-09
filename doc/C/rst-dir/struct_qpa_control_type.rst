@@ -30,6 +30,7 @@ qpa_control_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`valmin<doxid-structqpa__control__type_valmin>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`itref_max<doxid-structqpa__control__type_itref_max>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`infeas_check_interval<doxid-structqpa__control__type_infeas_check_interval>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ncrit<doxid-structqpa__control__type_ncrit>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_maxit<doxid-structqpa__control__type_cg_maxit>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`precon<doxid-structqpa__control__type_precon>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nsemib<doxid-structqpa__control__type_nsemib>`;
@@ -46,6 +47,7 @@ qpa_control_type structure
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infeas_g_improved_by_factor<doxid-structqpa__control__type_infeas_g_improved_by_factor>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`increase_rho_b_factor<doxid-structqpa__control__type_increase_rho_b_factor>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infeas_b_improved_by_factor<doxid-structqpa__control__type_infeas_b_improved_by_factor>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`relative_decrease_required<doxid-structqpa__control__type_relative_decrease_required>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pivot_tol<doxid-structqpa__control__type_pivot_tol>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pivot_tol_for_dependencies<doxid-structqpa__control__type_pivot_tol_for_dependencies>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_pivot<doxid-structqpa__control__type_zero_pivot>`;
@@ -218,6 +220,16 @@ the maximum number of iterative refinements allowed (OBSOLETE)
 
 the infeasibility will be checked for improvement every infeas_check_interval iterations (see infeas_g_improved_by_factor and infeas_b_improved_by_factor below)
 
+.. index:: pair: variable; ncrit
+.. _doxid-structqpa__control__type_ncrit:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` ncrit
+
+when solve_qp or solve_within_bounds (see below) is .TRUE., the problem will be declared infeasible if its infeasibility has failed to decrease by the factor relative_decrease_required (see below) over ncrit consecutive increases of the penalty parameters. Likewise, ncrit consecutive feasible but unbounded subproblems will cause the problem to be declared unbounded
+
 .. index:: pair: variable; cg_maxit
 .. _doxid-structqpa__control__type_cg_maxit:
 
@@ -381,6 +393,16 @@ if the problem is currently infeasible and solve_qp or solve_within_boun (see be
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` infeas_b_improved_by_factor
 
 if the infeasibility of the simple bounds has not dropped by a factor of infeas_b_improved_by_factor over the previous infeas_check_interval iterations, the current corresponding penalty parameter will be increase
+
+.. index:: pair: variable; relative_decrease_required
+.. _doxid-structqpa__control__type_relative_decrease_required:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` relative_decrease_required
+
+the infeasibility will be regarded as having decreased (see ncrit above) if it is smaller than relative_decrease_required times its value before the penalty parameters were last increased
 
 .. index:: pair: variable; pivot_tol
 .. _doxid-structqpa__control__type_pivot_tol:

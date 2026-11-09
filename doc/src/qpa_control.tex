@@ -172,6 +172,17 @@ that gives the number of iterations that are permitted before the
 infeasibility is checked for improvement.
 The default is {\tt infeas\_check\_interval = 100}.
 
+\itt{ncrit} is a scalar variable of type \integer,
+that specifies when the problem is declared infeasible
+(or unbounded) when solving quadratic programs (see {\tt solve\_qp} and
+{\tt solve\_within\_bounds}). If the infeasibility has failed to
+decrease by the factor {\tt relative\_decrease\_required} over
+{\tt ncrit} consecutive increases of the penalty parameters, the
+problem will be declared infeasible. Likewise, {\tt ncrit} consecutive
+feasible but unbounded subproblems will cause the problem to be declared
+unbounded.
+The default is {\tt ncrit = 100}.
+
 \itt{infinity} is a scalar variable of type \realdp, that is used to
 specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
@@ -223,6 +234,13 @@ during the previous {\tt infeas\_check\_in\-terval} iterations, the
 penalty parameter will be increased by a factor
 {\tt increase\_rho\_b\_factor}.
 The default is {\tt infeas\_im\-proved\_b\_by\_factor = 0.75}.
+
+\itt{relative\_decrease\_required} is a scalar variable of type default
+\realdp, that specifies when the infeasibility is regarded as having
+decreased (see {\tt ncrit}). This will be so if the infeasibility is
+smaller than {\tt relative\_decrease\_required} times its value
+before the penalty parameters were last increased.
+The default is {\tt relative\_decrease\_required = 0.99}.
 
 %\itt{pivot\_tol}  is a scalar variable of type default
 %\realdp, that holds the

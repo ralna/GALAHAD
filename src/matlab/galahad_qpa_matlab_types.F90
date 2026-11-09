@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 04/03/2011 AT 10:15 GMT.
+!  THIS VERSION: GALAHAD 2.4 - 2026-11-09 AT 10:08 GMT.
 
 !-*-*-*-  G A L A H A D _ Q P A _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -134,6 +134,9 @@
         CASE( 'infeas_check_interval' )
           CALL MATLAB_get_value( ps, 'infeas_check_interval',                  &
                                  pc, QPA_control%infeas_check_interval )
+        CASE( 'ncrit' )
+          CALL MATLAB_get_value( ps, 'ncrit',                                  &
+                                 pc, QPA_control%ncrit )
         CASE( 'cg_maxit' )
           CALL MATLAB_get_value( ps, 'cg_maxit',                               &
                                  pc, QPA_control%cg_maxit )
@@ -179,6 +182,9 @@
         CASE( 'infeas_b_improved_by_factor' )
           CALL MATLAB_get_value( ps,'infeas_b_improved_by_factor',             &
                                  pc, QPA_control%infeas_b_improved_by_factor )
+        CASE( 'relative_decrease_required' )
+          CALL MATLAB_get_value( ps,'relative_decrease_required',              &
+                                 pc, QPA_control%relative_decrease_required )
         CASE( 'pivot_tol' )
           CALL MATLAB_get_value( ps, 'pivot_tol',                              &
                                  pc, QPA_control%pivot_tol )
@@ -255,7 +261,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 41
+      INTEGER * 4, PARAMETER :: ninform = 43
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -263,14 +269,15 @@
          'factor                         ', 'max_col                        ', &
          'max_sc                         ', 'indmin                         ', &
          'valmin                         ', 'itref_max                      ', &
-         'infeas_check_interval          ', 'cg_maxit                       ', &
-         'precon                         ', 'nsemib                         ', &
-         'full_max_fill                  ', 'deletion_strategy              ', &
-         'restore_problem                ', 'monitor_residuals              ', &
-         'cold_start                     ', 'infinity                       ', &
-         'feas_tol                       ', 'obj_unbounded                  ', &
-         'increase_rho_g_factor          ', 'infeas_g_improved_by_factor    ', &
-         'increase_rho_b_factor          ', 'infeas_b_improved_by_factor    ', &
+         'infeas_check_interval          ', 'ncrit                          ', &
+         'cg_maxit                       ', 'precon                         ', &
+         'nsemib                         ', 'full_max_fill                  ', &
+         'deletion_strategy              ', 'restore_problem                ', &
+         'monitor_residuals              ', 'cold_start                     ', &
+         'infinity                       ', 'feas_tol                       ', &
+         'obj_unbounded                  ', 'increase_rho_g_factor          ', &
+         'infeas_g_improved_by_factor    ', 'increase_rho_b_factor          ', &
+         'infeas_b_improved_by_factor    ', 'relative_decrease_required     ', &
          'pivot_tol                      ', 'pivot_tol_for_dependencies     ', &
          'zero_pivot                     ', 'inner_stop_relative            ', &
          'inner_stop_absolute            ', 'multiplier_tol                 ', &
@@ -317,6 +324,8 @@
                                   QPA_control%itref_max )
       CALL MATLAB_fill_component( pointer, 'infeas_check_interval',            &
                                   QPA_control%infeas_check_interval )
+      CALL MATLAB_fill_component( pointer, 'ncrit',                            &
+                                  QPA_control%ncrit )
       CALL MATLAB_fill_component( pointer, 'cg_maxit',                         &
                                   QPA_control%cg_maxit )
       CALL MATLAB_fill_component( pointer, 'precon',                           &
@@ -347,6 +356,8 @@
                                   QPA_control%increase_rho_b_factor )
       CALL MATLAB_fill_component( pointer, 'infeas_b_improved_by_factor',      &
                                   QPA_control%infeas_b_improved_by_factor )
+      CALL MATLAB_fill_component( pointer, 'relative_decrease_required',       &
+                                  QPA_control%relative_decrease_required )
       CALL MATLAB_fill_component( pointer, 'pivot_tol',                        &
                                   QPA_control%pivot_tol )
       CALL MATLAB_fill_component( pointer, 'pivot_tol_for_dependencies',       &
