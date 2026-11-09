@@ -1661,19 +1661,48 @@
 
       ELSE IF ( control%cold_start /= 0 ) THEN
         B_stat = 0 ; C_stat = 0
+
+!  warm start: normalise the given statuses to -1, 0 or 1, and ignore any
+!  that refer to a bound that is not present (e.g. on a free variable, or an
+!  upper bound on a variable or constraint that is only bounded from below)
+
       ELSE
-        DO i = 1, prob%n
-          IF ( B_stat( i ) < 0 ) THEN
-            B_stat( i ) = - 1
-          ELSE IF ( B_stat( i ) > 0 ) THEN
-            B_stat( i ) = 1
-          END IF
+        DO i = 1, data%dims%c_equality
+          C_stat( i ) = SIGN( MIN( ABS( C_stat( i ) ), 1_ip_ ), C_stat( i ) )
         END DO
-        DO i = 1, prob%m
+        DO i = data%dims%c_equality + 1, data%dims%c_u_start - 1
           IF ( C_stat( i ) < 0 ) THEN
             C_stat( i ) = - 1
-          ELSE IF ( C_stat( i ) > 0 ) THEN
+          ELSE
+            C_stat( i ) = 0
+          END IF
+        END DO
+        DO i = data%dims%c_u_start, data%dims%c_l_end
+          C_stat( i ) = SIGN( MIN( ABS( C_stat( i ) ), 1_ip_ ), C_stat( i ) )
+        END DO
+        DO i = data%dims%c_l_end + 1, prob%m
+          IF ( C_stat( i ) > 0 ) THEN
             C_stat( i ) = 1
+          ELSE
+            C_stat( i ) = 0
+          END IF
+        END DO
+        B_stat( : data%dims%x_free ) = 0
+        DO i = data%dims%x_free + 1, data%dims%x_u_start - 1
+          IF ( B_stat( i ) < 0 ) THEN
+            B_stat( i ) = - 1
+          ELSE
+            B_stat( i ) = 0
+          END IF
+        END DO
+        DO i = data%dims%x_u_start, data%dims%x_l_end
+          B_stat( i ) = SIGN( MIN( ABS( B_stat( i ) ), 1_ip_ ), B_stat( i ) )
+        END DO
+        DO i = data%dims%x_l_end + 1, prob%n
+          IF ( B_stat( i ) > 0 ) THEN
+            B_stat( i ) = 1
+          ELSE
+            B_stat( i ) = 0
           END IF
         END DO
       END IF
@@ -3189,6 +3218,10 @@
       END DO
       K_part%c_ref = K_part%m_ref
 
+!  free variables have no bounds that might be active
+
+      B_stat( : dims%x_free ) = 0
+
 !  simple non-negativity
 
       DO i = dims%x_free + 1, dims%x_l_start - 1
@@ -3197,6 +3230,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
@@ -3208,6 +3243,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
@@ -3231,6 +3268,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
@@ -3242,6 +3281,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
