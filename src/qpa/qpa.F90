@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 11:57 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 
@@ -4515,7 +4515,8 @@
                                   S( : n ), A_s, A_norms,                      &
                                   C_stat, B_stat, REF, IBREAK, BREAKP, lbreak, &
                                   m_link, out, printt, printm, printd, t_opt,  &
-                                  too_small_a_s, active, linesearch_inform )
+                                  too_small_a_s * s_norm, active,              &
+                                  linesearch_inform )
 
 !  The problem is unbounded from below
 
@@ -6650,6 +6651,13 @@
 !  A_norms is a REAL array of length m, which must be set by the user to
 !   the estimates of the norms of the rows of $A$.
 !
+!  too_small is a REAL variable, which must be set by the user to a small
+!   positive multiple of ||s||_2. A general constraint for which
+!   |<a_i,s>| <= too_small ||a_i||_2, or a simple bound for which
+!   |s_i| <= too_small, is considered to be unaffected by the step, i.e.,
+!   the cosine of the angle between s and the constraint normal is
+!   negligible
+!
 !  C_stat, B_stat, REF are INTEGER arrays described in QPA_solve
 !
 !  IBREAK is an INTEGER workspace array of length lbreak
@@ -6758,7 +6766,7 @@
         infeas_g = infeas_g + ABS( res )
 
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
         IF ( res + t_pert * as > zero ) slope_infeas_g = slope_infeas_g + as
@@ -6803,7 +6811,7 @@
         IF ( res < zero ) infeas_g = infeas_g - res
 
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
 
@@ -6845,7 +6853,7 @@
         IF ( res < zero ) infeas_g = infeas_g - res
 
         as = - A_s( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
 !       IF ( res + t_pert * as < zero ) write(6,*) ' slope_term = u ', i
@@ -6887,7 +6895,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -6927,7 +6935,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -6967,7 +6975,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = - S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -7007,7 +7015,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = - S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -7045,8 +7053,8 @@
         CALL QPA_p_val_and_slope( dims, n, m,                                  &
                                   f, g_s, s_hs, rho_g, rho_b, X, X_l,          &
                                   X_u, RES_l, RES_u, S, A_s, 0.0_rp_, t_pert,  &
-                                  too_small, REF, m_link, C_stat, B_stat,      &
-                                  eval, eslope )
+                                  too_small, A_norms, REF, m_link, C_stat,     &
+                                  B_stat, eval, eslope )
         write( out, 2010 ) '  val', val, eval
       END IF
 
@@ -7148,7 +7156,8 @@
             IF ( print_debug ) THEN
               eval = QPA_p_val( dims, n, m,                                    &
                                 f, g_s, s_hs, rho_g, rho_b, X, X_l, X_u,       &
-                                RES_l, RES_u, S, A_s, t_opt, too_small )
+                                RES_l, RES_u, S, A_s, t_opt, too_small,        &
+                                A_norms )
               write( out, 2010 ) '  val', fun, eval
             END IF
             IF ( beyond_first_breakpoint ) inform = 0
@@ -7244,8 +7253,8 @@
             CALL QPA_p_val_and_slope( dims, n, m,                              &
                                       f, g_s, s_hs, rho_g, rho_b, X,           &
                                       X_l, X_u, RES_l, RES_u, S, A_s, t_break, &
-                                      t_pert, too_small, REF, m_link, C_stat,  &
-                                      B_stat, eval, eslope )
+                                      t_pert, too_small, A_norms, REF, m_link, &
+                                      C_stat, B_stat, eval, eslope )
             WRITE( out, 2010 ) '  val', fun, eval
             WRITE( out, 2010 ) 'slope', gradient, eslope
           END IF
@@ -7264,8 +7273,8 @@
             CALL QPA_p_val_and_slope( dims, n, m,                              &
                                       f, g_s, s_hs, rho_g, rho_g, X,           &
                                       X_l, X_u, RES_l, RES_u, S, A_s, t_break, &
-                                      t_pert, too_small, REF, m_link, C_stat,  &
-                                      B_stat, val, slope )
+                                      t_pert, too_small, A_norms, REF, m_link, &
+                                      C_stat, B_stat, val, slope )
 
             gradient = slope + t_break * curv
             IF ( print_debug )                                                 &
@@ -7284,8 +7293,8 @@
 
           CALL QPA_p_val_and_slope( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, &
                                     X_l, X_u, RES_l, RES_u, S, A_s, t_break,   &
-                                    t_pert, too_small, REF, m_link, C_stat,    &
-                                    B_stat, val, slope )
+                                    t_pert, too_small, A_norms, REF, m_link,   &
+                                    C_stat, B_stat, val, slope )
           gradient = slope + t_break * curv
           nbreak = 0
           cluster_end = nbreak_total
@@ -7330,7 +7339,7 @@
 !  value
 
       val = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, X_l, X_u,    &
-                       RES_l, RES_u, S, A_s, t_opt, too_small )
+                       RES_l, RES_u, S, A_s, t_opt, too_small, A_norms )
       recover =                                                                &
         f + rho_g * infeas_g + rho_b * infeas_b + epsmch ** 0.33 <= val
 
@@ -7352,8 +7361,8 @@
 
       CALL QPA_p_val_and_slope( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,     &
                                 X_l, X_u, RES_l, RES_u, S, A_s, 0.0_rp_,t_pert,&
-                                too_small, REF, m_link, C_stat, B_stat,        &
-                                val, slope )
+                                too_small, A_norms, REF, m_link, C_stat,       &
+                                B_stat, val, slope )
       curv = s_hs
 
 !  Record the function value and gradient at (just on the other side of)
@@ -7434,7 +7443,8 @@
 !  Calculate the function value for the piecewise quadratic
 
             val = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,        &
-                             X_l, X_u, RES_l, RES_u, S, A_s, t_opt, too_small )
+                             X_l, X_u, RES_l, RES_u, S, A_s, t_opt, too_small, &
+                             A_norms )
 
 !  If the function value has risen in the current interval, search the
 !  interval for a better value, and exit
@@ -7444,7 +7454,8 @@
                                             f, g_s, s_hs, rho_g, rho_b,        &
                                             X, X_l, X_u, RES_l, RES_u, S, A_s, &
                                             t_old, val_old, t_opt, val,        &
-                                            too_small, out, print_detail )
+                                            too_small, A_norms, out,           &
+                                            print_detail )
             END IF
 
             IF ( print_detail ) WRITE( out, 2000 )
@@ -7453,7 +7464,8 @@
                  iter, t_opt, '      -      -', fun, zero, curv
             IF ( print_debug ) THEN
               eval = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, X_l,&
-                                X_u, RES_l, RES_u, S, A_s, t_opt, too_small )
+                                X_u, RES_l, RES_u, S, A_s, t_opt, too_small,   &
+                                A_norms )
               WRITE( out, 2010 ) '  val', fun, eval
             END IF
             IF ( beyond_first_breakpoint ) inform = 0
@@ -7531,8 +7543,8 @@
         CALL QPA_p_val_and_slope( dims, n, m,                                  &
                                   f, g_s, s_hs, rho_g, rho_b, X, X_l,          &
                                   X_u, RES_l, RES_u, S, A_s, t_break, t_pert,  &
-                                  too_small, REF, m_link, C_stat, B_stat,      &
-                                  val, slope )
+                                  too_small, A_norms, REF, m_link, C_stat,     &
+                                  B_stat, val, slope )
         gradient = slope + t_break * curv
 
         IF ( print_debug )                                                     &
@@ -7543,7 +7555,7 @@
                                         f, g_s, s_hs, rho_g, rho_b, X,         &
                                         X_l, X_u, RES_l, RES_u, S, A_s,        &
                                         t_old, val_old, t_opt, val,            &
-                                        too_small, out, print_detail )
+                                        too_small, A_norms, out, print_detail )
           EXIT
         END IF
         val_old = val
@@ -7605,7 +7617,7 @@
                                           f, g_s, s_hs, rho_g, rho_b, X,       &
                                           X_l, X_u,  RES_l, RES_u, S, A_s,     &
                                           t_lower, val_lower, t_opt, val_opt,  &
-                                          too_small, out, print_debug )
+                                          too_small, A_norms, out, print_debug )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -7629,7 +7641,7 @@
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b, too_small
       REAL ( KIND = rp_ ), INTENT( INOUT ) :: t_lower, val_lower, t_opt, val_opt
       LOGICAL, INTENT( IN ) :: print_debug
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_end ) ::  RES_l
@@ -7660,7 +7672,8 @@
         END IF
         t_new = half * ( t_lower + t_opt )
         val_new = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, X_l,   &
-                             X_u, RES_l, RES_u, S, A_s, t_new, too_small )
+                             X_u, RES_l, RES_u, S, A_s, t_new, too_small,      &
+                             A_norms )
         IF ( val_opt < val_lower ) THEN
           t_lower = t_new ; val_lower = val_new
         ELSE
@@ -7754,7 +7767,8 @@
 !-*-*-*-*-*-*-*-*-*-   Q P A _ P _ V A L   F U N C T I O N   -*-*-*-*-*-*-*-*-*-
 
       FUNCTION QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,           &
-                          X_l, X_u, RES_l, RES_u, S, A_s, t, too_small )
+                          X_l, X_u, RES_l, RES_u, S, A_s, t, too_small,        &
+                          A_norms )
       REAL ( KIND = rp_ ) QPA_p_val
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -7769,7 +7783,7 @@
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
       REAL ( KIND = rp_ ), INTENT( IN ) :: t, too_small
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_end ) ::  RES_l
@@ -7787,7 +7801,7 @@
 
       DO i = 1, dims%c_equality
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g + ABS( RES_l( i ) )
         ELSE
           infeas_g = infeas_g + ABS( RES_l( i ) + t * as )
@@ -7798,7 +7812,7 @@
 
       DO i = dims%c_equality + 1, dims%c_l_end
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_l( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_l( i ) + t * as, zero )
@@ -7809,7 +7823,7 @@
 
       DO i = dims%c_u_start, m
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_u( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_u( i ) - t * as, zero )
@@ -7820,7 +7834,7 @@
 
       DO i = dims%x_free + 1, dims%x_l_start - 1
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) + t * as, zero )
@@ -7831,7 +7845,7 @@
 
       DO i = dims%x_l_start, dims%x_l_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ) + t * as, zero )
@@ -7842,7 +7856,7 @@
 
       DO i = dims%x_u_start, dims%x_u_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ) - t * as, zero )
@@ -7853,7 +7867,7 @@
 
       DO i = dims%x_u_end + 1, n
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( - X( i ) - t * as, zero )
@@ -7873,7 +7887,7 @@
 
       SUBROUTINE QPA_p_val_and_slope( dims, n, m, f, g_s, s_hs, rho_g, rho_b,  &
                                       X, X_l, X_u, RES_l, RES_u, S, A_s, t,    &
-                                      t_pert, too_small, REF, m_link,          &
+                                      t_pert, too_small, A_norms, REF, m_link, &
                                       C_stat, B_stat, val, slope )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -7893,7 +7907,7 @@
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
       REAL ( KIND = rp_ ), INTENT( IN ) :: t, t_pert, too_small
       REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_end ) ::  RES_l
@@ -7916,7 +7930,7 @@
 
       DO i = 1, dims%c_equality
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g + ABS( RES_l( i ) )
         ELSE
           infeas_g = infeas_g + ABS( RES_l( i ) + t * as )
@@ -7937,7 +7951,7 @@
 
       DO i = dims%c_equality + 1, dims%c_l_end
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_l( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_l( i ) + t * as, zero )
@@ -7956,7 +7970,7 @@
 
       DO i = dims%c_u_start, m
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_u( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_u( i ) - t * as, zero )
@@ -7975,7 +7989,7 @@
 
       DO i = dims%x_free + 1, dims%x_l_start - 1
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) + t * as, zero )
@@ -7994,7 +8008,7 @@
 
       DO i = dims%x_l_start, dims%x_l_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ) + t * as, zero )
@@ -8013,7 +8027,7 @@
 
       DO i = dims%x_u_start, dims%x_u_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ) - t * as, zero )
@@ -8032,7 +8046,7 @@
 
       DO i = dims%x_u_end + 1, n
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( - X( i ) - t * as, zero )
