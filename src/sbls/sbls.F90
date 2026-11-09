@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:24 GMT.
 
 #include "galahad_modules.h"
 
@@ -4308,6 +4308,12 @@
           END SELECT
           GO TO 900
         END IF
+
+!  a negative rank means that the solver did not report it; the factors are
+!  then taken to be nonsingular
+
+        IF ( inform%SLS_inform%rank < 0 )                                      &
+          inform%SLS_inform%rank = efactors%K%n
         efactors%rank_k = inform%SLS_inform%rank
         IF ( inform%SLS_inform%rank < efactors%K%n ) THEN
           inform%rank_def = .TRUE.
@@ -8148,6 +8154,11 @@
       CALL SLS_enquire( data%efactors%K_data, inform%SLS_inform,               &
                         PIVOTS = P, D = D )
 
+!  some solvers (e.g. PaStiX and MUMPS) cannot provide the pivots and
+!  diagonal blocks; the error status is returned in inform%SLS_inform
+
+      IF ( inform%SLS_inform%status /= GALAHAD_ok ) RETURN
+
       twobytwo = .FALSE.
       dmax = zero
       dmin = HUGE( one )
@@ -8219,6 +8230,11 @@
       IF ( n <= 0 ) RETURN
       rank = data%efactors%rank_k
       CALL SLS_enquire( data%efactors%K_data, inform%SLS_inform, D = D )
+
+!  some solvers (e.g. PaStiX and MUMPS) cannot provide the diagonal blocks;
+!  the error status is returned in inform%SLS_inform
+
+      IF ( inform%SLS_inform%status /= GALAHAD_ok ) RETURN
 
       twobytwo = .FALSE.
       DO i = 1, rank
