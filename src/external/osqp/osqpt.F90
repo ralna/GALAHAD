@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-10-07 AT 15:00 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-08 AT 10:20 GMT
 
 #include "galahad_modules.h"
 
@@ -42,7 +42,7 @@ PROGRAM GALAHAD_OSQP_test
    prob%G = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]        ! objective gradient
    CALL SMT_put( prob%H%type, 'SPARSE_BY_ROWS', status ) ! Specify Hessian
    prob%H%val = [ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ ]   ! H, column storage
-   prob%H%row = [ 1, 2, 2, 3 ]                           ! NB upper triangle =
+   prob%H%col = [ 1, 2, 2, 3 ]                           ! NB upper triangle =
    prob%H%ptr = [ 1, 2, 3, 5 ]                           ! lower triangle byrows
    CALL SMT_put( prob%A%type, 'SPARSE_BY_COLUMNS', status ) ! Specify Jacobian A
    prob%A%val = [ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ ]      ! column storage

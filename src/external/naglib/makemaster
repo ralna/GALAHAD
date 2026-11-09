@@ -44,24 +44,6 @@ RNAGS64T = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 RNAGD64T = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 RNAGQ64T = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 
-#  naglib_dum
-
-naglib_dum_silent: naglib_dum_$(PRECIS)
-nag_dum: naglib_dum_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: naglib_dum ($(PRECIS) $(SUCC)"
-naglib_dum_single: $(NAG_DUMS)
-	$(RANLIB) $(NLGS)
-naglib_dum_double: $(NAG_DUMD)
-	$(RANLIB) $(NLGD)
-naglib_dum_quadruple: $(NAG_DUMQ)
-	$(RANLIB) $(NLGQ)
-naglib_dum_single_64: $(NAG_DUMS64)
-	$(RANLIB) $(NLGS64)
-naglib_dum_double_64: $(NAG_DUMD64)
-	$(RANLIB) $(NLGD64)
-naglib_dum_quadruple_64: $(NAG_DUMQ64)
-	$(RANLIB) $(NLGQ64)
-
 #  naglib
 
 naglib_silent: naglib_$(PRECIS)
@@ -78,6 +60,24 @@ naglib_single_64: $(NAGS64)
 naglib_double_64: $(NAGD64)
 	$(RANLIB) $(NLGD64)
 naglib_quadruple_64: $(NAGQ64)
+	$(RANLIB) $(NLGQ64)
+
+#  naglib_dum
+
+naglib_dum_silent: naglib_dum_$(PRECIS)
+nag_dum: naglib_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: naglib_dum ($(PRECIS) $(SUCC)"
+naglib_dum_single: $(NAG_DUMS)
+	$(RANLIB) $(NLGS)
+naglib_dum_double: $(NAG_DUMD)
+	$(RANLIB) $(NLGD)
+naglib_dum_quadruple: $(NAG_DUMQ)
+	$(RANLIB) $(NLGQ)
+naglib_dum_single_64: $(NAG_DUMS64)
+	$(RANLIB) $(NLGS64)
+naglib_dum_double_64: $(NAG_DUMD64)
+	$(RANLIB) $(NLGD64)
+naglib_dum_quadruple_64: $(NAG_DUMQ64)
 	$(RANLIB) $(NLGQ64)
 
 #  tests

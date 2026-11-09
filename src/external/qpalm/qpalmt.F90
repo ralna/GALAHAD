@@ -1,147 +1,101 @@
-! THIS VERSION: 25/04/2022 AT 13:45 GMT
-! Nick Gould (nick.gould@stfc.ac.uk)
+! THIS VERSION: GALAHAD 5.6 - 2026-11-08 AT 10:20 GMT
 
 #include "galahad_modules.h"
 
-PROGRAM QPALM_example
+PROGRAM GALAHAD_QPALM_test
 
-   USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
-   USE QPALM_fiface
+!  main program to test the GALAHAD interface to the QPALM convex QP package
+
+!  Nick Gould, October 2026
+
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+  USE GALAHAD_QPALM_precision, ONLY: QPALM_data_type, QPALM_control_type,      &
+                                     QPALM_inform_type, QPALM_initialize,      &
+                                     QPALM_solve, QPALM_terminate,             &
+                                     QPT_problem_type, SMT_PUT
+  IMPLICIT NONE
 
 !  local variables
 
-   INTEGER ( KIND = ip_ ) :: i, j, k, l, n_bnds, m_qp, a_ne_qp, status
-   REAL ( KIND = rp_ ) :: f_calc
-!  REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
-   REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 20
+   INTEGER ( KIND = ip_ ) :: status
+   TYPE ( QPT_problem_type ) :: prob
+   TYPE ( QPALM_data_type ) :: data
+   TYPE ( QPALM_control_type ) :: control
+   TYPE ( QPALM_inform_type ) :: inform
 
 !  problem parameters
 
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
-!  INTEGER ( KIND = ip_ ), PARAMETER :: n = 2, m = 1, h_ne = 2, a_ne = 2
-   INTEGER ( KIND = ip_ ), PARAMETER :: ane = 4
-   INTEGER ( KIND = ip_ ), PARAMETER :: m_bnds = 3
-
-!  set problem and solution arrays
-
-   REAL ( KIND = rp_ ) :: f
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, A_ptr_qp
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_row_qp
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_ptr, H_row
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G, X, X_l, X_u
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u, C
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_val_qp, H_val
-   TYPE ( QPALM_settings ) :: settings
-   TYPE ( QPALM_info ) :: info
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
 
 !  input the problem data per GALAHAD's standard QP format
 
-   ALLOCATE( G( n ), X_l( n ), X_u( n ), STAT = status )
-   ALLOCATE( C( m ), C_l( m ), C_u( m ), STAT = status )
-   ALLOCATE( H_val( h_ne ), H_row( h_ne ), H_ptr( n + 1 ), STAT = status )
-   ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ), STAT = status )
+   ALLOCATE( prob%G( n ), prob%X_l( n ), prob%X_u( n ), STAT = status )
+   ALLOCATE( prob%C_l( m ), prob%C_u( m ), prob%X( n ), STAT = status )
+   ALLOCATE( prob%H%val( h_ne ), prob%H%row( h_ne ), prob%H%col( h_ne ),       &
+             STAT = status )
+   ALLOCATE( prob%A%val( a_ne ), prob%A%col( a_ne ), prob%A%ptr( n + 1 ),      &
+             STAT = status )
 
-!IF ( .false. ) THEN
-IF ( .true. ) THEN
-   f = 1.0_rp_                              ! objective constant
-   G = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]        ! objective gradient
-   H_val = [ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ ] ! Hessian H, column storage
-   H_row = [ 1, 2, 2, 3 ]                         ! NB upper triangle
-   H_ptr = [ 1, 2, 3, 5 ] 
-   C_l = [ 1.0_rp_, 2.0_rp_ ]                  ! constraint lower bound
-   C_u = [ 2.0_rp_, 2.0_rp_ ]                  ! constraint upper bound
-   X_l = [ - 1.0_rp_, - infinity, - infinity ] ! variable lower bound
-   X_u = [ 1.0_rp_, infinity, 2.0_rp_ ]        ! variable upper bound
-   A_val = [ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ ] ! Jacobian A, column storage
-   A_row = [ 1, 1, 2, 2 ]
-   A_ptr = [ 1, 2, 4, 5 ]
- ELSE
-   f = -100.0_rp_                              ! objective constant
-   G = [ 0.0_rp_, 0.0_rp_ ]        ! objective gradient
-   H_val = [ 0.02_rp_, 2.0_rp_ ] ! Hessian H, column storage
-   H_row = [ 1, 2 ]                         ! NB upper triangle
-   H_ptr = [ 1, 2, 3 ] 
-   C_l = [ 10.0_rp_ ]                  ! constraint lower bound
-   C_u = [ infinity ]                  ! constraint upper bound
-   X_l = [ 2.0_rp_, - 50.0_rp_ ] ! variable lower bound
-   X_u = [ 50.0_rp_, 50.0_rp_ ]        ! variable upper bound
-   A_val = [ 10.0_rp_, -1.0_rp_ ] ! Jacobian A, column storage
-   A_row = [ 1, 1 ]
-   A_ptr = [ 1, 2, 3 ]
- END IF
+   prob%n = n ; prob%m = m ; prob%A%ne = a_ne ; prob%H%ne = h_ne
+   prob%f = 1.0_rp_                              ! objective constant
+   prob%G = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]        ! objective gradient
+   CALL SMT_put( prob%H%type, 'SPARSE_BY_ROWS', status ) ! Specify Hessian
+   prob%H%val = [ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ ]   ! H, column storage
+   prob%H%col = [ 1, 2, 2, 3 ]                           ! NB upper triangle =
+   prob%H%ptr = [ 1, 2, 3, 5 ]                           ! lower triangle byrows
+   CALL SMT_put( prob%A%type, 'SPARSE_BY_COLUMNS', status ) ! Specify Jacobian A
+   prob%A%val = [ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ ]      ! column storage
+   prob%A%row = [ 1, 1, 2, 2 ]
+   prob%A%ptr =  [ 1, 2, 4, 5 ]                            ! NB row pointers
+   prob%C_l = [ 1.0_rp_, 2.0_rp_ ]                  ! constraint lower bound
+   prob%C_u = [ 2.0_rp_, 2.0_rp_ ]                  ! constraint upper bound
+   prob%X_l = [ - 1.0_rp_, - infinity, - infinity ] ! variable lower bound
+   prob%X_u = [ 1.0_rp_, infinity, 2.0_rp_ ]        ! variable upper bound
+   control%infinity = infinity
 
-!  transfer the data into QPALM's QP format
+!  initialize the control parameters
 
-   n_bnds = COUNT( X_l > -infinity .OR. X_u < infinity )
-   m_qp = m + n_bnds
-   a_ne_qp = a_ne + n_bnds
-   ALLOCATE( A_val_qp( a_ne_qp ), A_row_qp( a_ne_qp ), STAT = status )
-   ALLOCATE( A_ptr_qp( n + 1 ), STAT = status )
-   ALLOCATE( B_l( m_qp ), B_u( m_qp ), X( n ), Y( m_qp ), STAT = status )
-
-!  reset problem constraint data (NB 1-based integer index arrays)
-
-   B_l( : m ) = C_l( : m ) ; B_u( : m ) = C_u( : m )
-   l = 1 ; k = m
-   DO j = 1, n
-     A_ptr_qp( j ) = l
-     DO i = A_ptr( j ),  A_ptr( j + 1 ) - 1
-       A_row_qp( l ) = A_row( i )
-       A_val_qp( l ) = A_val( i )
-       l = l + 1
-     END DO
-     IF ( X_l( j ) > -infinity .OR. X_u( j ) < infinity ) THEN
-       k = k + 1
-       A_row_qp( l ) = k
-       A_val_qp( l ) = 1.0_rp_
-       l = l + 1
-       B_l( k ) = X_l( j ) ; B_u( k ) = X_u( j )
-     END IF
-   END DO
-   A_ptr_qp( n + 1 ) = l
-   DEALLOCATE( X_l, X_u, C_l, C_u, A_ptr, A_row, A_val, STAT = status )
+   CALL QPALM_initialize( data, control, inform )
 
 !  assign non-default settings prior to solution
 
-   settings%verbose = 0
-!  settings%verbose = 1
-  settings%eps_abs = 0.00000000001
-  settings%eps_rel = 0.00000000001
-! settings%scaling = 0
+   control%settings%verbose = 0
+
+!  Reduce stopping tolerances
+
+   control%settings%eps_abs = 0.00000000001
+   control%settings%eps_rel = 0.00000000001
 
 !  solve the problem
 
-   CALL qpalm_fortran( n, m_qp, h_ne, H_ptr, H_row, H_val, g, f,               &
-                       a_ne_qp, A_ptr_qp, A_row_qp, A_val_qp,                  &
-                       B_l, B_u, settings, X, Y, info )
+   CALL QPALM_solve( prob, data, control, inform )
 
-!  report the solution
+!  succesful solve - recover the dual variable as Lagrange multipliers
 
-   IF ( info%status_val == 1 ) THEN
-      WRITE( 6, "( ' problem solved in ', I0, ' iterations, objective =',      &
-      &  ES18.10 )" ) info%iter, info%objective
-      WRITE( 6, "( ' X =', ( 5ES13.5 ) )" ) x
-      WRITE( 6, "( ' Y =', ( 5ES13.5 ) )" ) y
+   WRITE( 6, "( /, ' QPALM solver' )" )
+   IF ( inform%status == 0 ) THEN
+     WRITE( 6, "( ' f:', ES16.8 )" ) inform%obj
+     WRITE( 6, "( ' x:', ( 5ES16.8 ) )" ) prob%X
+     WRITE( 6, "( ' y:', ( 5ES16.8 ) )" ) prob%Y( : m )
+     WRITE( 6, "( ' z:', ( 5ES16.8 ) )" ) prob%Z( : n )
+     WRITE( 6, "( 1X, I0, ' iterations, status = ', I0 ) ")                    &
+       inform%iter, inform%status
 
-   f_calc = f
-   do j = 1, n
-    f_calc = f_calc + G( j ) * X( j )
-    do i = H_ptr( j ), H_ptr( j + 1 ) - 1
-     IF ( H_row( i ) /= i ) THEN
-       f_calc = f_calc + H_val( i ) * X( H_row( i ) ) * X( j )
-     ELSE
-       f_calc = f_calc + 0.5_rp_ * H_val( i ) * X( H_row( i ) ) * X( j )
-     END IF
-    end do
-   end do
-   write(6,*) ' f ', f_calc
+!  unsucessful solve
 
    ELSE
-      WRITE( 6, "( ' error return with status = ', I0 )" ) info%status_val
+     WRITE( 6, "( ' Error return: status = ', I0 )" ) inform%status
    END IF
 
-   DEALLOCATE( X, Y, B_l, B_u, H_ptr, H_row, H_val, G, STAT = status )
-   DEALLOCATE( A_ptr_qp, A_row_qp, A_val_qp, STAT = status )
+!  clean up after the solve
 
-END PROGRAM QPALM_example
+   CALL QPALM_terminate( data, control, inform )
+   DEALLOCATE( prob%X_l, prob%X_u, prob%C_l, prob%C_u, prob%X, prob%Y, prob%Z, &
+               prob%G, STAT = status )
+   DEALLOCATE( prob%A%type, prob%A%ptr, prob%A%col, prob%A%val, STAT = status )
+   DEALLOCATE( prob%H%type, prob%H%val, prob%H%row, prob%H%col, STAT = status )
+   STOP
+
+END PROGRAM GALAHAD_QPALM_test
+ 

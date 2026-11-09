@@ -58,24 +58,6 @@ ROLDHIGHSS64T = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
 ROLDHIGHSD64T = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
 ROLDHIGHSQ64T = $(OBJ)/old_highst.o -L$(OBJ) $(LIBS)
 
-#  highs_dum
-
-highs_dum_silent: highs_dum_$(PRECIS)
-highs_dum: highs_dum_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: highs_dum ($(PRECIS) $(SUCC)"
-highs_dum_single: $(HIGHS_DUMS)
-	$(RANLIB) $(HILGS)
-highs_dum_double: $(HIGHS_DUMD)
-	$(RANLIB) $(HILGD)
-highs_dum_quadruple: $(HIGHS_DUMQ)
-	$(RANLIB) $(HILGQ)
-highs_dum_single_64: $(HIGHS_DUMS64)
-	$(RANLIB) $(HILGS64)
-highs_dum_double_64: $(HIGHS_DUMD64)
-	$(RANLIB) $(HILGD64)
-highs_dum_quadruple_64: $(HIGHS_DUMQ64)
-	$(RANLIB) $(HILGQ64)
-
 #  highs
 
 highs_silent: highs_$(PRECIS)
@@ -92,6 +74,24 @@ highs_single_64: $(HIGHSS64)
 highs_double_64: $(HIGHSD64)
 	$(RANLIB) $(HILGD64)
 highs_quadruple_64: $(HIGHSQ64)
+	$(RANLIB) $(HILGQ64)
+
+#  highs_dum
+
+highs_dum_silent: highs_dum_$(PRECIS)
+highs_dum: highs_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: highs_dum ($(PRECIS) $(SUCC)"
+highs_dum_single: $(HIGHS_DUMS)
+	$(RANLIB) $(HILGS)
+highs_dum_double: $(HIGHS_DUMD)
+	$(RANLIB) $(HILGD)
+highs_dum_quadruple: $(HIGHS_DUMQ)
+	$(RANLIB) $(HILGQ)
+highs_dum_single_64: $(HIGHS_DUMS64)
+	$(RANLIB) $(HILGS64)
+highs_dum_double_64: $(HIGHS_DUMD64)
+	$(RANLIB) $(HILGD64)
+highs_dum_quadruple_64: $(HIGHS_DUMQ64)
 	$(RANLIB) $(HILGQ64)
 
 #  tests
@@ -129,18 +129,6 @@ highssq: $(HIGHSQT)
 	- ../highs/run_highs > ../highs/highsqt.output 2>&1
 	cat ../highs/highsqt.output
 	rm ../highs/run_highs
-
-highs.o: $(LG)(highs.o)
-
-$(LG)(highs.o): ../highs/highs.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "highs  "
-	$(CP) ../highs/highs.F90 $(OBJ)/highs.F90
-	cd $(OBJ); $(FORTRAN) -o highs.o $(FFLAGS) highs.F90
-	cd $(OBJ); $(ARR) highs.o ; $(RM) highs.F90 highs.o
-	$(RMOBFILE) qp_$(PRECIS).o
-	$(RMOBFILE) qpt_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
 
 #  blas and lapack generic packages and interfaces
 
@@ -194,14 +182,15 @@ $(LG)(highs_interface.o): ../highs/highs_interface.F90
           $(RM) highs_interface.F90 highs_interface.o
 	@printf '[ OK ]\n'
 
-osqp.o: $(LG)(osqp.o)
+highs.o: $(LG)(highs.o)
 
-$(LG)(osqp.o): ../osqp/osqp.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "osqp"
-	$(CP) ../osqp/osqp.F90 $(OBJ)/osqp.F90
-	cd $(OBJ); $(FORTRAN) -o osqp.o $(FFLAGS) osqp.F90
-	cd $(OBJ); $(ARR) osqp.o ; $(RM) osqp.F90 osqp.o
-	$(RANLIB) $(LG)
+$(LG)(highs.o): ../highs/highs.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "highs  "
+	$(CP) ../highs/highs.F90 $(OBJ)/highs.F90
+	cd $(OBJ); $(FORTRAN) -o highs.o $(FFLAGS) highs.F90
+	cd $(OBJ); $(ARR) highs.o ; $(RM) highs.F90 highs.o
+	$(RMOBFILE) qp_$(PRECIS).o
+	$(RMOBFILE) qpt_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

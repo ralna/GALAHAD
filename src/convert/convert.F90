@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-09-26 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-09 AT 09:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -1325,10 +1325,10 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_m, A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                    &
                                 DIMENSION( : ) :: A_out_col, A_out_ptr
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -1816,10 +1816,10 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_m, A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                    &
                                 DIMENSION( : ) :: A_out_row, A_out_ptr
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -2307,10 +2307,10 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_m, A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                    &
                                 DIMENSION( : ) :: A_out_row, A_out_col
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -2679,8 +2679,8 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_m, A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -2951,8 +2951,8 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_m, A_out_n, A_out_ne
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_m, A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -3225,10 +3225,10 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                    &
                                 DIMENSION( : ) :: A_out_col, A_out_ptr
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -3643,10 +3643,10 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                    &
                                 DIMENSION( : ) :: A_out_row, A_out_ptr
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -4060,10 +4060,10 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_n, A_out_ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                    &
                                 DIMENSION( : ) :: A_out_row, A_out_col
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -4360,8 +4360,8 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
@@ -4581,8 +4581,8 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: A_out_n, A_out_ne
-      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE,                         &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: A_out_n, A_out_ne
+      REAL ( KIND = rp_ ), INTENT( INOUT ), ALLOCATABLE,                       &
                                 DIMENSION( : ) :: A_out_val
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform

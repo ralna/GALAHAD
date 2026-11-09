@@ -443,8 +443,10 @@ The default is {\tt small = 1E-20}.
 \itt{u}
 is a scalar variable of type \realdp, that specifies the
 relative pivot threshold used in the symmetric
-indefinite case. Values outside of the range $[0,0.5]$ are treated
-as the closest value in that range.
+indefinite case. Values outside of the range $(u_{\min},0.5]$ are treated
+as the closest value in that range, 
+where $u_{\min}$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}.
 The default is {\tt u = 0.01}.
 
 \end{description}

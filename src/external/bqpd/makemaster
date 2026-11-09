@@ -44,24 +44,6 @@ RBQPDS64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
 RBQPDD64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
 RBQPQD64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
 
-#  bqpd_dum
-
-bqpd_dum_silent: bqpd_dum_$(PRECIS)
-bqpd_dum: bqpd_dum_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: bqpd_dum ($(PRECIS) $(SUCC)"
-bqpd_dum_single: $(BQPD_DUMS)
-	$(RANLIB) $(BQLGS)
-bqpd_dum_double: $(BQPD_DUMD)
-	$(RANLIB) $(BQLGD)
-bqpd_dum_quadruple: $(BQPD_DUMQ)
-	$(RANLIB) $(BQLGQ)
-bqpd_dum_single_64: $(BQPD_DUMS64)
-	$(RANLIB) $(BQLGS64)
-bqpd_dum_double_64: $(BQPD_DUMD64)
-	$(RANLIB) $(BQLGD64)
-bqpd_dum_quadruple_64: $(BQPD_DUMQ64)
-	$(RANLIB) $(BQLGQ64)
-
 #  bqpd
 
 bqpd_silent: bqpd_$(PRECIS)
@@ -78,6 +60,24 @@ bqpd_single_64: $(BQPDS64)
 bqpd_double_64: $(BQPDD64)
 	$(RANLIB) $(BQLGD64)
 bqpd_quadruple_64: $(BQPDQ64)
+	$(RANLIB) $(BQLGQ64)
+
+#  bqpd_dum
+
+bqpd_dum_silent: bqpd_dum_$(PRECIS)
+bqpd_dum: bqpd_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: bqpd_dum ($(PRECIS) $(SUCC)"
+bqpd_dum_single: $(BQPD_DUMS)
+	$(RANLIB) $(BQLGS)
+bqpd_dum_double: $(BQPD_DUMD)
+	$(RANLIB) $(BQLGD)
+bqpd_dum_quadruple: $(BQPD_DUMQ)
+	$(RANLIB) $(BQLGQ)
+bqpd_dum_single_64: $(BQPD_DUMS64)
+	$(RANLIB) $(BQLGS64)
+bqpd_dum_double_64: $(BQPD_DUMD64)
+	$(RANLIB) $(BQLGD64)
+bqpd_dum_quadruple_64: $(BQPD_DUMQ64)
 	$(RANLIB) $(BQLGQ64)
 
 #  tests

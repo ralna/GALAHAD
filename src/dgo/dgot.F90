@@ -19,8 +19,8 @@
    nlp%pname = 'DGOSPEC'                        ! name
    nlp%n = n ; nlp%H%ne = h_ne                  ! dimensions
    ALLOCATE( nlp%X( n ), nlp%G( n ), nlp%X_l( n ), nlp%X_u( n ) )
-!  nlp%X_l = -10.0_rp_ ; nlp%X_u = 0.5_rp_ ! search in [-10,1/2]
-   nlp%X_l = -1.0_rp_ ; nlp%X_u = 0.5_rp_ ! search in [-10,1/2]
+   nlp%X_l = -10.0_rp_ ; nlp%X_u = 0.5_rp_ ! search in [-10,1/2]
+!  nlp%X_l = -1.0_rp_ ; nlp%X_u = 0.5_rp_ ! search in [-10,1/2]
    nlp%X = 0.0_rp_  ! start from 1.0
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
@@ -36,6 +36,7 @@
    control%out = scratch_out ; control%error = scratch_out
    control%print_level = 101
 !  control%attempts_max = 10000
+!  control%maxit = 50000
    control%maxit = 1000
    control%max_evals = 2000
 ! Solve the problem

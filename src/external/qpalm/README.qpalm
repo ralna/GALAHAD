@@ -9,7 +9,7 @@ GALAHAD relies on two environment variables,
 and if QPALM has not been installed, these 
 are set by default as
 
-  QPALMINCLUDE = $(GALAHAD)/src/dum/include
+  QPALMINCLUDE =
   QPALM = -lgalahad_qpalm
 
 This allows GALAHAD to function, but any attempt

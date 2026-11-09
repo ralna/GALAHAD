@@ -59,7 +59,7 @@ make_bnls:
 
 make_bpmpd:
 	( cd $(GALAHAD)/src/external/bpmpd ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bpmpd.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bpmpd_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/bpmpd )
 
 make_bqp:
@@ -74,7 +74,7 @@ make_bqpb:
 
 make_bqpd:
 	( cd $(GALAHAD)/src/external/bqpd ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpd.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpd_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/bqpd )
 
 make_bsc:
@@ -262,7 +262,7 @@ make_hash:
 
 make_highs:
 	( cd $(GALAHAD)/src/external/highs ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) highs.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) highs_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/highs )
 
 make_hw:
@@ -424,7 +424,7 @@ make_nlpt:
 
 make_naglib:
 	( cd $(GALAHAD)/src/external/naglib ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) naglib_interface.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) naglib_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/naglib )
 
 make_nls:
@@ -455,7 +455,7 @@ make_opt:
 
 make_osqp:
 	( cd $(GALAHAD)/src/external/osqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) osqp.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) osqp_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/osqp )
 
 make_pdqp:
@@ -498,7 +498,7 @@ make_qpa:
 
 make_qpalm:
 	( cd $(GALAHAD)/src/external/qpalm ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpalm.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpalm_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/qpalm )
 
 make_qpb:
@@ -529,7 +529,7 @@ make_qpf:
 
 make_qpoases:
 	( cd $(GALAHAD)/src/external/qpoases ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpoases.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpoases_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/qpoases )
 
 make_qpp:

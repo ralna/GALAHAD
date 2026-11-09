@@ -14,8 +14,9 @@
 !  CHARACTER ( LEN = 20 ) :: solver = "cqp" // REPEAT( ' ', 17 )
 !  CHARACTER ( LEN = 20 ) :: solver = "bpmpd" // REPEAT( ' ', 15 )
 !  CHARACTER ( LEN = 20 ) :: solver = "bqpd" // REPEAT( ' ', 16 )
-   CHARACTER ( LEN = 20 ) :: solver = "highs" // REPEAT( ' ', 15 )
+!  CHARACTER ( LEN = 20 ) :: solver = "highs" // REPEAT( ' ', 15 )
 !  CHARACTER ( LEN = 20 ) :: solver = "osqp" // REPEAT( ' ', 16 )
+   CHARACTER ( LEN = 20 ) :: solver = "qpalm" // REPEAT( ' ', 15 )
 !  CHARACTER ( LEN = 20 ) :: solver = "e04nqf" // REPEAT( ' ', 14 )
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )

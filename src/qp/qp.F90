@@ -137,6 +137,9 @@
       USE GALAHAD_OSQP_precision, ONLY: OSQP_data_type, OSQP_control_type,     &
                                         OSQP_inform_type, OSQP_initialize,     &
                                         OSQP_solve, OSQP_terminate
+      USE GALAHAD_QPALM_precision, ONLY: QPALM_data_type, QPALM_control_type,  &
+                                         QPALM_inform_type, QPALM_initialize,  &
+                                         QPALM_solve, QPALM_terminate
 
       IMPLICIT NONE ( TYPE, EXTERNAL )
 
@@ -286,6 +289,10 @@
 
         TYPE ( OSQP_control_type ) :: OSQP_control
 
+!  control parameters for QPALM
+
+        TYPE ( QPALM_control_type ) :: QPALM_control
+
       END TYPE QP_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -423,6 +430,10 @@
 
         TYPE ( OSQP_inform_type ) :: OSQP_inform
 
+!  inform parameters for QPALM
+
+        TYPE ( QPALM_inform_type ) :: QPALM_inform
+
       END TYPE QP_inform_type
 
 !  - - - - - - - - - - - - - - - - - - - - --
@@ -434,16 +445,6 @@
         LOGICAL :: new_structure = .TRUE.
         TYPE ( SMT_type ) :: A, H
       END TYPE QP_CLARABEL_data_type
-
-!  - - - - - - - - - - - - - - - - - - -
-!   extended data derived type for QPALM
-!  - - - - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: QP_QPALM_data_type
-        LOGICAL :: original_a, original_h
-        LOGICAL :: new_structure = .TRUE.
-        TYPE ( SMT_type ) :: A, H
-      END TYPE QP_QPALM_data_type
 
 !  - - - - - - - - - - - - - - - - - - - -
 !   extended data derived type for QPOASES
@@ -481,9 +482,10 @@
         TYPE ( QPD_data_type ) :: QPD_data
         TYPE ( BPMPD_data_type ) :: BPMPD_data
         TYPE ( BQPD_data_type ) :: BQPD_data
+        TYPE ( E04NQF_data_type ) :: E04NQF_data
         TYPE ( HIGHS_data_type ) :: HIGHS_data
         TYPE ( OSQP_data_type ) :: OSQP_data
-        TYPE ( E04NQF_data_type ) :: E04NQF_data
+        TYPE ( QPALM_data_type ) :: QPALM_data
       END TYPE QP_data_type
 
    CONTAINS
@@ -594,6 +596,13 @@
                               inform%OSQP_inform )
         control%OSQP_control%settings%verbose = 0
         control%OSQP_control%settings%linsys_solver = 1
+
+!  == QPALM ==
+
+      CASE ( 'qpalm', 'QPALM' )
+        CALL QPALM_initialize( data%QPALM_data, control%QPALM_control,         &
+                               inform%QPALM_inform )
+        control%QPALM_control%settings%verbose = 0
       END SELECT
 
       inform%status = GALAHAD_ok
@@ -1716,6 +1725,21 @@
 !  == QPALM ==
 
         CASE ( 'qpalm', 'QPALM' )
+          IF ( printi ) WRITE( control%out,                                    &
+              "( A, ' ** QPALM solver used **' )" ) prefix
+          CALL QPALM_solve( prob, data%QPALM_data, control%QPALM_control,      &
+                            inform%QPALM_inform )
+          inform%status = inform%QPALM_inform%status
+          inform%iter = inform%QPALM_inform%iter
+          inform%obj = inform%QPALM_inform%obj
+          inform%primal_infeasibility = inform%QPALM_inform%info%pri_res_norm
+          inform%dual_infeasibility = inform%QPALM_inform%info%dua_res_norm
+!         inform%complementary_slackness = inform%QPALM_inform%info%duality_gap
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            IF ( printi ) WRITE( control%out, "( A,                            &
+           &  ' QPALM solve error status = ', I0 )" ) prefix, inform%status
+            GO TO 800
+          END IF
 
 !  == qpOASES ==
 
@@ -1938,31 +1962,6 @@
 !!$!  End of QP_clarabel_solve
 !!$
 !!$      END SUBROUTINE QP_clarabel_solve
-
-!-*-*-*-*-*-*-   Q P _ Q P A L M _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
-
-!!$      SUBROUTINE QP_QPALM_solve( prob, data, settings, info, out )
-!!$
-!!$!  solve the quadratic program using the QPALM package
-!!$
-!!$!  A - by columns
-!!$!  H - upper triangle by columns
-!!$
-!!$!  dummy arguments
-!!$
-!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-!!$      TYPE ( QP_QPALM_data_type ), INTENT( INOUT ) :: data
-!!$      TYPE ( QPALM_control_type ), INTENT( IN ) :: control
-!!$      TYPE ( QPALM_inform_type ), INTENT( OUT ) :: inform
-!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-!!$
-!!$!  local variables
-!!$
-!!$      RETURN
-!!$
-!!$!  End of QP_qpALM_solve
-!!$
-!!$      END SUBROUTINE QP_qpALM_solve
 !!$
 !!$!-*-*-*-*-*-*-   Q P _ qpOASES _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
 !!$
@@ -2194,6 +2193,13 @@
 !  == QPALM ==
 
       CASE ( 'qpalm', 'QPALM' )
+        CALL QPALM_terminate( data%QPALM_data, control%QPALM_control,          &
+                              inform%QPALM_inform )
+        IF ( inform%QPALM_inform%status == GALAHAD_error_deallocate ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%QPALM_inform%alloc_status
+          inform%bad_alloc = inform%QPALM_inform%bad_alloc
+        END IF
 
 !  == qpOASES ==
 

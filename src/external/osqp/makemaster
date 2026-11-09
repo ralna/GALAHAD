@@ -58,24 +58,6 @@ ROLDOSQPS64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
 ROLDOSQPD64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
 ROLDOSQPQ64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
 
-#  osqp_dum
-
-osqp_dum_silent: osqp_dum_$(PRECIS)
-osqp_dum: osqp_dum_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: osqp_dum ($(PRECIS) $(SUCC)"
-osqp_dum_single: $(OSQP_DUMS)
-	$(RANLIB) $(OSLGS)
-osqp_dum_double: $(OSQP_DUMD)
-	$(RANLIB) $(OSLGD)
-osqp_dum_quadruple: $(OSQP_DUMQ)
-	$(RANLIB) $(OSLGQ)
-osqp_dum_single_64: $(OSQP_DUMS64)
-	$(RANLIB) $(OSLGS64)
-osqp_dum_double_64: $(OSQP_DUMD64)
-	$(RANLIB) $(OSLGD64)
-osqp_dum_quadruple_64: $(OSQP_DUMQ64)
-	$(RANLIB) $(OSLGQ64)
-
 #  osqp
 
 osqp_silent: osqp_$(PRECIS)
@@ -92,6 +74,24 @@ osqp_single_64: $(OSQPS64)
 osqp_double_64: $(OSQPD64)
 	$(RANLIB) $(OSLGD64)
 osqp_quadruple_64: $(OSQPQ64)
+	$(RANLIB) $(OSLGQ64)
+
+#  osqp_dum
+
+osqp_dum_silent: osqp_dum_$(PRECIS)
+osqp_dum: osqp_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: osqp_dum ($(PRECIS) $(SUCC)"
+osqp_dum_single: $(OSQP_DUMS)
+	$(RANLIB) $(OSLGS)
+osqp_dum_double: $(OSQP_DUMD)
+	$(RANLIB) $(OSLGD)
+osqp_dum_quadruple: $(OSQP_DUMQ)
+	$(RANLIB) $(OSLGQ)
+osqp_dum_single_64: $(OSQP_DUMS64)
+	$(RANLIB) $(OSLGS64)
+osqp_dum_double_64: $(OSQP_DUMD64)
+	$(RANLIB) $(OSLGD64)
+osqp_dum_quadruple_64: $(OSQP_DUMQ64)
 	$(RANLIB) $(OSLGQ64)
 
 #  tests

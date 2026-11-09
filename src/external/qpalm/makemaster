@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(QPALM) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(QPALM) $(LAPACK) $(BLAS)
 NLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
@@ -37,6 +37,13 @@ QPALMS64T = $(QPALMS64) $(OBJ)/qpalmt.o
 QPALMD64T = $(QPALMD64) $(OBJ)/qpalmt.o
 QPALMQ64T = $(QPALMQ64) $(OBJ)/qpalmt.o
 
+OLDQPALMST = $(QPALMS) $(OBJ)/old_qpalmt.o
+OLDQPALMDT = $(QPALMD) $(OBJ)/old_qpalmt.o
+OLDQPALMQT = $(QPALMQ) $(OBJ)/old_qpalmt.o
+OLDQPALMS64T = $(QPALMS64) $(OBJ)/old_qpalmt.o
+OLDQPALMD64T = $(QPALMD64) $(OBJ)/old_qpalmt.o
+OLDQPALMQ64T = $(QPALMQ64) $(OBJ)/old_qpalmt.o
+
 RQPALMST = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 RQPALMDT = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 RQPALMQT = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
@@ -44,23 +51,12 @@ RQPALMS64T = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 RQPALMD64T = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 RQPALMDQ64 = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 
-#  qpalm_dum
-
-qpalm_dum_silent: qpalm_dum_$(PRECIS)
-qpalm_dum: qpalm_dum_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: qpalm_dum ($(PRECIS) $(SUCC)"
-qpalm_dum_single: $(QPALM_DUMS)
-	$(RANLIB) $(QALGS)
-qpalm_dum_double: $(QPALM_DUMD)
-	$(RANLIB) $(QALGD)
-qpalm_dum_quadruple: $(QPALM_DUMQ)
-	$(RANLIB) $(QALGQ)
-qpalm_dum_single_64: $(QPALM_DUMS64)
-	$(RANLIB) $(QALGS64)
-qpalm_dum_double_64: $(QPALM_DUMD64)
-	$(RANLIB) $(QALGD64)
-qpalm_dum_quadruple_64: $(QPALM_DUMQ64)
-	$(RANLIB) $(QALGQ64)
+ROLDQPALMST = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMDT = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMQT = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMS64T = $(OBJold_)/qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMD64T = $(OBJold_)/qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMDQ64 = $(OBJold_)/qpalmt.o -L$(OBJ) $(LIBS)
 
 #  qpalm
 
@@ -80,12 +76,39 @@ qpalm_double_64: $(QPALMD64)
 qpalm_quadruple_64: $(QPALMQ64)
 	$(RANLIB) $(QALGQ64)
 
+#  qpalm_dum
+
+qpalm_dum_silent: qpalm_dum_$(PRECIS)
+qpalm_dum: qpalm_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: qpalm_dum ($(PRECIS) $(SUCC)"
+qpalm_dum_single: $(QPALM_DUMS)
+	$(RANLIB) $(QALGS)
+qpalm_dum_double: $(QPALM_DUMD)
+	$(RANLIB) $(QALGD)
+qpalm_dum_quadruple: $(QPALM_DUMQ)
+	$(RANLIB) $(QALGQ)
+qpalm_dum_single_64: $(QPALM_DUMS64)
+	$(RANLIB) $(QALGS64)
+qpalm_dum_double_64: $(QPALM_DUMD64)
+	$(RANLIB) $(QALGD64)
+qpalm_dum_quadruple_64: $(QPALM_DUMQ64)
+	$(RANLIB) $(QALGQ64)
+
 #  tests
 
 qpalmdt: $(QPALMDT)
 	echo " Exhaustive test of subroutine interface to qpalm"
 	cd ../qpalm ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpalm \
                          $(RQPALMDT)
+#	- ../qpalm/run_qpalm > ../qpalm/qpalmdt.output 2>&1
+#	cat ../qpalm/qpalmdt.output
+	- ../qpalm/run_qpalm
+	rm ../qpalm/run_qpalm
+
+old_qpalmdt: $(OLDQPALMDT)
+	echo " Exhaustive test of subroutine interface to old qpalm"
+	cd ../qpalm ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpalm \
+                         $(ROLDQPALMDT)
 #	- ../qpalm/run_qpalm > ../qpalm/qpalmdt.output 2>&1
 #	cat ../qpalm/qpalmdt.output
 	- ../qpalm/run_qpalm
@@ -135,7 +158,7 @@ lapack_inter:
 
 #  individual compilations
 
-qpalm.o: $(QALG)(qpalm.o)
+qpalm_dummy.o: $(QALG)(qpalm.o)
 
 $(QALG)(qpalm.o): ../../dum/qpalm.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy qpalm"
@@ -143,6 +166,18 @@ $(QALG)(qpalm.o): ../../dum/qpalm.F90
 	cd $(OBJ); $(FORTRAN) -o qpalm.o $(FFLAGS) qpalm.F90
 	cd $(OBJ); $(QAARR) qpalm.o ; $(RM) qpalm.F90 qpalm.o
 	$(RANLIB) $(QALG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+qpalm.o: $(LG)(qpalm.o)
+
+$(LG)(qpalm.o): ../qpalm/qpalm.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "qpalm"
+#	$(RM) $(MOD)/qpalm_fiface.mod
+	$(CP) ../qpalm/qpalm.F90 $(OBJ)/qpalm.F90
+	cd $(OBJ); $(FORTRAN) -o qpalm.o -I$(QPALMINCLUDE) $(FFLAGS) qpalm.F90
+	cd $(OBJ); $(ARR) qpalm.o ; $(RM) qpalm.F90 qpalm.o
+	$(RANLIB) $(LG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -154,6 +189,15 @@ $(OBJ)/qpalmt.o: ../qpalm/qpalmt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "qpalmt  "
 	$(SED) -f $(SEDS) ../qpalm/qpalmt.F90 > $(OBJ)/qpalmt.F90
 	cd $(OBJ) ; $(FORTRAN) -o qpalmt.o -I$(QPALMINCLUDE) $(FFLAGSS) qpalmt.F90
+	@printf '[ OK ]\n'
+
+old_qpalmt.o: $(OBJ)/old_qpalmt.o
+
+$(OBJ)/old_qpalmt.o: ../qpalm/old_qpalmt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "old_qpalmt  "
+	$(SED) -f $(SEDS) ../qpalm/old_qpalmt.F90 > $(OBJ)/old_qpalmt.F90
+	cd $(OBJ) ; $(FORTRAN) -o old_qpalmt.o -I$(QPALMINCLUDE) \
+                      $(FFLAGSS) old_qpalmt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
