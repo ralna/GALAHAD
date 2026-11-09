@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 10:08 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 11:57 GMT.
 
 #include "galahad_modules.h"
 
@@ -3036,6 +3036,7 @@
       INTEGER ( KIND = ip_ ) :: QPA_delete_constraint_status
       INTEGER ( KIND = ip_ ) :: QPA_add_constraint_status
       REAL ( KIND = rp_ ) :: g_s, s_hs, t_opt, mult, hmax, G_perturb
+      REAL ( KIND = rp_ ) :: q_eqp, q_x, s_max
       REAL ( KIND = rp_ ) :: last_infeas_g, last_infeas_b
       REAL ( KIND = rp_ ) :: a_x, mult_min, mult_max, ats, mult_zero, res_max
       REAL ( KIND = rp_ ) :: inner_stop_absolute, inner_stop_relative
@@ -3045,6 +3046,7 @@
       LOGICAL :: set_printt, set_printi, set_printm, set_printd, set_printe
       LOGICAL :: printt, printi, printm, printd, printe, warmer_start
       LOGICAL :: stop_now, negative_curvature, G_eq_H, minor_start
+      LOGICAL :: indefinite
       LOGICAL :: x_r0, y0, x_f0, z0, still_adding
       LOGICAL :: move_infeasible, move_infeas, check_dependent
       CHARACTER ( LEN = 1 ) :: mo
@@ -3382,7 +3384,7 @@
                     dims, n, m, jumpto_factorize_reference,                    &
                     k_n_max, print_level, m_link, max_col, factor, precon,     &
                     nsemib, hmax, G_perturb, out, prec_hist, printi, printt,   &
-                    printe, G_eq_H, auto_prec, auto_fact,                      &
+                    printe, G_eq_H, indefinite, auto_prec, auto_fact,          &
                     check_dependent, mo, PERM, REF, C_stat, B_stat,            &
                     A_ptr, A_col, H_ptr, H_col, A_val, H_val, K, K_part, S,    &
                     Abycol_row, Abycol_ptr, S_row, S_col, S_colptr,            &
@@ -3563,7 +3565,15 @@
 !           write(6,"('============ warmer start !!! ')" )
             warmer_start = .FALSE.
 
-!  Since this is the first iteration, solve the current EQP
+!  Since this is the first iteration, solve the current EQP. If the
+!  preconditioner G is H, the factorization gives its solution directly.
+!  Otherwise (for instance if H has been perturbed as it is not positive
+!  definite on the working set), the solution of the EQP with G in place of
+!  H is a good starting point when G is close to H, but it may be worse
+!  than X, and if the EQP is nonconvex the latter has no solution. So also
+!  move X onto the working set (using the smallest change in the G norm),
+!  and start the minimization of the quadratic from whichever of these two
+!  points gives the smaller objective value
 
             IF ( inform%iter <= 1 ) THEN
               S( : n ) = - G
@@ -3602,6 +3612,11 @@
               END DO
 !             write( 6, "( I6, ES12.4 )" ) ( i, S( i ), i = 1, K_part%k_ref )
 
+!  record the values of the working constraints for later use
+
+              IF ( .NOT. G_eq_H .AND. indefinite )                             &
+                DX( : K_part%m_ref ) = S( n + 1 : n + K_part%m_ref )
+
 !  Find a point that satisfies the constraints
 
               S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
@@ -3614,7 +3629,103 @@
               IF ( printm ) WRITE( out, "( ' ' )" )
 
               S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
-              X = S( : n )
+              IF ( G_eq_H .OR. .NOT. indefinite ) THEN
+                X = S( : n )
+              ELSE
+
+!  record the solution of the EQP with G in place of H, and its objective value
+
+                VECTOR( : n ) = S( : n )
+                H_s( : n ) = zero
+                CALL QPA_HX( dims, n, H_s( : n ), H_ptr( n + 1 ) - 1,         &
+                             H_val, H_col, H_ptr, VECTOR( : n ), '+' )
+                q_eqp = DOT_PRODUCT( VECTOR( : n ),                           &
+                                     half * H_s( : n ) + G( : n ) )
+
+!  now move X onto the working set; the right-hand side is the residual of
+!  the working constraints at X
+
+                S( : n ) = zero
+                DO i = 1, K_part%m_ref
+                  j = REF( i )
+                  IF ( j <= m ) THEN
+                    a_x = zero
+                    DO ii = A_ptr( j ), A_ptr( j + 1 ) - 1
+                      a_x = a_x + A_val( ii ) * X( A_col( ii ) )
+                    END DO
+                    S( n + i ) = DX( i ) - a_x
+                  ELSE
+                    S( n + i ) = DX( i ) - X( j - m )
+                  END IF
+                END DO
+                S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
+                x_r0 = .FALSE. ; y0 = .FALSE. ; x_f0 = .FALSE. ; z0 = .FALSE.
+                CALL QPA_ir( K, SLS_data, K_part, S_perm( : K_part%k_ref ),    &
+                             B( : K_part%k_ref ), RES( : K_part%k_ref ),       &
+                             x_r0, y0, x_f0, z0, SLS_control, itref_max + 1,   &
+                             out, printm, RES_print, inform )
+                inform%factorization_status = inform%status
+                S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
+                S( : n ) = X + S( : n )
+                H_s( : n ) = zero
+                CALL QPA_HX( dims, n, H_s( : n ), H_ptr( n + 1 ) - 1,         &
+                             H_val, H_col, H_ptr, S( : n ), '+' )
+                q_x = DOT_PRODUCT( S( : n ), half * H_s( : n ) + G( : n ) )
+
+!  start from the better of the two
+
+                IF ( q_x < q_eqp ) THEN
+                  X = S( : n )
+                ELSE
+                  X = VECTOR( : n )
+                END IF
+
+!  if X is (nearly) a stationary point of the quadratic on the working set,
+!  the minimization cannot make progress from it, even though H is not
+!  positive definite there. Find the projected gradient (in the G norm)
+
+                H_s( : n ) = zero
+                CALL QPA_HX( dims, n, H_s( : n ), H_ptr( n + 1 ) - 1,         &
+                             H_val, H_col, H_ptr, X, '+' )
+                H_s( : n ) = - H_s( : n ) - G( : n )
+                S( : n ) = H_s( : n ) ; S( n + 1 : K_part%k_ref ) = zero
+                S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
+                x_r0 = .FALSE. ; y0 = .FALSE. ; x_f0 = .FALSE. ; z0 = .FALSE.
+                CALL QPA_ir( K, SLS_data, K_part, S_perm( : K_part%k_ref ),    &
+                             B( : K_part%k_ref ), RES( : K_part%k_ref ),       &
+                             x_r0, y0, x_f0, z0, SLS_control, itref_max + 1,   &
+                             out, printm, RES_print, inform )
+                S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
+
+!  if so, move X a small distance along a (fixed, arbitrary) direction in
+!  the working set, so that negative curvature may be detected from there
+
+                IF ( SQRT( ABS( DOT_PRODUCT( H_s( : n ), S( : n ) ) ) )        &
+                       <= SQRT( epsmch ) ) THEN
+                  DO i = 1, n
+                    S( i ) = SIN( REAL( i, KIND = rp_ ) )
+                  END DO
+                  S( n + 1 : K_part%k_ref ) = zero
+                  S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
+                  x_r0 = .FALSE. ; y0 = .FALSE. ; x_f0 = .FALSE. ; z0 = .FALSE.
+                  CALL QPA_ir( K, SLS_data, K_part,                            &
+                               S_perm( : K_part%k_ref ),                       &
+                               B( : K_part%k_ref ), RES( : K_part%k_ref ),     &
+                               x_r0, y0, x_f0, z0, SLS_control,                &
+                               itref_max + 1, out, printm, RES_print, inform )
+                  S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
+                  s_max = MAXVAL( ABS( S( : n ) ) )
+                  IF ( s_max > zero ) THEN
+                    X = X + ( epsmch ** 0.25                                   &
+                              * MAX( one, MAXVAL( ABS( X ) ) ) / s_max )       &
+                            * S( : n )
+                    IF ( printi ) WRITE( out, "( A, ' stationary starting',   &
+                   &  ' point with H indefinite: moving away from it' )" )     &
+                      prefix
+                  END IF
+                END IF
+                inform%factorization_status = inform%status
+              END IF
 
 !  From this point, try to minimize the quadratic on the current working set
 
@@ -9981,7 +10092,8 @@ main: DO
       SUBROUTINE QPA_factorize_reference(                                      &
                     dims, n, m, jumpto, k_n_max, print_level, &
                     m_link, max_col, factor, precon, nsemib, hmax, G_perturb,  &
-                    out, prec_hist, printi, printt, printe, G_eq_H, auto_prec, &
+                    out, prec_hist, printi, printt, printe, G_eq_H,            &
+                    indefinite, auto_prec,                                     &
                     auto_fact, check_dependent, mo, PERM, REF, C_stat, B_stat, &
                     A_ptr, A_col, H_ptr, H_col, A_val, H_val, K, K_part, S,    &
                     Abycol_row, Abycol_ptr, S_row, S_col, S_colptr,            &
@@ -10003,6 +10115,11 @@ main: DO
       REAL ( KIND = rp_ ), INTENT( INOUT ) :: G_perturb
       LOGICAL, INTENT( IN ) :: printi, printt, printe
       LOGICAL, INTENT( INOUT ) :: G_eq_H
+
+!  indefinite is set .TRUE. if the factorization of the reference matrix
+!  showed that H is not positive definite on the working set
+
+      LOGICAL, INTENT( OUT ) :: indefinite
       LOGICAL, INTENT( INOUT ) :: auto_prec, auto_fact, check_dependent
       CHARACTER ( LEN = 1 ), INTENT( INOUT ) :: mo
 
@@ -10098,6 +10215,7 @@ main: DO
       DO i = K_part%k_ref + 1, k_n_max + control%max_sc
         PERM( i ) = i
       END DO
+      indefinite = .FALSE.
 
 !  Print a header indicating the method selected
 
@@ -11508,6 +11626,7 @@ main: DO
 !  Test that the problem is convex in the null-space of the constraints
 
         modify_k = zeig + inform%SLS_inform%negative_eigenvalues > K_part%c_ref
+        IF ( modify_k .AND. G_eq_H ) indefinite = .TRUE.
 
 !  As a precaution, check that the pivots are not too small
 
