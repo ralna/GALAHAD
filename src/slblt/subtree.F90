@@ -79,6 +79,11 @@
 
      PROCEDURE( solve_proc_iface ), DEFERRED :: solve_bwd
 
+!  multiply by D^{-1/2} for a positive-definite factor stored as L D L^T with
+!  unit L, so that partial solves use the Cholesky factor L D^{1/2}
+
+     PROCEDURE( solve_proc_iface ), DEFERRED :: solve_sqrt_diag
+
 !  free associated memory/resources
 
      PROCEDURE( numeric_cleanup_iface ), DEFERRED :: cleanup
