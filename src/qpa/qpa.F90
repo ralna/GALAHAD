@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 16:44 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 08:08 GMT.
 
 #include "galahad_modules.h"
 
@@ -4232,7 +4232,7 @@
 !  simple bound from below and above
 
             DO i = dims%x_u_start, dims%x_l_end
-              IF ( ABS( m + i ) == j_del ) THEN
+              IF ( m + i == ABS( j_del ) ) THEN
                 IF ( move_infeasible ) THEN
                   IF ( j_del < 0 ) THEN
                     RHS( i ) = RHS( i ) + rho_b
