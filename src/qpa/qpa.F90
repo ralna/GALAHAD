@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 12:20 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 15:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -4569,14 +4569,18 @@
               gzero = teneps * s_norm * g_scale
               hzero = teneps * s_norm ** 2 * h_max
 
-!  Perform the linesearch
+!  Perform the linesearch. A constraint whose normal makes an angle with s
+!  whose cosine is at most epsmch ** 0.4 is regarded as unaffected by the
+!  step; this is the threshold below which QPA_most_independent will not
+!  add a constraint to the working set, so that every breakpoint found by
+!  the linesearch may be added
 
               CALL QPA_linesearch( dims, n, m, inform%obj, g_s, s_hs, s_norm,  &
                                   rho_g, rho_b, X, X_l, X_u, RES_l, RES_u,     &
                                   S( : n ), A_s, A_norms,                      &
                                   C_stat, B_stat, REF, IBREAK, BREAKP, lbreak, &
                                   m_link, out, printt, printm, printd, t_opt,  &
-                                  too_small_a_s * s_norm, gzero, hzero,        &
+                                  epsmch ** 0.4 * s_norm, gzero, hzero,        &
                                   active, linesearch_inform )
 
 !  The problem is unbounded from below
@@ -7829,6 +7833,9 @@
 
       INTEGER ( KIND = ip_ ) :: i, j
       REAL ( KIND = rp_ ) :: cos_current, small_cos, small_cosine
+
+!  NB. the linesearch uses the same threshold, and they should be changed
+!  together
 
       small_cosine = epsmch ** 0.4
       cos_best = zero
