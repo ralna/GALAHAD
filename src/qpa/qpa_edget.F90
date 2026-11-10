@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.1 - 2026-11-09 AT 16:48 GMT.
+! THIS VERSION: GALAHAD 5.6.1 - 2026-11-10 AT 07:43 GMT.
 !
 ! Edge-case and reliability tests for QPA. Every solution is checked
 ! independently of QPA through the KKT conditions of the original problem
@@ -76,6 +76,9 @@
 
    WRITE( 6, "( /, ' -- randomized problems with planted solutions --' )" )
    CALL case_planted_sweep( )
+
+   WRITE( 6, "( /, ' -- duplicated entries in H and A --' )" )
+   CALL case_duplicates( )
 
    WRITE( 6, "( /, ' -- extreme scaling and infinite bounds --' )" )
    CALL case_scaling_and_bounds( )
@@ -258,7 +261,7 @@
 !  =========================================================================
 
    SUBROUTINE solve( qp, control, res, x0, c_stat0, b_stat0, n_override,     &
-                     m_override, rho )
+                     m_override, rho, restored )
    TYPE ( qp_type ), INTENT( IN ) :: qp
    TYPE ( QPA_control_type ), INTENT( IN ) :: control
    TYPE ( result_type ), INTENT( OUT ) :: res
@@ -266,6 +269,7 @@
    INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: c_stat0( : ), b_stat0( : )
    INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: n_override, m_override
    REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: rho
+   LOGICAL, OPTIONAL, INTENT( OUT ) :: restored
    TYPE ( QPT_problem_type ) :: p
    TYPE ( QPA_data_type ) :: data
    TYPE ( QPA_control_type ) :: ctrl
@@ -319,6 +323,18 @@
    res%num_g_infeas = inform%num_g_infeas
    res%num_b_infeas = inform%num_b_infeas
    res%x = p%X ; res%z = p%Z ; res%y = p%Y
+!  check that the values of H and A given to QPA have been restored exactly
+   IF ( PRESENT( restored ) ) THEN
+     restored = p%H%ne == qp%h_ne .AND. p%A%ne == qp%a_ne
+     IF ( restored .AND. qp%h_ne > 0 ) restored =                              &
+       ALL( p%H%val( : qp%h_ne ) == qp%h_val( : qp%h_ne ) ) .AND.              &
+       ALL( p%H%row( : qp%h_ne ) == qp%h_row( : qp%h_ne ) ) .AND.              &
+       ALL( p%H%col( : qp%h_ne ) == qp%h_col( : qp%h_ne ) )
+     IF ( restored .AND. qp%a_ne > 0 ) restored =                              &
+       ALL( p%A%val( : qp%a_ne ) == qp%a_val( : qp%a_ne ) ) .AND.              &
+       ALL( p%A%row( : qp%a_ne ) == qp%a_row( : qp%a_ne ) ) .AND.              &
+       ALL( p%A%col( : qp%a_ne ) == qp%a_col( : qp%a_ne ) )
+   END IF
    CALL QPA_terminate( data, ctrl, inform )
    END SUBROUTINE solve
 
@@ -817,6 +833,72 @@
    CALL solve( qp, control, res )
    CALL check( qp, res, 'row whose variables are all fixed (lower bound)' )
    END SUBROUTINE case_fixed_variables
+
+!  =========================================================================
+!  duplicated entries in H and A, which should be summed: every entry of a
+!  random problem with a planted solution is split into two halves, given as
+!  separate entries; the solution must be that of the original problem, and
+!  the data given to QPA must be restored on exit
+!  =========================================================================
+
+   SUBROUTINE case_duplicates( )
+   TYPE ( qp_type ) :: qp, qpd
+   TYPE ( QPA_control_type ) :: control
+   TYPE ( result_type ) :: res
+   INTEGER ( KIND = ip_ ) :: trial, nbad, nunrestored, n, m
+   LOGICAL :: ok, restored
+   CHARACTER ( LEN = 80 ) :: lab
+   CALL set_controls( control )
+   nbad = 0 ; nunrestored = 0
+   DO trial = 1, 10
+     n = 5 + irand( 40_ip_ ) ; m = irand( n )
+     CALL planted( qp, n, m, zero, zero, 0_ip_, one )
+     CALL split_entries( qp, qpd )
+     CALL solve( qpd, control, res, restored = restored )
+     WRITE( lab, "( 'duplicates trial ', I0, ' (n = ', I0, ', m = ', I0,     &
+    &               ')' )" ) trial, n, m
+     CALL check( qp, res, TRIM( lab ), ok )
+     IF ( .NOT. ok ) nbad = nbad + 1
+     IF ( .NOT. restored ) nunrestored = nunrestored + 1
+   END DO
+   WRITE( lab, "( 'every entry duplicated: 10 problems' )" )
+   IF ( nbad > 0 ) WRITE( lab, "( A, ' (', I0, ' failed)' )" ) TRIM( lab ), nbad
+   CALL report( nbad == 0, TRIM( lab ) )
+   WRITE( lab, "( 'duplicated entries restored on exit: 10 problems' )" )
+   IF ( nunrestored > 0 )                                                      &
+     WRITE( lab, "( A, ' (', I0, ' failed)' )" ) TRIM( lab ), nunrestored
+   CALL report( nunrestored == 0, TRIM( lab ) )
+   END SUBROUTINE case_duplicates
+
+!  split every entry of H and A into two halves, the second halves being
+!  appended after all of the original entries
+
+   SUBROUTINE split_entries( qp, qpd )
+   TYPE ( qp_type ), INTENT( IN ) :: qp
+   TYPE ( qp_type ), INTENT( OUT ) :: qpd
+   INTEGER ( KIND = ip_ ) :: hne, ane
+   REAL ( KIND = rp_ ), PARAMETER :: frac = 0.3_rp_
+   qpd = qp
+   hne = qp%h_ne ; ane = qp%a_ne
+   qpd%h_ne = 2 * hne ; qpd%a_ne = 2 * ane
+   DEALLOCATE( qpd%h_row, qpd%h_col, qpd%h_val,                               &
+               qpd%a_row, qpd%a_col, qpd%a_val )
+   ALLOCATE( qpd%h_row( MAX( 2 * hne, 1 ) ), qpd%h_col( MAX( 2 * hne, 1 ) ),  &
+             qpd%h_val( MAX( 2 * hne, 1 ) ), qpd%a_row( MAX( 2 * ane, 1 ) ),  &
+             qpd%a_col( MAX( 2 * ane, 1 ) ), qpd%a_val( MAX( 2 * ane, 1 ) ) )
+   qpd%h_row( : hne ) = qp%h_row( : hne )
+   qpd%h_row( hne + 1 : 2 * hne ) = qp%h_row( : hne )
+   qpd%h_col( : hne ) = qp%h_col( : hne )
+   qpd%h_col( hne + 1 : 2 * hne ) = qp%h_col( : hne )
+   qpd%h_val( : hne ) = frac * qp%h_val( : hne )
+   qpd%h_val( hne + 1 : 2 * hne ) = qp%h_val( : hne ) - qpd%h_val( : hne )
+   qpd%a_row( : ane ) = qp%a_row( : ane )
+   qpd%a_row( ane + 1 : 2 * ane ) = qp%a_row( : ane )
+   qpd%a_col( : ane ) = qp%a_col( : ane )
+   qpd%a_col( ane + 1 : 2 * ane ) = qp%a_col( : ane )
+   qpd%a_val( : ane ) = frac * qp%a_val( : ane )
+   qpd%a_val( ane + 1 : 2 * ane ) = qp%a_val( : ane ) - qpd%a_val( : ane )
+   END SUBROUTINE split_entries
 
 !  =========================================================================
 !  extreme scaling and infinite bounds
