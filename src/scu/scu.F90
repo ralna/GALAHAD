@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-05 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2026-11-10 AT 08:08 GMT.
 
 #include "galahad_modules.h"
 
@@ -462,11 +462,12 @@
                  matrix%BD_col_start( data%jcol + 1 ) - 1
             j = matrix%BD_row( k )
             IF ( j <= matrix%n ) THEN
-              VECTOR( j ) = matrix%BD_val( k )
+              VECTOR( j ) = VECTOR( j ) + matrix%BD_val( k )
             ELSE
               irow = j - matrix%n
               IF ( irow <= data%jcol )                                         &
-                data%R( newclr + irow ) = matrix%BD_val( k )
+                data%R( newclr + irow )                                        &
+                  = data%R( newclr + irow ) + matrix%BD_val( k )
             END IF
           END DO
 
@@ -477,11 +478,12 @@
                  matrix%BD_col_start( data%jcol + 1 ) - 1
             j = matrix%BD_row( k )
             IF ( j <= matrix%n ) THEN
-              VECTOR( j ) = - matrix%BD_val( k )
+              VECTOR( j ) = VECTOR( j ) - matrix%BD_val( k )
             ELSE
               irow = j - matrix%n
               IF ( irow <= data%jcol )                                         &
-                data%R( newclr + irow ) = - matrix%BD_val( k )
+                data%R( newclr + irow )                                        &
+                  = data%R( newclr + irow ) - matrix%BD_val( k )
             END IF
           END DO
         END IF
@@ -498,11 +500,12 @@
                matrix%BD_col_start( data%jcol + 1 ) - 1
           j = matrix%BD_row( k )
           IF ( j <= matrix%n ) THEN
-            VECTOR( j ) = matrix%BD_val( k )
+            VECTOR( j ) = VECTOR( j ) + matrix%BD_val( k )
           ELSE
             irow = j - matrix%n
             IF ( irow <= data%jcol )                                           &
-              data%Q( irow, data%jcol ) = matrix%BD_val( k )
+              data%Q( irow, data%jcol )                                        &
+                = data%Q( irow, data%jcol ) + matrix%BD_val( k )
           END IF
         END DO
       END IF
@@ -1001,9 +1004,9 @@
       DO k = matrix%BD_col_start( mnew ), matrix%BD_col_start( mnew + 1 ) - 1
         j = matrix%BD_row( k )
         IF ( j <= matrix%n ) THEN
-          VECTOR( j ) = matrix%BD_val( k )
+          VECTOR( j ) = VECTOR( j ) + matrix%BD_val( k )
         ELSE
-          data%W( j - matrix%n ) = matrix%BD_val( k )
+          data%W( j - matrix%n ) = data%W( j - matrix%n ) + matrix%BD_val( k )
         END IF
       END DO
       data%dianew = data%W( mnew )
@@ -1096,9 +1099,9 @@
       DO k = matrix%CD_row_start( mnew ), matrix%CD_row_start( mnew + 1 ) - 1
         j = matrix%CD_col( k )
         IF ( j <= matrix%n ) THEN
-          VECTOR( j ) = matrix%CD_val( k )
+          VECTOR( j ) = VECTOR( j ) + matrix%CD_val( k )
         ELSE
-          data%W( j - matrix%n ) = matrix%CD_val( k )
+          data%W( j - matrix%n ) = data%W( j - matrix%n ) + matrix%CD_val( k )
         END IF
       END DO
 
