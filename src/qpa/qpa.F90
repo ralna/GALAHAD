@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 11:01 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 12:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -91,6 +91,7 @@
       REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_neg_restarts = 5
       REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
       REAL ( KIND = rp_ ), PARAMETER :: k_diag = one
       REAL ( KIND = rp_ ), PARAMETER :: curv_min = epsmch
@@ -3048,7 +3049,8 @@
       REAL ( KIND = rp_ ) :: inner_stop_absolute, inner_stop_relative
       REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s, h_max, a_max
       REAL ( KIND = rp_ ) :: g_scale, gzero, hzero
-      INTEGER ( KIND = ip_ ) :: j_add_failed
+      INTEGER ( KIND = ip_ ) :: j_add_failed, n_neg_restarts
+      LOGICAL :: exact_g_fallback
       REAL :: time_record, time_now
       REAL ( KIND = rp_ ) :: clock_record, clock_now
       LOGICAL :: set_printt, set_printi, set_printm, set_printd, set_printe
@@ -3326,6 +3328,7 @@
 !  whether a search direction is simply the result of rounding errors
 
       j_add_failed = 0
+      n_neg_restarts = 0 ; exact_g_fallback = .FALSE.
       h_max = zero
       IF ( H_ptr( n + 1 ) > 1 )                                                &
         h_max = MAXVAL( ABS( H_val( : H_ptr( n + 1 ) - 1 ) ) )
@@ -4358,9 +4361,28 @@
                 IF ( pcg_status < - 2 ) THEN
 
 !  If a negative inner product has occured on the first minor iteration,
-!  modify the preconditioner and restart
+!  modify the preconditioner and restart. If this has happened more than
+!  max_neg_restarts times in succession, the preconditioner is unlikely to
+!  be at fault; use G = H instead, and if this fails as well, give up
 
                   IF ( pcg_status == - 3 .AND. minor_start ) THEN
+                    n_neg_restarts = n_neg_restarts + 1
+                    IF ( n_neg_restarts > max_neg_restarts ) THEN
+                      IF ( exact_g_fallback ) THEN
+                        IF ( printe ) WRITE( out, 2160 ) prefix,               &
+                          max_neg_restarts
+                        inform%status = GALAHAD_error_preconditioner
+                        EXIT major
+                      END IF
+                      IF ( printi ) WRITE( out, 2170 ) prefix,                 &
+                        max_neg_restarts
+                      exact_g_fallback = .TRUE. ; n_neg_restarts = 0
+                      precon = 1 ; auto_prec = .FALSE.
+                      G_perturb = zero ; mo = ' '
+                      pcount = 0 ; minor_start = .FALSE.
+                      jumpto_factorize_reference = 0
+                      GO TO 10
+                    END IF
                     IF ( mo == ' ' ) THEN
                       inform%nmods = inform%nmods + 1
                       mo = 'm'
@@ -4400,6 +4422,7 @@
                   EXIT minor
                 END IF
               END IF
+              IF ( pcg_status >= 0 ) n_neg_restarts = 0
               inform%cg_iter = inform%cg_iter + pcg_iter
 
               IF ( printm ) WRITE( out,                                        &
@@ -4418,14 +4441,15 @@
 
 ! If the search direction is essentially rounding errors, reset it to zero.
 ! The test compares the sizes of H s and A^T y, so that it is unaffected by
-! the scaling of the problem; it is skipped when H is zero
+! the scaling of the problem, with a margin of ten times the rounding
+! errors expected in computing them; it is skipped when H is zero
 
             s_norm = SQRT( DOT_PRODUCT( S( : n ), S( : n ) ) )
             IF ( printt ) WRITE( out, "( A, ' s vs y ', 2ES12.4 )" ) prefix,   &
                s_norm, SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-            IF ( s_norm /= zero .AND. h_max > zero ) THEN
-              y_norm = SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-              IF ( s_norm * h_max <= y_norm * a_max * epsmch ** 0.66 ) THEN
+            IF ( s_norm /= zero .AND. h_max > zero .AND. n_all > n ) THEN
+              y_norm = MAXVAL( ABS( S( n + 1 : n_all ) ) )
+              IF ( s_norm * h_max <= teneps * y_norm * a_max ) THEN
                 IF ( printt ) WRITE( out, "( ' tiny S = ', ES10.4, ' (',       &
                & 'compared with Y = ', ES10.4, ') has been reset to zero' )" ) &
                   s_norm, y_norm
@@ -6094,6 +6118,10 @@
  2120 FORMAT( /, A, '  on exit from SCU_append,   status = ', I0 )
  2150 FORMAT( /, A, '  constraint ', I0, ' cannot be added to the working',   &
               ' set even after refactorization' )
+ 2160 FORMAT( /, A, '  the preconditioner gave a negative inner product ', I0, &
+              ' times in succession, even with G = H' )
+ 2170 FORMAT( /, A, '  the preconditioner gave a negative inner product ', I0, &
+              ' times in succession; using G = H instead' )
  2130 FORMAT( /, A, '  on exit from SCU_delete,   status = ', I0 )
  2140 FORMAT( /, A, ' =+=> Inertia should be (', I0, ',', I0, ',  0)',         &
                               ' but is    (', I0, ',', I0, ',  0)' )
