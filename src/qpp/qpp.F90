@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2026-11-09 AT 10:03 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2026-11-10 AT 07:41 GMT.
 
 #include "galahad_modules.h"
 
@@ -139,7 +139,13 @@
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: h_map_inverse
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: a_map_inverse
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ptr_a_fixed
+        INTEGER ( KIND = ip_ ) :: a_ndup = 0
+        INTEGER ( KIND = ip_ ) :: h_ndup = 0
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: a_dup_pos
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: h_dup_pos
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: a_dup_val
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: h_dup_val
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: a_type_original
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: h_type_original
       END TYPE
@@ -1467,6 +1473,35 @@
             CALL QPP_order_rows( map%n, prob%H%val, prob%H%col,                &
                                  prob%H%ptr, map%h_map_inverse )
 
+!  sum any duplicated entries of H, recording their original values so
+!  that they may be restored
+
+          map%h_ndup = 0
+          IF ( map%h_type /= h_none ) THEN
+            CALL QPP_merge_duplicates( map%n, prob%H%ptr, prob%H%col,          &
+                                       prob%H%val, map%h_ndup )
+            IF ( map%h_ndup > 0 ) THEN
+              array_name = 'qpp: map%h_dup_pos'
+              CALL SPACE_resize_array( map%h_ndup, map%h_dup_pos,              &
+                     inform%status, inform%alloc_status,                       &
+                     array_name = array_name, bad_alloc = inform%bad_alloc,    &
+                     out = control%error )
+              IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+              array_name = 'qpp: map%h_dup_val'
+              CALL SPACE_resize_array( map%h_ndup, map%h_dup_val,              &
+                     inform%status, inform%alloc_status,                       &
+                     array_name = array_name, bad_alloc = inform%bad_alloc,    &
+                     out = control%error )
+              IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+              CALL QPP_merge_duplicates( map%n, prob%H%ptr, prob%H%col,        &
+                                         prob%H%val, map%h_ndup,               &
+                                         DUP_pos = map%h_dup_pos,              &
+                                         DUP_val = map%h_dup_val )
+            END IF
+          END IF
+
 !  if the original storage scheme was by co-ordinates, record the
 !  final row indices
 
@@ -2038,6 +2073,30 @@
       CALL QPP_order_rows( map%m, prob%A%val, prob%A%col, prob%A%ptr,          &
                            map%a_map_inverse )
 
+!  sum any duplicated entries of A, recording their original values so
+!  that they may be restored
+
+      map%a_ndup = 0
+      CALL QPP_merge_duplicates( map%m, prob%A%ptr, prob%A%col, prob%A%val,    &
+                                 map%a_ndup )
+      IF ( map%a_ndup > 0 ) THEN
+        array_name = 'qpp: map%a_dup_pos'
+        CALL SPACE_resize_array( map%a_ndup, map%a_dup_pos,                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'qpp: map%a_dup_val'
+        CALL SPACE_resize_array( map%a_ndup, map%a_dup_val,                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        CALL QPP_merge_duplicates( map%m, prob%A%ptr, prob%A%col, prob%A%val,  &
+                                   map%a_ndup, DUP_pos = map%a_dup_pos,        &
+                                   DUP_val = map%a_dup_val )
+      END IF
+
 !  if the original storage scheme was by co-ordinates, record the
 !  final row indices
 
@@ -2562,6 +2621,20 @@
           END IF
         END IF
       END IF
+
+!  sum any duplicated entries of the newly permuted A and H, recording
+!  their original values so that they may be restored
+
+      IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
+             PRESENT( get_A ) ) .AND. map%a_perm .AND. map%a_ndup > 0 )        &
+        CALL QPP_merge_duplicates( map%m, prob%A%ptr, prob%A%col, prob%A%val,  &
+                                   map%a_ndup, DUP_pos = map%a_dup_pos,        &
+                                   DUP_val = map%a_dup_val )
+      IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
+             PRESENT( get_H ) ) .AND. map%h_perm .AND. map%h_ndup > 0 )        &
+        CALL QPP_merge_duplicates( map%n, prob%H%ptr, prob%H%col, prob%H%val,  &
+                                   map%h_ndup, DUP_pos = map%h_dup_pos,        &
+                                   DUP_val = map%h_dup_val )
 
 !  check to see if permuted A and H are available
 
@@ -3177,6 +3250,12 @@
 
         ELSE IF ( prob%Hessian_kind < 0 ) THEN
 
+!  restore the original values of any duplicated entries that were summed
+
+          IF ( map%h_perm .AND. map%h_ndup > 0 )                               &
+            prob%H%val( map%h_dup_pos( : map%h_ndup ) )                        &
+              = map%h_dup_val( : map%h_ndup )
+
 !  special case for the L-BFGS Hessian
 
           IF ( map%h_type == h_lbfgs ) THEN
@@ -3263,6 +3342,12 @@
 
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_A ) ) THEN
+
+!  restore the original values of any duplicated entries that were summed
+
+        IF ( map%a_perm .AND. map%a_ndup > 0 )                                 &
+          prob%A%val( map%a_dup_pos( : map%a_ndup ) )                          &
+            = map%a_dup_val( : map%a_ndup )
 
 !  original dense storage
 
@@ -3605,6 +3690,36 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      map%a_ndup = 0 ; map%h_ndup = 0
+
+      array_name = 'qpp: map%a_dup_pos'
+      CALL SPACE_dealloc_array( map%a_dup_pos,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'qpp: map%h_dup_pos'
+      CALL SPACE_dealloc_array( map%h_dup_pos,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'qpp: map%a_dup_val'
+      CALL SPACE_dealloc_array( map%a_dup_val,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'qpp: map%h_dup_val'
+      CALL SPACE_dealloc_array( map%h_dup_val,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       RETURN
 
 !  End of subroutine QPP_terminate
@@ -3732,6 +3847,102 @@
 !  End of subroutine QPP_order_rows
 
       END SUBROUTINE QPP_order_rows
+
+!-*-*-   Q P P _ m e r g e _ d u p l i c a t e s   S U B R O U T I N E   -*-*-
+
+      SUBROUTINE QPP_merge_duplicates( n_rows, PTR, COL, VAL, ndup,            &
+                                       DUP_pos, DUP_val )
+
+!  Sum any duplicated entries in the rows of a matrix stored by rows, whose
+!  column indices appear in increasing order within each row. The sum is
+!  placed in the last entry of each group of duplicates, and the remaining
+!  entries of the group are set to zero; this preserves the property that
+!  the diagonal entry of a row of the lower triangle of a symmetric matrix
+!  is the last entry of that row. If DUP_pos and DUP_val are absent,
+!  the number of entries that belong to groups of duplicates is simply
+!  counted, and nothing is changed. Otherwise, the positions and original
+!  values of these entries are also recorded, so that they may be restored
+!  by assigning VAL( DUP_pos ) = DUP_val
+
+!  Arguments:
+!  =========
+!
+!   n_rows   number of rows
+!   PTR      starting addresses of each row, as well as 1 beyond the last row
+!   COL      column indices of the entries in each row, in increasing order
+!   VAL      values of the entries in each row
+!   ndup     the number of entries that belong to groups of duplicates
+!            (set on exit if DUP_pos and DUP_val are absent, and must
+!            have been set by such a call otherwise)
+!   DUP_pos  OPTIONAL. The positions in VAL of these entries
+!   DUP_val  OPTIONAL. The original values of these entries
+
+!  Dummy arguments
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_rows
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ndup
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n_rows + 1 ) :: PTR
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+               DIMENSION( PTR( n_rows + 1 ) - 1 ) :: COL
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( PTR( n_rows + 1 ) - 1 ) :: VAL
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( OUT ),                         &
+               DIMENSION( ndup ) :: DUP_pos
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ),                            &
+             DIMENSION( ndup ) :: DUP_val
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, l, ll, group_end, kdup
+      LOGICAL :: record
+      REAL ( KIND = rp_ ) :: sum
+
+      record = PRESENT( DUP_pos ) .AND. PRESENT( DUP_val )
+      kdup = 0
+
+!  loop over the rows
+
+      DO i = 1, n_rows
+        l = PTR( i )
+        DO
+          IF ( l >= PTR( i + 1 ) - 1 ) EXIT
+
+!  find the end of the group of entries with the same column index as l
+
+          group_end = l
+          DO
+            IF ( group_end + 1 > PTR( i + 1 ) - 1 ) EXIT
+            IF ( COL( group_end + 1 ) /= COL( l ) ) EXIT
+            group_end = group_end + 1
+          END DO
+
+!  the group contains duplicates; record and sum them
+
+          IF ( group_end > l ) THEN
+            IF ( record ) THEN
+              sum = zero
+              DO ll = l, group_end
+                kdup = kdup + 1
+                DUP_pos( kdup ) = ll
+                DUP_val( kdup ) = VAL( ll )
+                sum = sum + VAL( ll )
+              END DO
+              VAL( group_end ) = sum
+              VAL( l : group_end - 1 ) = zero
+            ELSE
+              kdup = kdup + group_end - l + 1
+            END IF
+          END IF
+          l = group_end + 1
+        END DO
+      END DO
+      IF ( .NOT. record ) ndup = kdup
+
+      RETURN
+
+!  End of subroutine QPP_merge_duplicates
+
+      END SUBROUTINE QPP_merge_duplicates
 
 !!-*-*-*-   Q P P _ i n p l a c e _ p e r m u t e  S U B R O U T I N E  -*-*-*-
 !
