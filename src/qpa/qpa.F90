@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 08:08 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 11:01 GMT.
 
 #include "galahad_modules.h"
 
@@ -3912,6 +3912,11 @@
               RES_u( i ) = C_u( i ) - a_x
             END DO
 
+!  Remove any residuals that are simply the result of rounding errors
+
+            CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,        &
+                                     A_norms, RES_l, RES_u )
+
             res_max = zero
 
 !  reference constraints
@@ -4577,6 +4582,11 @@
 
               RES_l = RES_l + t_opt * A_s( : dims%c_l_end )
               RES_u = RES_u - t_opt * A_s( dims%c_u_start : m )
+
+!  Remove any residuals that are simply the result of rounding errors
+
+              CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,      &
+                                       A_norms, RES_l, RES_u )
               GRAD = GRAD + t_opt * H_s
 
               IF ( printt ) THEN
@@ -5765,6 +5775,11 @@
             RES_u( i ) = C_u( i ) - a_x
           END DO
 
+!  Remove any residuals that are simply the result of rounding errors
+
+          CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,          &
+                                   A_norms, RES_l, RES_u )
+
 !  Compute the resulting gradient
 
           GRAD = G
@@ -5874,6 +5889,11 @@
           END DO
           RES_u( i ) = C_u( i ) - a_x
         END DO
+
+!  Remove any residuals that are simply the result of rounding errors
+
+        CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,            &
+                                 A_norms, RES_l, RES_u )
 
 !  Compute the resulting gradient
 
@@ -8130,6 +8150,93 @@
 !  End of subroutine QPA_p_val_and_slope
 
       END SUBROUTINE QPA_p_val_and_slope
+
+!-*-*-*-*-   Q P A _ S N A P _ R E S I D U A L S   S U B R O U T I N E   -*-*-*-
+
+      SUBROUTINE QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,        &
+                                     A_norms, RES_l, RES_u )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Set to zero any residual of a general constraint, and any distance of a
+!  variable from one of its simple bounds, that is no larger than the
+!  rounding errors that may be expected in computing it, namely
+!  10 epsmch ( |c_i| + ||a_i|| ||x||_inf ) for a general constraint a_i^T x
+!  with bound c_i, and 10 epsmch ( |x_b| + ||x||_inf ) for a simple bound
+!  x_b (in which case the variable is moved onto the bound). Whether a
+!  constraint is violated is decided by the sign of its residual in several
+!  places (the search direction, the linesearch and the final multipliers),
+!  and this ensures that these decisions are consistent
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+      TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u, A_norms
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_l_end ) :: RES_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_u_start : m ) :: RES_u
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: x_max
+
+      IF ( n <= 0 ) RETURN
+      x_max = MAXVAL( ABS( X ) )
+
+!  general constraints with lower bounds (including equalities)
+
+      DO i = 1, dims%c_l_end
+        IF ( ABS( RES_l( i ) ) <=                                              &
+             teneps * ( ABS( C_l( i ) ) + A_norms( i ) * x_max ) )             &
+          RES_l( i ) = zero
+      END DO
+
+!  general constraints with upper bounds
+
+      DO i = dims%c_u_start, m
+        IF ( ABS( RES_u( i ) ) <=                                              &
+             teneps * ( ABS( C_u( i ) ) + A_norms( i ) * x_max ) )             &
+          RES_u( i ) = zero
+      END DO
+
+!  simple non-negativity
+
+      DO i = dims%x_free + 1, dims%x_l_start - 1
+        IF ( ABS( X( i ) ) <= teneps * x_max ) X( i ) = zero
+      END DO
+
+!  simple lower bounds (including those of variables with both bounds)
+
+      DO i = dims%x_l_start, dims%x_l_end
+        IF ( ABS( X( i ) - X_l( i ) ) <=                                       &
+             teneps * ( ABS( X_l( i ) ) + x_max ) ) X( i ) = X_l( i )
+      END DO
+
+!  simple upper bounds (including those of variables with both bounds)
+
+      DO i = dims%x_u_start, dims%x_u_end
+        IF ( ABS( X_u( i ) - X( i ) ) <=                                       &
+             teneps * ( ABS( X_u( i ) ) + x_max ) ) X( i ) = X_u( i )
+      END DO
+
+!  simple non-positivity
+
+      DO i = dims%x_u_end + 1, n
+        IF ( ABS( X( i ) ) <= teneps * x_max ) X( i ) = zero
+      END DO
+
+      RETURN
+
+!  End of subroutine QPA_snap_residuals
+
+      END SUBROUTINE QPA_snap_residuals
 
 !-*-*-   Q P A _ R E M O V E _ D E P E N D E N T  S U B R O U T I N E   -*-*-
 
