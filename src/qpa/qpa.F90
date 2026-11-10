@@ -3048,6 +3048,7 @@
       REAL ( KIND = rp_ ) :: inner_stop_absolute, inner_stop_relative
       REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s, h_max, a_max
       REAL ( KIND = rp_ ) :: g_scale, gzero, hzero
+      INTEGER ( KIND = ip_ ) :: j_add_failed
       REAL :: time_record, time_now
       REAL ( KIND = rp_ ) :: clock_record, clock_now
       LOGICAL :: set_printt, set_printi, set_printm, set_printd, set_printe
@@ -3324,6 +3325,7 @@
 !  working-set matrix (a simple bound has a row of norm one), used to decide
 !  whether a search direction is simply the result of rounding errors
 
+      j_add_failed = 0
       h_max = zero
       IF ( H_ptr( n + 1 ) > 1 )                                                &
         h_max = MAXVAL( ABS( H_val( : H_ptr( n + 1 ) - 1 ) ) )
@@ -4698,6 +4700,17 @@
             CASE ( 2 )
               IF ( printe ) WRITE ( out, 2062 ) prefix, inform%iter, addel
               IF ( printe ) WRITE ( out, 2120 ) prefix, scu_status
+
+!  if the same constraint could not be added immediately after the
+!  matrices were refactorized, give up rather than repeat the attempt
+!  indefinitely
+
+              IF ( active == j_add_failed ) THEN
+                IF ( printe ) WRITE( out, 2150 ) prefix, active
+                inform%status = GALAHAD_error_ill_conditioned
+                EXIT major
+              END IF
+              j_add_failed = active
               EXIT minor
             CASE ( 3 )
               IF ( printe ) WRITE ( out, 2062 ) prefix, inform%iter, addel
@@ -4709,6 +4722,7 @@
               IF ( printe ) WRITE ( out, 2062 ) prefix, inform%iter, addel
               EXIT minor
             END SELECT
+            j_add_failed = 0
 
 !  ====================
 !  Check for optimality
@@ -6058,6 +6072,8 @@
                  ' Perturbing G', :, ' by ', ES12.4, ' and restarting',        &
                  ' (pivtol = ', ES9.2, ')', / )
  2120 FORMAT( /, A, '  on exit from SCU_append,   status = ', I0 )
+ 2150 FORMAT( /, A, '  constraint ', I0, ' cannot be added to the working',   &
+              ' set even after refactorization' )
  2130 FORMAT( /, A, '  on exit from SCU_delete,   status = ', I0 )
  2140 FORMAT( /, A, ' =+=> Inertia should be (', I0, ',', I0, ',  0)',         &
                               ' but is    (', I0, ',', I0, ',  0)' )
