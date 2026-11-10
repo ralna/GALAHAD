@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 08:08 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 12:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -4413,14 +4413,15 @@
 
 ! If the search direction is essentially rounding errors, reset it to zero.
 ! The test compares the sizes of H s and A^T y, so that it is unaffected by
-! the scaling of the problem; it is skipped when H is zero
+! the scaling of the problem, with a margin of ten times the rounding
+! errors expected in computing them; it is skipped when H is zero
 
             s_norm = SQRT( DOT_PRODUCT( S( : n ), S( : n ) ) )
             IF ( printt ) WRITE( out, "( A, ' s vs y ', 2ES12.4 )" ) prefix,   &
                s_norm, SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-            IF ( s_norm /= zero .AND. h_max > zero ) THEN
-              y_norm = SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-              IF ( s_norm * h_max <= y_norm * a_max * epsmch ** 0.66 ) THEN
+            IF ( s_norm /= zero .AND. h_max > zero .AND. n_all > n ) THEN
+              y_norm = MAXVAL( ABS( S( n + 1 : n_all ) ) )
+              IF ( s_norm * h_max <= teneps * y_norm * a_max ) THEN
                 IF ( printt ) WRITE( out, "( ' tiny S = ', ES10.4, ' (',       &
                & 'compared with Y = ', ES10.4, ') has been reset to zero' )" ) &
                   s_norm, y_norm
