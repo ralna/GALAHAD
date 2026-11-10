@@ -1285,7 +1285,7 @@
       INTEGER ( KIND = ip_ ) :: i, idrop, irow, j, jcol, k, k2, kirn, kjcn, row
       INTEGER ( KIND = ip_ ) :: njcol, mm1, mp1, njdrop, irow2, jcol2, nirow
       INTEGER ( KIND = ip_ ) :: last, nidrop, newlst, nextr, sign_determinant
-      REAL ( KIND = rp_ ) :: c, s, x, y
+      REAL ( KIND = rp_ ) :: c, s, x, y, r_max
       LOGICAL :: qused
 
 !  Ensure that optional arguments are present when required
@@ -1640,10 +1640,15 @@
 
         END DO
 
-!  Check that the new Schur complement is nonsingular
+!  Check that the new Schur complement is nonsingular, i.e., that no
+!  diagonal entry of R is negligible relative to the largest
 
+        r_max = zero
         DO j = 1, mm1
-          IF ( abs( data%R( j * ( j + 1 ) / 2 ) ) <= epsmch ) THEN
+          r_max = MAX( r_max, ABS( data%R( j * ( j + 1 ) / 2 ) ) )
+        END DO
+        DO j = 1, mm1
+          IF ( ABS( data%R( j * ( j + 1 ) / 2 ) ) <= epsmch * r_max ) THEN
 !           write(6,*) ' new diag = ', abs( data%R( j * ( j + 1 ) / 2 ) )
             status = - 9 ; RETURN
           END IF
@@ -1796,7 +1801,7 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: j, k, mnew, nextr, nextw
-      REAL ( KIND = rp_ ) :: c, s, x, y
+      REAL ( KIND = rp_ ) :: c, s, x, y, r_max
 
       mnew = msofar + 1
 
@@ -1841,11 +1846,16 @@
         END DO
       END IF
 
-!  Check that the new diagonal entry of R is non-zero
+!  Check that the new diagonal entry of R is not negligible relative to
+!  the largest diagonal entry
 
       R( mnew * ( mnew + 1 ) / 2 ) = SPIKE( mnew )
 !     write(6,*) ' new diag = ', abs( SPIKE( mnew ) )
-      IF ( ABS( SPIKE( mnew ) ) > epsmch ) THEN
+      r_max = zero
+      DO j = 1, mnew
+        r_max = MAX( r_max, ABS( R( j * ( j + 1 ) / 2 ) ) )
+      END DO
+      IF ( ABS( SPIKE( mnew ) ) > epsmch * r_max ) THEN
         status = GALAHAD_ok
       ELSE
         status = - 9
