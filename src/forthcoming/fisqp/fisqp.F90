@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-06-16 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2026-11-11 AT 11:31 GMT.
 
 #include "galahad_modules.h"
 
@@ -3401,7 +3401,7 @@
          WHERE ( nlp%C_l( : nlp%m ) > - data%control%infinity )
            data%QP_pred%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) - nlp%C( : nlp%m )
          ELSE WHERE
-           data%QP_steer%C_l( : nlp%m ) = nlp%C_l( : nlp%m )
+           data%QP_pred%C_l( : nlp%m ) = nlp%C_l( : nlp%m )
          END WHERE
          WHERE ( nlp%C_u( : nlp%m ) < data%control%infinity )
            data%QP_pred%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) - nlp%C( : nlp%m )
