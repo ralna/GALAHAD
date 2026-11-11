@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2026-11-11 AT 11:31 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2026-11-11 AT 12:25 GMT.
 
 #include "galahad_modules.h"
 
@@ -173,7 +173,8 @@
 !  symmetric linear equation solver used to factorize the predictor Hessian
 !   when predictor_hessian = 1 or 2. NB. the Schnabel-Eskow modifications
 !   required by predictor_hessian = 1 are only available from the HSL
-!   solvers sils/ma27 and ma57; with other solvers the Hessian is not modified
+!   solvers sils/ma27 and ma57; with other solvers, diagonally-dominant
+!   modifications (predictor_hessian = 2) are used instead
 
        CHARACTER ( LEN = 30 ) :: linear_solver_for_modifications =             &
           "slblt" // REPEAT( ' ', 25 )
@@ -1763,6 +1764,24 @@
      data%print_1st_header = .TRUE.
 
      IF ( data%printd ) WRITE( data%out, "( ' (A1:1-2)' )" )
+
+!  the Schnabel-Eskow modifications required for predictor_hessian = 1 are
+!  only provided by some solvers; for others, use diagonally-dominant
+!  modifications instead
+
+     IF ( data%control%predictor_hessian == se_modified_predictor_hessian ) THEN
+       SELECT CASE ( TRIM( ADJUSTL(                                            &
+                       data%control%linear_solver_for_modifications ) ) )
+       CASE ( 'sils', 'ma27', 'ma57' )
+       CASE DEFAULT
+         data%control%predictor_hessian = dd_modified_predictor_hessian
+         IF ( data%printi ) WRITE( data%out, "( /, A, '  Schnabel-Eskow',      &
+        &  ' modifications are not available from ', A, ',', /, A,             &
+        &  '  so diagonally-dominant modifications will be used instead' )" ) &
+           prefix, TRIM( ADJUSTL(                                              &
+             data%control%linear_solver_for_modifications ) ), prefix
+       END SELECT
+     END IF
 
 !  initialize the filter
 
