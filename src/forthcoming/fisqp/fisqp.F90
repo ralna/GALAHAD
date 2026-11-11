@@ -170,10 +170,13 @@
 
        INTEGER ( KIND = ip_ ) :: scale_constraints = 0
 
-!  indefinite linear equation solver for use with predictor = 2
+!  symmetric linear equation solver used to factorize the predictor Hessian
+!   when predictor_hessian = 1 or 2. NB. the Schnabel-Eskow modifications
+!   required by predictor_hessian = 1 are only available from the HSL
+!   solvers sils/ma27 and ma57; with other solvers the Hessian is not modified
 
        CHARACTER ( LEN = 30 ) :: linear_solver_for_modifications =             &
-          "sils" // REPEAT( ' ', 26 )
+          "slblt" // REPEAT( ' ', 25 )
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
@@ -746,7 +749,7 @@
 ! use-accelerator-step                              yes
 ! filter-uses-steering-information                  yes
 ! alive-filename                                    ALIVE.d
-! linear-equation-solver-for-modifications          sils
+! linear-equation-solver-for-modifications          slblt
 ! output-line-prefix                                ""
 ! END FISQP SPECIFICATIONS
 
