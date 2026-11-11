@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2026-11-11 AT 11:34 GMT.
 
 #include "galahad_modules.h"
 
@@ -1900,8 +1900,12 @@
 
 !  compute the degree of the polynomial
 
+!  if no coefficient is significant (which can only happen if they are not
+!  all finite), the polynomial is treated as having no roots
+
       c_max = MAXVAL( ABS( C ) )
       teeny =  control%zero_coef * c_max
+      nn = - 1
       DO i = 0, UBOUND( C, 1 )
 !       IF ( ABS( C( i ) ) >= control%zero_coef ) nn = i
         IF ( ABS( C( i ) ) >= teeny ) nn = i
@@ -1991,7 +1995,6 @@
 !  allocate appropriate workspace
 
         IF ( n > data%n_max ) THEN
-          data%n_max = n
 
           array_name = 'roots: data%A_mat'
           CALL SPACE_resize_array( np1, np1, data%A_mat,                       &
@@ -2042,6 +2045,9 @@
                bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) RETURN
 
+!  record the new size only once all of the workspace has been allocated
+
+          data%n_max = n
         END IF
 
 !  given p_n(x), set p_{n-1}(x) = p_n'(x), and for i = n, ... , 2, compute
