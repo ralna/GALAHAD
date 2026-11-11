@@ -3813,13 +3813,15 @@
            data%QP_accel%A%ne = 0
            DO i = 1, nlp%m
              ii = ABS( nlp%C_status( i ) )
-             IF ( ii > 0 .AND. ABS( nlp%J%val( l ) ) >                         &
-                    data%control%jacobian_zero_tolerance ) THEN
+             IF ( ii > 0 ) THEN
                DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
-                 data%QP_accel%A%ne = data%QP_accel%A%ne + 1
-                 data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
-                 data%QP_accel%A%col( data%QP_accel%A%ne ) = nlp%J%col( l )
-                 data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 IF ( ABS( nlp%J%val( l ) ) >                                  &
+                        data%control%jacobian_zero_tolerance ) THEN
+                   data%QP_accel%A%ne = data%QP_accel%A%ne + 1
+                   data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
+                   data%QP_accel%A%col( data%QP_accel%A%ne ) = nlp%J%col( l )
+                   data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 END IF
                END DO
              END IF
            END DO
@@ -3827,13 +3829,16 @@
            data%QP_accel%A%ne = 0 ; l = 0
            DO i = 1, nlp%m
              ii = ABS( nlp%C_status( i ) )
-             IF ( ii > 0 .AND. ABS( nlp%J%val( l ) ) >                         &
-                    data%control%jacobian_zero_tolerance ) THEN
+             IF ( ii > 0 ) THEN
                DO j = 1, nlp%n
-                 data%QP_accel%A%ne = data%QP_accel%A%ne + 1 ; l = l + 1
-                 data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
-                 data%QP_accel%A%col( data%QP_accel%A%ne ) = j
-                 data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 l = l + 1
+                 IF ( ABS( nlp%J%val( l ) ) >                                  &
+                        data%control%jacobian_zero_tolerance ) THEN
+                   data%QP_accel%A%ne = data%QP_accel%A%ne + 1
+                   data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
+                   data%QP_accel%A%col( data%QP_accel%A%ne ) = j
+                   data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 END IF
                END DO
              ELSE
                l = l + nlp%n
