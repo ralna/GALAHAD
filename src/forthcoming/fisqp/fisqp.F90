@@ -337,12 +337,15 @@
 
        REAL ( KIND = rp_ ) :: jacobian_zero_tolerance = epsmch
 
-!   the steering and predictor QP subproblems are solved to an accuracy
-!    (in each of their primal, dual and complementarity measures) of
-!    qp_forcing_factor times the current infeasibility (steering) or largest
-!    optimality measure (predictor) of the nonlinear problem, but not more
-!    accurately than qp_floor_factor times the corresponding overall stopping
-!    tolerance (stop_p, stop_d or stop_c), and not less accurately than the
+!   the steering and predictor QP subproblems are solved to a relative
+!    accuracy (in each of their primal, dual and complementarity measures) of
+!    qp_forcing_factor times the current relative infeasibility (steering) or
+!    largest relative optimality measure (predictor) of the nonlinear problem,
+!    but not more accurately than qp_floor_factor times the corresponding
+!    relative stopping tolerance (stop_rel_kkt_p, stop_rel_kkt_d or
+!    stop_rel_kkt_c). These relative accuracies are converted to the absolute
+!    ones required by the QP solvers using the scales of the relative KKT
+!    measures (see stop_rel_kkt_p), and are never less accurate than the
 !    tolerances given in QP_steer_control and QP_pred_control
 
        REAL ( KIND = rp_ ) :: qp_forcing_factor = tenth
@@ -613,6 +616,7 @@
        REAL ( KIND = rp_ ) :: qp_target_steer, qp_target_pred
        REAL ( KIND = rp_ ) :: qp_measure_steer, qp_measure_pred
        REAL ( KIND = rp_ ) :: g_norm_initial
+       REAL ( KIND = rp_ ) :: kkt_g_scale, kkt_p_scale, kkt_j_scale
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
@@ -2992,7 +2996,9 @@
               data%JTY_kkt, data%ROW_NORM_kkt,                                 &
               inform%relative_primal_infeasibility,                            &
               inform%relative_dual_infeasibility,                              &
-              inform%relative_complementary_slackness )
+              inform%relative_complementary_slackness,                         &
+              g_scale = data%kkt_g_scale, p_scale = data%kkt_p_scale,          &
+              j_scale = data%kkt_j_scale )
 
 !  ---------------------
 !  first-iteration tasks
@@ -3419,14 +3425,22 @@
 !  solve the steering subproblem only as accurately as the current
 !  infeasibility requires
 
+!  (the gradient of the l_1 steering problem has components rho = 1 and its
+!  dual variables are at most rho in size, so its dual residuals are
+!  measured relative to the larger of rho and the size of J)
+
          CALL FISQP_qp_accuracy( control%QP_steer_control,                     &
-                                 data%control%QP_steer_control,                &
-                                 data%primal_viol, .NOT. data%accepted,        &
-                                 data%qp_target_steer, data%qp_measure_steer,  &
-                                 data%control%qp_forcing_factor,               &
-                                 data%control%qp_floor_factor * data%stop_p,   &
-                                 data%control%qp_floor_factor * data%stop_d,   &
-                                 data%control%qp_floor_factor * data%stop_c )
+                data%control%QP_steer_control,                                 &
+                inform%relative_primal_infeasibility, .NOT. data%accepted,     &
+                data%qp_target_steer, data%qp_measure_steer,                   &
+                data%control%qp_forcing_factor,                                &
+                data%control%qp_floor_factor * data%control%stop_rel_kkt_p,    &
+                data%control%qp_floor_factor * data%control%stop_rel_kkt_d,    &
+                data%control%qp_floor_factor * data%control%stop_rel_kkt_c,    &
+                data%kkt_p_scale,                                              &
+                MAX( data%control%QP_steer_control%rho, data%kkt_j_scale ),    &
+                MAX( data%control%QP_steer_control%rho, data%kkt_j_scale )     &
+                  * data%kkt_p_scale )
          IF ( data%printt ) WRITE( data%out, "( A, ' steering subproblem',     &
         &  ' accuracy =', ES11.4 )" ) prefix,                                  &
            data%control%QP_steer_control%stop_abs_p
@@ -3586,16 +3600,17 @@
 !  optimality measures require
 
        CALL FISQP_qp_accuracy( control%QP_pred_control,                        &
-                               data%control%QP_pred_control,                   &
-                               MAX( inform%primal_infeasibility,               &
-                                    inform%dual_infeasibility,                 &
-                                    inform%complementary_slackness ),          &
-                               .NOT. data%accepted, data%qp_target_pred,       &
-                               data%qp_measure_pred,                           &
-                               data%control%qp_forcing_factor,                 &
-                               data%control%qp_floor_factor * data%stop_p,     &
-                               data%control%qp_floor_factor * data%stop_d,     &
-                               data%control%qp_floor_factor * data%stop_c )
+              data%control%QP_pred_control,                                    &
+              MAX( inform%relative_primal_infeasibility,                       &
+                   inform%relative_dual_infeasibility,                         &
+                   inform%relative_complementary_slackness ),                  &
+              .NOT. data%accepted, data%qp_target_pred, data%qp_measure_pred,  &
+              data%control%qp_forcing_factor,                                  &
+              data%control%qp_floor_factor * data%control%stop_rel_kkt_p,      &
+              data%control%qp_floor_factor * data%control%stop_rel_kkt_d,      &
+              data%control%qp_floor_factor * data%control%stop_rel_kkt_c,      &
+              data%kkt_p_scale, data%kkt_g_scale,                              &
+              data%kkt_g_scale * data%kkt_p_scale )
        IF ( data%printt ) WRITE( data%out, "( A, ' predictor subproblem',      &
       &  ' accuracy =', ES11.4 )" ) prefix,                                    &
          data%control%QP_pred_control%stop_abs_p
@@ -5712,18 +5727,21 @@
 
      SUBROUTINE FISQP_qp_accuracy( user, qp, measure, rejected, target,        &
                                    previous_measure, forcing, floor_p,         &
-                                   floor_d, floor_c )
+                                   floor_d, floor_c, scale_p, scale_d,         &
+                                   scale_c )
 
-!  set the stopping tolerances for a QP subproblem to a target value, but
-!  at least floor_p, floor_d and floor_c (for the primal, dual and
-!  complementarity measures) and at most the values given by the user. The
-!  target is forcing times the given optimality measure, and, if the
-!  previous iteration was unsuccessful (its step was rejected, or the
-!  optimality measure did not decrease), at most forcing times the previous
-!  target, so that repeated failures, which may be caused by inaccurate QP
-!  solutions, lead to increasingly accurate ones. The tolerances of the CQP
-!  solver are only set if the user has set them explicitly (by default, CQP
-!  uses those of L1QP)
+!  set the stopping tolerances for a QP subproblem to a relative target
+!  value, but at least the relative floor_p, floor_d and floor_c (for the
+!  primal, dual and complementarity measures), each converted to an absolute
+!  tolerance by multiplying by scale_p, scale_d or scale_c, and never larger
+!  than the values given by the user. The target is forcing times the given
+!  (relative) optimality measure, and, if the previous iteration was
+!  unsuccessful (its step was rejected, or the optimality measure did not
+!  decrease), at most forcing times the previous target, so that repeated
+!  failures, which may be caused by inaccurate QP solutions, lead to
+!  increasingly accurate ones. The relative tolerances of the QP solver are
+!  set to zero. The tolerances of the CQP solver are only set if the user has
+!  set them explicitly (by default, CQP uses those of L1QP)
 
 !  Arguments:
 !  =========
@@ -5737,7 +5755,9 @@
 !   previous_measure  the previous optimality measure on entry (negative
 !            if there is none), and the current one on exit
 !   forcing  the forcing factor
-!   floor_p, floor_d, floor_c  the smallest tolerances permitted
+!   floor_p, floor_d, floor_c  the smallest relative tolerances permitted
+!   scale_p, scale_d, scale_c  the scales that convert relative tolerances
+!            to absolute ones
 
 !  Dummy arguments
 
@@ -5747,6 +5767,7 @@
      REAL ( KIND = rp_ ), INTENT( INOUT ) :: target, previous_measure
      REAL ( KIND = rp_ ), INTENT( IN ) :: measure, forcing
      REAL ( KIND = rp_ ), INTENT( IN ) :: floor_p, floor_d, floor_c
+     REAL ( KIND = rp_ ), INTENT( IN ) :: scale_p, scale_d, scale_c
 
 !  Local variables
 
@@ -5760,15 +5781,23 @@
        target = forcing * measure
      END IF
      previous_measure = measure
-     qp%stop_abs_p = MAX( floor_p, MIN( user%stop_abs_p, target ) )
-     qp%stop_abs_d = MAX( floor_d, MIN( user%stop_abs_d, target ) )
-     qp%stop_abs_c = MAX( floor_c, MIN( user%stop_abs_c, target ) )
+!  the target is already relative to the nonlinear problem, so the QP
+!  solver's own relative tolerances (relative to the measures at its
+!  arbitrary starting point) are switched off
+
+     qp%stop_rel_p = zero ; qp%stop_rel_d = zero ; qp%stop_rel_c = zero
+     qp%stop_abs_p                                                             &
+       = MIN( user%stop_abs_p, MAX( floor_p, target ) * scale_p )
+     qp%stop_abs_d                                                             &
+       = MIN( user%stop_abs_d, MAX( floor_d, target ) * scale_d )
+     qp%stop_abs_c                                                             &
+       = MIN( user%stop_abs_c, MAX( floor_c, target ) * scale_c )
      IF ( user%CQP_control%stop_abs_p >= zero ) qp%CQP_control%stop_abs_p =    &
-       MAX( floor_p, MIN( user%CQP_control%stop_abs_p, target ) )
+       MIN( user%CQP_control%stop_abs_p, MAX( floor_p, target ) * scale_p )
      IF ( user%CQP_control%stop_abs_d >= zero ) qp%CQP_control%stop_abs_d =    &
-       MAX( floor_d, MIN( user%CQP_control%stop_abs_d, target ) )
+       MIN( user%CQP_control%stop_abs_d, MAX( floor_d, target ) * scale_d )
      IF ( user%CQP_control%stop_abs_c >= zero ) qp%CQP_control%stop_abs_c =    &
-       MAX( floor_c, MIN( user%CQP_control%stop_abs_c, target ) )
+       MIN( user%CQP_control%stop_abs_c, MAX( floor_c, target ) * scale_c )
      RETURN
 
 !  End of subroutine FISQP_qp_accuracy
@@ -5780,7 +5809,8 @@
 
      SUBROUTINE FISQP_relative_kkt( n, m, X, X_l, X_u, C, C_l, C_u, G, J, Y,   &
                                     Z, infinity, g_norm_initial, JTY,          &
-                                    ROW_NORM, primal, dual, comp )
+                                    ROW_NORM, primal, dual, comp, g_scale,     &
+                                    p_scale, j_scale )
 
 !  compute measures of the primal infeasibility, the dual infeasibility and
 !  the complementary slackness of (x,y,z) that are relative to the sizes of
@@ -5789,9 +5819,10 @@
 !  and g_s = max(||g||,||J^T y||,||z||,||g(x_0)||) (infinity norms; the last
 !  term, the size of the gradient at the initial point, ensures that g_s does
 !  not vanish at a solution where y and z are zero), the scale of the
-!  i-th general constraint is c_s,i = max(||J_i|| x_s, |c_l,i|, |c_u,i|) (finite
-!  bounds only), where J_i is the i-th row of J, and that of the j-th simple
-!  bound is max(x_s, |x_l,j|, |x_u,j|). Then
+!  i-th general constraint is c_s,i = max(||J_i|| x_s, |c_i|, |c_l,i|, |c_u,i|)
+!  (finite bounds only), where J_i is the i-th row of J (including |c_i|
+!  keeps the scale positive when J_i and the bounds are zero), and that of
+!  the j-th simple bound is max(x_s, |x_l,j|, |x_u,j|). Then
 !
 !   primal = the largest constraint violation divided by its scale
 !   dual = ||g - J^T y - z|| / g_s
@@ -5813,6 +5844,10 @@
 !   g_norm_initial  the infinity norm of the gradient at the initial point
 !   JTY, ROW_NORM  workspace of lengths n and m
 !   primal, dual, comp  the relative measures
+!   g_scale  (optional) the scale g_s of the dual infeasibility
+!   p_scale  (optional) the smallest scale of a constraint or simple bound
+!            (at most x_s)
+!   j_scale  (optional) the largest of the norms ||J_i|| (one if m = 0)
 
 !  Dummy arguments
 
@@ -5824,11 +5859,12 @@
      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: JTY
      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: ROW_NORM
      REAL ( KIND = rp_ ), INTENT( OUT ) :: primal, dual, comp
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ) :: g_scale, p_scale, j_scale
 
 !  Local variables
 
      INTEGER ( KIND = ip_ ) :: i, l
-     REAL ( KIND = rp_ ) :: xs, gs, scale, lo, up
+     REAL ( KIND = rp_ ) :: xs, gs, ps, scale, lo, up
 
 !  the scale of x, and the infinity norms of the rows of J
 
@@ -5868,12 +5904,13 @@
 !  the relative primal infeasibility and complementary slackness for the
 !  simple bounds
 
-     primal = zero ; comp = zero
+     primal = zero ; comp = zero ; ps = xs
      DO i = 1, n
        lo = X_l( i ) ; up = X_u( i )
        scale = xs
        IF ( lo > - infinity ) scale = MAX( scale, ABS( lo ) )
        IF ( up < infinity ) scale = MAX( scale, ABS( up ) )
+       ps = MIN( ps, scale )
        IF ( lo > - infinity ) primal = MAX( primal, ( lo - X( i ) ) / scale )
        IF ( up < infinity ) primal = MAX( primal, ( X( i ) - up ) / scale )
        comp = MAX( comp, FISQP_bound_gap( Z( i ), X( i ), lo, up, scale,      &
@@ -5884,14 +5921,27 @@
 
      DO i = 1, m
        lo = C_l( i ) ; up = C_u( i )
-       scale = MAX( TINY( one ), ROW_NORM( i ) * xs )
+       scale = MAX( TINY( one ), ROW_NORM( i ) * xs, ABS( C( i ) ) )
        IF ( lo > - infinity ) scale = MAX( scale, ABS( lo ) )
        IF ( up < infinity ) scale = MAX( scale, ABS( up ) )
+       ps = MIN( ps, scale )
        IF ( lo > - infinity ) primal = MAX( primal, ( lo - C( i ) ) / scale )
        IF ( up < infinity ) primal = MAX( primal, ( C( i ) - up ) / scale )
        comp = MAX( comp, FISQP_bound_gap( Y( i ), C( i ), lo, up, scale,      &
                                           infinity ) / ( gs * scale ) )
      END DO
+
+!  record the scales if required
+
+     IF ( PRESENT( g_scale ) ) g_scale = gs
+     IF ( PRESENT( p_scale ) ) p_scale = ps
+     IF ( PRESENT( j_scale ) ) THEN
+       IF ( m > 0 ) THEN
+         j_scale = MAX( TINY( one ), MAXVAL( ROW_NORM( : m ) ) )
+       ELSE
+         j_scale = one
+       END IF
+     END IF
      RETURN
 
 !  End of subroutine FISQP_relative_kkt
