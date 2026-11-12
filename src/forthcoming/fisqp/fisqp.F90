@@ -215,6 +215,17 @@
        REAL ( KIND = rp_ ) :: stop_abs_i = ten ** ( - 5 )
        REAL ( KIND = rp_ ) :: stop_rel_i = epsmch
 
+!   the iteration will terminate successfully when the relative primal
+!    infeasibility, the relative dual infeasibility and the relative
+!    complementary slackness are no larger than stop_rel_kkt_p, stop_rel_kkt_d
+!    and stop_rel_kkt_c, respectively. Each measure is relative to the sizes
+!    of the quantities from which it is formed (see FISQP_relative_kkt), so
+!    that it is unaffected by the scaling of the objective and constraints
+
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_p = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_d = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_c = ten ** ( - 5 )
+
 !   the minimum useful predictor decrease allowed when approximately feasible
 
        REAL ( KIND = rp_ ) :: stop_predictor = ten ** ( - 12 )
@@ -491,6 +502,14 @@
 
        REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
 
+!  the values of the relative primal infeasibility, the relative dual
+!  infeasibility and the relative complementary slackness used to decide
+!  termination (see FISQP_relative_kkt)
+
+       REAL ( KIND = rp_ ) :: relative_primal_infeasibility = HUGE( one )
+       REAL ( KIND = rp_ ) :: relative_dual_infeasibility = HUGE( one )
+       REAL ( KIND = rp_ ) :: relative_complementary_slackness = HUGE( one )
+
 !  the number of times that penalty mode was entered
 
        INTEGER ( KIND = ip_ ) :: entered_penalty = 0
@@ -593,6 +612,7 @@
        REAL ( KIND = rp_ ) :: radius_accelerator
        REAL ( KIND = rp_ ) :: qp_target_steer, qp_target_pred
        REAL ( KIND = rp_ ) :: qp_measure_steer, qp_measure_pred
+       REAL ( KIND = rp_ ) :: g_norm_initial
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
@@ -622,6 +642,8 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_accel
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK_n
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK_m
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JTY_kkt
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_NORM_kkt
 
 !  copy of controls
 
@@ -733,6 +755,9 @@
 ! relative-complementary-slackness-accuracy         2.0D-16
 ! absolute-infeasiblity-tolerated                   6.0D-6
 ! relative-infeasiblity-tolerated                   2.0D-16
+! relative-primal-optimality-required               1.0D-5
+! relative-dual-optimality-required                 1.0D-5
+! relative-slackness-optimality-required            1.0D-5
 ! minimum-useful-predictor-decrease                 1.0D-12
 ! maximum-absolute-infeasibility                    10.0
 ! maximum-relative-infeasibility                    10.0
@@ -804,7 +829,10 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_c = stop_abs_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_i = stop_rel_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_i = stop_abs_i + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: stop_predictor = stop_rel_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_kkt_p = stop_rel_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_kkt_d = stop_rel_kkt_p + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_kkt_c = stop_rel_kkt_d + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_predictor = stop_rel_kkt_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_abs_i = stop_predictor + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_rel_i = max_abs_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_rel_i + 1
@@ -894,6 +922,9 @@
      spec( stop_rel_c )%keyword = 'relative-complementary-slackness-accuracy'
      spec( stop_abs_i )%keyword = 'absolute-infeasiblity-tolerated'
      spec( stop_rel_i )%keyword = 'relative-infeasiblity-tolerated'
+     spec( stop_rel_kkt_p )%keyword = 'relative-primal-optimality-required'
+     spec( stop_rel_kkt_d )%keyword = 'relative-dual-optimality-required'
+     spec( stop_rel_kkt_c )%keyword = 'relative-slackness-optimality-required'
      spec( stop_predictor )%keyword = 'minimum-useful-predictor-decrease'
      spec( max_abs_i )%keyword = 'maximum-absolute-infeasibility'
      spec( max_rel_i )%keyword = 'maximum-relative-infeasibility'
@@ -1012,6 +1043,15 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( stop_rel_i ),                           &
                                  control%stop_rel_i,                           &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( stop_rel_kkt_p ),                       &
+                                 control%stop_rel_kkt_p,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( stop_rel_kkt_d ),                       &
+                                 control%stop_rel_kkt_d,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( stop_rel_kkt_c ),                       &
+                                 control%stop_rel_kkt_c,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( stop_predictor ),                       &
                                  control%stop_predictor,                       &
@@ -1639,6 +1679,7 @@
      INTEGER ( KIND = ip_ ) :: ne_eqp, s_start, active
 !    INTEGER ( KIND = ip_ ) :: Rk
      REAL ( KIND = rp_ ) :: complementary_slackness, multiplier_norm
+     REAL ( KIND = rp_ ) :: rel_p, rel_d, rel_c
      REAL ( KIND = rp_ ) :: ellv_pred, ellv_steer, del_ellv_pred, del_ellv_steer
      REAL ( KIND = rp_ ) :: fil_f, fil_viol, gts, sths, rho_f, rho_phi
      REAL ( KIND = rp_ ) :: max_viol, new_sigma, new_sigma_denom, relaxed_viol
@@ -2051,6 +2092,22 @@
 
      array_name = 'fisqp: data%WORK_n'
      CALL SPACE_resize_array( nlp%n, data%WORK_n,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( inform%status /= 0 ) GO TO 910
+
+     array_name = 'fisqp: data%JTY_kkt'
+     CALL SPACE_resize_array( nlp%n, data%JTY_kkt,                             &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( inform%status /= 0 ) GO TO 910
+
+     array_name = 'fisqp: data%ROW_NORM_kkt'
+     CALL SPACE_resize_array( MAX( nlp%m, 1_ip_ ), data%ROW_NORM_kkt,          &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = data%control%deallocate_error_fatal,      &
             exact_size = data%control%space_critical,                          &
@@ -2750,15 +2807,18 @@
              WRITE( data%out, 2010 )                                           &
                prefix, inform%iter, data%it_type, data%pair_type,              &
                data%step_used( 1 : 1 ), inform%obj,                            &
-               inform%primal_infeasibility, inform%dual_infeasibility,         &
-               inform%complementary_slackness,                                 &
+               inform%relative_primal_infeasibility,                           &
+               inform%relative_dual_infeasibility,                             &
+               inform%relative_complementary_slackness,                        &
                ADJUSTR( STRING_integer_6( data%QP_accel%A%m ) ),               &
                data%s_norm, data%d_type,                                       &
                inform%FILTER_inform%filter_size, data%sigma, data%clock_now
            ELSE
              WRITE( data%out, 2020 ) prefix, inform%iter,                      &
-               inform%obj, inform%primal_infeasibility,                        &
-               inform%dual_infeasibility, inform%complementary_slackness,      &
+               inform%obj,                                                     &
+               inform%relative_primal_infeasibility,                           &
+               inform%relative_dual_infeasibility,                             &
+               inform%relative_complementary_slackness,                        &
                inform%FILTER_inform%filter_size, data%sigma, data%clock_now
            END IF
 
@@ -2920,6 +2980,20 @@
             nlp%m, nlp%C( : nlp%m ), nlp%C_l( : nlp%m ),                       &
             nlp%C_u( : nlp%m ), nlp%Y( : nlp%m ) ) / multiplier_norm
 
+!  compute the relative measures that are used to decide termination. The
+!  size of the gradient at the initial point is recorded, as a scale for the
+!  dual infeasibility that does not vanish at a solution
+
+       IF ( inform%iter == 0 )                                                 &
+         data%g_norm_initial = MAXVAL( ABS( nlp%G( : nlp%n ) ) )
+       CALL FISQP_relative_kkt( nlp%n, nlp%m, nlp%X, nlp%X_l, nlp%X_u,         &
+              nlp%C, nlp%C_l, nlp%C_u, nlp%G, nlp%J, nlp%Y, nlp%Z,             &
+              data%control%infinity, data%g_norm_initial,                      &
+              data%JTY_kkt, data%ROW_NORM_kkt,                                 &
+              inform%relative_primal_infeasibility,                            &
+              inform%relative_dual_infeasibility,                              &
+              inform%relative_complementary_slackness )
+
 !  ---------------------
 !  first-iteration tasks
 !  ---------------------
@@ -2936,10 +3010,13 @@
            data%control%stop_rel_c * inform%complementary_slackness )
          data%stop_i = MAX( data%control%stop_abs_i, data%control%stop_rel_i )
          IF ( data%printi ) WRITE( data%out,                                   &
-             "(  /, A, '  Primal    convergence tolerance =', ES11.4,          &
-            &    /, A, '  Dual      convergence tolerance =', ES11.4,          &
-            &    /, A, '  Slackness convergence tolerance =', ES11.4 )" )      &
-                 prefix, data%stop_p, prefix, data%stop_d, prefix, data%stop_c
+             "(  /, A, '  Relative primal    convergence tolerance =', ES11.4, &
+            &    /, A, '  Relative dual      convergence tolerance =', ES11.4, &
+            &    /, A, '  Relative slackness convergence tolerance =', ES11.4  &
+            &  )" )                                                            &
+                 prefix, data%control%stop_rel_kkt_p,                          &
+                 prefix, data%control%stop_rel_kkt_d,                          &
+                 prefix, data%control%stop_rel_kkt_c
 
 !  compute the one-norm of the violation
 
@@ -2969,9 +3046,12 @@
 
 !  exit if an approximate KKT point has been found
 
-       IF ( inform%primal_infeasibility <= data%stop_p .AND.                   &
-            inform%dual_infeasibility <= data%stop_d .AND.                     &
-            inform%complementary_slackness <= data%stop_c ) THEN
+       IF ( inform%relative_primal_infeasibility                               &
+              <= data%control%stop_rel_kkt_p .AND.                             &
+            inform%relative_dual_infeasibility                                 &
+              <= data%control%stop_rel_kkt_d .AND.                             &
+            inform%relative_complementary_slackness                            &
+              <= data%control%stop_rel_kkt_c ) THEN
          IF ( data%printt ) WRITE( data%out,                                   &
                 "( /, A, ' Termination criteria satisfied ' )" ) prefix
          inform%status = GALAHAD_ok ; GO TO 900
@@ -2991,15 +3071,18 @@
            WRITE( data%out, 2010 )                                             &
              prefix, inform%iter, data%it_type, data%pair_type,                &
              data%step_used( 1 : 1 ), inform%obj,                              &
-             inform%primal_infeasibility, inform%dual_infeasibility,           &
-             inform%complementary_slackness,                                   &
+             inform%relative_primal_infeasibility,                             &
+             inform%relative_dual_infeasibility,                               &
+             inform%relative_complementary_slackness,                          &
              ADJUSTR( STRING_integer_6( data%QP_accel%A%m ) ),                 &
              data%s_norm, data%d_type,                                         &
              inform%FILTER_inform%filter_size, data%sigma, data%clock_now
          ELSE
            WRITE( data%out, 2020 ) prefix, inform%iter,                        &
-             inform%obj, inform%primal_infeasibility,                          &
-             inform%dual_infeasibility, inform%complementary_slackness,        &
+             inform%obj,                                                       &
+             inform%relative_primal_infeasibility,                             &
+             inform%relative_dual_infeasibility,                               &
+             inform%relative_complementary_slackness,                          &
              inform%FILTER_inform%filter_size, data%sigma, data%clock_now
          END IF
 
@@ -3588,9 +3671,19 @@
 
 !  check if an approximate KKT point has been found
 
-         kkt_pred = inform%primal_infeasibility <= data%stop_p .AND.           &
-                    inform%dual_infeasibility <= data%stop_d .AND.             &
-                    inform%complementary_slackness <= data%stop_c
+         CALL FISQP_relative_kkt( nlp%n, nlp%m, nlp%X, nlp%X_l, nlp%X_u,       &
+                nlp%C, nlp%C_l, nlp%C_u, nlp%G, nlp%J, nlp%Y, nlp%Z,           &
+                data%control%infinity, data%g_norm_initial,                    &
+                data%JTY_kkt, data%ROW_NORM_kkt,                               &
+                inform%relative_primal_infeasibility,                          &
+                inform%relative_dual_infeasibility,                            &
+                inform%relative_complementary_slackness )
+         kkt_pred = inform%relative_primal_infeasibility                       &
+                      <= data%control%stop_rel_kkt_p .AND.                     &
+                    inform%relative_dual_infeasibility                         &
+                      <= data%control%stop_rel_kkt_d .AND.                     &
+                    inform%relative_complementary_slackness                    &
+                      <= data%control%stop_rel_kkt_c
          IF ( data%printt ) WRITE( data%out, "( A, ' KKT measures ',           &
         &  '(predictor  ):', 3ES11.4 )" ) prefix, inform%primal_infeasibility, &
                inform%dual_infeasibility, inform%complementary_slackness
@@ -4745,9 +4838,19 @@
 
 !  record if an approximate KKT point has been found
 
-       kkt_pred = inform%primal_infeasibility <= data%stop_p .AND.             &
-                  inform%dual_infeasibility <= data%stop_d .AND.               &
-                  inform%complementary_slackness <= data%stop_c
+       CALL FISQP_relative_kkt( nlp%n, nlp%m, nlp%X, nlp%X_l, nlp%X_u,         &
+              nlp%C, nlp%C_l, nlp%C_u, nlp%G, nlp%J, nlp%Y, nlp%Z,             &
+              data%control%infinity, data%g_norm_initial,                      &
+              data%JTY_kkt, data%ROW_NORM_kkt,                                 &
+              inform%relative_primal_infeasibility,                            &
+              inform%relative_dual_infeasibility,                              &
+              inform%relative_complementary_slackness )
+       kkt_pred = inform%relative_primal_infeasibility                         &
+                    <= data%control%stop_rel_kkt_p .AND.                       &
+                  inform%relative_dual_infeasibility                           &
+                    <= data%control%stop_rel_kkt_d .AND.                       &
+                  inform%relative_complementary_slackness                      &
+                    <= data%control%stop_rel_kkt_c
        IF ( data%printt ) WRITE( data%out, "( A, ' KKT measures ',             &
       &  '(predictor  ):', 3ES11.4 )" ) prefix, inform%primal_infeasibility,   &
            inform%dual_infeasibility, inform%complementary_slackness
@@ -4802,9 +4905,17 @@
 
 !  record if an approximate KKT point has been found
 
-         kkt_accel = inform%primal_infeasibility <= data%stop_p .AND.          &
-                     dual_infeasibility <= data%stop_d .AND.                   &
-                     complementary_slackness <= data%stop_c
+         CALL FISQP_relative_kkt( nlp%n, nlp%m, nlp%X, nlp%X_l, nlp%X_u,       &
+                nlp%C, nlp%C_l, nlp%C_u, nlp%G, nlp%J, data%Y_accel,           &
+                data%Z_accel,                                                  &
+                data%control%infinity, data%g_norm_initial,                    &
+                data%JTY_kkt, data%ROW_NORM_kkt,                               &
+                rel_p,                                                         &
+                rel_d,                                                         &
+                rel_c )
+         kkt_accel = rel_p <= data%control%stop_rel_kkt_p .AND.                &
+                     rel_d <= data%control%stop_rel_kkt_d .AND.                &
+                     rel_c <= data%control%stop_rel_kkt_c
          IF ( data%printt ) WRITE( data%out, "( A, ' KKT measures ',           &
       &  '(accelerator):', 3ES11.4 )" ) prefix, inform%primal_infeasibility,   &
              dual_infeasibility, complementary_slackness
@@ -4830,6 +4941,9 @@
            nlp%gL( : nlp%n ) = data%WORK_n( : nlp%n )
            inform%dual_infeasibility = dual_infeasibility
            inform%complementary_slackness = complementary_slackness
+           inform%relative_primal_infeasibility = rel_p
+           inform%relative_dual_infeasibility = rel_d
+           inform%relative_complementary_slackness = rel_c
 
            IF ( kkt_accel ) THEN
              IF ( data%printt ) WRITE( data%out,                               &
@@ -4949,15 +5063,18 @@
            WRITE( data%out, 2010 )                                             &
              prefix, inform%iter, data%it_type, data%pair_type,                &
              data%step_used( 1 : 1 ), inform%obj,                              &
-             inform%primal_infeasibility, inform%dual_infeasibility,           &
-             inform%complementary_slackness,                                   &
+             inform%relative_primal_infeasibility,                             &
+             inform%relative_dual_infeasibility,                               &
+             inform%relative_complementary_slackness,                          &
              ADJUSTR( STRING_integer_6( data%QP_accel%A%m ) ), data%s_norm,    &
              data%d_type, inform%FILTER_inform%filter_size, data%sigma,        &
              inform%time%clock_total
          ELSE
            WRITE( data%out, 2020 ) prefix, inform%iter, inform%obj,            &
-             inform%primal_infeasibility, inform%dual_infeasibility,           &
-             inform%complementary_slackness, inform%FILTER_inform%filter_size, &
+             inform%relative_primal_infeasibility,                             &
+             inform%relative_dual_infeasibility,                               &
+             inform%relative_complementary_slackness,                          &
+             inform%FILTER_inform%filter_size,                                 &
              data%sigma, inform%time%clock_total
          END IF
 !        WRITE( data%out, 2110 )                                               &
@@ -5427,6 +5544,18 @@
             bad_alloc = inform%bad_alloc, out = data%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'fisqp: data%JTY_kkt'
+     CALL SPACE_dealloc_array( data%JTY_kkt,                                   &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'fisqp: data%ROW_NORM_kkt'
+     CALL SPACE_dealloc_array( data%ROW_NORM_kkt,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
     array_name = 'fisqp: data%QP_pred%H%row'
     CALL SPACE_dealloc_array( data%QP_pred%H%row, inform%status,               &
            inform%alloc_status, array_name = array_name,                       &
@@ -5669,5 +5798,161 @@
 !  End of subroutine FISQP_qp_accuracy
 
      END SUBROUTINE FISQP_qp_accuracy
+
+
+!-*-*-*-*-   F I S Q P _ R E L A T I V E _ K K T   S U B R O U T I N E   -*-*-*-
+
+     SUBROUTINE FISQP_relative_kkt( n, m, X, X_l, X_u, C, C_l, C_u, G, J, Y,   &
+                                    Z, infinity, g_norm_initial, JTY,          &
+                                    ROW_NORM, primal, dual, comp )
+
+!  compute measures of the primal infeasibility, the dual infeasibility and
+!  the complementary slackness of (x,y,z) that are relative to the sizes of
+!  the quantities from which they are formed, and hence unaffected by the
+!  scaling of the objective and of each constraint. With x_s = max(1,||x||)
+!  and g_s = max(||g||,||J^T y||,||z||,||g(x_0)||) (infinity norms; the last
+!  term, the size of the gradient at the initial point, ensures that g_s does
+!  not vanish at a solution where y and z are zero), the scale of the
+!  i-th general constraint is c_s,i = max(||J_i|| x_s, |c_l,i|, |c_u,i|) (finite
+!  bounds only), where J_i is the i-th row of J, and that of the j-th simple
+!  bound is max(x_s, |x_l,j|, |x_u,j|). Then
+!
+!   primal = the largest constraint violation divided by its scale
+!   dual = ||g - J^T y - z|| / g_s
+!   comp = the largest product of a multiplier and the distance to the bound
+!          it belongs to, divided by g_s and the scale of the constraint; a
+!          multiplier for an infinite bound (i.e., of the wrong sign) is
+!          measured by its size divided by g_s
+
+!  Arguments:
+!  =========
+!
+!   n, m     the numbers of variables and general constraints
+!   X, X_l, X_u  the variables and their bounds
+!   C, C_l, C_u  the constraint values and their bounds
+!   G        the gradient of the objective
+!   J        the Jacobian of the constraints
+!   Y, Z     the Lagrange multipliers and dual variables (g = J^T y + z)
+!   infinity bounds larger than infinity in absolute value are infinite
+!   g_norm_initial  the infinity norm of the gradient at the initial point
+!   JTY, ROW_NORM  workspace of lengths n and m
+!   primal, dual, comp  the relative measures
+
+!  Dummy arguments
+
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     REAL ( KIND = rp_ ), INTENT( IN ) :: infinity, g_norm_initial
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, G, Z
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u, Y
+     TYPE ( SMT_type ), INTENT( IN ) :: J
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: JTY
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: ROW_NORM
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: primal, dual, comp
+
+!  Local variables
+
+     INTEGER ( KIND = ip_ ) :: i, l
+     REAL ( KIND = rp_ ) :: xs, gs, scale, lo, up
+
+!  the scale of x, and the infinity norms of the rows of J
+
+     xs = MAX( one, MAXVAL( ABS( X( : n ) ) ) )
+     IF ( m > 0 ) THEN
+       ROW_NORM( : m ) = zero
+       SELECT CASE ( SMT_get( J%type ) )
+       CASE ( 'COORDINATE' )
+         DO l = 1, J%ne
+           i = J%row( l )
+           ROW_NORM( i ) = MAX( ROW_NORM( i ), ABS( J%val( l ) ) )
+         END DO
+       CASE ( 'SPARSE_BY_ROWS' )
+         DO i = 1, m
+           DO l = J%ptr( i ), J%ptr( i + 1 ) - 1
+             ROW_NORM( i ) = MAX( ROW_NORM( i ), ABS( J%val( l ) ) )
+           END DO
+         END DO
+       CASE ( 'DENSE' )
+         DO i = 1, m
+           ROW_NORM( i ) = MAXVAL( ABS( J%val( ( i - 1 ) * n + 1 : i * n ) ) )
+         END DO
+       END SELECT
+       CALL mop_AX( one, J, Y, zero, JTY, transpose = .TRUE.,                  &
+                    m_matrix = m, n_matrix = n )
+     ELSE
+       JTY( : n ) = zero
+     END IF
+
+!  the relative dual infeasibility
+
+     gs = MAX( TINY( one ), MAXVAL( ABS( G( : n ) ) ),                         &
+               MAXVAL( ABS( JTY( : n ) ) ), MAXVAL( ABS( Z( : n ) ) ),         &
+               g_norm_initial )
+     dual = MAXVAL( ABS( G( : n ) - JTY( : n ) - Z( : n ) ) ) / gs
+
+!  the relative primal infeasibility and complementary slackness for the
+!  simple bounds
+
+     primal = zero ; comp = zero
+     DO i = 1, n
+       lo = X_l( i ) ; up = X_u( i )
+       scale = xs
+       IF ( lo > - infinity ) scale = MAX( scale, ABS( lo ) )
+       IF ( up < infinity ) scale = MAX( scale, ABS( up ) )
+       IF ( lo > - infinity ) primal = MAX( primal, ( lo - X( i ) ) / scale )
+       IF ( up < infinity ) primal = MAX( primal, ( X( i ) - up ) / scale )
+       comp = MAX( comp, FISQP_bound_gap( Z( i ), X( i ), lo, up, scale,      &
+                                          infinity ) / ( gs * scale ) )
+     END DO
+
+!  and for the general constraints
+
+     DO i = 1, m
+       lo = C_l( i ) ; up = C_u( i )
+       scale = MAX( TINY( one ), ROW_NORM( i ) * xs )
+       IF ( lo > - infinity ) scale = MAX( scale, ABS( lo ) )
+       IF ( up < infinity ) scale = MAX( scale, ABS( up ) )
+       IF ( lo > - infinity ) primal = MAX( primal, ( lo - C( i ) ) / scale )
+       IF ( up < infinity ) primal = MAX( primal, ( C( i ) - up ) / scale )
+       comp = MAX( comp, FISQP_bound_gap( Y( i ), C( i ), lo, up, scale,      &
+                                          infinity ) / ( gs * scale ) )
+     END DO
+     RETURN
+
+!  End of subroutine FISQP_relative_kkt
+
+     END SUBROUTINE FISQP_relative_kkt
+
+!-*-*-*-*-*-*-   F I S Q P _ B O U N D _ G A P   F U N C T I O N   -*-*-*-*-*-*-
+
+     FUNCTION FISQP_bound_gap( mult, v, lo, up, scale, infinity )
+     REAL ( KIND = rp_ ) :: FISQP_bound_gap
+
+!  |mult| times the distance from v to the bound that mult belongs to (lo if
+!  mult > 0, up if mult < 0); if that bound is infinite, the multiplier has
+!  the wrong sign, and |mult| times scale is returned instead
+
+!  Dummy arguments
+
+     REAL ( KIND = rp_ ), INTENT( IN ) :: mult, v, lo, up, scale, infinity
+
+     FISQP_bound_gap = zero
+     IF ( mult > zero ) THEN
+       IF ( lo > - infinity ) THEN
+         FISQP_bound_gap = mult * ABS( v - lo )
+       ELSE
+         FISQP_bound_gap = mult * scale
+       END IF
+     ELSE IF ( mult < zero ) THEN
+       IF ( up < infinity ) THEN
+         FISQP_bound_gap = - mult * ABS( up - v )
+       ELSE
+         FISQP_bound_gap = - mult * scale
+       END IF
+     END IF
+     RETURN
+
+!  End of function FISQP_bound_gap
+
+     END FUNCTION FISQP_bound_gap
 
    END MODULE GALAHAD_FISQP_precision
