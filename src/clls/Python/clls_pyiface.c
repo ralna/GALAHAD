@@ -889,7 +889,7 @@ static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds)
       }
     }
     if(py_x_s != NULL) {
-      if((PyObject *) py_w != Py_None){
+      if((PyObject *) py_x_s != Py_None){
         if(!check_array_double("x_s", py_x_s, n))
             return NULL;
         x_s = (double *) PyArray_DATA(py_x_s);
