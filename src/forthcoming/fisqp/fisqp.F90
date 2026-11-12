@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-06-16 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2026-11-11 AT 12:25 GMT.
 
 #include "galahad_modules.h"
 
@@ -170,10 +170,14 @@
 
        INTEGER ( KIND = ip_ ) :: scale_constraints = 0
 
-!  indefinite linear equation solver for use with predictor = 2
+!  symmetric linear equation solver used to factorize the predictor Hessian
+!   when predictor_hessian = 1 or 2. NB. the Schnabel-Eskow modifications
+!   required by predictor_hessian = 1 are only available from the HSL
+!   solvers sils/ma27 and ma57; with other solvers, diagonally-dominant
+!   modifications (predictor_hessian = 2) are used instead
 
        CHARACTER ( LEN = 30 ) :: linear_solver_for_modifications =             &
-          "sils" // REPEAT( ' ', 26 )
+          "slblt" // REPEAT( ' ', 25 )
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
@@ -746,7 +750,7 @@
 ! use-accelerator-step                              yes
 ! filter-uses-steering-information                  yes
 ! alive-filename                                    ALIVE.d
-! linear-equation-solver-for-modifications          sils
+! linear-equation-solver-for-modifications          slblt
 ! output-line-prefix                                ""
 ! END FISQP SPECIFICATIONS
 
@@ -1760,6 +1764,24 @@
      data%print_1st_header = .TRUE.
 
      IF ( data%printd ) WRITE( data%out, "( ' (A1:1-2)' )" )
+
+!  the Schnabel-Eskow modifications required for predictor_hessian = 1 are
+!  only provided by some solvers; for others, use diagonally-dominant
+!  modifications instead
+
+     IF ( data%control%predictor_hessian == se_modified_predictor_hessian ) THEN
+       SELECT CASE ( TRIM( ADJUSTL(                                            &
+                       data%control%linear_solver_for_modifications ) ) )
+       CASE ( 'sils', 'ma27', 'ma57' )
+       CASE DEFAULT
+         data%control%predictor_hessian = dd_modified_predictor_hessian
+         IF ( data%printi ) WRITE( data%out, "( /, A, '  Schnabel-Eskow',      &
+        &  ' modifications are not available from ', A, ',', /, A,             &
+        &  '  so diagonally-dominant modifications will be used instead' )" ) &
+           prefix, TRIM( ADJUSTL(                                              &
+             data%control%linear_solver_for_modifications ) ), prefix
+       END SELECT
+     END IF
 
 !  initialize the filter
 
@@ -3401,7 +3423,7 @@
          WHERE ( nlp%C_l( : nlp%m ) > - data%control%infinity )
            data%QP_pred%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) - nlp%C( : nlp%m )
          ELSE WHERE
-           data%QP_steer%C_l( : nlp%m ) = nlp%C_l( : nlp%m )
+           data%QP_pred%C_l( : nlp%m ) = nlp%C_l( : nlp%m )
          END WHERE
          WHERE ( nlp%C_u( : nlp%m ) < data%control%infinity )
            data%QP_pred%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) - nlp%C( : nlp%m )
@@ -3813,13 +3835,15 @@
            data%QP_accel%A%ne = 0
            DO i = 1, nlp%m
              ii = ABS( nlp%C_status( i ) )
-             IF ( ii > 0 .AND. ABS( nlp%J%val( l ) ) >                         &
-                    data%control%jacobian_zero_tolerance ) THEN
+             IF ( ii > 0 ) THEN
                DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
-                 data%QP_accel%A%ne = data%QP_accel%A%ne + 1
-                 data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
-                 data%QP_accel%A%col( data%QP_accel%A%ne ) = nlp%J%col( l )
-                 data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 IF ( ABS( nlp%J%val( l ) ) >                                  &
+                        data%control%jacobian_zero_tolerance ) THEN
+                   data%QP_accel%A%ne = data%QP_accel%A%ne + 1
+                   data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
+                   data%QP_accel%A%col( data%QP_accel%A%ne ) = nlp%J%col( l )
+                   data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 END IF
                END DO
              END IF
            END DO
@@ -3827,13 +3851,16 @@
            data%QP_accel%A%ne = 0 ; l = 0
            DO i = 1, nlp%m
              ii = ABS( nlp%C_status( i ) )
-             IF ( ii > 0 .AND. ABS( nlp%J%val( l ) ) >                         &
-                    data%control%jacobian_zero_tolerance ) THEN
+             IF ( ii > 0 ) THEN
                DO j = 1, nlp%n
-                 data%QP_accel%A%ne = data%QP_accel%A%ne + 1 ; l = l + 1
-                 data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
-                 data%QP_accel%A%col( data%QP_accel%A%ne ) = j
-                 data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 l = l + 1
+                 IF ( ABS( nlp%J%val( l ) ) >                                  &
+                        data%control%jacobian_zero_tolerance ) THEN
+                   data%QP_accel%A%ne = data%QP_accel%A%ne + 1
+                   data%QP_accel%A%row( data%QP_accel%A%ne ) = ii
+                   data%QP_accel%A%col( data%QP_accel%A%ne ) = j
+                   data%QP_accel%A%val( data%QP_accel%A%ne ) = nlp%J%val( l )
+                 END IF
                END DO
              ELSE
                l = l + nlp%n
