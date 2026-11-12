@@ -4836,7 +4836,10 @@
             nlp%m, nlp%C( : nlp%m ), nlp%C_l( : nlp%m ),                       &
             nlp%C_u( : nlp%m ), nlp%Y( : nlp%m ) ) / multiplier_norm
 
-!  record if an approximate KKT point has been found
+!  compute the relative measures. NB. g and J have not yet been evaluated at
+!  the new point, so these measures are only used to choose the multipliers;
+!  termination is decided at the start of the next iteration, once g and J
+!  are available
 
        CALL FISQP_relative_kkt( nlp%n, nlp%m, nlp%X, nlp%X_l, nlp%X_u,         &
               nlp%C, nlp%C_l, nlp%C_u, nlp%G, nlp%J, nlp%Y, nlp%Z,             &
@@ -4845,12 +4848,6 @@
               inform%relative_primal_infeasibility,                            &
               inform%relative_dual_infeasibility,                              &
               inform%relative_complementary_slackness )
-       kkt_pred = inform%relative_primal_infeasibility                         &
-                    <= data%control%stop_rel_kkt_p .AND.                       &
-                  inform%relative_dual_infeasibility                           &
-                    <= data%control%stop_rel_kkt_d .AND.                       &
-                  inform%relative_complementary_slackness                      &
-                    <= data%control%stop_rel_kkt_c
        IF ( data%printt ) WRITE( data%out, "( A, ' KKT measures ',             &
       &  '(predictor  ):', 3ES11.4 )" ) prefix, inform%primal_infeasibility,   &
            inform%dual_infeasibility, inform%complementary_slackness
@@ -4903,7 +4900,7 @@
               nlp%m, nlp%C( : nlp%m ), nlp%C_l( : nlp%m ),                     &
               nlp%C_u( : nlp%m ), data%Y_accel( : nlp%m ) ) / multiplier_norm
 
-!  record if an approximate KKT point has been found
+!  compute the relative measures for the accelerator's multipliers
 
          CALL FISQP_relative_kkt( nlp%n, nlp%m, nlp%X, nlp%X_l, nlp%X_u,       &
                 nlp%C, nlp%C_l, nlp%C_u, nlp%G, nlp%J, data%Y_accel,           &
@@ -4944,27 +4941,6 @@
            inform%relative_primal_infeasibility = rel_p
            inform%relative_dual_infeasibility = rel_d
            inform%relative_complementary_slackness = rel_c
-
-           IF ( kkt_accel ) THEN
-             IF ( data%printt ) WRITE( data%out,                               &
-                    "( /, A, ' Termination criteria satisfied ' )" ) prefix
-             inform%status = GALAHAD_ok ; GO TO 900
-           END IF
-         ELSE
-           IF ( kkt_pred ) THEN
-             IF ( data%printt ) WRITE( data%out,                               &
-                    "( /, A, ' Termination criteria satisfied ' )" ) prefix
-             inform%status = GALAHAD_ok ; GO TO 900
-           END IF
-         END IF
-       ELSE
-
-!  exit if an approximate KKT point has been found
-
-         IF ( kkt_pred ) THEN
-           IF ( data%printt ) WRITE( data%out,                                 &
-                  "( /, A, ' Termination criteria satisfied ' )" ) prefix
-           inform%status = GALAHAD_ok ; GO TO 900
          END IF
        END IF
        data%primal_viol = OPT_primal_infeasibility( nlp%n, nlp%X,              &
