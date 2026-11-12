@@ -220,11 +220,18 @@
 !    complementary slackness are no larger than stop_rel_kkt_p, stop_rel_kkt_d
 !    and stop_rel_kkt_c, respectively. Each measure is relative to the sizes
 !    of the quantities from which it is formed (see FISQP_relative_kkt), so
-!    that it is unaffected by the scaling of the objective and constraints
+!    that it is unaffected by the scaling of the objective and constraints.
+!    The defaults are 1.0E-5 (1.0E-4 in single precision)
 
+#ifdef REAL_32
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_p = ten ** ( - 4 )
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_d = ten ** ( - 4 )
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_c = ten ** ( - 4 )
+#else
        REAL ( KIND = rp_ ) :: stop_rel_kkt_p = ten ** ( - 5 )
        REAL ( KIND = rp_ ) :: stop_rel_kkt_d = ten ** ( - 5 )
        REAL ( KIND = rp_ ) :: stop_rel_kkt_c = ten ** ( - 5 )
+#endif
 
 !   the minimum useful predictor decrease allowed when approximately feasible,
 !    relative to the larger of |f| and ||g(x_0)||_inf max(1,||x||_inf)
@@ -761,9 +768,9 @@
 ! relative-complementary-slackness-accuracy         2.0D-16
 ! absolute-infeasiblity-tolerated                   6.0D-6
 ! relative-infeasiblity-tolerated                   2.0D-16
-! relative-primal-optimality-required               1.0D-5
-! relative-dual-optimality-required                 1.0D-5
-! relative-slackness-optimality-required            1.0D-5
+! relative-primal-optimality-required               1.0D-5 (1.0D-4 single)
+! relative-dual-optimality-required                 1.0D-5 (1.0D-4 single)
+! relative-slackness-optimality-required            1.0D-5 (1.0D-4 single)
 ! minimum-useful-predictor-decrease                 1.8D-12
 ! maximum-absolute-infeasibility                    10.0
 ! maximum-relative-infeasibility                    10.0
@@ -1697,7 +1704,7 @@
 !    REAL ( KIND = rp_ ) :: K, rhs, sol, g_old, Jx_old, step
 !    REAL ( KIND = rp_ ) :: B_k, B_k_scalar, Bk_D, Hess, Hess_D, Heps
 !    REAL ( KIND = rp_ ) :: normg, normHess, muLS, accel_bd_viol
-     LOGICAL :: kkt_accel, kkt_pred, lin_feas, acceptable, names
+     LOGICAL :: kkt_accel, kkt_pred, lin_feas, acceptable, names, steer_rejected
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
@@ -3495,9 +3502,23 @@
          IF ( data%printt ) WRITE( data%out, "( A, ' steering objective ',     &
         &  'decrease =', ES12.4 )") prefix, del_ellv_steer
 
+!  never accept a steering step that increases the linearized infeasibility,
+!  as may happen if the steering subproblem was solved inaccurately (or its
+!  solver stalled); use s = 0 instead. Such a step provides no evidence that
+!  the problem is infeasible, nor that steering has failed
+
+         steer_rejected = del_ellv_steer < zero
+         IF ( steer_rejected ) THEN
+           IF ( data%printt ) WRITE( data%out, "( A, ' steering step ',        &
+          &  'rejected, s = 0 used instead' )" ) prefix
+           data%S_steer( : nlp%n ) = zero
+           ellv_steer = data%primal_viol ; del_ellv_steer = zero
+         END IF
+
 !  we are feasible so steering is unnecessary
 
        ELSE
+         steer_rejected = .FALSE.
          ellv_steer = zero ; del_ellv_steer = zero
          IF ( nlp%m > 0 ) data%S_steer( : nlp%n ) = zero
          IF ( data%printt )                                                    &
@@ -3516,7 +3537,7 @@
 !write(6,*) data%primal_viol, data%stop_p
 
        IF ( del_ellv_steer <= data%stop_i .AND.                                &
-            data%primal_viol > data%stop_p ) THEN
+            data%primal_viol > data%stop_p .AND. .NOT. steer_rejected ) THEN
          inform%status = GALAHAD_error_primal_infeasible
          GO TO 900
        END IF
@@ -3524,7 +3545,8 @@
 !  check if the steering step achieved its purpose.
 
        IF ( del_ellv_steer <= zero .AND.                                       &
-            data%primal_viol >= data%stop_p / ten ) THEN
+            data%primal_viol >= data%stop_p / ten .AND.                        &
+            .NOT. steer_rejected ) THEN
          inform%status = - 108
          GO TO 900
        END IF
