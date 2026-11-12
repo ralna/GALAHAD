@@ -226,9 +226,10 @@
        REAL ( KIND = rp_ ) :: stop_rel_kkt_d = ten ** ( - 5 )
        REAL ( KIND = rp_ ) :: stop_rel_kkt_c = ten ** ( - 5 )
 
-!   the minimum useful predictor decrease allowed when approximately feasible
+!   the minimum useful predictor decrease allowed when approximately feasible,
+!    relative to the larger of |f| and ||g(x_0)||_inf max(1,||x||_inf)
 
-       REAL ( KIND = rp_ ) :: stop_predictor = ten ** ( - 12 )
+       REAL ( KIND = rp_ ) :: stop_predictor = epsmch ** 0.75_rp_
 
 !   the maximum infeasibility tolerated will be the larger of
 !    max_abs_i and max_rel_i times the initial infeasibility
@@ -617,6 +618,7 @@
        REAL ( KIND = rp_ ) :: qp_measure_steer, qp_measure_pred
        REAL ( KIND = rp_ ) :: g_norm_initial
        REAL ( KIND = rp_ ) :: kkt_g_scale, kkt_p_scale, kkt_j_scale
+       LOGICAL :: predictor_stalled
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
@@ -762,7 +764,7 @@
 ! relative-primal-optimality-required               1.0D-5
 ! relative-dual-optimality-required                 1.0D-5
 ! relative-slackness-optimality-required            1.0D-5
-! minimum-useful-predictor-decrease                 1.0D-12
+! minimum-useful-predictor-decrease                 1.8D-12
 ! maximum-absolute-infeasibility                    10.0
 ! maximum-relative-infeasibility                    10.0
 ! minimum-constraint-scaling-factor                 1.0D-5
@@ -1683,7 +1685,7 @@
      INTEGER ( KIND = ip_ ) :: ne_eqp, s_start, active
 !    INTEGER ( KIND = ip_ ) :: Rk
      REAL ( KIND = rp_ ) :: complementary_slackness, multiplier_norm
-     REAL ( KIND = rp_ ) :: rel_p, rel_d, rel_c
+     REAL ( KIND = rp_ ) :: rel_p, rel_d, rel_c, f_scale
      REAL ( KIND = rp_ ) :: ellv_pred, ellv_steer, del_ellv_pred, del_ellv_steer
      REAL ( KIND = rp_ ) :: fil_f, fil_viol, gts, sths, rho_f, rho_phi
      REAL ( KIND = rp_ ) :: max_viol, new_sigma, new_sigma_denom, relaxed_viol
@@ -2134,6 +2136,7 @@
      data%f_ref = nlp%f
      data%accepted = .TRUE.
      data%qp_target_steer = - one ; data%qp_target_pred = - one
+     data%predictor_stalled = .FALSE.
      data%qp_measure_steer = - one ; data%qp_measure_pred = - one
 
 !  set up space for the steering LP
@@ -3061,6 +3064,14 @@
          IF ( data%printt ) WRITE( data%out,                                   &
                 "( /, A, ' Termination criteria satisfied ' )" ) prefix
          inform%status = GALAHAD_ok ; GO TO 900
+       END IF
+
+!  exit if the predictor step from the previous iterate, computed as
+!  accurately as permitted, gave a negligible decrease
+
+       IF ( data%predictor_stalled ) THEN
+         inform%status = - 102
+         GO TO 900
        END IF
 
 !  print details of the current iteration
@@ -4970,13 +4981,22 @@
         & ( 5X, 3ES24.16 ) )" ) prefix, nlp%Z( : nlp%n )
        END IF
 
-!  check for optimality based on the predictor step
+!  record if the predicted decrease in the penalty function is negligible
+!  relative to the size of the objective, measured by the larger of |f| and
+!  ||g(x_0)|| max(1,||x||), while the iterate is feasible. This only counts
+!  if the predictor subproblem was solved as accurately as permitted, since
+!  otherwise a more accurate solution may give a useful step. The resulting
+!  exit is taken at the start of the next iteration, once it is known that
+!  the new point is not an approximate KKT point
 
-       IF ( ABS( data%del_qphi_pred ) <= data%control%stop_predictor           &
-            .AND. data%primal_viol <= data%stop_p ) THEN
-         inform%status = - 102
-         GO TO 900
-       END IF
+       f_scale = MAX( TINY( one ), ABS( nlp%f ), data%g_norm_initial *        &
+                      MAX( one, MAXVAL( ABS( nlp%X( : nlp%n ) ) ) ) )
+       data%predictor_stalled = ABS( data%del_qphi_pred )                      &
+             <= data%control%stop_predictor * f_scale .AND.                    &
+           data%qp_target_pred <= data%control%qp_floor_factor *               &
+             MIN( data%control%stop_rel_kkt_p, data%control%stop_rel_kkt_d,   &
+                  data%control%stop_rel_kkt_c ) .AND.                          &
+           data%primal_viol <= data%stop_p
 
 !  update values at R(k)
 
