@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-12 AT 16:17 GMT.
 
 #include "galahad_modules.h"
 
@@ -61,7 +61,7 @@
                SLLS_reset_control, SLLS_information, USERDATA_type,            &
                QPT_problem_type, SMT_type, SMT_put, SMT_get,                   &
                SLLS_project_onto_simplex, SLLS_project_onto_simplices,         &
-               SLLS_simplex_projection_path, SLLS_cgls
+               SLLS_simplex_projection_path, SLLS_cgls, SLLS_multipliers
 
 
 !----------------------
@@ -2236,6 +2236,15 @@ END IF
          inform%status = GALAHAD_ok ; GO TO 900
        END IF
 
+!  before the iteration- or time-limit exits below, record Lagrange
+!  multipliers and dual variables that are consistent with the current x
+
+       IF ( inform%iter > data%maxit .OR.                                      &
+            ( control%cpu_time_limit >= zero .AND.                             &
+              inform%time%total > control%cpu_time_limit ) )                   &
+         CALL SLLS_multipliers( prob%n, prob%m, data%multiple_simplices,       &
+                                data%S_ptr, data%S_ind, prob%G, prob%Y, prob%Z )
+
 !  test to see if more than maxit iterations have been performed
 
        IF ( inform%iter > data%maxit ) THEN
@@ -3180,6 +3189,12 @@ END IF
 
  900 CONTINUE
 
+!  compute Lagrange multipliers y and dual variables z that satisfy the dual
+!  optimality conditions g = sum_i e_Ci y_i + z at the final x
+
+     CALL SLLS_multipliers( prob%n, prob%m, data%multiple_simplices,           &
+                            data%S_ptr, data%S_ind, prob%G, prob%Y, prob%Z )
+
 !  set the optimal variable status
 
      IF ( ALLOCATED( prob%X_status ) ) THEN
@@ -3809,6 +3824,88 @@ endif
 !  End of subroutine SLLS_subproblem_terminate
 
      END SUBROUTINE SLLS_subproblem_terminate
+
+!-*-*-*-*-   S L L S _ M U L T I P L I E R S   S U B R O U T I N E   -*-*-*-*-
+
+      SUBROUTINE SLLS_multipliers( n, m, multiple_simplices, S_ptr, S_ind,     &
+                                   G, Y, Z )
+
+!  Compute Lagrange multipliers y and dual variables z for the constraints
+!  e_Ci^T x_Ci = 1, x_Ci >= 0, i = 1,..., m, from the gradient g of the
+!  objective, so that the dual optimality conditions g = sum_i e_Ci y_i + z
+!  hold exactly. Taking y_i = min_{j in C_i} g_j ensures that z_Ci >= 0,
+!  while x^T z -> 0 as the projected gradient -> 0 (at a first-order
+!  critical point, g_j = y_i for every j in C_i for which x_j > 0, so y_i
+!  is then the exact multiplier). Variables in no cohort have z_j = g_j
+
+!  ------------------------------- dummy arguments -----------------------
+!
+!  INPUT arguments that are not altered by the subroutine
+!
+!  n      (INTEGER) the number of variables
+!  m      (INTEGER) the number of cohorts
+!  multiple_simplices (LOGICAL) .TRUE. if the cohorts are given by S_ptr and
+!          S_ind, and .FALSE. if all variables belong to a single cohort
+!  S_ptr  (OPTIONAL INTEGER array of length at least m+1) if
+!          multiple_simplices is .TRUE., S_ptr must be present, and the
+!          variables in cohort i are S_ind(S_ptr(i):S_ptr(i+1)-1)
+!  S_ind  (OPTIONAL INTEGER array of length at least n) see S_ptr
+!  G      (REAL array of length at least n) the gradient of the objective
+!
+!  OUTPUT arguments that need not be set on entry to the subroutine
+!
+!  Y      (REAL array of length at least m, or 1 if multiple_simplices is
+!          .FALSE.) the Lagrange multipliers. If multiple_simplices is
+!          .FALSE. and Y has no elements, there is no constraint, and Z = G
+!  Z      (REAL array of length at least n) the dual variables
+
+!  ------------------ end of dummy arguments --------------------------
+
+!  dummy arguments
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      LOGICAL, INTENT( IN ) :: multiple_simplices
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: S_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: S_ind
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i, k, l
+
+!  variables in no cohort retain z_j = g_j
+
+      Z( : n ) = G( : n )
+
+!  several cohorts
+
+      IF ( multiple_simplices .AND. PRESENT( S_ptr ) .AND.                     &
+           PRESENT( S_ind ) ) THEN
+        DO i = 1, m
+          IF ( S_ptr( i + 1 ) > S_ptr( i ) ) THEN
+            Y( i ) = MINVAL( G( S_ind( S_ptr( i ) : S_ptr( i + 1 ) - 1 ) ) )
+          ELSE
+            Y( i ) = zero
+          END IF
+          DO k = S_ptr( i ), S_ptr( i + 1 ) - 1
+            l = S_ind( k )
+            Z( l ) = G( l ) - Y( i )
+          END DO
+        END DO
+
+!  a single cohort containing all the variables
+
+      ELSE IF ( .NOT. multiple_simplices .AND. SIZE( Y ) > 0 .AND. n > 0 ) THEN
+        Y( 1 ) = MINVAL( G( : n ) )
+        Z( : n ) = G( : n ) - Y( 1 )
+      END IF
+      RETURN
+
+!  End of subroutine SLLS_multipliers
+
+      END SUBROUTINE SLLS_multipliers
 
 ! -  S L L S _ P R O J E C T _ O N T O _ S I M P L E X    S U B R O U T I N E  -
 
