@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2026-11-11 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -1151,6 +1151,14 @@
       LOGICAL :: printi, printa, printe, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial
+      LOGICAL :: saved
+      INTEGER ( KIND = ip_ ) :: status_save, save_status
+      REAL ( KIND = rp_ ) :: obj_save, pinf_save, dinf_save, comp_save
+      LOGICAL :: feasible_save
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat_save
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_save
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_save, Z_save
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_save, C_save
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( CQP_control_type ) :: CQP_control
       TYPE ( DQP_control_type ) :: DQP_control
@@ -2658,6 +2666,25 @@ H_loop: DO i = 1, prob%n
         DQP_control%stop_rel_c = control%stop_rel_c
       dual_starting_point = - 1
 
+!  record the solution found so far, so that it may be restored if the
+!  refinement fails (for example, if H is not positive definite)
+
+      ALLOCATE( X_save( prob%n ), Z_save( prob%n ), X_stat_save( prob%n ),     &
+                Y_save( prob%m ), C_save( prob%m ), C_stat_save( prob%m ),     &
+                STAT = save_status )
+      saved = save_status == 0
+      IF ( saved ) THEN
+        X_save = prob%X( : prob%n ) ; Z_save = prob%Z( : prob%n )
+        Y_save = prob%Y( : prob%m ) ; C_save = prob%C( : prob%m )
+        X_stat_save = data%X_stat( : prob%n )
+        C_stat_save = data%C_stat( : prob%m )
+        status_save = inform%status ; obj_save = inform%obj
+        pinf_save = inform%primal_infeasibility
+        dinf_save = inform%dual_infeasibility
+        comp_save = inform%complementary_slackness
+        feasible_save = inform%feasible
+      END IF
+
 !  solve the problem using a dual projected-gradient method
 
       CALL CPU_TIME( time_record )  ; CALL CLOCK_time( clock_record )
@@ -3174,6 +3201,26 @@ H_loop: DO i = 1, prob%n
          inform%DQP_inform%time%clock_solve - clock_solve
       IF ( printi ) WRITE( control%out,                                        &
         "( /, A, ' on exit from DQP, status = ', I0 )" ) prefix, inform%status
+
+!  if the refinement failed, restore the solution found before it
+
+      IF ( saved ) THEN
+        IF ( inform%status /= GALAHAD_ok ) THEN
+          prob%X( : prob%n ) = X_save ; prob%Z( : prob%n ) = Z_save
+          prob%Y( : prob%m ) = Y_save ; prob%C( : prob%m ) = C_save
+          data%X_stat( : prob%n ) = X_stat_save
+          data%C_stat( : prob%m ) = C_stat_save
+          inform%status = status_save ; inform%obj = obj_save
+          inform%primal_infeasibility = pinf_save
+          inform%dual_infeasibility = dinf_save
+          inform%complementary_slackness = comp_save
+          inform%feasible = feasible_save
+          IF ( printi ) WRITE( control%out, "( A, ' refinement failed, so',    &
+         &  ' the solution found before it is retained' )" ) prefix
+        END IF
+        DEALLOCATE( X_save, Z_save, X_stat_save, Y_save, C_save, C_stat_save, &
+                    STAT = save_status )
+      END IF
 
       IF ( inform%status == GALAHAD_ok ) THEN
 !write(6,*) ' n_active, m_active ',  &
