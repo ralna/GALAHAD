@@ -788,7 +788,7 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_predictor = stop_rel_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_abs_i = stop_predictor + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_rel_i = max_abs_i + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_abs_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_rel_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_constraint_scaling               &
                                             = min_constraint_scaling + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: min_hessian_perturbation             &
@@ -2797,8 +2797,6 @@
            val = MAXVAL( data%C_scale( : nlp%m ) )
            data%C_scale( : nlp%m ) = data%C_scale( : nlp%m ) / val
          END IF
-
-         write(6,"( ' c_scale ', /, ( 5ES12.4 ) )" ) data%C_scale( : nlp%m )
 
 !  scale c and its bounds
 
