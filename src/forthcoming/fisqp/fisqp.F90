@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-15 AT 11:27 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-15 AT 14:41 GMT.
 
 #include "galahad_modules.h"
 
@@ -326,6 +326,17 @@
 
        REAL ( KIND = rp_ ) :: jacobian_zero_tolerance = epsmch
 
+!   the steering and predictor QP subproblems are solved to an accuracy
+!    (in each of their primal, dual and complementarity measures) of
+!    qp_forcing_factor times the current infeasibility (steering) or largest
+!    optimality measure (predictor) of the nonlinear problem, but not more
+!    accurately than qp_floor_factor times the corresponding overall stopping
+!    tolerance (stop_p, stop_d or stop_c), and not less accurately than the
+!    tolerances given in QP_steer_control and QP_pred_control
+
+       REAL ( KIND = rp_ ) :: qp_forcing_factor = tenth
+       REAL ( KIND = rp_ ) :: qp_floor_factor = tenth
+
 !   the maximum CPU time allowed (-ve means infinite)
 
        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
@@ -580,6 +591,8 @@
        REAL ( KIND = rp_ ) :: comp_viol, comp_viol_ref, viol_trial,phi_trial
        REAL ( KIND = rp_ ) :: stop_p_inner, stop_d_inner, stop_c_inner, h_norm
        REAL ( KIND = rp_ ) :: radius_accelerator
+       REAL ( KIND = rp_ ) :: qp_target_steer, qp_target_pred
+       REAL ( KIND = rp_ ) :: qp_measure_steer, qp_measure_pred
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
@@ -744,6 +757,8 @@
 ! cauchy-f-stepsize-minimum                         1.0D-8
 ! cauchy-phi-stepsize-minimum                       1.0D-8
 ! jacobian-zero-tolerance                           2.0D-16
+! qp-subproblem-forcing-factor                      0.1
+! qp-subproblem-accuracy-floor-factor               0.1
 ! maximum-cpu-time-limit                            -1.0
 ! maximum-clock-time-limit                          -1.0
 ! print-full-solution                               no
@@ -826,8 +841,12 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: alpha_reduce = gamma_phi + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: s_tiny = alpha_reduce + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: jacobian_zero_tolerance = s_tiny + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
+     INTEGER ( KIND = ip_ ), PARAMETER :: qp_forcing_factor                    &
                                             = jacobian_zero_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: qp_floor_factor                      &
+                                            = qp_forcing_factor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
+                                            = qp_floor_factor + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: filter_uses_steering                 &
                                             = clock_time_limit + 1
@@ -903,6 +922,8 @@
      spec( alpha_f_min )%keyword = 'cauchy-f-stepsize-minimum '
      spec( alpha_phi_min )%keyword = 'cauchy-phi-stepsize-minimum '
      spec( jacobian_zero_tolerance )%keyword = 'jacobian-zero-tolerance'
+     spec( qp_forcing_factor )%keyword = 'qp-subproblem-forcing-factor'
+     spec( qp_floor_factor )%keyword = 'qp-subproblem-accuracy-floor-factor'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
@@ -1078,6 +1099,12 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( jacobian_zero_tolerance ),              &
                                  control%jacobian_zero_tolerance,              &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( qp_forcing_factor ),                    &
+                                 control%qp_forcing_factor,                    &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( qp_floor_factor ),                      &
+                                 control%qp_floor_factor,                      &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
@@ -2045,6 +2072,8 @@
      data%X_ref = nlp%X
      data%f_ref = nlp%f
      data%accepted = .TRUE.
+     data%qp_target_steer = - one ; data%qp_target_pred = - one
+     data%qp_measure_steer = - one ; data%qp_measure_pred = - one
 
 !  set up space for the steering LP
 
@@ -3304,6 +3333,21 @@
          data%QP_steer%Z( : nlp%n ) = zero
          data%control%QP_steer_control%rho = one
 
+!  solve the steering subproblem only as accurately as the current
+!  infeasibility requires
+
+         CALL FISQP_qp_accuracy( control%QP_steer_control,                     &
+                                 data%control%QP_steer_control,                &
+                                 data%primal_viol, .NOT. data%accepted,        &
+                                 data%qp_target_steer, data%qp_measure_steer,  &
+                                 data%control%qp_forcing_factor,               &
+                                 data%control%qp_floor_factor * data%stop_p,   &
+                                 data%control%qp_floor_factor * data%stop_d,   &
+                                 data%control%qp_floor_factor * data%stop_c )
+         IF ( data%printt ) WRITE( data%out, "( A, ' steering subproblem',     &
+        &  ' accuracy =', ES11.4 )" ) prefix,                                  &
+           data%control%QP_steer_control%stop_abs_p
+
 !  solve the problem
 
          IF ( data%printt ) WRITE( data%out, "( A, ' linear violation before', &
@@ -3454,6 +3498,24 @@
        ELSE
          data%control%QP_pred_control%rho = data%sigma
        END IF
+
+!  solve the predictor subproblem only as accurately as the current
+!  optimality measures require
+
+       CALL FISQP_qp_accuracy( control%QP_pred_control,                        &
+                               data%control%QP_pred_control,                   &
+                               MAX( inform%primal_infeasibility,               &
+                                    inform%dual_infeasibility,                 &
+                                    inform%complementary_slackness ),          &
+                               .NOT. data%accepted, data%qp_target_pred,       &
+                               data%qp_measure_pred,                           &
+                               data%control%qp_forcing_factor,                 &
+                               data%control%qp_floor_factor * data%stop_p,     &
+                               data%control%qp_floor_factor * data%stop_d,     &
+                               data%control%qp_floor_factor * data%stop_c )
+       IF ( data%printt ) WRITE( data%out, "( A, ' predictor subproblem',      &
+      &  ' accuracy =', ES11.4 )" ) prefix,                                    &
+         data%control%QP_pred_control%stop_abs_p
 
 !  solve the predictor QP problem
 
@@ -5535,5 +5597,72 @@
      END SUBROUTINE FISQP_terminate
 
 !  End of module GALAHAD_FISQP
+
+!-*-*-*-*-   F I S Q P _ Q P _ A C C U R A C Y   S U B R O U T I N E   -*-*-*-*-
+
+     SUBROUTINE FISQP_qp_accuracy( user, qp, measure, rejected, target,        &
+                                   previous_measure, forcing, floor_p,         &
+                                   floor_d, floor_c )
+
+!  set the stopping tolerances for a QP subproblem to a target value, but
+!  at least floor_p, floor_d and floor_c (for the primal, dual and
+!  complementarity measures) and at most the values given by the user. The
+!  target is forcing times the given optimality measure, and, if the
+!  previous iteration was unsuccessful (its step was rejected, or the
+!  optimality measure did not decrease), at most forcing times the previous
+!  target, so that repeated failures, which may be caused by inaccurate QP
+!  solutions, lead to increasingly accurate ones. The tolerances of the CQP
+!  solver are only set if the user has set them explicitly (by default, CQP
+!  uses those of L1QP)
+
+!  Arguments:
+!  =========
+!
+!   user     the user's control parameters for the QP subproblem
+!   qp       the control parameters that will be used for the QP subproblem
+!   measure  the current optimality measure
+!   rejected .TRUE. if the previous step was rejected
+!   target   the previous target on entry (negative if there is none), and
+!            the new target on exit
+!   previous_measure  the previous optimality measure on entry (negative
+!            if there is none), and the current one on exit
+!   forcing  the forcing factor
+!   floor_p, floor_d, floor_c  the smallest tolerances permitted
+
+!  Dummy arguments
+
+     TYPE ( L1QP_control_type ), INTENT( IN ) :: user
+     TYPE ( L1QP_control_type ), INTENT( INOUT ) :: qp
+     LOGICAL, INTENT( IN ) :: rejected
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: target, previous_measure
+     REAL ( KIND = rp_ ), INTENT( IN ) :: measure, forcing
+     REAL ( KIND = rp_ ), INTENT( IN ) :: floor_p, floor_d, floor_c
+
+!  Local variables
+
+     LOGICAL :: unsuccessful
+
+     unsuccessful = rejected .OR.                                              &
+       ( previous_measure >= zero .AND. measure >= previous_measure )
+     IF ( unsuccessful .AND. target > zero ) THEN
+       target = MIN( forcing * measure, forcing * target )
+     ELSE
+       target = forcing * measure
+     END IF
+     previous_measure = measure
+     qp%stop_abs_p = MAX( floor_p, MIN( user%stop_abs_p, target ) )
+     qp%stop_abs_d = MAX( floor_d, MIN( user%stop_abs_d, target ) )
+     qp%stop_abs_c = MAX( floor_c, MIN( user%stop_abs_c, target ) )
+     IF ( user%CQP_control%stop_abs_p >= zero ) qp%CQP_control%stop_abs_p =    &
+       MAX( floor_p, MIN( user%CQP_control%stop_abs_p, target ) )
+     IF ( user%CQP_control%stop_abs_d >= zero ) qp%CQP_control%stop_abs_d =    &
+       MAX( floor_d, MIN( user%CQP_control%stop_abs_d, target ) )
+     IF ( user%CQP_control%stop_abs_c >= zero ) qp%CQP_control%stop_abs_c =    &
+       MAX( floor_c, MIN( user%CQP_control%stop_abs_c, target ) )
+     RETURN
+
+!  End of subroutine FISQP_qp_accuracy
+
+     END SUBROUTINE FISQP_qp_accuracy
 
    END MODULE GALAHAD_FISQP_precision
