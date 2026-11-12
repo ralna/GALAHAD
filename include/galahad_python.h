@@ -209,6 +209,11 @@ static inline bool check_error_codes(int status){
             " named options['alive_file'] from unit options['alive_unit']."
             ,2); // raise in module
             return true; // warnings return true
+        case -90: // NB this is a ValueError as a matrix type is not recognised
+            PyErr_SetString(PyExc_ValueError,
+            "an unknown matrix storage scheme has been specified."
+            );
+            return false; // errors return false
         default:
             return true; // no error
     }
