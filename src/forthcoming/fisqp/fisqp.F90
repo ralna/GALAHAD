@@ -4815,8 +4815,13 @@
 !write(6,*) 'z_accel',  data%Z_accel( : nlp%n )
 !        IF ( .TRUE. ) THEN
 !        IF ( .FALSE. ) THEN
-         IF ( kkt_accel .OR.                                                   &
-              complementary_slackness < inform%complementary_slackness ) THEN
+!  the accelerator multipliers are preferred if they reduce the larger of
+!  the dual infeasibility and the complementary slackness (the latter is
+!  identically zero when there are no inequalities)
+
+         IF ( kkt_accel .OR. MAX( dual_infeasibility,                          &
+              complementary_slackness ) < MAX( inform%dual_infeasibility,      &
+              inform%complementary_slackness ) ) THEN
 !        IF ( kkt_accel .OR.                                                   &
 !          complementary_slackness < inform%complementary_slackness .OR.       &
 !            inform%iter > 8 ) THEN
