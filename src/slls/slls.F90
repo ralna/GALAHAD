@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-12 AT 16:17 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-13 AT 08:48 GMT.
 
 #include "galahad_modules.h"
 
@@ -8656,9 +8656,9 @@ endif
 !   cohorts
 !
 !  Ao_type is a character string that specifies the design matrix storage
-!   scheme used. It should be one of 'dense', 'dense_by_rows', 'dense_by_cols', 
-!   'sparse_by_rows', 'sparse_by_cols' or 'coordinate';  lower or upper case 
-!   variants are allowed
+!   scheme used. It should be one of 'dense' (a synonym for 'dense_by_rows'),
+!   'dense_by_rows', 'dense_by_columns', 'sparse_by_rows', 'sparse_by_columns'
+!   or 'coordinate'; lower or upper case variants are allowed
 !
 !  Ao_ne is a scalar variable of type default integer, that holds the number of
 !   entries in Ao in the sparse co-ordinate storage scheme. It need not be set
@@ -8868,7 +8868,7 @@ endif
          data%prob%Ao%row( : data%prob%Ao%ne ) = Ao_row( : data%prob%Ao%ne ) + 1
        END IF
 
-     CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
+     CASE ( 'dense', 'DENSE', 'dense_by_rows', 'DENSE_BY_ROWS' )
        CALL SMT_put( data%prob%Ao%type, 'DENSE_BY_ROWS',                       &
                      data%slls_inform%alloc_status )
        data%prob%Ao%n = n ; data%prob%Ao%m = o
