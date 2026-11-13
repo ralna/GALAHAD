@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2026-11-11 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-12 AT 13:42 GMT.
 
 #include "galahad_modules.h"
 
@@ -1482,7 +1482,7 @@
           IF ( printe )                                                        &
             WRITE( control%error, "( ' On exit from LPQP_formulate',           &
            & ', status = ', I0 )" ) inform%LPQP_inform%status
-          inform%status = GALAHAD_error_qp_solve ; GO TO 900
+          inform%status = GALAHAD_error_qp_solve ; GO TO 800
         END IF
 
         SELECT CASE ( SMT_get( prob%A%type ) )
