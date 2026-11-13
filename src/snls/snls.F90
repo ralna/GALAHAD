@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-12 AT 16:28 GMT.
 
 #include "galahad_modules.h"
 
@@ -444,6 +444,7 @@
        LOGICAL :: reverse_jr_sprod, reverse_internal
        LOGICAL :: successful, transpose, reduce, f_is_nan, g_is_nan
        LOGICAL :: jacobian_available, re_entry, multiple_simplices
+       LOGICAL :: time_limit_reached
        LOGICAL :: w_eq_identity, step_accepted, solve_projection
        CHARACTER ( LEN = 1 ) :: perturb = ' '
        CHARACTER ( LEN = 1 ) :: hard = ' '
@@ -2196,6 +2197,7 @@
      END IF
      data%step_accepted = .FALSE.
      data%poor_model = .FALSE.
+     data%time_limit_reached = .FALSE.
      data%minimum_weight = data%control%minimum_weight
      data%got_jr = .FALSE.
 !write(6,*) ' a ', data%reverse_r 
@@ -2261,11 +2263,9 @@
                         MAX( control%stop_r_relative, zero ) * inform%norm_r,  &
                         epsmch )
 
-!  stop in the unlikely event that the initial residual is already small
-
-     IF ( inform%norm_r <= data%stop_r ) THEN
-       inform%status = GALAHAD_ok ; GO TO 900
-     END IF
+!  if the initial residual is already small, the convergence test in the
+!  first iteration will stop the iteration, once the gradient is known and
+!  the Lagrange multipliers and dual variables have been computed
 
 !  initialize the history of objective values
 
@@ -2593,11 +2593,27 @@
 !  1. Test for convergence
 !  ============================================================================
 
-!  stop if the gradient is small enough
+!  compute Lagrange multipliers y and dual variables z that satisfy the dual
+!  optimality conditions g = sum_i e_Ci y_i + z at the current x, so that
+!  those returned always correspond to the returned x
+
+       CALL SLLS_multipliers( nlp%n, nlp%m_c, data%multiple_simplices,         &
+                              data%SLLS_data%S_ptr, data%SLLS_data%S_ind,      &
+                              nlp%G, nlp%Y, nlp%Z )
+
+!  stop if the residual or the projected gradient is small enough
 
        IF ( inform%norm_r <= data%stop_r .OR.                                  &
             inform%norm_pg <= data%stop_pg ) THEN
          inform%status = GALAHAD_ok ; GO TO 900
+       END IF
+
+!  stop if the time limit was exceeded at the end of the previous iteration
+
+       IF ( data%time_limit_reached ) THEN
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: time limit exceeded' )" ) prefix
+         inform%status = GALAHAD_error_cpu_limit ; GO TO 990
        END IF
 
 !  switch from an interior-point to a projection iteration
@@ -3242,62 +3258,15 @@ end if
 
          inform%norm_r = data%norm_r_trial
          inform%obj = data%f_trial
-         nlp%Y( : nlp%m_c ) = data%GN_model%Y( : nlp%m_c )
-         nlp%Z( : nlp%n ) = data%GN_model%Z( : nlp%n )
          nlp%X_status( : nlp%n ) = data%GN_model%X_status( : nlp%n )
 
-!  stop if the residual is sufficiently small
+!  if the residual is sufficiently small, return to the start of the
+!  iteration, where the gradient at the new point is computed, and with it
+!  the Lagrange multipliers and dual variables, and the convergence test
+!  then stops the iteration
 
          IF ( inform%norm_r <= data%stop_r ) THEN
-
-!  print one-line summary
-
-           IF ( data%printi ) THEN
-             CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-             data%time_now = data%time_now - data%time_start
-             data%clock_now = data%clock_now - data%clock_start
-             IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
-               WRITE( data%out, 2090 ) prefix
-               IF ( data%solve_projection ) THEN
-                 IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2130 ) prefix
-                 ELSE
-                   WRITE( data%out, 2120 ) prefix
-                 END IF
-               ELSE
-                 IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2110 ) prefix
-                 ELSE
-                   WRITE( data%out, 2100 ) prefix
-                 END IF
-               END IF
-             END IF
-             data%print_1st_header = .FALSE.
-             char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-             IF ( data%control%print_obj ) THEN
-               obj = inform%obj
-             ELSE
-               obj = inform%norm_r
-             END IF
-             IF ( inform%iter > 0 ) THEN
-               IF ( data%solve_projection ) THEN
-                 char_sit                                                      &
-                   = ADJUSTR( STRING_integer_6( inform%SLLS_inform%iter ) )
-               ELSE
-                 char_sit                                                      &
-                   = ADJUSTR( STRING_integer_6( inform%SLLSB_inform%iter ) )
-               END IF
-               char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
-               WRITE( data%out, 2140 ) prefix, char_iter, data%accept,         &
-                  data%perturb, obj, inform%norm_pg, data%ratio,               &
-                  data%old_weight, data%s_norm, char_sit, char_free,           &
-                  data%clock_now
-             ELSE
-               WRITE( data%out, 2150 ) prefix,                                 &
-                      char_iter, inform%norm_r, inform%norm_pg
-             END IF
-           END IF
-           inform%status = GALAHAD_ok ; GO TO 900
+           GO TO 100
          END IF
 
 !  the new point is not acceptable
@@ -3407,9 +3376,12 @@ end if
               data%time_now > data%control%cpu_time_limit ) .OR.               &
             ( data%control%clock_time_limit >= zero .AND.                      &
               data%clock_now > data%control%clock_time_limit ) ) THEN
-         IF ( control%error > 0 ) WRITE( control%error,                        &
-           "( A, ' error: time limit exceeded' )" ) prefix
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 990
+
+!  the exit is taken at the start of the next iteration, once the gradient,
+!  and with it the Lagrange multipliers and dual variables, at the current
+!  point are known
+
+         data%time_limit_reached = .TRUE.
        END IF
 
 !write(6,*) ' f ', data%f_trial, data%ratio
@@ -3460,7 +3432,7 @@ end if
 
        WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', I0, &
     &   ')', /, A, '  SNLS stopping tolerances (r,P[-J''r]) =', 2ES9.2 )" )    &
-          prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r, prefix,                     &
+          prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r, prefix,                   &
           data%stop_r, data%stop_pg
        IF ( .NOT. data%monotone ) WRITE( data%out,                             &
            "( A, '  Non-monotone method used (history = ', I0, ')' )" )        &
