@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-13 AT 13:44 GMT.
 
 #include "galahad_modules.h"
 
@@ -1913,11 +1913,15 @@
       IF ( printi ) WRITE( out, "( /, A, '  new quadratic perturbation ',      &
      &   'should be no larger than', ES9.2 )" ) prefix, new_perturbation
 
+!  record whether the optional status arrays are present (they are used in
+!  both of the following cases)
+
+      c_stat_required = PRESENT( C_stat )
+      x_stat_required = PRESENT( X_stat )
+
       IF ( new_perturbation < infeas ) THEN
         extrapolation_ok = .TRUE.
         perturbation = zero
-        c_stat_required = PRESENT( C_stat )
-        x_stat_required = PRESENT( X_stat )
         IF ( x_stat_required ) X_stat  = 0
         IF ( c_stat_required ) THEN
           C_stat( : dims%c_equality ) = - 1
