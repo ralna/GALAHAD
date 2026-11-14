@@ -4689,9 +4689,11 @@
       &  '(predictor  ):', 3ES11.4 )" ) prefix, inform%primal_infeasibility,   &
            inform%dual_infeasibility, inform%complementary_slackness
 
-       IF ( data%control%use_accelerator ) THEN
+       IF ( data%control%use_accelerator .AND. data%accel_found ) THEN
 
 !  compute the gradient of the Lagrangian using the accelerator multipliers
+!  (only if an accelerator step, and with it its multipliers, has been
+!  computed during this iteration)
 
 !write(6,"( ' y ', /, ( 6ES12.4) )" ) nlp%Y( : nlp%m )
 !write(6,"( ' y_accel ', /, ( 6ES12.4) )" ) data%Y_accel( : nlp%m )
