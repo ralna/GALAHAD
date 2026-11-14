@@ -335,6 +335,11 @@ Solve the trust-region problem using reverse communication.
 		  * **-15**
                     the matrix $M$ appears to be indefinite
 		  
+		  * **-16**
+                    the Lanczos process has broken down (a value that
+                    is not finite has arisen), as may happen if the
+                    problem is very ill-conditioned
+		  
 		  * **-18**
                     the iteration limit has been exceeded
 		  
