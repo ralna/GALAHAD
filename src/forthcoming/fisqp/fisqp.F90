@@ -234,7 +234,9 @@
 #endif
 
 !   the minimum useful predictor decrease allowed when approximately feasible,
-!    relative to the larger of |f| and ||g(x_0)||_inf max(1,||x||_inf)
+!    relative to the larger of |f| and ||g(x_0)||_inf max(1,||x||_inf). Since
+!    the decrease available near a solution is of the order of the square of
+!    the KKT error, the smaller of stop_predictor and stop_rel_kkt_d**2 is used
 
        REAL ( KIND = rp_ ) :: stop_predictor = epsmch ** 0.75_rp_
 
@@ -3674,6 +3676,7 @@
 !  solve the predictor QP problem
 
 !write(6,*) ' before l1qp pred'
+  165  CONTINUE
        CALL L1QP_solve( data%QP_pred, data%QP_pred_data,                       &
                         data%control%QP_pred_control, inform%QP_pred_inform,   &
                         C_stat = nlp%C_status, X_stat = nlp%X_status )
@@ -3799,6 +3802,113 @@
        IF ( data%printt )                                                      &
          WRITE( data%out, "( A, ' predictor objective decrease =',             &
       &   ES12.4 )" ) prefix, data%del_qphi_pred
+
+!  if the current point is feasible, s = 0 is feasible for the predictor
+!  subproblem, and an exact solution cannot increase its objective. If the
+!  objective has increased by more than a negligible amount (as judged for
+!  the stopping test, relative to the larger of |f| and
+!  ||g(x_0)|| max(1,||x||)), the subproblem was solved too inaccurately, so
+!  solve it again, ten times more accurately each time, but not more
+!  accurately than ten times epsmch relative to the scales of its measures
+
+       f_scale = MAX( TINY( one ), ABS( nlp%f ), data%g_norm_initial *        &
+                      MAX( one, MAXVAL( ABS( nlp%X( : nlp%n ) ) ) ) )
+       IF ( data%primal_viol == zero .AND.                                     &
+            del_qf_pred < - MIN( data%control%stop_predictor,                  &
+                                 data%control%stop_rel_kkt_d ** 2 )            &
+                              * f_scale ) THEN
+         IF ( data%control%QP_pred_control%stop_abs_p                          &
+                > teneps * data%kkt_p_scale .OR.                               &
+              data%control%QP_pred_control%stop_abs_d                          &
+                > teneps * data%kkt_g_scale .OR.                               &
+              data%control%QP_pred_control%stop_abs_c                          &
+                > teneps * data%kkt_g_scale * data%kkt_p_scale ) THEN
+           data%control%QP_pred_control%stop_abs_p                             &
+             = MAX( tenth * data%control%QP_pred_control%stop_abs_p,           &
+                    teneps * data%kkt_p_scale )
+           data%control%QP_pred_control%stop_abs_d                             &
+             = MAX( tenth * data%control%QP_pred_control%stop_abs_d,           &
+                    teneps * data%kkt_g_scale )
+           data%control%QP_pred_control%stop_abs_c                             &
+             = MAX( tenth * data%control%QP_pred_control%stop_abs_c,           &
+                    teneps * data%kkt_g_scale * data%kkt_p_scale )
+
+!  the tolerances of the CQP solver are tightened likewise if they have been
+!  set explicitly (otherwise CQP uses those of L1QP)
+
+           IF ( control%QP_pred_control%CQP_control%stop_abs_p >= zero )       &
+             data%control%QP_pred_control%CQP_control%stop_abs_p =             &
+               data%control%QP_pred_control%stop_abs_p
+           IF ( control%QP_pred_control%CQP_control%stop_abs_d >= zero )       &
+             data%control%QP_pred_control%CQP_control%stop_abs_d =             &
+               data%control%QP_pred_control%stop_abs_d
+           IF ( control%QP_pred_control%CQP_control%stop_abs_c >= zero )       &
+             data%control%QP_pred_control%CQP_control%stop_abs_c =             &
+               data%control%QP_pred_control%stop_abs_c
+           IF ( data%printt ) WRITE( data%out, "( A, ' predictor objective',   &
+          &  ' increased, resolving with accuracy =', ES11.4 )" ) prefix,      &
+             data%control%QP_pred_control%stop_abs_p
+           GO TO 165
+
+!  if even the most accurate solution increases the objective, use s = 0
+
+         ELSE
+           IF ( data%printt ) WRITE( data%out, "( A, ' predictor objective',   &
+          &  ' increased, s = 0 used instead' )" ) prefix
+           data%S_pred( : nlp%n ) = zero
+           del_qf_pred = zero ; data%del_qphi_pred = zero
+         END IF
+       END IF
+
+!  if the current point is feasible, the predictor subproblem has been solved
+!  as accurately as permitted, and its predicted decrease is negligible, no
+!  progress can be made along the predictor step. Decide whether the point is
+!  an approximate KKT point, using the better of the current and predictor
+!  multipliers (the gradient is that at the current point), and otherwise
+!  report that no further progress is possible
+
+       IF ( data%primal_viol == zero .AND.                                     &
+            ABS( data%del_qphi_pred ) <= MIN( data%control%stop_predictor,     &
+              data%control%stop_rel_kkt_d ** 2 ) * f_scale                     &
+            .AND. data%control%QP_pred_control%stop_abs_p                      &
+              <= ( one + teneps ) * data%control%qp_floor_factor *             &
+                 data%control%stop_rel_kkt_p * data%kkt_p_scale                &
+            .AND. data%control%QP_pred_control%stop_abs_d                      &
+              <= ( one + teneps ) * data%control%qp_floor_factor *             &
+                 data%control%stop_rel_kkt_d * data%kkt_g_scale                &
+            .AND. data%control%QP_pred_control%stop_abs_c                      &
+              <= ( one + teneps ) * data%control%qp_floor_factor *             &
+                 data%control%stop_rel_kkt_c * data%kkt_g_scale *              &
+                 data%kkt_p_scale ) THEN
+         CALL FISQP_relative_kkt( nlp%n, nlp%m, nlp%X, nlp%X_l, nlp%X_u,       &
+                nlp%C, nlp%C_l, nlp%C_u, nlp%G, nlp%J, data%QP_pred%Y,         &
+                data%QP_pred%Z, data%control%infinity, data%g_norm_initial,    &
+                data%JTY_kkt, data%ROW_NORM_kkt, rel_p, rel_d, rel_c )
+         IF ( MAX( rel_d, rel_c ) <                                            &
+              MAX( inform%relative_dual_infeasibility,                         &
+                   inform%relative_complementary_slackness ) ) THEN
+           nlp%Y( : nlp%m ) = data%QP_pred%Y( : nlp%m )
+           nlp%Z( : nlp%n ) = data%QP_pred%Z( : nlp%n )
+           inform%relative_primal_infeasibility = rel_p
+           inform%relative_dual_infeasibility = rel_d
+           inform%relative_complementary_slackness = rel_c
+         END IF
+         IF ( inform%relative_primal_infeasibility                             &
+                <= data%control%stop_rel_kkt_p .AND.                           &
+              inform%relative_dual_infeasibility                               &
+                <= data%control%stop_rel_kkt_d .AND.                           &
+              inform%relative_complementary_slackness                          &
+                <= data%control%stop_rel_kkt_c ) THEN
+           IF ( data%printt ) WRITE( data%out,                                 &
+                  "( /, A, ' Termination criteria satisfied ' )" ) prefix
+           inform%status = GALAHAD_ok
+         ELSE
+           IF ( data%printt ) WRITE( data%out, "( /, A, ' no progress is',     &
+          &  ' possible along the predictor step' )" ) prefix
+           inform%status = - 102
+         END IF
+         GO TO 900
+       END IF
 
  ! check if the predictor is linearly feasible
 
@@ -5037,7 +5147,8 @@
        f_scale = MAX( TINY( one ), ABS( nlp%f ), data%g_norm_initial *        &
                       MAX( one, MAXVAL( ABS( nlp%X( : nlp%n ) ) ) ) )
        data%predictor_stalled = ABS( data%del_qphi_pred )                      &
-             <= data%control%stop_predictor * f_scale .AND.                    &
+             <= MIN( data%control%stop_predictor,                              &
+                     data%control%stop_rel_kkt_d ** 2 ) * f_scale .AND.        &
            data%qp_target_pred <= data%control%qp_floor_factor *               &
              MIN( data%control%stop_rel_kkt_p, data%control%stop_rel_kkt_d,   &
                   data%control%stop_rel_kkt_c ) .AND.                          &
