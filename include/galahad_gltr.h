@@ -1,7 +1,7 @@
 //* \file galahad_gltr.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 09:58 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_GLTR C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -429,6 +429,9 @@ void gltr_solve_problem( void **data,
    \li -2. an array deallocation has failed
    \li -3. n and/or radius is not positive
    \li -15. the matrix \f$M\f$ appears to be indefinite
+   \li -16. the Lanczos process has broken down (a value that is not
+            finite has arisen), as may happen if the problem is very
+            ill-conditioned
    \li -18. the iteration limit has been exceeded
    \li -30. the trust-region has been encountered in Steihaug-Toint mode
    \li -31. the function value is smaller than control.f_min

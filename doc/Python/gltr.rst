@@ -215,6 +215,12 @@ functions
 
               $M$ appears to be indefinite.
 
+            * **-16**
+
+              The Lanczos process has broken down (a value that is not
+              finite has arisen), as may happen if the problem is very
+              ill-conditioned.
+
             * **-18**
 
               The iteration limit has been exceeded.
