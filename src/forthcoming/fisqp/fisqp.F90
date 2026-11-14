@@ -238,6 +238,11 @@
 
        REAL ( KIND = rp_ ) :: stop_predictor = epsmch ** 0.75_rp_
 
+!   the objective function will be judged to be unbounded from below if
+!    its value at a feasible iterate falls below obj_unbounded
+
+       REAL ( KIND = rp_ ) :: obj_unbounded = - epsmch ** ( - 2 )
+
 !   the maximum infeasibility tolerated will be the larger of
 !    max_abs_i and max_rel_i times the initial infeasibility
 
@@ -772,6 +777,7 @@
 ! relative-dual-optimality-required                 1.0D-5 (1.0D-4 single)
 ! relative-slackness-optimality-required            1.0D-5 (1.0D-4 single)
 ! minimum-useful-predictor-decrease                 1.8D-12
+! minimum-objective-before-unbounded               -2.0D+31
 ! maximum-absolute-infeasibility                    10.0
 ! maximum-relative-infeasibility                    10.0
 ! minimum-constraint-scaling-factor                 1.0D-5
@@ -846,7 +852,8 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_kkt_d = stop_rel_kkt_p + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_kkt_c = stop_rel_kkt_d + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_predictor = stop_rel_kkt_c + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: max_abs_i = stop_predictor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded = stop_predictor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_abs_i = obj_unbounded + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_rel_i = max_abs_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_rel_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_constraint_scaling               &
@@ -939,6 +946,7 @@
      spec( stop_rel_kkt_d )%keyword = 'relative-dual-optimality-required'
      spec( stop_rel_kkt_c )%keyword = 'relative-slackness-optimality-required'
      spec( stop_predictor )%keyword = 'minimum-useful-predictor-decrease'
+     spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
      spec( max_abs_i )%keyword = 'maximum-absolute-infeasibility'
      spec( max_rel_i )%keyword = 'maximum-relative-infeasibility'
      spec( min_constraint_scaling )%keyword                                    &
@@ -1068,6 +1076,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( stop_predictor ),                       &
                                  control%stop_predictor,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( obj_unbounded ),                        &
+                                 control%obj_unbounded,                        &
                                  control%error )
      CALL SPECFILE_assign_value( spec( max_abs_i ),                            &
                                  control%max_abs_i,                            &
@@ -3079,6 +3090,18 @@
        IF ( data%predictor_stalled ) THEN
          inform%status = - 102
          GO TO 900
+       END IF
+
+!  exit if the objective function appears to be unbounded from below at a
+!  (sufficiently) feasible point
+
+       IF ( inform%obj < data%control%obj_unbounded .AND.                      &
+            inform%relative_primal_infeasibility                               &
+              <= data%control%stop_rel_kkt_p ) THEN
+         IF ( data%printi ) WRITE( data%out, "( /, A, ' objective value',      &
+        &  ES12.4, ' is lower than the unbounded limit', ES12.4 )" )           &
+           prefix, inform%obj, data%control%obj_unbounded
+         inform%status = GALAHAD_error_unbounded ; GO TO 900
        END IF
 
 !  print details of the current iteration
