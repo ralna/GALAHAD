@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 17:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-15 AT 11:27 GMT.
 
 #include "galahad_modules.h"
 
@@ -584,6 +584,7 @@
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
        LOGICAL :: filter_acceptable, p_mode, check_filter, accepted, accel_found
+       INTEGER ( KIND = ip_ ) :: s_type
        LOGICAL :: exit_small_s, check_b_pair
        LOGICAL :: print_iteration_header, print_1st_header
        CHARACTER ( LEN = 1 ) :: pair_type = REPEAT( ' ', 1 )
@@ -1608,7 +1609,7 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: i, ic, ii, ir, j, l
-     INTEGER ( KIND = ip_ ) :: ne_eqp, s_start, s_type, active
+     INTEGER ( KIND = ip_ ) :: ne_eqp, s_start, active
 !    INTEGER ( KIND = ip_ ) :: Rk
      REAL ( KIND = rp_ ) :: complementary_slackness, multiplier_norm
      REAL ( KIND = rp_ ) :: ellv_pred, ellv_steer, del_ellv_pred, del_ellv_steer
@@ -4082,7 +4083,7 @@
            ELSE
              s_start = s_normal
            END IF
-           s_type = s_start
+           data%s_type = s_start
 
            data%p_mode = .TRUE.
            data%filter_acceptable = .FALSE.
@@ -4096,7 +4097,7 @@
 
 !  set the trial point
 
-             IF ( s_type == s_accel ) THEN
+             IF ( data%s_type == s_accel ) THEN
                data%X_trial = nlp%X + data%alpha * data%S_accel
              ELSE
                data%X_trial = nlp%X + data%alpha * data%S
@@ -4149,7 +4150,7 @@
                = data%f_trial + data%sigma_new_ref * data%viol_trial
 
              IF ( data%printt ) THEN
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  WRITE( data%out,"( A, ' accelerator s, trial f and c',        &
                 &  ES9.2, ES21.13, ES20.13 )" )                                &
                     prefix, data%accel_norm, data%f_trial, data%viol_trial
@@ -4168,7 +4169,7 @@
                     * data%alpha * data%rho_phi_ref ) THEN
                IF ( data%printd ) WRITE( data%out, "( A, ' (A1:21-22)')") prefix
                data%pair_type = 'p'
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  data%step_used = 'accel  '
                ELSE
                  data%step_used = 'pred   '
@@ -4176,7 +4177,7 @@
                inform%num_p = inform%num_p + 1
                data%accepted = .TRUE.
                IF ( data%printt ) THEN
-                 IF ( s_type == s_accel ) THEN
+                 IF ( data%s_type == s_accel ) THEN
                    WRITE( data%out, "( A, ' accelerator step with stepsize',   &
                   &   ES11.4, ' gives a p-pair' )" ) prefix, data%alpha
                  ELSE
@@ -4191,7 +4192,7 @@
              ELSE IF ( data%fails <= data%control%max_fails .AND.              &
                        data%control%max_fails > 0 ) THEN
                IF ( data%printd ) WRITE( data%out, "( A, ' (A1:23-24)')") prefix
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  data%step_used = 'accel_nm'
                ELSE
                  data%step_used = 'pred_nm '
@@ -4200,7 +4201,7 @@
                data%fails = data%fails + 1
                data%accepted = .FALSE.
                IF ( data%printt ) THEN
-                 IF ( s_type == s_accel ) THEN
+                 IF ( data%s_type == s_accel ) THEN
                    WRITE( data%out, "( A, ' accelerator step with stepsize',   &
                   &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
                  ELSE
@@ -4214,8 +4215,8 @@
 !  end of loop over possible steps (A1:20)
 
              IF ( data%printd ) WRITE( data%out, "( A, ' (A1:20)' )" ) prefix
-             s_type = s_type + 1
-             IF ( s_type <= s_normal ) GO TO 200
+             data%s_type = data%s_type + 1
+             IF ( data%s_type <= s_normal ) GO TO 200
 !          END DO
 
 !  reduce step size (A1:19)
@@ -4245,7 +4246,7 @@
              data%filter_acceptable = .TRUE.
              data%accepted = .TRUE.
              IF ( data%printt ) THEN
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  WRITE( data%out, "( A, ' accelerator step with stepsize',     &
                 &   ES11.4, ' acceptable to filter' )" ) prefix, data%alpha
                ELSE
@@ -4291,7 +4292,7 @@
            ELSE
              s_start = s_normal
            END IF
-           s_type = s_start
+           data%s_type = s_start
 
            data%p_mode = .FALSE.
            data%accepted = .FALSE.
@@ -4306,7 +4307,7 @@
 
 !  set the trial point
 
-             IF ( s_type == s_accel ) THEN
+             IF ( data%s_type == s_accel ) THEN
                data%check_b_pair = data%fails <= data%control%max_fails .AND.  &
                  data%control%max_fails > 0
                data%X_trial = nlp%X + data%alpha * data%S_accel
@@ -4365,7 +4366,7 @@
               = data%f_trial + data%sigma_new_ref * data%viol_trial
 
              IF ( data%printt ) THEN
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  WRITE( data%out,"( A, ' accelerator s, trial f and c',        &
                 &  ES9.2, ES21.13, ES20.13 )" )                                &
                   prefix, data%accel_norm, data%f_trial, data%viol_trial
@@ -4429,7 +4430,7 @@
                                               data%control%FILTER_control,     &
                                               inform%FILTER_inform )
                    IF ( data%printt ) THEN
-                     IF ( s_type == s_accel ) THEN
+                     IF ( data%s_type == s_accel ) THEN
                        WRITE( data%out, "( A, ' accelerator step with step',   &
                       & 'size', ES11.4, ' gives a v-pair' )") prefix, data%alpha
                      ELSE
@@ -4459,7 +4460,7 @@
                         data%alpha * data%rho_f_ref ) THEN
                    data%pair_type = 'o'
                    IF ( data%printt ) THEN
-                     IF ( s_type == s_accel ) THEN
+                     IF ( data%s_type == s_accel ) THEN
                        WRITE( data%out, "( A, ' accelerator step with step',   &
                       & 'size', ES11.4, ' gives an o-pair')") prefix, data%alpha
                      ELSE
@@ -4504,7 +4505,7 @@
                                             data%control%FILTER_control,       &
                                             inform%FILTER_inform )
                  IF ( data%printt ) THEN
-                   IF ( s_type == s_accel ) THEN
+                   IF ( data%s_type == s_accel ) THEN
                      WRITE( data%out, "( A, ' accelerator step with step',     &
                     & 'size', ES11.4, ' gives a b-pair' )") prefix, data%alpha
                    ELSE
@@ -4523,7 +4524,7 @@
 
                ELSE IF ( data%fails <= data%control%max_fails .AND.            &
                          data%control%max_fails > 0 ) THEN
-                 IF ( s_type == s_accel ) THEN
+                 IF ( data%s_type == s_accel ) THEN
                    data%step_used = 'accel_nm'
                  ELSE
                    data%step_used = 'pred_nm '
@@ -4532,7 +4533,7 @@
                  data%fails = data%fails + 1
                  data%accepted = .FALSE.
                  IF ( data%printt ) THEN
-                   IF ( s_type == s_accel ) THEN
+                   IF ( data%s_type == s_accel ) THEN
                      WRITE( data%out, "( A, ' accelerator step with stepsize', &
                     &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
                    ELSE
@@ -4547,8 +4548,8 @@
 !  end of loop over possible steps (A1:31)
 
              IF ( data%printd ) WRITE( data%out, "( A, ' (A1:31)' )" ) prefix
-             s_type = s_type + 1
-             IF ( s_type <= s_normal ) GO TO 310
+             data%s_type = data%s_type + 1
+             IF ( data%s_type <= s_normal ) GO TO 310
 !          END DO
 
 !  reduce step size (A1:30)
@@ -4564,7 +4565,7 @@
 !        END DO
 
   440    CONTINUE
-         IF ( s_type == s_accel ) THEN
+         IF ( data%s_type == s_accel ) THEN
            data%step_used = 'accel  '
            ELSE
            data%step_used = 'pred   '
