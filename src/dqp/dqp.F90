@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-13 AT 15:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -288,7 +288,9 @@
 
         REAL ( KIND = rp_ ) :: final_perturbation = ten ** ( - 6 )
 
-!   are the factors of the optimal augmented matrix required?
+!   are the factors of the optimal augmented matrix required? (if so, the
+!    matrix of constraints active at the solution is assembled in any case,
+!    but it is only factorized if subspace_direct is .TRUE.)
 
         LOGICAL :: factor_optimal_matrix = .FALSE.
 
@@ -4587,10 +4589,12 @@
 !  if required, form and factorize the matrix K_0 = (   H     J^T_F_k )
 !                                                   ( J_F_k      0    )
 
-          IF ( control%factor_optimal_matrix .AND. control%subspace_direct     &
-               .AND. change_subspace > 0 ) THEN
+          IF ( control%factor_optimal_matrix .AND.                             &
+               ( .NOT. control%subspace_direct .OR. change_subspace > 0 ) ) THEN
 
-!  form the matrix of primal-active rows of A
+!  form the matrix of primal-active rows of A (this is required even if the
+!  subspace step is computed iteratively, since the matrix is then used to
+!  compute products with the active constraints, e.g., by DLP)
 
 !  components from the general constraints
 
@@ -4622,6 +4626,12 @@
 !do i = 1, A_sbls%ne
 !  if ( A_sbls%row( i ) > m_ref ) write( 6, * ) m_ref, A_sbls%row( i ), i
 !end do
+
+!  the matrix K_0 is only factorized if the subspace step is computed directly
+
+            IF ( .NOT. control%subspace_direct ) THEN
+              inform%status = GALAHAD_ok ; GO TO 600
+            END IF
 
 !  factorize the matrix K_0
 
