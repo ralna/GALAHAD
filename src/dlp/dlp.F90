@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-13 AT 13:44 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 10:44 GMT.
 
 #include "galahad_modules.h"
 
@@ -87,7 +87,16 @@
       REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: infeas = ten ** ( - 10 )
+
+!  the trust-region radius for the subspace step; any finite value is
+!  allowed by the theory, and it is smaller in single precision to limit the
+!  size of the quantities computed within it
+
+#ifdef REAL_32
+      REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 4
+#else
       REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 10
+#endif
       REAL ( KIND = rp_ ), PARAMETER :: alpha_search = one
       REAL ( KIND = rp_ ), PARAMETER :: beta_search = half
       REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
