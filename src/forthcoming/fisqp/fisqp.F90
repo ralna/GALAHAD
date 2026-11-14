@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2026-11-11 AT 12:25 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 17:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -159,6 +159,9 @@
 !    = 2 if diagonally_dominant modified exact Hessian used
 !    = 3 if L-BFGS with indefinite update skipping used
 !    = 4 if L-BFGS with Powell corrections used
+!   NB. L-BFGS (3 and 4) is not available at present, as the l_1 QP
+!   subproblem solver does not yet support L-BFGS Hessians; the scaled
+!   identity (0) is used instead
 
        INTEGER ( KIND = ip_ ) :: predictor_hessian                             &
                                    = se_modified_predictor_hessian
@@ -1685,12 +1688,18 @@
 
 !  ensure that control parameters are sensible
 
-     IF ( data%control%predictor_hessian == powell_l_bfgs_predictor_hessian )  &
-       data%control%predictor_hessian = l_bfgs_predictor_hessian
+!  L-BFGS predictor Hessians are disabled until LPQP (and hence L1QP)
+!  supports them; the following lines should be restored then
+
+!    IF ( data%control%predictor_hessian == powell_l_bfgs_predictor_hessian ) &
+!      data%control%predictor_hessian = l_bfgs_predictor_hessian
+!    IF ( data%control%predictor_hessian /= se_modified_predictor_hessian     &
+!        .AND. data%control%predictor_hessian /= dd_modified_predictor_hessian&
+!        .AND. data%control%predictor_hessian /= l_bfgs_predictor_hessian )   &
+!      data%control%predictor_hessian = identity_predictor_hessian
      IF ( data%control%predictor_hessian /= se_modified_predictor_hessian      &
          .AND. data%control%predictor_hessian /= dd_modified_predictor_hessian &
-         .AND. data%control%predictor_hessian /= l_bfgs_predictor_hessian )    &
-       data%control%predictor_hessian = identity_predictor_hessian
+       ) data%control%predictor_hessian = identity_predictor_hessian
 
 !  decide how much reverse communication is required
 
