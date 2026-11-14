@@ -221,12 +221,14 @@
 !    and stop_rel_kkt_c, respectively. Each measure is relative to the sizes
 !    of the quantities from which it is formed (see FISQP_relative_kkt), so
 !    that it is unaffected by the scaling of the objective and constraints.
-!    The defaults are 1.0E-5 (1.0E-4 in single precision)
+!    The defaults are 1.0E-5 (1.0E-3 in single precision, as the decrease in
+!    the objective near a solution, of the order of the square of the KKT
+!    error, must remain larger than the rounding error in its value)
 
 #ifdef REAL_32
-       REAL ( KIND = rp_ ) :: stop_rel_kkt_p = ten ** ( - 4 )
-       REAL ( KIND = rp_ ) :: stop_rel_kkt_d = ten ** ( - 4 )
-       REAL ( KIND = rp_ ) :: stop_rel_kkt_c = ten ** ( - 4 )
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_p = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_d = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: stop_rel_kkt_c = ten ** ( - 3 )
 #else
        REAL ( KIND = rp_ ) :: stop_rel_kkt_p = ten ** ( - 5 )
        REAL ( KIND = rp_ ) :: stop_rel_kkt_d = ten ** ( - 5 )
@@ -775,9 +777,9 @@
 ! relative-complementary-slackness-accuracy         2.0D-16
 ! absolute-infeasiblity-tolerated                   6.0D-6
 ! relative-infeasiblity-tolerated                   2.0D-16
-! relative-primal-optimality-required               1.0D-5 (1.0D-4 single)
-! relative-dual-optimality-required                 1.0D-5 (1.0D-4 single)
-! relative-slackness-optimality-required            1.0D-5 (1.0D-4 single)
+! relative-primal-optimality-required               1.0D-5 (1.0D-3 single)
+! relative-dual-optimality-required                 1.0D-5 (1.0D-3 single)
+! relative-slackness-optimality-required            1.0D-5 (1.0D-3 single)
 ! minimum-useful-predictor-decrease                 1.8D-12
 ! minimum-objective-before-unbounded               -2.0D+31
 ! maximum-absolute-infeasibility                    10.0
