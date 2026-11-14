@@ -3346,6 +3346,7 @@
 
        ELSE
          ellv_steer = zero ; del_ellv_steer = zero
+         IF ( nlp%m > 0 ) data%S_steer( : nlp%n ) = zero
          IF ( data%printt )                                                    &
            WRITE( data%out, "( A, ' no steering necessary' )" ) prefix
        END IF
