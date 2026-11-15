@@ -1720,7 +1720,7 @@
 !    REAL ( KIND = rp_ ) :: B_k, B_k_scalar, Bk_D, Hess, Hess_D, Heps
 !    REAL ( KIND = rp_ ) :: normg, normHess, muLS, accel_bd_viol
      LOGICAL :: kkt_accel, kkt_pred, lin_feas, acceptable, names, steer_rejected
-     LOGICAL :: steer_failed
+     LOGICAL :: steer_failed, pred_inexact_feas, pred_inexact_pen
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
@@ -3833,14 +3833,22 @@
 !  the stopping test, relative to the larger of |f| and
 !  ||g(x_0)|| max(1,||x||)), the subproblem was solved too inaccurately, so
 !  solve it again, ten times more accurately each time, but not more
-!  accurately than ten times epsmch relative to the scales of its measures
+!  accurately than ten times epsmch relative to the scales of its measures.
+!  Likewise, s = 0 is feasible for the l_1-penalty form of the subproblem
+!  (used when the linearized constraints may be inconsistent, rho > 0), so
+!  if its solver reports an inexact solution that increases the penalty
+!  model, the subproblem is solved again more accurately
 
        f_scale = MAX( TINY( one ), ABS( nlp%f ), data%g_norm_initial *        &
                       MAX( one, MAXVAL( ABS( nlp%X( : nlp%n ) ) ) ) )
-       IF ( data%primal_viol == zero .AND.                                     &
+       pred_inexact_feas = data%primal_viol == zero .AND.                      &
             del_qf_pred < - MIN( data%control%stop_predictor,                  &
-                                 data%control%stop_rel_kkt_d ** 2 )            &
-                              * f_scale ) THEN
+                                 data%control%stop_rel_kkt_d ** 2 ) * f_scale
+       pred_inexact_pen = data%control%QP_pred_control%rho > zero .AND.        &
+            inform%QP_pred_inform%status /= GALAHAD_ok .AND.                   &
+            data%del_qphi_pred < - MIN( data%control%stop_predictor,           &
+                                 data%control%stop_rel_kkt_d ** 2 ) * f_scale
+       IF ( pred_inexact_feas .OR. pred_inexact_pen ) THEN
          IF ( data%control%QP_pred_control%stop_abs_p                          &
                 > teneps * data%kkt_p_scale .OR.                               &
               data%control%QP_pred_control%stop_abs_d                          &
@@ -3874,13 +3882,23 @@
              data%control%QP_pred_control%stop_abs_p
            GO TO 165
 
-!  if even the most accurate solution increases the objective, use s = 0
+!  if even the most accurate solution increases the objective at a feasible
+!  point, use s = 0
 
-         ELSE
+         ELSE IF ( pred_inexact_feas ) THEN
            IF ( data%printt ) WRITE( data%out, "( A, ' predictor objective',   &
           &  ' increased, s = 0 used instead' )" ) prefix
            data%S_pred( : nlp%n ) = zero
            del_qf_pred = zero ; data%del_qphi_pred = zero
+
+!  if even the most accurate inexact solution of the l_1-penalty form
+!  increases the penalty model, the QP solver has failed
+
+         ELSE
+           IF ( data%printe ) WRITE( data%error, "( A, ' the predictor',       &
+          &  ' subproblem could not be solved (status = ', I0, ')' )" )        &
+             prefix, inform%QP_pred_inform%status
+           inform%status = GALAHAD_error_qp_solve ; GO TO 900
          END IF
        END IF
 
