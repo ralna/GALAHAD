@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2026-11-11 AT 12:25 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-15 AT 11:27 GMT.
 
 #include "galahad_modules.h"
 
@@ -159,6 +159,9 @@
 !    = 2 if diagonally_dominant modified exact Hessian used
 !    = 3 if L-BFGS with indefinite update skipping used
 !    = 4 if L-BFGS with Powell corrections used
+!   NB. L-BFGS (3 and 4) is not available at present, as the l_1 QP
+!   subproblem solver does not yet support L-BFGS Hessians; the scaled
+!   identity (0) is used instead
 
        INTEGER ( KIND = ip_ ) :: predictor_hessian                             &
                                    = se_modified_predictor_hessian
@@ -581,6 +584,7 @@
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
        LOGICAL :: filter_acceptable, p_mode, check_filter, accepted, accel_found
+       INTEGER ( KIND = ip_ ) :: s_type
        LOGICAL :: exit_small_s, check_b_pair
        LOGICAL :: print_iteration_header, print_1st_header
        CHARACTER ( LEN = 1 ) :: pair_type = REPEAT( ' ', 1 )
@@ -788,7 +792,7 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_predictor = stop_rel_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_abs_i = stop_predictor + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_rel_i = max_abs_i + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_abs_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_rel_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_constraint_scaling               &
                                             = min_constraint_scaling + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: min_hessian_perturbation             &
@@ -1605,7 +1609,7 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: i, ic, ii, ir, j, l
-     INTEGER ( KIND = ip_ ) :: ne_eqp, s_start, s_type, active
+     INTEGER ( KIND = ip_ ) :: ne_eqp, s_start, active
 !    INTEGER ( KIND = ip_ ) :: Rk
      REAL ( KIND = rp_ ) :: complementary_slackness, multiplier_norm
      REAL ( KIND = rp_ ) :: ellv_pred, ellv_steer, del_ellv_pred, del_ellv_steer
@@ -1685,12 +1689,18 @@
 
 !  ensure that control parameters are sensible
 
-     IF ( data%control%predictor_hessian == powell_l_bfgs_predictor_hessian )  &
-       data%control%predictor_hessian = l_bfgs_predictor_hessian
+!  L-BFGS predictor Hessians are disabled until LPQP (and hence L1QP)
+!  supports them; the following lines should be restored then
+
+!    IF ( data%control%predictor_hessian == powell_l_bfgs_predictor_hessian ) &
+!      data%control%predictor_hessian = l_bfgs_predictor_hessian
+!    IF ( data%control%predictor_hessian /= se_modified_predictor_hessian     &
+!        .AND. data%control%predictor_hessian /= dd_modified_predictor_hessian&
+!        .AND. data%control%predictor_hessian /= l_bfgs_predictor_hessian )   &
+!      data%control%predictor_hessian = identity_predictor_hessian
      IF ( data%control%predictor_hessian /= se_modified_predictor_hessian      &
          .AND. data%control%predictor_hessian /= dd_modified_predictor_hessian &
-         .AND. data%control%predictor_hessian /= l_bfgs_predictor_hessian )    &
-       data%control%predictor_hessian = identity_predictor_hessian
+       ) data%control%predictor_hessian = identity_predictor_hessian
 
 !  decide how much reverse communication is required
 
@@ -2798,8 +2808,6 @@
            data%C_scale( : nlp%m ) = data%C_scale( : nlp%m ) / val
          END IF
 
-         write(6,"( ' c_scale ', /, ( 5ES12.4 ) )" ) data%C_scale( : nlp%m )
-
 !  scale c and its bounds
 
          nlp%C( : nlp%m ) = nlp%C( : nlp%m ) / data%C_scale( : nlp%m )
@@ -3339,6 +3347,7 @@
 
        ELSE
          ellv_steer = zero ; del_ellv_steer = zero
+         IF ( nlp%m > 0 ) data%S_steer( : nlp%n ) = zero
          IF ( data%printt )                                                    &
            WRITE( data%out, "( A, ' no steering necessary' )" ) prefix
        END IF
@@ -4074,7 +4083,7 @@
            ELSE
              s_start = s_normal
            END IF
-           s_type = s_start
+           data%s_type = s_start
 
            data%p_mode = .TRUE.
            data%filter_acceptable = .FALSE.
@@ -4088,7 +4097,7 @@
 
 !  set the trial point
 
-             IF ( s_type == s_accel ) THEN
+             IF ( data%s_type == s_accel ) THEN
                data%X_trial = nlp%X + data%alpha * data%S_accel
              ELSE
                data%X_trial = nlp%X + data%alpha * data%S
@@ -4141,7 +4150,7 @@
                = data%f_trial + data%sigma_new_ref * data%viol_trial
 
              IF ( data%printt ) THEN
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  WRITE( data%out,"( A, ' accelerator s, trial f and c',        &
                 &  ES9.2, ES21.13, ES20.13 )" )                                &
                     prefix, data%accel_norm, data%f_trial, data%viol_trial
@@ -4160,7 +4169,7 @@
                     * data%alpha * data%rho_phi_ref ) THEN
                IF ( data%printd ) WRITE( data%out, "( A, ' (A1:21-22)')") prefix
                data%pair_type = 'p'
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  data%step_used = 'accel  '
                ELSE
                  data%step_used = 'pred   '
@@ -4168,7 +4177,7 @@
                inform%num_p = inform%num_p + 1
                data%accepted = .TRUE.
                IF ( data%printt ) THEN
-                 IF ( s_type == s_accel ) THEN
+                 IF ( data%s_type == s_accel ) THEN
                    WRITE( data%out, "( A, ' accelerator step with stepsize',   &
                   &   ES11.4, ' gives a p-pair' )" ) prefix, data%alpha
                  ELSE
@@ -4183,7 +4192,7 @@
              ELSE IF ( data%fails <= data%control%max_fails .AND.              &
                        data%control%max_fails > 0 ) THEN
                IF ( data%printd ) WRITE( data%out, "( A, ' (A1:23-24)')") prefix
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  data%step_used = 'accel_nm'
                ELSE
                  data%step_used = 'pred_nm '
@@ -4192,7 +4201,7 @@
                data%fails = data%fails + 1
                data%accepted = .FALSE.
                IF ( data%printt ) THEN
-                 IF ( s_type == s_accel ) THEN
+                 IF ( data%s_type == s_accel ) THEN
                    WRITE( data%out, "( A, ' accelerator step with stepsize',   &
                   &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
                  ELSE
@@ -4206,8 +4215,8 @@
 !  end of loop over possible steps (A1:20)
 
              IF ( data%printd ) WRITE( data%out, "( A, ' (A1:20)' )" ) prefix
-             s_type = s_type + 1
-             IF ( s_type <= s_normal ) GO TO 200
+             data%s_type = data%s_type + 1
+             IF ( data%s_type <= s_normal ) GO TO 200
 !          END DO
 
 !  reduce step size (A1:19)
@@ -4237,7 +4246,7 @@
              data%filter_acceptable = .TRUE.
              data%accepted = .TRUE.
              IF ( data%printt ) THEN
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  WRITE( data%out, "( A, ' accelerator step with stepsize',     &
                 &   ES11.4, ' acceptable to filter' )" ) prefix, data%alpha
                ELSE
@@ -4283,7 +4292,7 @@
            ELSE
              s_start = s_normal
            END IF
-           s_type = s_start
+           data%s_type = s_start
 
            data%p_mode = .FALSE.
            data%accepted = .FALSE.
@@ -4298,7 +4307,7 @@
 
 !  set the trial point
 
-             IF ( s_type == s_accel ) THEN
+             IF ( data%s_type == s_accel ) THEN
                data%check_b_pair = data%fails <= data%control%max_fails .AND.  &
                  data%control%max_fails > 0
                data%X_trial = nlp%X + data%alpha * data%S_accel
@@ -4357,7 +4366,7 @@
               = data%f_trial + data%sigma_new_ref * data%viol_trial
 
              IF ( data%printt ) THEN
-               IF ( s_type == s_accel ) THEN
+               IF ( data%s_type == s_accel ) THEN
                  WRITE( data%out,"( A, ' accelerator s, trial f and c',        &
                 &  ES9.2, ES21.13, ES20.13 )" )                                &
                   prefix, data%accel_norm, data%f_trial, data%viol_trial
@@ -4421,7 +4430,7 @@
                                               data%control%FILTER_control,     &
                                               inform%FILTER_inform )
                    IF ( data%printt ) THEN
-                     IF ( s_type == s_accel ) THEN
+                     IF ( data%s_type == s_accel ) THEN
                        WRITE( data%out, "( A, ' accelerator step with step',   &
                       & 'size', ES11.4, ' gives a v-pair' )") prefix, data%alpha
                      ELSE
@@ -4451,7 +4460,7 @@
                         data%alpha * data%rho_f_ref ) THEN
                    data%pair_type = 'o'
                    IF ( data%printt ) THEN
-                     IF ( s_type == s_accel ) THEN
+                     IF ( data%s_type == s_accel ) THEN
                        WRITE( data%out, "( A, ' accelerator step with step',   &
                       & 'size', ES11.4, ' gives an o-pair')") prefix, data%alpha
                      ELSE
@@ -4496,7 +4505,7 @@
                                             data%control%FILTER_control,       &
                                             inform%FILTER_inform )
                  IF ( data%printt ) THEN
-                   IF ( s_type == s_accel ) THEN
+                   IF ( data%s_type == s_accel ) THEN
                      WRITE( data%out, "( A, ' accelerator step with step',     &
                     & 'size', ES11.4, ' gives a b-pair' )") prefix, data%alpha
                    ELSE
@@ -4515,7 +4524,7 @@
 
                ELSE IF ( data%fails <= data%control%max_fails .AND.            &
                          data%control%max_fails > 0 ) THEN
-                 IF ( s_type == s_accel ) THEN
+                 IF ( data%s_type == s_accel ) THEN
                    data%step_used = 'accel_nm'
                  ELSE
                    data%step_used = 'pred_nm '
@@ -4524,7 +4533,7 @@
                  data%fails = data%fails + 1
                  data%accepted = .FALSE.
                  IF ( data%printt ) THEN
-                   IF ( s_type == s_accel ) THEN
+                   IF ( data%s_type == s_accel ) THEN
                      WRITE( data%out, "( A, ' accelerator step with stepsize', &
                     &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
                    ELSE
@@ -4539,8 +4548,8 @@
 !  end of loop over possible steps (A1:31)
 
              IF ( data%printd ) WRITE( data%out, "( A, ' (A1:31)' )" ) prefix
-             s_type = s_type + 1
-             IF ( s_type <= s_normal ) GO TO 310
+             data%s_type = data%s_type + 1
+             IF ( data%s_type <= s_normal ) GO TO 310
 !          END DO
 
 !  reduce step size (A1:30)
@@ -4556,7 +4565,7 @@
 !        END DO
 
   440    CONTINUE
-         IF ( s_type == s_accel ) THEN
+         IF ( data%s_type == s_accel ) THEN
            data%step_used = 'accel  '
            ELSE
            data%step_used = 'pred   '
@@ -4681,9 +4690,11 @@
       &  '(predictor  ):', 3ES11.4 )" ) prefix, inform%primal_infeasibility,   &
            inform%dual_infeasibility, inform%complementary_slackness
 
-       IF ( data%control%use_accelerator ) THEN
+       IF ( data%control%use_accelerator .AND. data%accel_found ) THEN
 
 !  compute the gradient of the Lagrangian using the accelerator multipliers
+!  (only if an accelerator step, and with it its multipliers, has been
+!  computed during this iteration)
 
 !write(6,"( ' y ', /, ( 6ES12.4) )" ) nlp%Y( : nlp%m )
 !write(6,"( ' y_accel ', /, ( 6ES12.4) )" ) data%Y_accel( : nlp%m )
