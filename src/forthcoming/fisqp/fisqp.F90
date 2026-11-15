@@ -1720,6 +1720,7 @@
 !    REAL ( KIND = rp_ ) :: B_k, B_k_scalar, Bk_D, Hess, Hess_D, Heps
 !    REAL ( KIND = rp_ ) :: normg, normHess, muLS, accel_bd_viol
      LOGICAL :: kkt_accel, kkt_pred, lin_feas, acceptable, names, steer_rejected
+     LOGICAL :: steer_failed
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
@@ -3497,20 +3498,40 @@
          CALL L1QP_solve( data%QP_steer, data%QP_steer_data,                   &
                           data%control%QP_steer_control, inform%QP_steer_inform)
 !                         C_stat = nlp%C_status, X_stat = nlp%X_status )
+         steer_failed = .FALSE.
          IF ( inform%QP_steer_inform%status /= GALAHAD_ok                      &
           .AND. inform%QP_steer_inform%status /= GALAHAD_error_max_iterations  &
           .AND. inform%QP_steer_inform%status /= GALAHAD_error_ill_conditioned &
           .AND. inform%QP_steer_inform%status /= GALAHAD_error_tiny_step ) THEN
-           IF ( data%printe )                                                  &
-             WRITE( data%error, "( ' On exit from steering QP_solve status',   &
-            &  ' = ', I0 )" ) inform%QP_steer_inform%status
-           inform%status = GALAHAD_error_qp_solve ; GO TO 900
+
+!  stop if there has been an allocation or deallocation error
+
+           IF ( inform%QP_steer_inform%status == GALAHAD_error_allocate .OR.   &
+                inform%QP_steer_inform%status == GALAHAD_error_deallocate )    &
+               THEN
+             IF ( data%printe )                                                &
+               WRITE( data%error, "( ' On exit from steering QP_solve status', &
+              &  ' = ', I0 )" ) inform%QP_steer_inform%status
+             inform%status = GALAHAD_error_qp_solve ; GO TO 900
+           END IF
+
+!  otherwise the solver has failed (the steering problem is always feasible
+!  and bounded), so use s = 0 instead (see below)
+
+           IF ( data%printt ) WRITE( data%out, "( A, ' steering subproblem',   &
+          &  ' not solved (status = ', I0, '), s = 0 used instead' )" )        &
+             prefix, inform%QP_steer_inform%status
+           steer_failed = .TRUE.
          END IF
 !        WRITE(6,*) ' x ', data%QP_steer%X( : data%QP_steer%n )
 
 !  restore the solution
 
-         data%S_steer( : nlp%n ) = data%QP_steer%X( : nlp%n )
+         IF ( steer_failed ) THEN
+           data%S_steer( : nlp%n ) = zero
+         ELSE
+           data%S_steer( : nlp%n ) = data%QP_steer%X( : nlp%n )
+         END IF
 
 !  calculate linearized feasiblity improvement
 
@@ -3531,10 +3552,11 @@
 
 !  never accept a steering step that increases the linearized infeasibility,
 !  as may happen if the steering subproblem was solved inaccurately (or its
-!  solver stalled); use s = 0 instead. Such a step provides no evidence that
-!  the problem is infeasible, nor that steering has failed
+!  solver stalled); use s = 0 instead. Such a step, or a failure of the
+!  solver, provides no evidence that the problem is infeasible, nor that
+!  steering has failed
 
-         steer_rejected = del_ellv_steer < zero
+         steer_rejected = del_ellv_steer < zero .OR. steer_failed
          IF ( steer_rejected ) THEN
            IF ( data%printt ) WRITE( data%out, "( A, ' steering step ',        &
           &  'rejected, s = 0 used instead' )" ) prefix
