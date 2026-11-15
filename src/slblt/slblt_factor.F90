@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 16:40 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-15 AT 10:08 GMT
 !
 ! Pure-Fortran SLBLT factor/solve kernels + a serial multifrontal driver,
 ! in GALAHAD templated precision (GALAHAD ip_/rp_/long_ kinds).
@@ -2118,6 +2118,10 @@
             RETURN
          END IF
          nd%lcol = 0._rp_
+         ! D is zeroed too: if the factorization of this node fails, the
+         ! entries for its uneliminated columns are not computed, but the
+         ! statistics gathered afterwards (accumulate_stats) read them
+         nd%d = 0._rp_
          IF (cm > 0) nd%contrib = 0._rp_
          DO i = 1, nd%symb_ncol
             nd%perm(i) = nd%rlist(i); tls_pmap(nd%rlist(i)) = i
