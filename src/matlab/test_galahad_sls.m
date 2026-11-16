@@ -14,7 +14,7 @@ A(1:n,1) = 1.0 ;
 A(1,1:n) = 1.0 ;
 
 %linear_solver = 'sytr';
-linear_solver = 'ssids';
+linear_solver = 'slblt';
 %linear_solver = 'ma97';
 
 [ control ] = galahad_sls( 'initial' ) ;

@@ -528,6 +528,10 @@ has been violated.
 \itt{\galerrpreconditioner.} ({\tt \packagename\_solve} only)
 The matrix $\bmM$ appears not to be positive definite.
 
+\itt{\galerrillconditioned.} ({\tt \packagename\_solve} only)
+The Lanczos process has broken down because a value that is not finite
+has arisen, as may happen if the problem is very ill-conditioned.
+
 \itt{\galerrmaxiterations.} ({\tt \packagename\_solve} only) More than
 {\tt control\%itmax} iterations have been performed without obtaining
 convergence.

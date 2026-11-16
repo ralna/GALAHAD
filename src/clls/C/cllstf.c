@@ -100,7 +100,7 @@ int main(void) {
                              A_ptr_ne, A_ptr );
                 clls_solve_given_a( &data, &status, n, o, m, Ao_ne, Ao_val, b,
                                     sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
-                                    x, r, c, y, z, x_stat, c_stat, 
+                                    x, y, z, r, c, x_stat, c_stat,
                                     w, x_s );
                 }
                 break;

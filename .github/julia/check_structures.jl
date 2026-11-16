@@ -59,8 +59,8 @@ excluded_fortran_fields = Dict(
   "presolve_control_type" => ["get_q", "get_f", "get_g", "get_h", "get_a", "get_x", "get_x_bounds", "get_z", "get_z_bounds", "get_c", "get_c_bounds", "get_y", "get_y_bounds"],
   "wcp_inform_type" => ["x_status", "c_status"],
   "sbls_inform_type" => ["sils_analyse_status", "sils_factorize_status", "sils_solve_status", "sls_analyse_status", "sls_factorize_status", "sls_solve_status", "uls_analyse_status", "uls_factorize_status", "uls_solve_status"],
-  "ssids_control_type" => ["auction", "rb_dump"],
-  "ssids_inform_type" => ["auction"],
+  "slblt_control_type" => ["auction", "rb_dump"],
+  "slblt_inform_type" => ["auction"],
   "ugo_inform_type" => ["dx_best"],
 )
 
@@ -78,7 +78,7 @@ function F_structures()
       (folders[end-1] != "forthcoming") && (folders[end-1] != "src") && continue
       package = folders[end]
       if file == "$package.F90"
-        if package == "ssids"
+        if package == "slblt"
           path = joinpath(root, "types.F90") |> normpath
         end
         code = read(path, String)
@@ -104,7 +104,7 @@ function F_structures()
                 f_extend[f_struct] = lowercase(extension) |> strip
               end 
             end
-            if contains(line |> uppercase, "TYPE SSIDS_INFORM") || contains(line |> uppercase, "TYPE SSIDS_OPTIONS")
+            if contains(line |> uppercase, "TYPE SLBLT_INFORM") || contains(line |> uppercase, "TYPE SLBLT_OPTIONS")
               f_struct = split(line, "type")[2] |> strip
               f_types[f_struct] = String[]
               f_structures[f_struct] = String[]

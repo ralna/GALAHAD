@@ -17,10 +17,12 @@
    MODULE GALAHAD_USERDATA_precision
 
      USE GALAHAD_KINDS_precision
+     USE, INTRINSIC :: ISO_C_BINDING, ONLY : C_PTR, C_NULL_PTR
 
      IMPLICIT NONE
 
      PUBLIC
+     PRIVATE :: C_PTR, C_NULL_PTR
 
 !  ======================================
 !  The GALAHAD_userdata_type derived type
@@ -40,6 +42,12 @@
          DIMENSION( : ) :: complex_pointer => NULL( )
        CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => NULL( )
        LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => NULL( )
+
+!  reserved for GALAHAD's C interfaces, which use it to pass the user's C
+!  callbacks and data to their evaluation wrappers (this avoids internal
+!  procedures, whose trampolines would need an executable stack)
+
+       TYPE ( C_PTR ) :: c_context = C_NULL_PTR
      END TYPE USERDATA_type
 !    END TYPE GALAHAD_userdata_type
 

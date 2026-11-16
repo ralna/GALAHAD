@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -225,7 +225,7 @@
 !  deallocate-error-fatal                            F
 !  generate-sif-file                                 F
 !  generate-qplib-file                               F
-!  symmetric-linear-equation-solver                  ssids
+!  symmetric-linear-equation-solver                  slblt
 !  sif-file-name                                     BLLSBPROB.SIF
 !  qplib-file-name                                   BLLSBPROB.qplib
 !  output-line-prefix                                ""

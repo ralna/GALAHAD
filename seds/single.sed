@@ -24,5 +24,5 @@ s/MC77AD/MC77A/g
 s/MC21BD/MC21B/g
 s/dmumps/smumps/g
 s/DMUMPS/SMUMPS/g
-s/symmetric_linear_solver = "ssids"/symmetric_linear_solver = "sytr "/g
-s/definite_linear_solver = "ssids"/definite_linear_solver = "sytr "/g
+s/symmetric_linear_solver = "slblt"/symmetric_linear_solver = "sytr "/g
+s/definite_linear_solver = "slblt"/definite_linear_solver = "sytr "/g

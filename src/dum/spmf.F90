@@ -5,27 +5,27 @@
 !-*-*-*-  G A L A H A D  -  D U M M Y   S P M F  S U B R O U T I N E S -*-*-*-
 
    SUBROUTINE spmInit_f08( spm )
-    USE spmf_enums, ONLY : spmatrix_t
+    USE galahad_spmf_enums, ONLY : spmatrix_t
     IMPLICIT NONE
     TYPE ( spmatrix_t ), INTENT( INOUT ), TARGET :: spm
     spm%mtxtype = - 1
    END SUBROUTINE spmInit_f08
 
    SUBROUTINE spmUpdateComputedFields_f08( spm )
-     USE spmf_enums, ONLY : spmatrix_t
+     USE galahad_spmf_enums, ONLY : spmatrix_t
      IMPLICIT NONE
      TYPE ( spmatrix_t ), INTENT( INOUT ), TARGET :: spm
    END SUBROUTINE spmUpdateComputedFields_f08
 
    SUBROUTINE spmAlloc_f08( spm )
-     USE spmf_enums, ONLY : spmatrix_t
+     USE galahad_spmf_enums, ONLY : spmatrix_t
      IMPLICIT NONE
      TYPE ( spmatrix_t ), INTENT( INOUT ), TARGET :: spm
    END SUBROUTINE spmAlloc_f08
 
    SUBROUTINE spmCheckAndCorrect_f08( spm_in, spm_out, info )
      USE GALAHAD_KINDS, ONLY : ipc_
-     USE spmf_enums, ONLY : spmatrix_t
+     USE galahad_spmf_enums, ONLY : spmatrix_t
      IMPLICIT NONE
      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm_in
      TYPE ( spmatrix_t ), INTENT( INOUT ), TARGET :: spm_out
@@ -36,7 +36,7 @@
                                dvalues, svalues, dofs, loc2glob, glob2loc )
      USE iso_c_binding, ONLY : c_double_complex, c_float_complex, c_double,    &
                                c_float, c_f_pointer
-     USE spmf_enums, ONLY : spmatrix_t, spm_int_t, SpmCSC, SpmCSR,             &
+     USE galahad_spmf_enums, ONLY : spmatrix_t, spm_int_t, SpmCSC, SpmCSR,     &
                             SpmComplex64, SpmComplex32, SpmDouble, SpmFloat
      IMPLICIT NONE
      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
@@ -89,7 +89,7 @@
         CALL c_f_pointer( spm%values, cvalues, [ spm%nnzexp ] )
      IF ( PRESENT( dvalues ) .AND. ( spm%flttype == SpmDouble ) )              &
         CALL c_f_pointer( spm%values, dvalues, [ spm%nnzexp ] )
-     IF ( PRESENT( svalues ) .AND. ( spm%flttype == SpmFloat ) )              &
+     IF ( PRESENT( svalues ) .AND. ( spm%flttype == SpmFloat ) )               &
         CALL c_f_pointer( spm%values, svalues, [ spm%nnzexp ] )
 
    END SUBROUTINE spmGetArray_f08
@@ -97,7 +97,7 @@
    SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,    &
                                ldx, info )
      USE GALAHAD_KINDS_precision, ONLY : ipc_, dpc_
-     USE spmf_enums, ONLY : spmatrix_t, spm_int_t
+     USE galahad_spmf_enums, ONLY : spmatrix_t, spm_int_t
      IMPLICIT NONE
      REAL ( KIND = dpc_ ), INTENT( IN ) :: eps
      INTEGER ( KIND = spm_int_t ),INTENT( IN ) :: nrhs
@@ -112,7 +112,7 @@
    END SUBROUTINE spmCheckAxb_f08
 
    SUBROUTINE spmExit_f08( spm )
-     USE spmf_enums, ONLY : spmatrix_t
+     USE galahad_spmf_enums, ONLY : spmatrix_t
      IMPLICIT NONE
      TYPE( spmatrix_t ), INTENT( INOUT ), TARGET :: spm
    END SUBROUTINE spmExit_f08

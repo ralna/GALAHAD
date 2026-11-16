@@ -1092,7 +1092,7 @@ See {\tt https://www.galahad.rl.ac.uk/download/} for full details.}}
 \newcommand{\galerrmcsixtyone}{-69}
 \newcommand{\galerrmcsictyeight}{-70}
 \newcommand{\galerrmetis}{-71}
-\newcommand{\galerrspral}{-72}
+\newcommand{\galerrslblt}{-72}
 \newcommand{\galerrrepeated}{-73}
 \newcommand{\galerreval}{-78}
 \newcommand{\galerroptional}{-79}

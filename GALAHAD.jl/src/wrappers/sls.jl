@@ -24,6 +24,7 @@ struct sls_control_type{T,INT}
   array_decrease_factor::T
   pivot_control::INT
   ordering::INT
+  pastix_ordering::INT
   full_row_threshold::INT
   row_search_indefinite::INT
   scaling::INT
@@ -135,7 +136,7 @@ struct sls_inform_type{T,INT}
   ma86_info::ma86_info{T,INT}
   ma87_info::ma87_info{T,INT}
   ma97_info::ma97_info{T,INT}
-  ssids_inform::ssids_inform_type{T,INT}
+  slblt_inform::slblt_inform_type{T,INT}
   nodend_inform::nodend_inform_type{T,INT}
   mc61_info::NTuple{10,INT}
   mc61_rinfo::NTuple{15,T}

@@ -181,7 +181,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type char that specifies the :ref:`solver package<details-sls_supported__sym>` that should be used to factorize the matrix $A$. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed.  Only 'potr', 'sytr', 'pbtr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default, but others are easily installed (see README.external).
+		- is a one-dimensional array of type char that specifies the :ref:`solver package<details-sls_supported__sym>` that should be used to factorize the matrix $A$. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'slblt', 'mumps', 'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed.  Only 'potr', 'sytr', 'pbtr' and 'slblt' are installed by default, but others are easily installed (see README.external).
 
 	*
 		- data

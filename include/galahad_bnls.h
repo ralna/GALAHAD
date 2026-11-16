@@ -1332,11 +1332,11 @@ void bnls_solve_reverse_with_jacprod( void **data,
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[out] v is a one-dimensional array of size n and type rpc_, that
-    is used for reverse communication (see status=2-7 above for details)
+ @param[out] v is a one-dimensional array of size max(n,m_r) and type rpc_,
+    that is used for reverse communication (see status=2-7 above for details)
 
- @param[out] iv is a one-dimensional array of size n and type ipc_, that
-    is used for reverse communication (see status=7-8 above for details)
+ @param[out] iv is a one-dimensional array of size max(n,m_r) and type ipc_,
+    that is used for reverse communication (see status=7-8 above for details)
 
  @param[out] lvl is a scalar of type ipc_, that
     is used for reverse communication (see status=7-8 above for details)
@@ -1347,11 +1347,11 @@ void bnls_solve_reverse_with_jacprod( void **data,
  @param[out] index is a scalar of type ipc_, that
     is used for reverse communication (see status=6 above for details)
 
- @param[in] p is a one-dimensional array of size n and type rpc_, that
-    is used for reverse communication (see status=2-8 above for details)
+ @param[in] p is a one-dimensional array of size max(n,m_r) and type rpc_,
+    that is used for reverse communication (see status=2-8 above for details)
 
- @param[in] ip is a one-dimensional array of size n and type ipc_, that
-    is used for reverse communication (see status=6 above for details)
+ @param[in] ip is a one-dimensional array of size max(n,m_r) and type ipc_,
+    that is used for reverse communication (see status=6 above for details)
 
  @param[in] lp is a scalar of type ipc_, that
     is used for reverse communication (see status=6 above for details)

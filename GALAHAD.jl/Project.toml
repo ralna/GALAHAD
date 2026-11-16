@@ -1,7 +1,7 @@
 name = "GALAHAD"
 uuid = "c591611e-c43e-4808-98fb-ce4cafe3a717"
 authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>", "Dominique Orban <dominique.orban@polymtl.ca>"]
-version = "0.6.0"
+version = "0.6.1"
 
 [deps]
 Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
@@ -20,15 +20,17 @@ GALAHADCUTEstExt = "CUTEst"
 [compat]
 Accessors = "0.1.42"
 CUTEst = "1.4.0"
-GALAHAD_jll = "=5.5.1"
+GALAHAD_jll = "=5.5.2"
+Pkg = "1.10"
 Printf = "1.10"
 Quadmath = "0.5.10, 1.0.1"
 Test = "1.10"
 julia = "1.10"
 
 [extras]
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Printf"]
+test = ["Test", "Printf", "Pkg"]

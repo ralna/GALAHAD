@@ -172,6 +172,17 @@ that gives the number of iterations that are permitted before the
 infeasibility is checked for improvement.
 The default is {\tt infeas\_check\_interval = 100}.
 
+\itt{ncrit} is a scalar variable of type \integer,
+that specifies when the problem is declared infeasible
+(or unbounded) when solving quadratic programs (see {\tt solve\_qp} and
+{\tt solve\_within\_bounds}). If the infeasibility has failed to
+decrease by the factor {\tt relative\_decrease\_required} over
+{\tt ncrit} consecutive increases of the penalty parameters, the
+problem will be declared infeasible. Likewise, {\tt ncrit} consecutive
+feasible but unbounded subproblems will cause the problem to be declared
+unbounded.
+The default is {\tt ncrit = 100}.
+
 \itt{infinity} is a scalar variable of type \realdp, that is used to
 specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
@@ -180,7 +191,8 @@ The default is {\tt infinity =} $10^{19}$.
 \itt{feas\_tol} is a scalar variable of type \realdp, that specifies the
 maximum amount by which a constraint may be violated and yet still be
 considered to be satisfied.
-The default is {\tt feas\_tol =} $u^{3/4}$,
+The default is {\tt feas\_tol =} $u^{3/4}$ ($u^{0.65}$ in
+single precision),
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_dou\-ble}).
 
@@ -224,6 +236,13 @@ penalty parameter will be increased by a factor
 {\tt increase\_rho\_b\_factor}.
 The default is {\tt infeas\_im\-proved\_b\_by\_factor = 0.75}.
 
+\itt{relative\_decrease\_required} is a scalar variable of type default
+\realdp, that specifies when the infeasibility is regarded as having
+decreased (see {\tt ncrit}). This will be so if the infeasibility is
+smaller than {\tt relative\_decrease\_required} times its value
+before the penalty parameters were last increased.
+The default is {\tt relative\_decrease\_required = 0.99}.
+
 %\itt{pivot\_tol}  is a scalar variable of type default
 %\realdp, that holds the
 %threshold pivot tolerance used by the matrix factorization.  See
@@ -249,10 +268,12 @@ The default is {\tt pivot\_tol\_for\_dependencies = 0.5}.
 %{\tt \fullpackagename\_dou\-ble}).
 
 \itt{multiplier\_tol} is a scalar variable of type \realdp.
-Any dual variable or Lagrange multiplier which is less than
-{\tt multiplier\_tol} outside its optimal interval will be regarded
+Any dual variable or Lagrange multiplier which lies outside its
+optimal interval by less than {\tt multiplier\_tol} times the largest
+of $\|g\|_{\infty}$, $\|H x\|_{\infty}$ and the largest multiplier in
+absolute value will be regarded
 as being acceptable when checking for optimality.
-The default is {\tt zero\_pivot =} $\sqrt{u}$,
+The default is {\tt multiplier\_tol =} $\sqrt{u}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_dou\-ble}).
 
@@ -334,10 +355,9 @@ The default is {\tt randomize = .TRUE.}.
 and length 30, that specifies the external package to be used to
 solve any symmetric linear system that might arise. Current possible
 choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
-{\tt 'ma86'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'}
+{\tt 'ma86'}, {\tt 'ma97'}, {\tt slblt}, {\tt 'pardiso'}
 and {\tt 'wsmp'},
-although only {\tt 'sils'} and, for OMP 4.0-compliant compilers,
-{\tt 'ssids'} are installed by default.
+although only {\tt 'sils'} and {\tt 'slblt'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 The default is {\tt symmetric\_linear\_solver = 'sils'}.
 
@@ -346,10 +366,9 @@ and length 30, that specifies the external package to be used to
 solve any symmetric positive-definite linear system that might arise.
 Current possible
 choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
-{\tt 'ma86'}, {\tt 'ma87'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'}
+{\tt 'ma86'}, {\tt 'ma87'}, {\tt 'ma97'}, {\tt slblt}, {\tt 'pardiso'}
 and {\tt 'wsmp'},
-although only {\tt 'sils'} and, for OMP 4.0-compliant compilers,
-{\tt 'ssids'} are installed by default.
+although only {\tt 'sils'} and {\tt 'slblt'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 The default is {\tt definite\_linear\_solver = 'sils'}.
 

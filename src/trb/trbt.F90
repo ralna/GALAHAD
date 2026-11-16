@@ -1,4 +1,4 @@
-!  THIS VERSION: GALAHAD 5.4 - 2025-11-23 AT 09:35 GMT.
+!  THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:35 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TRB_test
    USE GALAHAD_USERDATA_precision
@@ -429,8 +429,8 @@ CONTAINS
    SUBROUTINE WHICH_sls( control )
    TYPE ( TRB_control_type ) :: control
 #include "galahad_sls_defaults_ls.h"
-!symmetric_linear_solver = 'ssids'
-!definite_linear_solver = 'ssids'
+!symmetric_linear_solver = 'slblt'
+!definite_linear_solver = 'slblt'
 !definite_linear_solver = 'sytr '
    control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
    control%TRS_control%definite_linear_solver = definite_linear_solver

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 17:00 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 17:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_EQP_interface_test
    USE GALAHAD_KINDS_precision
@@ -54,7 +54,7 @@
    DO data_storage_type = 1, 6
      CALL EQP_initialize( data, control, inform )
      CALL WHICH_sls( control )
-!control%FDC_control%symmetric_linear_solver = 'ssids'
+!control%FDC_control%symmetric_linear_solver = 'slblt'
 !control%FDC_control%symmetric_linear_solver = 'ma57 '
 !control%print_level = 2
 !control%FDC_control%SLS_control%print_level = 2

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 20/01/2022 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:30 GMT.
    PROGRAM GALAHAD_FDC_example
    USE GALAHAD_FDC_double                      ! double precision version
    IMPLICIT NONE
@@ -19,7 +19,7 @@
    CALL FDC_initialize( data, control, inform )  ! Initialize control parameters
    control%use_sls = .TRUE.
    control%symmetric_linear_solver = 'sytr'
-   control%symmetric_linear_solver = 'ssids '
+   control%symmetric_linear_solver = 'slblt '
    control%symmetric_linear_solver = 'ma86 '
    control%print_level = 3
    CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen, DEPEN,      &

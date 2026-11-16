@@ -218,8 +218,9 @@ static PyObject* py_sha_initialize(PyObject *self){
 
 static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_row, *py_col;
+    PyArrayObject *tmp_row = NULL, *tmp_col = NULL;
     PyObject *py_options = NULL;
-    int *row = NULL, *col = NULL;
+    const ipc_ *row = NULL, *col = NULL;
     int n, ne, m;
 
     // Check that package has been initialised
@@ -234,22 +235,21 @@ static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("row", py_row, ne) &&
         check_array_int("col", py_col, ne)
         ))
         return NULL;
 
-    // Convert 64bit integer row array to 32bit
-    row = malloc(ne * sizeof(int));
-    long int *row_long = (long int *) PyArray_DATA(py_row);
-    for(int i = 0; i < ne; i++) row[i] = (int) row_long[i];
+    // Convert NumPy integer row array to ipc_
+    tmp_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+    if(tmp_row == NULL) goto conversion_error;
+    row = (const ipc_ *) PyArray_DATA(tmp_row);
 
-    // Convert 64bit integer col array to 32bit
-    col = malloc(ne * sizeof(int));
-    long int *col_long = (long int *) PyArray_DATA(py_col);
-    for(int i = 0; i < ne; i++) col[i] = (int) col_long[i];
+    // Convert NumPy integer col array to ipc_
+    tmp_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+    if(tmp_col == NULL) goto conversion_error;
+    col = (const ipc_ *) PyArray_DATA(tmp_col);
 
     // Reset control options
     sha_reset_control(&control, &data, &status);
@@ -261,9 +261,9 @@ static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject 
     // Call sha_analyse_matrix
     sha_analyse_matrix(&control, &data, &status, n, ne, row, col, &m);
 
-    // Free allocated memory
-    free(row);
-    free(col);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_row);
+    Py_XDECREF(tmp_col);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -271,15 +271,22 @@ static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject 
 
     // Return m
     return Py_BuildValue("i", m);
+
+     // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_row);
+        Py_XDECREF(tmp_col);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SHA_RECOVER_MATRIX   -*-*-*-*-*-*-*-*-*
 
 static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_order = NULL;
+    PyArrayObject *tmp_order = NULL;
     PyArrayObject *py_s1, *py_y1;
     int ne, m, ls1, ls2, ly1, ly2;
-    int *order = NULL;
+    const ipc_ *order = NULL;
 
     // Check that package has been initialised
     if(!check_init(init_called))
@@ -310,13 +317,13 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
     if(!check_2darray_double("y", py_y, ly1, ly2))
         return NULL;
 
-    // Convert 64bit integer order to 32bit
+    // Convert NumPy integer order array to ipc_
     if((PyObject *) py_order != NULL){
         if(!check_array_int("order", py_order, m))
             return NULL;
-        order = malloc(m * sizeof(int));
-        long int *order_long = (long int *) PyArray_DATA(py_order);
-        for(int i = 0; i < m; i++) order[i] = (int) order_long[i];
+        tmp_order = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_order, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+        if(tmp_order == NULL) return NULL;
+        order = (const ipc_ *) PyArray_DATA(tmp_order);
     }
 
     // Get array data pointers
@@ -324,8 +331,6 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
     double (*s2d)[ls2] = (double (*)[ls2]) s;
     double *y = (double *) PyArray_DATA(py_y);
     double (*y2d)[ly2] = (double (*)[ly2]) y;
-
-    //for( int i = 0; i < ls2; i++) printf("s %f\n", s2d[0][i]);
 
     // Create NumPy output array for val
     npy_intp nedim[] = {ne};
@@ -335,12 +340,10 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
 
     // Call sha_solve_direct
     sha_recover_matrix( &data, &status, ne, m, ls1, ls2, s2d, ly1, ly2, y2d,
-                        val, order );
+                        val, order);
 
-    //for( int i = 0; i < ne; i++) printf("val %f\n", val[i]);
-
-    // Free allocated memory
-    if(order != NULL) free(order);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_order);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())

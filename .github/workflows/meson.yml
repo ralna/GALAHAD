@@ -9,7 +9,6 @@ on:
 jobs:
   windows-gcc-build:
     name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -19,21 +18,16 @@ jobs:
         version: ['11']
         int: ['32', '64']
         sanitizers: ['false']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run common setup
-        uses: ./.github/meson
-        with:
-          os: ${{ matrix.os }}
-          compiler: ${{ matrix.compiler }}
-          version: ${{ matrix.version }}
-          int: ${{ matrix.int }}
-          sanitizers: ${{ matrix.sanitizers }}
+    uses: ./.github/workflows/meson_build.yml
+    with:
+      os: ${{ matrix.os }}
+      compiler: ${{ matrix.compiler }}
+      version: ${{ matrix.version }}
+      int: ${{ matrix.int }}
+      sanitizers: ${{ matrix.sanitizers }}
 
   mac-linux-gcc-build:
     name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -43,21 +37,16 @@ jobs:
         version: ['13']
         int: ['32', '64']
         sanitizers: ['false']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run common setup
-        uses: ./.github/meson
-        with:
-          os: ${{ matrix.os }}
-          compiler: ${{ matrix.compiler }}
-          version: ${{ matrix.version }}
-          int: ${{ matrix.int }}
-          sanitizers: ${{ matrix.sanitizers }}
+    uses: ./.github/workflows/meson_build.yml
+    with:
+      os: ${{ matrix.os }}
+      compiler: ${{ matrix.compiler }}
+      version: ${{ matrix.version }}
+      int: ${{ matrix.int }}
+      sanitizers: ${{ matrix.sanitizers }}
 
   silicon-gcc-build:
     name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -67,21 +56,16 @@ jobs:
         version: ['13']
         int: ['32', '64']
         sanitizers: ['false']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run common setup
-        uses: ./.github/meson
-        with:
-          os: ${{ matrix.os }}
-          compiler: ${{ matrix.compiler }}
-          version: ${{ matrix.version }}
-          int: ${{ matrix.int }}
-          sanitizers: ${{ matrix.sanitizers }}
+    uses: ./.github/workflows/meson_build.yml
+    with:
+      os: ${{ matrix.os }}
+      compiler: ${{ matrix.compiler }}
+      version: ${{ matrix.version }}
+      int: ${{ matrix.int }}
+      sanitizers: ${{ matrix.sanitizers }}
 
   arm-linux-build:
     name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -91,21 +75,16 @@ jobs:
         version: ['14']
         int: ['32', '64']
         sanitizers: ['false']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run common setup
-        uses: ./.github/meson
-        with:
-          os: ${{ matrix.os }}
-          compiler: ${{ matrix.compiler }}
-          version: ${{ matrix.version }}
-          int: ${{ matrix.int }}
-          sanitizers: ${{ matrix.sanitizers }}
+    uses: ./.github/workflows/meson_build.yml
+    with:
+      os: ${{ matrix.os }}
+      compiler: ${{ matrix.compiler }}
+      version: ${{ matrix.version }}
+      int: ${{ matrix.int }}
+      sanitizers: ${{ matrix.sanitizers }}
 
   # intel-build:
   #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-  #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     fail-fast: false
   #     matrix:
@@ -115,21 +94,16 @@ jobs:
   #       version: ['2025.2']
   #       int: ['32', '64']
   #       sanitizers: ['false']
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #     - name: Run common setup
-  #       uses: ./.github/meson
-  #       with:
-  #         os: ${{ matrix.os }}
-  #         compiler: ${{ matrix.compiler }}
-  #         version: ${{ matrix.version }}
-  #         int: ${{ matrix.int }}
-  #         sanitizers: ${{ matrix.sanitizers }}
+  #   uses: ./.github/workflows/meson_build.yml
+  #   with:
+  #     os: ${{ matrix.os }}
+  #     compiler: ${{ matrix.compiler }}
+  #     version: ${{ matrix.version }}
+  #     int: ${{ matrix.int }}
+  #     sanitizers: ${{ matrix.sanitizers }}
 
   # nvidia-build:
   #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-  #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     fail-fast: false
   #     matrix:
@@ -139,14 +113,10 @@ jobs:
   #       version: ['25.7']
   #       int: ['32', '64']
   #       sanitizers: ['false']
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #     - name: Run common setup
-  #       uses: ./.github/meson
-  #       with:
-  #         os: ${{ matrix.os }}
-  #         compiler: ${{ matrix.compiler }}
-  #         version: ${{ matrix.version }}
-  #         int: ${{ matrix.int }}
-  #         sanitizers: ${{ matrix.sanitizers }}
+  #   uses: ./.github/workflows/meson_build.yml
+  #   with:
+  #     os: ${{ matrix.os }}
+  #     compiler: ${{ matrix.compiler }}
+  #     version: ${{ matrix.version }}
+  #     int: ${{ matrix.int }}
+  #     sanitizers: ${{ matrix.sanitizers }}

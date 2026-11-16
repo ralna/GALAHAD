@@ -2228,8 +2228,8 @@ void ugo_information_q_64(void **data, struct ugo_inform_type_q_64 *inform, int6
 void ugo_terminate_q(void **data, struct ugo_control_type_q *control, struct ugo_inform_type_q *inform);
 void ugo_terminate_q_64(void **data, struct ugo_control_type_q_64 *control, struct ugo_inform_type_q_64 *inform);
 
-// C interface for SSIDS
-struct ssids_control_type_q {
+// C interface for SLBLT
+struct slblt_control_type_q {
     int32_t array_base;
     int32_t print_level;
     int32_t unit_diagnostics;
@@ -2238,26 +2238,21 @@ struct ssids_control_type_q {
     int32_t ordering;
     int32_t nemin;
     bool ignore_numa;
-    bool use_gpu;
-    bool gpu_only;
-    int64_t min_gpu_work;
     float max_load_inbalance;
-    float gpu_perf_coeff;
     int32_t scaling;
     int64_t small_subtree_threshold;
-    int32_t cpu_block_size;
+    int32_t block_size;
     bool action;
     int32_t pivot_method;
     __float128 small;
     __float128 u;
     struct nodend_control_type nodend_control;
-    int32_t nstream;
     __float128 multiplier;
     float min_loadbalance;
     int32_t failed_pivot_method;
 };
 
-struct ssids_control_type_q_64 {
+struct slblt_control_type_q_64 {
     int64_t array_base;
     int64_t print_level;
     int64_t unit_diagnostics;
@@ -2266,26 +2261,21 @@ struct ssids_control_type_q_64 {
     int64_t ordering;
     int64_t nemin;
     bool ignore_numa;
-    bool use_gpu;
-    bool gpu_only;
-    int64_t min_gpu_work;
     float max_load_inbalance;
-    float gpu_perf_coeff;
     int64_t scaling;
     int64_t small_subtree_threshold;
-    int64_t cpu_block_size;
+    int64_t block_size;
     bool action;
     int64_t pivot_method;
     __float128 small;
     __float128 u;
     struct nodend_control_type_64 nodend_control;
-    int64_t nstream;
     __float128 multiplier;
     float min_loadbalance;
     int64_t failed_pivot_method;
 };
 
-struct ssids_inform_type_q {
+struct slblt_inform_type_q {
     int32_t flag;
     int32_t matrix_dup;
     int32_t matrix_missing_diag;
@@ -2301,17 +2291,14 @@ struct ssids_inform_type_q {
     int32_t num_sup;
     int32_t num_two;
     int32_t stat;
-    int32_t cuda_error;
-    int32_t cublas_error;
     struct nodend_inform_type_q nodend_inform;
     int32_t not_first_pass;
     int32_t not_second_pass;
     int32_t nparts;
-    int64_t cpu_flops;
-    int64_t gpu_flops;
+    int64_t flops;
 };
 
-struct ssids_inform_type_q_64 {
+struct slblt_inform_type_q_64 {
     int64_t flag;
     int64_t matrix_dup;
     int64_t matrix_missing_diag;
@@ -2327,44 +2314,41 @@ struct ssids_inform_type_q_64 {
     int64_t num_sup;
     int64_t num_two;
     int64_t stat;
-    int64_t cuda_error;
-    int64_t cublas_error;
     struct nodend_inform_type_q_64 nodend_inform;
     int64_t not_first_pass;
     int64_t not_second_pass;
     int64_t nparts;
-    int64_t cpu_flops;
-    int64_t gpu_flops;
+    int64_t flops;
 };
 
-void ssids_default_control_q(struct ssids_control_type_q *control);
-void ssids_default_control_q_64(struct ssids_control_type_q_64 *control);
-void ssids_analyse_q(bool check, int32_t n, int32_t *order, int64_t *ptr, int32_t *row, __float128 *val, void **akeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_analyse_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
-void ssids_analyse_ptr32_q(bool check, int32_t n, int32_t *order, int32_t *ptr, int32_t *row, __float128 *val, void **akeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_analyse_ptr32_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
-void ssids_analyse_coord_q(int32_t n, int32_t *order, int64_t ne, int32_t *row, int32_t *col, __float128 *val, void **akeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_analyse_coord_q_64(int64_t n, int64_t *order, int64_t ne, int64_t *row, int64_t *col, __float128 *val, void **akeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
-void ssids_factor_q(bool posdef, int64_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_factor_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
-void ssids_factor_ptr32_q(bool posdef, int32_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_factor_ptr32_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
-void ssids_solve1_q(int32_t job, __float128 *x1, void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_solve1_q_64(int64_t job, __float128 *x1, void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
-void ssids_solve_q(int32_t job, int32_t nrhs, __float128 *x, int32_t ldx, void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_solve_q_64(int64_t job, int64_t nrhs, __float128 *x, int64_t ldx, void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
-int32_t ssids_free_akeep_q(void **akeep);
-int64_t ssids_free_akeep_q_64(void **akeep);
-int32_t ssids_free_fkeep_q(void **fkeep);
-int64_t ssids_free_fkeep_q_64(void **fkeep);
-int32_t ssids_free_q(void **akeep, void **fkeep);
-int64_t ssids_free_q_64(void **akeep, void **fkeep);
-void ssids_enquire_posdef_q(void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform, __float128 *d);
-void ssids_enquire_posdef_q_64(void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform, __float128 *d);
-void ssids_enquire_indef_q(void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform, int32_t *piv_order, __float128 *d);
-void ssids_enquire_indef_q_64(void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform, int64_t *piv_order, __float128 *d);
-void ssids_alter_q(__float128 *d, void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
-void ssids_alter_q_64(__float128 *d, void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
+void slblt_default_control_q(struct slblt_control_type_q *control);
+void slblt_default_control_q_64(struct slblt_control_type_q_64 *control);
+void slblt_analyse_q(bool check, int32_t n, int32_t *order, int64_t *ptr, int32_t *row, __float128 *val, void **akeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_analyse_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
+void slblt_analyse_ptr32_q(bool check, int32_t n, int32_t *order, int32_t *ptr, int32_t *row, __float128 *val, void **akeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_analyse_ptr32_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
+void slblt_analyse_coord_q(int32_t n, int32_t *order, int64_t ne, int32_t *row, int32_t *col, __float128 *val, void **akeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_analyse_coord_q_64(int64_t n, int64_t *order, int64_t ne, int64_t *row, int64_t *col, __float128 *val, void **akeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
+void slblt_factor_q(bool posdef, int64_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_factor_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
+void slblt_factor_ptr32_q(bool posdef, int32_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_factor_ptr32_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
+void slblt_solve1_q(int32_t job, __float128 *x1, void *akeep, void *fkeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_solve1_q_64(int64_t job, __float128 *x1, void *akeep, void *fkeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
+void slblt_solve_q(int32_t job, int32_t nrhs, __float128 *x, int32_t ldx, void *akeep, void *fkeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_solve_q_64(int64_t job, int64_t nrhs, __float128 *x, int64_t ldx, void *akeep, void *fkeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
+int32_t slblt_free_akeep_q(void **akeep);
+int64_t slblt_free_akeep_q_64(void **akeep);
+int32_t slblt_free_fkeep_q(void **fkeep);
+int64_t slblt_free_fkeep_q_64(void **fkeep);
+int32_t slblt_free_q(void **akeep, void **fkeep);
+int64_t slblt_free_q_64(void **akeep, void **fkeep);
+void slblt_enquire_posdef_q(void *akeep, void *fkeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform, __float128 *d);
+void slblt_enquire_posdef_q_64(void *akeep, void *fkeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform, __float128 *d);
+void slblt_enquire_indef_q(void *akeep, void *fkeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform, int32_t *piv_order, __float128 *d);
+void slblt_enquire_indef_q_64(void *akeep, void *fkeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform, int64_t *piv_order, __float128 *d);
+void slblt_alter_q(__float128 *d, void *akeep, void *fkeep, struct slblt_control_type_q *control, struct slblt_inform_type_q *inform);
+void slblt_alter_q_64(__float128 *d, void *akeep, void *fkeep, struct slblt_control_type_q_64 *control, struct slblt_inform_type_q_64 *inform);
 
 // C interface for SLS
 struct sls_control_type_q {
@@ -2391,6 +2375,7 @@ struct sls_control_type_q {
     __float128 array_decrease_factor;
     int32_t pivot_control;
     int32_t ordering;
+    int32_t pastix_ordering;
     int32_t full_row_threshold;
     int32_t row_search_indefinite;
     int32_t scaling;
@@ -2446,6 +2431,7 @@ struct sls_control_type_q_64 {
     __float128 array_decrease_factor;
     int64_t pivot_control;
     int64_t ordering;
+    int64_t pastix_ordering;
     int64_t full_row_threshold;
     int64_t row_search_indefinite;
     int64_t scaling;
@@ -2553,7 +2539,7 @@ struct sls_inform_type_q {
     struct ma86_info_q ma86_info;
     struct ma87_info_q ma87_info;
     struct ma97_info_q ma97_info;
-    struct ssids_inform_type_q ssids_inform;
+    struct slblt_inform_type_q slblt_inform;
     struct nodend_inform_type_q nodend_inform;
     int32_t mc61_info[10];
     __float128 mc61_rinfo[15];
@@ -2634,7 +2620,7 @@ struct sls_inform_type_q_64 {
     struct ma86_info_q_64 ma86_info;
     struct ma87_info_q_64 ma87_info;
     struct ma97_info_q_64 ma97_info;
-    struct ssids_inform_type_q_64 ssids_inform;
+    struct slblt_inform_type_q_64 slblt_inform;
     struct nodend_inform_type_q_64 nodend_inform;
     int64_t mc61_info[10];
     __float128 mc61_rinfo[15];
@@ -6740,6 +6726,7 @@ struct qpa_control_type_q {
     int32_t valmin;
     int32_t itref_max;
     int32_t infeas_check_interval;
+    int32_t ncrit;
     int32_t cg_maxit;
     int32_t precon;
     int32_t nsemib;
@@ -6756,6 +6743,7 @@ struct qpa_control_type_q {
     __float128 infeas_g_improved_by_factor;
     __float128 increase_rho_b_factor;
     __float128 infeas_b_improved_by_factor;
+    __float128 relative_decrease_required;
     __float128 pivot_tol;
     __float128 pivot_tol_for_dependencies;
     __float128 zero_pivot;
@@ -6794,6 +6782,7 @@ struct qpa_control_type_q_64 {
     int64_t valmin;
     int64_t itref_max;
     int64_t infeas_check_interval;
+    int64_t ncrit;
     int64_t cg_maxit;
     int64_t precon;
     int64_t nsemib;
@@ -6810,6 +6799,7 @@ struct qpa_control_type_q_64 {
     __float128 infeas_g_improved_by_factor;
     __float128 increase_rho_b_factor;
     __float128 infeas_b_improved_by_factor;
+    __float128 relative_decrease_required;
     __float128 pivot_tol;
     __float128 pivot_tol_for_dependencies;
     __float128 zero_pivot;

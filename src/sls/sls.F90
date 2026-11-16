@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-07-31 AT 15:10 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 09:44 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -32,7 +32,7 @@
 !     |               MA86                        |
 !     |               MA87                        |
 !     |               MA97                        |
-!     |               SSIDS from SPRAL            |
+!     |               SLBLT from GALAHAD          |
 !     |               MUMPS                       |
 !     |               PARDISO                     |
 !     |               MKL PARDISO                 |
@@ -68,12 +68,12 @@
      USE hsl_mc64_precision
      USE hsl_mc68_integer
      USE MKL_PARDISO
-     USE GALAHAD_SSIDS_precision
+     USE GALAHAD_SLBLT_precision
      USE GALAHAD_MUMPS_TYPES_precision, MPI_COMM_WORLD_mumps => MPI_COMM_WORLD
-     USE spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
-     USE spmf_interfaces_precision
-     USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
-     USE pastixf_interfaces_precision
+     USE galahad_spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
+     USE galahad_spmf_interfaces
+     USE galahad_pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
+     USE galahad_pastixf_interfaces
 !    USE omp_lib
 
      IMPLICIT NONE
@@ -82,7 +82,7 @@
      PUBLIC :: SLS_initialize, SLS_analyse, SLS_factorize, SLS_solve,          &
                SLS_fredholm_alternative, SLS_terminate, SLS_enquire,           &
                SLS_alter_d, SLS_part_solve, SLS_sparse_forward_solve,          &
-               SLS_read_specfile, SLS_available, SLS_ssids_available,          &
+               SLS_read_specfile, SLS_available, SLS_slblt_available,          &
                SLS_sils_available, SLS_ma57_available, SLS_ma77_available,     &
                SLS_ma86_available, SLS_ma87_available, SLS_ma97_available,     &
                SLS_mumps_available, SLS_pardiso_available,                     &
@@ -253,6 +253,14 @@
 !  >7  ordering chosen depending on matrix characteristics (not yet implemented)
 
        INTEGER ( KIND = ip_ ) :: ordering = 0
+
+!  controls the ordering used by the PaStiX solver (IPARM_ORDERING); ignored by
+!  every other solver
+!  <0  use PaStiX's own default ordering (the first one compiled in)
+!   0  SCOTCH ordering (PastixOrderScotch)
+!   1  METIS ordering (PastixOrderMetis)
+
+       INTEGER ( KIND = ip_ ) :: pastix_ordering = - 1
 
 !  controls threshold for detecting full rows in analyse, registered as
 !  percentage of matrix order. If 100, only fully dense rows detected (default)
@@ -688,9 +696,9 @@
 
        TYPE ( MA97_info ) :: ma97_info
 
-!  the output structure from ssids
+!  the output structure from slblt
 
-       TYPE ( SSIDS_inform_type ) :: ssids_inform
+       TYPE ( SLBLT_inform_type ) :: slblt_inform
 
 !  the output structure from nodend
 
@@ -773,9 +781,9 @@
        LOGICAL :: no_mpi = .FALSE.
        LOGICAL :: no_mumps = .FALSE.
        LOGICAL :: no_pastix = .FALSE.
+       LOGICAL :: pastix_allocated = .FALSE.
        LOGICAL :: no_sils = .FALSE.
        LOGICAL :: no_ma57 = .FALSE.
-       LOGICAL :: no_ssids = .FALSE.
        LOGICAL :: trivial_matrix_type = .FALSE.
        INTEGER ( KIND = long_ ), DIMENSION( 64 ) :: pardiso_PT
        TYPE ( MKL_PARDISO_HANDLE ), DIMENSION( 64 ) :: mkl_pardiso_PT
@@ -849,10 +857,10 @@
        TYPE ( MA97_control ) :: ma97_control
        TYPE ( MA97_info ) :: ma97_info
 
-       TYPE ( SSIDS_akeep_type ) :: ssids_akeep
-       TYPE ( SSIDS_fkeep_type ) :: ssids_fkeep
-       TYPE ( SSIDS_control_type ) :: ssids_control
-       TYPE ( SSIDS_inform_type ) :: ssids_inform
+       TYPE ( SLBLT_akeep_type ) :: slblt_akeep
+       TYPE ( SLBLT_fkeep_type ) :: slblt_fkeep
+       TYPE ( SLBLT_control_type ) :: slblt_control
+       TYPE ( SLBLT_inform_type ) :: slblt_inform
 
        TYPE ( AMD_data_type ) :: amd_data
        TYPE ( AMD_control_type ) :: amd_control
@@ -870,9 +878,22 @@
        TYPE ( spmatrix_t ), POINTER :: spm, spm_check
        TYPE ( pastix_order_t ), POINTER :: order_pastix => NULL( )
        INTEGER ( KIND = pastix_int_t ), DIMENSION( : ), POINTER :: PERMTAB
-       INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( 75 )
-       REAL ( KIND = rp_ ) :: dparm_pastix( 24 )
+       INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( IPARM_SIZE )
+       REAL ( KIND = dpc_ ) :: dparm_pastix( DPARM_SIZE )
        TYPE ( MUMPS_STRUC ) :: mumps_par
+
+     CONTAINS
+
+!  finalizer: release the C-side PaStiX instance (pastix_data) and sparse-matrix
+!  structure (spm) whenever an SLS_data is deallocated, reset by an INTENT( OUT )
+!  argument, or goes out of scope. These are POINTER/C-managed and so are not
+!  reclaimed by Fortran when the containing data is wiped; in particular
+!  SLS_initialize takes data as INTENT( OUT ), which clears pastix_allocated
+!  before the body runs, so a leftover PaStiX instance from a previous
+!  initialization on the same data (e.g. repeated NREK/TREK solves) would
+!  otherwise leak. See also the FINAL procedures on the SSIDS akeep/fkeep types.
+
+       FINAL :: SLS_final_data
 
      END TYPE SLS_data_type
 
@@ -1022,10 +1043,10 @@
        IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
        IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .TRUE.
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
-       IF ( PRESENT( available ) ) available = SLS_ssids_available( )
+     CASE ( 'slblt' )
+       IF ( PRESENT( available ) ) available = SLS_slblt_available( )
        IF ( PRESENT( enquire ) ) enquire = .TRUE.
        IF ( PRESENT( perm ) ) perm = .TRUE.
        IF ( PRESENT( pivots ) ) pivots = .TRUE.
@@ -1208,11 +1229,11 @@
       SLS_ma97_available = ma97_available
       END FUNCTION SLS_ma97_available
 
-! - G A L A H A D - S L S _ S S I D S _ A V A I L A B L E  F U N C T ION -
+! - G A L A H A D - S L S _ S L B L T _ A V A I L A B L E  F U N C T ION -
 
-      LOGICAL FUNCTION SLS_ssids_available( )
-      SLS_ssids_available = ssids_available
-      END FUNCTION SLS_ssids_available
+      LOGICAL FUNCTION SLS_slblt_available( )
+      SLS_slblt_available = .TRUE.
+      END FUNCTION SLS_slblt_available
 
 ! - G A L A H A D - S L S _ M U M P S _ A V A I L A B L E  F U N C T ION -
 
@@ -1493,11 +1514,11 @@
 !        END IF
        END IF
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
        IF ( control%scaling == 0 )                                             &
-         control%scaling = - data%ssids_control%scaling
+         control%scaling = - data%slblt_control%scaling
 !      control%node_amalgamation = 8
        IF ( control%ordering == 0 ) THEN
          control%ordering = 3
@@ -1613,15 +1634,14 @@
 
 !  local variables
 
-     INTEGER ( KIND = ip_ ) :: flag_ssids
      LOGICAL :: check_available, mpi_initialzed_flag
+     CHARACTER ( LEN = 8 ) :: pastix_ordering_env
      INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL_ma27
      REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma27
      TYPE ( MA57_control ) :: control_ma57
-     TYPE ( SSIDS_akeep_type ) :: akeep_ssids
 !$   LOGICAL :: OMP_GET_CANCELLATION
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_PROC_BIND
-!$   INTEGER :: omp_status
+!$   INTEGER ( KIND = i4_ ) :: OMP_GET_PROC_BIND
+!$   INTEGER ( KIND = i4_ ) :: omp_status
 
 !  record the solver
 
@@ -1639,7 +1659,7 @@
 !  ensure that OpenMP has been correctly initialized
 
 !$   SELECT CASE( data%solver( 1 : data%len_solver ) )
-!$   CASE ( 'ssids', 'mumps' )
+!$   CASE ( 'slblt', 'mumps' )
 !$     CALL get_environment_variable( "OMP_CANCELLATION", STATUS = omp_status )
 !$     IF ( omp_status == 0 ) THEN
 !$       CALL get_environment_variable( "OMP_PROC_BIND", STATUS = omp_status )
@@ -1669,10 +1689,10 @@
        CALL MA27I( ICNTL_ma27, CNTL_ma27 )
        data%no_sils = ICNTL_ma27( 4 ) == - 1
        IF ( data%no_sils ) THEN
-         IF ( check_available ) THEN ! if sils is unavailble, use ssids instead
+         IF ( check_available ) THEN ! if sils is unavailble, use slblt instead
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 5
-           data%solver( 1 : data%len_solver ) = 'ssids'
+           data%solver( 1 : data%len_solver ) = 'slblt'
            GO TO 10
          ELSE
            inform%status = GALAHAD_unavailable_option ; RETURN
@@ -1721,21 +1741,9 @@
      CASE ( 'ma97' )
        data%must_be_definite = .FALSE.
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
-       CALL SSIDS_free( akeep_ssids, flag_ssids )
-       data%no_ssids = flag_ssids == GALAHAD_unavailable_option
-       IF ( data%no_ssids ) THEN
-         IF ( check_available ) THEN ! if ssids is unavailble, use sytr instead
-           data%solver = REPEAT( ' ', len_solver )
-           data%len_solver = 4
-           data%solver( 1 : data%len_solver ) = 'sytr'
-           GO TO 10
-         ELSE
-           inform%status = GALAHAD_unavailable_option ; RETURN
-         END IF
-       END IF
+     CASE ( 'slblt' )
        data%must_be_definite = .FALSE.
 
 !  = PARDISO =
@@ -1766,6 +1774,19 @@
 !  = PaStiX =
 
      CASE ( 'pastix' )
+
+!  finalize any PaStiX instance left over from a previous initialization on this
+!  data (e.g. repeated SBLS factorizations re-enter here without an intervening
+!  SLS_terminate); otherwise the previous pastix_data and spm structures leak
+
+       IF ( data%pastix_allocated ) THEN
+         CALL pastixFinalize( data%pastix_data )
+         IF ( ASSOCIATED( data%spm ) ) THEN
+           CALL spmExit( data%spm )
+           DEALLOCATE( data%spm )
+         END IF
+         data%pastix_allocated = .FALSE.
+       END IF
        ALLOCATE( data%spm )
        CALL spmInit( data%spm )
        data%no_pastix = data%spm%mtxtype == - 1
@@ -1791,16 +1812,41 @@
 !      ELSE
          data%iparm_pastix( 44 ) = 1
 !      END IF
+
+!  optionally select the PaStiX ordering (IPARM_ORDERING) via the environment,
+!  so that both the SCOTCH (default) and METIS variants can be exercised. This
+!  init-time default is overridden at analyse time by control%pastix_ordering
+!  when the latter is non-negative (see SLS_analyse)
+
+       CALL get_environment_variable( 'GALAHAD_PASTIX_ORDERING',              &
+                                      pastix_ordering_env )
+       CALL STRING_lower_word( pastix_ordering_env )
+       IF ( pastix_ordering_env( 1 : 5 ) == 'metis' ) THEN
+         data%iparm_pastix( 9 ) = 1     ! IPARM_ORDERING = PastixOrderMetis
+       ELSE IF ( pastix_ordering_env( 1 : 6 ) == 'scotch' ) THEN
+         data%iparm_pastix( 9 ) = 0     ! IPARM_ORDERING = PastixOrderScotch
+       END IF
 !      OPEN( 2, FILE = "/dev/null", STATUS = "OLD" ) ! try to get rid of msgs
        CALL pastixInit( data%pastix_data, MPI_COMM_WORLD_pastix,               &
                         data%iparm_pastix, data%dparm_pastix )
 !      CLOSE( 2 )
 !      OPEN( 2, FILE = "/dev/stdout", STATUS = "OLD" )
+       data%pastix_allocated = .TRUE.
        data%must_be_definite = .FALSE.
 
 !  = MUMPS =
 
      CASE ( 'mumps' )
+
+!  give the GALAHAD-managed MUMPS_STRUC input pointers a defined (null)
+!  association status. MUMPS_STRUC does not default-initialise them to NULL, so
+!  if the JOB = -1 initialization does not complete (e.g. an MPI or thread-
+!  binding failure on some platforms) they would be left undefined, and the
+!  ASSOCIATED / SPACE_dealloc_pointer calls in SLS_terminate would then be
+!  undefined behaviour (seen as a SIGABRT under the stricter macOS malloc)
+
+       NULLIFY( data%mumps_par%IRN, data%mumps_par%JCN, data%mumps_par%A,       &
+                data%mumps_par%PERM_IN, data%mumps_par%RHS )
        CALL MPI_INITIALIZED( mpi_initialzed_flag, inform%mpi_ierr )
        IF ( mpi_initialzed_flag ) THEN
          data%no_mpi = .FALSE.
@@ -2174,63 +2220,63 @@
 
      END SUBROUTINE SLS_copy_control_to_ma97
 
-!-   S L S _ C O P Y _ C O N T R O L _ T O _ S S I D S  S U B R O U T I N E  -
+!-   S L S _ C O P Y _ C O N T R O L _ T O _ S L B L T  S U B R O U T I N E  -
 
-     SUBROUTINE SLS_copy_control_to_ssids( control, control_ssids )
+     SUBROUTINE SLS_copy_control_to_slblt( control, control_slblt )
 
-!  copy control parameters to their SSIDS equivalents
+!  copy control parameters to their SLBLT equivalents
 
 !  Dummy arguments
 
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
-     TYPE ( SSIDS_control_type ), INTENT( INOUT ) :: control_ssids
+     TYPE ( SLBLT_control_type ), INTENT( INOUT ) :: control_slblt
 
      IF ( control%print_level_solver > 0 ) THEN
-       control_ssids%unit_error = control%error
-       control_ssids%unit_warning = control%warning
-       control_ssids%unit_diagnostics = control%out
+       control_slblt%unit_error = control%error
+       control_slblt%unit_warning = control%warning
+       control_slblt%unit_diagnostics = control%out
      ELSE
-       control_ssids%unit_error = - 1
-       control_ssids%unit_warning = - 1
-       control_ssids%unit_diagnostics = - 1
+       control_slblt%unit_error = - 1
+       control_slblt%unit_warning = - 1
+       control_slblt%unit_diagnostics = - 1
      END IF
-     control_ssids%print_level = control%print_level_solver
-     control_ssids%nemin = control%node_amalgamation
+     control_slblt%print_level = control%print_level_solver
+     control_slblt%nemin = control%node_amalgamation
      IF ( control%scaling == - 1 ) THEN
-       control_ssids%scaling = 1
+       control_slblt%scaling = 1
      ELSE IF ( control%scaling == - 2 ) THEN
-       control_ssids%scaling = 2
+       control_slblt%scaling = 2
      ELSE IF ( control%scaling == - 3 ) THEN
-       control_ssids%scaling = 3
+       control_slblt%scaling = 3
      ELSE
-       control_ssids%scaling = 0
+       control_slblt%scaling = 0
      END IF
-     control_ssids%small = control%absolute_pivot_tolerance
-!    control_ssids%presolve = 0
-!    control_ssids%consist_tol = control%consistency_tolerance
+     control_slblt%small = control%absolute_pivot_tolerance
+!    control_slblt%presolve = 0
+!    control_slblt%consist_tol = control%consistency_tolerance
      IF ( control%pivot_control == 2 ) THEN
-       control_ssids%u = 0.0_rp_
-!      control_ssids%presolve = 1
-       control_ssids%action = .TRUE.
+       control_slblt%u = 0.0_rp_
+!      control_slblt%presolve = 1
+       control_slblt%action = .TRUE.
      ELSE IF ( control%pivot_control == 3 ) THEN
-       control_ssids%u = 0.0_rp_
-!      control_ssids%action = .TRUE.
-!      control_ssids%presolve = 1
-       control_ssids%action = .FALSE.
+       control_slblt%u = 0.0_rp_
+!      control_slblt%action = .TRUE.
+!      control_slblt%presolve = 1
+       control_slblt%action = .FALSE.
      ELSE IF ( control%pivot_control == 4 ) THEN
-       control_ssids%u = 0.0_rp_
-       control_ssids%action = .TRUE.
+       control_slblt%u = 0.0_rp_
+       control_slblt%action = .TRUE.
      ELSE
-       control_ssids%u = control%relative_pivot_tolerance
-       control_ssids%action = .TRUE.
+       control_slblt%u = control%relative_pivot_tolerance
+       control_slblt%action = .TRUE.
      END IF
-!    IF ( control%multiple_rhs ) control_ssids%presolve = 1
+!    IF ( control%multiple_rhs ) control_slblt%presolve = 1
 
      RETURN
 
-!  End of SLS_copy_control_to_ssids
+!  End of SLS_copy_control_to_slblt
 
-     END SUBROUTINE SLS_copy_control_to_ssids
+     END SUBROUTINE SLS_copy_control_to_slblt
 
 !-  S L S _ C O P Y _ C O N T R O L _ T O _ P A R D I S O  S U B R O U T I N E -
 
@@ -2617,36 +2663,36 @@
 
      END SUBROUTINE SLS_copy_inform_from_ma97
 
-!-   S L S _ C O P Y _ I N F O R M _ F R O M _ S S I D S  S U B R O U T I N E  -
+!-   S L S _ C O P Y _ I N F O R M _ F R O M _ S L B L T  S U B R O U T I N E  -
 
-     SUBROUTINE SLS_copy_inform_from_ssids( inform, ssids_inform )
+     SUBROUTINE SLS_copy_inform_from_slblt( inform, slblt_inform )
 
-!  copy inform parameters from their SSIDS equivalents
+!  copy inform parameters from their SLBLT equivalents
 
 !  Dummy arguments
 
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( SSIDS_inform_type ), INTENT( IN ) :: ssids_inform
+     TYPE ( SLBLT_inform_type ), INTENT( IN ) :: slblt_inform
 
-     inform%ssids_inform = ssids_inform
-     inform%status = ssids_inform%flag
+     inform%slblt_inform = slblt_inform
+     inform%status = slblt_inform%flag
      SELECT CASE( inform%status )
      CASE ( 0 : )
        inform%status = GALAHAD_ok
-       inform%duplicates = ssids_inform%matrix_dup
-       inform%out_of_range = ssids_inform%matrix_outrange
-       inform%two_by_two_pivots = ssids_inform%num_two
-       inform%rank = ssids_inform%matrix_rank
-       inform%negative_eigenvalues = ssids_inform%num_neg
-!      inform%static_pivots = ssids_inform%num_perturbed
-       inform%delayed_pivots = ssids_inform%num_delay
-       inform%entries_in_factors = ssids_inform%num_factor
-       inform%flops_elimination = ssids_inform%num_flops
-       inform%max_front_size  = ssids_inform%maxfront
-       inform%max_depth_assembly_tree = ssids_inform%maxdepth
+       inform%duplicates = slblt_inform%matrix_dup
+       inform%out_of_range = slblt_inform%matrix_outrange
+       inform%two_by_two_pivots = slblt_inform%num_two
+       inform%rank = slblt_inform%matrix_rank
+       inform%negative_eigenvalues = slblt_inform%num_neg
+!      inform%static_pivots = slblt_inform%num_perturbed
+       inform%delayed_pivots = slblt_inform%num_delay
+       inform%entries_in_factors = slblt_inform%num_factor
+       inform%flops_elimination = slblt_inform%num_flops
+       inform%max_front_size  = slblt_inform%maxfront
+       inform%max_depth_assembly_tree = slblt_inform%maxdepth
      CASE ( - 50  )
        inform%status = GALAHAD_error_allocate
-       inform%alloc_status = ssids_inform%stat
+       inform%alloc_status = slblt_inform%stat
      CASE( - 1, - 2, - 3, - 4, - 7, - 10, - 11, - 12, - 13, - 14 )
        inform%status = GALAHAD_error_restrictions
      CASE ( - 8, - 9, - 15 )
@@ -2663,9 +2709,9 @@
 
      RETURN
 
-!  End of SLS_copy_inform_from_ssids
+!  End of SLS_copy_inform_from_slblt
 
-     END SUBROUTINE SLS_copy_inform_from_ssids
+     END SUBROUTINE SLS_copy_inform_from_slblt
 
 !-*-*-*-*-   S L S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -2770,7 +2816,9 @@
                                             = max_integer_factor_size + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: pivot_control = max_in_core_store + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: ordering = pivot_control + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: full_row_threshold = ordering + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: pastix_ordering = ordering + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: full_row_threshold                    &
+                                            = pastix_ordering + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: row_search_indefinite                &
                                             = full_row_threshold + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: scaling = row_search_indefinite + 1
@@ -2854,6 +2902,7 @@
      spec( max_in_core_store )%keyword = 'maximum-in-core-store'
      spec( pivot_control )%keyword = 'pivot-control'
      spec( ordering )%keyword = 'ordering'
+     spec( pastix_ordering )%keyword = 'pastix-ordering'
      spec( full_row_threshold )%keyword = 'full-row-threshold'
      spec( row_search_indefinite )%keyword = 'pivot-row-search-when-indefinite'
      spec( scaling )%keyword = 'scaling'
@@ -2973,6 +3022,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( ordering ),                             &
                                  control%ordering,                             &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( pastix_ordering ),                       &
+                                 control%pastix_ordering,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( full_row_threshold ),                   &
                                  control%full_row_threshold,                   &
@@ -3110,13 +3162,14 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, j, k, l, l1, l2, ordering, pardiso_solver
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
      LOGICAL :: mc6168_ordering
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
+     TYPE ( MA77_keep ) :: fresh_ma77_keep
+!$   INTEGER ( KIND = i4_ ) :: OMP_GET_NUM_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -3161,14 +3214,6 @@
 
      CASE ( 'ma57' )
        IF ( data%no_ma57 ) THEN
-         inform%status = GALAHAD_error_unknown_solver
-         GO TO 900
-       END IF
-
-!  = SSIDS =
-
-     CASE ( 'ssids' )
-       IF ( data%no_ssids ) THEN
          inform%status = GALAHAD_error_unknown_solver
          GO TO 900
        END IF
@@ -3238,7 +3283,7 @@
 !  decide if the ordering should be chosen by one of mc61, mc68 or amd
 
      SELECT CASE( data%solver( 1 : data%len_solver ) )
-     CASE ( 'ma77', 'ma86', 'ma87', 'ma97', 'ssids' )
+     CASE ( 'ma77', 'ma86', 'ma87', 'ma97', 'slblt' )
        mc6168_ordering = control%ordering >= 0 .AND. .NOT. PRESENT( PERM )
      CASE DEFAULT
        mc6168_ordering = control%ordering > 0 .AND. .NOT. PRESENT( PERM )
@@ -3848,7 +3893,17 @@
                            data%ma77_control, data%ma77_info, path = path )
          END IF
          IF (  data%ma77_info%flag /= - 3 ) EXIT
-         CALL MA77_finalise( data%ma77_keep, data%ma77_control, data%ma77_info )
+
+!  flag = -3 means MA77_open was called with keep%status /= 0, i.e. a keep left
+!  over from an earlier factorization on this data. Do NOT MA77_finalise it here:
+!  the earlier out-of-core restart round trip can leave keep%idata/%rdata with
+!  half-torn of01 buffers, and MA77_finalise would then double-close them and
+!  segfault. Instead reset the keep to a pristine (status = 0) state by intrinsic
+!  assignment from a default-initialized keep; every MA77_keep / of01_data
+!  component is allocatable, so this safely deallocates the stale buffers with no
+!  leak, and the next MA77_open then starts cleanly.
+
+         data%ma77_keep = fresh_ma77_keep
        END DO
 
        CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
@@ -3874,9 +3929,9 @@
                           data%ma77_control, data%ma77_info )
        CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
 
-!  = MA86, MA87, MA97, SSIDS, PARDISO or WSMP =
+!  = MA86, MA87, MA97, SLBLT, PARDISO or WSMP =
 
-     CASE ( 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl_pardiso',         &
+     CASE ( 'ma86', 'ma87', 'ma97', 'slblt', 'pardiso', 'mkl_pardiso',         &
             'wsmp', 'pastix' )
 
 !  convert the data to sorted compressed-sparse row format
@@ -4141,36 +4196,36 @@
            data%LFLAG( i ) = .FALSE.
          END DO
 
-!  = SSIDS =
+!  = SLBLT =
 
-       CASE ( 'ssids' )
-         CALL SLS_copy_control_to_ssids( control, data%ssids_control )
+       CASE ( 'slblt' )
+         CALL SLS_copy_control_to_slblt( control, data%slblt_control )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          IF ( mc6168_ordering ) THEN
-           data%ssids_control%ordering = 0
-           CALL SSIDS_analyse( .FALSE., data%matrix%n,                         &
+           data%slblt_control%ordering = 0
+           CALL SLBLT_analyse( .FALSE., data%matrix%n,                         &
                                data%matrix%PTR, data%matrix%COL,               &
-                               data%ssids_akeep,                               &
-                               data%ssids_control, data%ssids_inform,          &
+                               data%slblt_akeep,                               &
+                               data%slblt_control, data%slblt_inform,          &
                                order = data%ORDER )
          ELSE
            IF ( PRESENT( PERM ) ) THEN
-             data%ssids_control%ordering = 0
-             CALL SSIDS_analyse( .FALSE., data%matrix%n,                       &
+             data%slblt_control%ordering = 0
+             CALL SLBLT_analyse( .FALSE., data%matrix%n,                       &
                                  data%matrix%PTR, data%matrix%COL,             &
-                                 data%ssids_akeep,                             &
-                                 data%ssids_control, data%ssids_inform,        &
+                                 data%slblt_akeep,                             &
+                                 data%slblt_control, data%slblt_inform,        &
                                  order = data%ORDER )
            ELSE
-             data%ssids_control%ordering = - control%ordering
-             CALL SSIDS_analyse( .FALSE., data%matrix%n,                       &
+             data%slblt_control%ordering = - control%ordering
+             CALL SLBLT_analyse( .FALSE., data%matrix%n,                       &
                                  data%matrix%PTR, data%matrix%COL,             &
-                                 data%ssids_akeep,                             &
-                                 data%ssids_control, data%ssids_inform,        &
+                                 data%slblt_akeep,                             &
+                                 data%slblt_control, data%slblt_inform,        &
                                  order = data%ORDER )
            END IF
          END IF
-         CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+         CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 800
          CALL SPACE_resize_array( matrix%n, data%LFLAG,                        &
                                   inform%status, inform%alloc_status )
@@ -4223,7 +4278,7 @@
            GO TO 800
          END IF
          data%pardiso_IPARM( 3 ) = 1
-!$       data%pardiso_IPARM( 3 ) = OMP_GET_NUM_THREADS( )
+!$       data%pardiso_IPARM( 3 ) = INT( OMP_GET_NUM_THREADS( ), KIND = ip_ )
          IF ( control%ordering > 0 .OR. PRESENT( PERM ) )                      &
            data%pardiso_IPARM( 5 ) = 1
 
@@ -4369,7 +4424,7 @@
 
          CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,              &
                                         data%wsmp_DPARM )
-!$       CALL WSETMAXTHRDS( OMP_GET_NUM_THREADS( ) )
+!$       CALL WSETMAXTHRDS( INT( OMP_GET_NUM_THREADS( ), KIND = ip_ ) )
 
          data%wsmp_iparm( 2 ) = 1
          data%wsmp_iparm( 3 ) = 2
@@ -4428,8 +4483,9 @@
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, svalues = data%VAL )
 #elif REAL_128
-         CALL spmGetArray( data%spm, colptr = data%PTR,                        &
-                           rowptr = data%ROW, qvalues = data%VAL )
+!  PaStiX has no quadruple arithmetic (it is the dummy solver here), so only the
+!  structure is fetched; the value pointer is never used in this precision
+         CALL spmGetArray( data%spm, colptr = data%PTR, rowptr = data%ROW )
 #else
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, dvalues = data%VAL )
@@ -4440,6 +4496,12 @@
          data%PTR( 1 : data%matrix%n + 1 )                                     &
            = data%matrix%PTR( 1 : data%matrix%n + 1 )
          data%ROW( 1 : data%ne ) = data%matrix%COL( 1 : data%ne )
+
+!  a non-negative control%pastix_ordering overrides the init-time IPARM_ORDERING
+!  default; pastix_data shares the iparm array, so the change takes effect here
+
+         IF ( control%pastix_ordering >= 0 )                                    &
+           data%iparm_pastix( 9 ) = control%pastix_ordering
 
          CALL pastix_task_analyze( data%pastix_data, data%spm, pastix_info )
          inform%pastix_info = INT( pastix_info )
@@ -4736,7 +4798,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, k, l, l1, l2, job, matrix_type
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
      REAL ( KIND = rp_ ) :: val
@@ -5356,9 +5418,9 @@
                           path = path )
        END IF
 
-!  = MA86, MA87, MA97, SSIDS, PARDISO or WSMP =
+!  = MA86, MA87, MA97, SLBLT, PARDISO or WSMP =
 
-     CASE ( 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl_pardiso',         &
+     CASE ( 'ma86', 'ma87', 'ma97', 'slblt', 'pardiso', 'mkl_pardiso',         &
             'wsmp', 'pastix' )
        data%matrix%n = matrix%n
        DO i = 1, matrix%n
@@ -5525,34 +5587,45 @@
          END IF
          CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 
-!  = SSIDS =
+!  = SLBLT =
 
-       CASE ( 'ssids' )
-         CALL SLS_copy_control_to_ssids( control, data%ssids_control )
+       CASE ( 'slblt' )
+         CALL SLS_copy_control_to_slblt( control, data%slblt_control )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+
+!  the slblt symbolic factorization (akeep) must have been set up by a matching
+!  SLS_analyse before factorizing: a valid analyse leaves akeep%n = matrix%n.
+!  If that is not so (analyse failed, was skipped, or the data were reset),
+!  akeep%n is stale/uninitialised, and since SLBLT_factor indexes the supplied
+!  ptr array as ptr( 1 : akeep%n + 1 ) while SLS passes data%matrix%PTR (of
+!  length data%matrix%n + 1) this would read out of bounds. Guard against it.
+
+         IF ( data%slblt_akeep%n /= data%matrix%n ) THEN
+           inform%status = GALAHAD_error_call_order ; GO TO 800
+         END IF
 !    WRITE( 77, * ) data%matrix%n
 !    WRITE( 77, * ) data%matrix%PTR( : data%matrix%n + 1 )
 !    WRITE( 77, * ) data%matrix%COL( : data%matrix%PTR( data%matrix%n + 1 ) )
 !    WRITE( 77, * ) data%matrix%VAL( : data%matrix%PTR( data%matrix%n + 1 ) )
 !    stop
          must_be_definite = data%must_be_definite
-         IF ( data%ssids_control%scaling == 0 ) THEN
-           CALL SSIDS_factor( must_be_definite, data%matrix%VAL,               &
-                              data%ssids_akeep, data%ssids_fkeep,              &
-                              data%ssids_control, data%ssids_inform,           &
+         IF ( data%slblt_control%scaling == 0 ) THEN
+           CALL SLBLT_factor( must_be_definite, data%matrix%VAL,               &
+                              data%slblt_akeep, data%slblt_fkeep,              &
+                              data%slblt_control, data%slblt_inform,           &
                               ptr = data%matrix%PTR, row = data%matrix%COL )
          ELSE
            CALL SPACE_resize_array( data%n, data%SCALE,                        &
                                     inform%status, inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) THEN
              inform%bad_alloc = 'sls: data%matrix%VAL' ; GO TO 800 ; END IF
-           CALL SSIDS_factor( must_be_definite, data%matrix%VAL,               &
-                              data%ssids_akeep, data%ssids_fkeep,              &
-                              data%ssids_control, data%ssids_inform,           &
+           CALL SLBLT_factor( must_be_definite, data%matrix%VAL,               &
+                              data%slblt_akeep, data%slblt_fkeep,              &
+                              data%slblt_control, data%slblt_inform,           &
                               scale = data%SCALE,                              &
                               ptr = data%matrix%PTR, row = data%matrix%COL )
          END IF
-         CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+         CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
 
 !  = PARDISO =
 
@@ -5693,6 +5766,13 @@
          inform%pastix_info = INT( pastix_info )
          IF ( pastix_info == PASTIX_SUCCESS ) THEN
            inform%status = GALAHAD_ok
+
+!  PaStiX does not detect rank deficiency, so a successful factorization is
+!  reported as having full rank. It does not report the inertia, which is
+!  flagged as unknown by setting negative_eigenvalues to - 1
+
+           inform%rank = data%matrix%n
+           inform%negative_eigenvalues = - 1
          ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
            inform%status = GALAHAD_error_restrictions
          ELSE IF ( pastix_info == PASTIX_ERR_OUTOFMEMORY ) THEN
@@ -6744,7 +6824,7 @@
 
 !  local variables
 
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 
@@ -6873,14 +6953,14 @@
                         data%ma97_control, data%ma97_info )
        CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
-       CALL SLS_copy_control_to_ssids( control, data%ssids_control )
+     CASE ( 'slblt' )
+       CALL SLS_copy_control_to_slblt( control, data%slblt_control )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,    &
-                        data%ssids_control, data%ssids_inform )
-       CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+       CALL SLBLT_solve( X( : data%n ), data%slblt_akeep, data%slblt_fkeep,    &
+                        data%slblt_control, data%slblt_inform )
+       CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
 
 !  = PARDISO =
 
@@ -7161,7 +7241,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, lx, nrhs
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 
@@ -7290,16 +7370,16 @@
                         data%ma97_control, data%ma97_info )
        CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
        inform%status = GALAHAD_unavailable_option
        lx = SIZE( X, 1 ) ; nrhs = SIZE( X, 2 )
-       CALL SLS_copy_control_to_ssids( control, data%ssids_control )
+       CALL SLS_copy_control_to_slblt( control, data%slblt_control )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL SSIDS_solve( nrhs, X, lx, data%ssids_akeep, data%ssids_fkeep,      &
-                        data%ssids_control, data%ssids_inform )
-       CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+       CALL SLBLT_solve( nrhs, X, lx, data%slblt_akeep, data%slblt_fkeep,      &
+                        data%slblt_control, data%slblt_inform )
+       CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
 
 !  = PARDISO =
 
@@ -7707,11 +7787,11 @@
        CALL MA97_finalise( data%ma97_akeep, data%ma97_fkeep )
        inform%status = 0
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
        CALL SPACE_dealloc_array( data%X2, inform%status, inform%alloc_status )
-       CALL SSIDS_free( data%ssids_akeep, data%ssids_fkeep, inform%status )
+       CALL SLBLT_free( data%slblt_akeep, data%slblt_fkeep, inform%status )
        inform%status = 0
 
 !  = PARDISO =
@@ -7784,32 +7864,43 @@
 !  = PaStiX =
 
      CASE ( 'pastix' )
-       CALL pastixFinalize( data%pastix_data )
-       IF ( ASSOCIATED( data%spm ) ) THEN
-         CALL spmExit( data%spm )
-         DEALLOCATE( data%spm )
+       IF ( data%pastix_allocated ) THEN
+         CALL pastixFinalize( data%pastix_data )
+         IF ( ASSOCIATED( data%spm ) ) THEN
+           CALL spmExit( data%spm )
+           DEALLOCATE( data%spm )
+         END IF
+         data%pastix_allocated = .FALSE.
        END IF
        data%no_pastix = .FALSE.
 
 !  = MUMPS =
 
      CASE ( 'mumps' )
+
+!  if MUMPS could not be initialized (no MPI, or MUMPS unavailable), the JOB
+!  = -1 call did not set up the MUMPS instance, so there is nothing to free,
+!  and a JOB = -2 call would operate on an undefined MUMPS_STRUC (reported by
+!  MUMPS as INFO(1) = -3, INFO(2) = -2, and an abort on macOS)
+
+       IF ( .NOT. data%no_mumps ) THEN
 !write(6,*) ' mumps myid ', data%mumps_par%MYID
-       IF ( data%mumps_par%MYID == 0 ) THEN
-         CALL SPACE_dealloc_pointer( data%mumps_par%IRN, inform%status,        &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%JCN, inform%status,        &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%A, inform%status,          &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%PERM_IN, inform%status,    &
-                                     inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%RHS, inform%status,        &
-                                     inform%alloc_status )
+         IF ( data%mumps_par%MYID == 0 ) THEN
+           CALL SPACE_dealloc_pointer( data%mumps_par%IRN, inform%status,      &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%JCN, inform%status,      &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%A, inform%status,        &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%PERM_IN, inform%status,  &
+                                       inform%alloc_status )
+           CALL SPACE_dealloc_pointer( data%mumps_par%RHS, inform%status,      &
+                                       inform%alloc_status )
+         END IF
+         IF ( control%print_level_solver <= 0 ) data%mumps_par%ICNTL( 4 ) = 0
+         data%mumps_par%JOB = - 2
+         CALL MUMPS_precision( data%mumps_par )
        END IF
-       IF ( control%print_level_solver <= 0 ) data%mumps_par%ICNTL( 4 ) = 0
-       data%mumps_par%JOB = - 2
-       CALL MUMPS_precision( data%mumps_par )
        data%no_mumps = .FALSE. ; data%no_mpi = .FALSE.
 
 !  = POTR =
@@ -7893,6 +7984,33 @@
 !  End of SLS_terminate
 
      END SUBROUTINE SLS_terminate
+
+!-*-*-*-  G A L A H A D -  S L S _ f i n a l _ d a t a  S U B R O U T I N E -*-*-
+
+     SUBROUTINE SLS_final_data( data )
+
+!  finalizer for SLS_data_type. Ensures the C-side PaStiX instance and sparse-
+!  matrix structure are released when an SLS_data is deallocated, reset by an
+!  INTENT( OUT ) argument, or goes out of scope. Guarded by pastix_allocated,
+!  so it is a safe no-op after an explicit SLS_terminate. The SSIDS akeep/fkeep
+!  C++ subtrees held elsewhere in data are reclaimed by their own FINAL
+!  procedures when this type is finalized.
+
+     TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
+
+     IF ( data%pastix_allocated ) THEN
+       CALL pastixFinalize( data%pastix_data )
+       IF ( ASSOCIATED( data%spm ) ) THEN
+         CALL spmExit( data%spm )
+         DEALLOCATE( data%spm )
+       END IF
+       data%pastix_allocated = .FALSE.
+     END IF
+     RETURN
+
+!  End of SLS_final_data
+
+     END SUBROUTINE SLS_final_data
 
 ! -  G A L A H A D -  S L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
 
@@ -8127,15 +8245,15 @@
          END IF
        END IF
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
        IF ( data%must_be_definite ) THEN
          IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
-         CALL SSIDS_enquire_posdef( data%ssids_akeep, data%ssids_fkeep,        &
-                                    data%ssids_control, data%ssids_inform,     &
+         CALL SLBLT_enquire_posdef( data%slblt_akeep, data%slblt_fkeep,        &
+                                    data%slblt_control, data%slblt_inform,     &
                                     D( 1, : ) )
          D( 2, : ) = 0.0_rp_
        ELSE
@@ -8148,18 +8266,18 @@
          END IF
          IF ( PRESENT( D ) ) THEN
            IF ( PRESENT( PIVOTS ) ) THEN
-             CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
-                                       data%ssids_control, data%ssids_inform,  &
+             CALL SLBLT_enquire_indef( data%slblt_akeep, data%slblt_fkeep,     &
+                                       data%slblt_control, data%slblt_inform,  &
                                        piv_order = data%INVP, d = D )
            ELSE
-             CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
-                                       data%ssids_control, data%ssids_inform,  &
+             CALL SLBLT_enquire_indef( data%slblt_akeep, data%slblt_fkeep,     &
+                                       data%slblt_control, data%slblt_inform,  &
                                        d = D )
            END IF
          ELSE
            IF ( PRESENT( PIVOTS ) ) THEN
-             CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
-                                       data%ssids_control, data%ssids_inform,  &
+             CALL SLBLT_enquire_indef( data%slblt_akeep, data%slblt_fkeep,     &
+                                       data%slblt_control, data%slblt_inform,  &
                                        piv_order = data%INVP )
            END IF
          END IF
@@ -8385,15 +8503,15 @@
          CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
        END IF
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
        IF ( data%must_be_definite ) THEN
          inform%status = GALAHAD_ok
        ELSE
-         CALL SSIDS_alter( D, data%ssids_akeep, data%ssids_fkeep,              &
-                           data%ssids_control, data%ssids_inform )
-         CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+         CALL SLBLT_alter( D, data%slblt_akeep, data%slblt_fkeep,              &
+                           data%slblt_control, data%slblt_inform )
+         CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
        END IF
 
 !  = POTR =
@@ -8821,39 +8939,39 @@
        END IF
        CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
 !      inform%status = GALAHAD_unavailable_option
 !      GO TO 900
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( part == 'L' .OR. ( part == 'S' .AND. data%must_be_definite ) ) THEN
-         CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
-                           data%ssids_control, data%ssids_inform, job = 1_ip_ )
+         CALL SLBLT_solve( X( : data%n ), data%slblt_akeep, data%slblt_fkeep,  &
+                           data%slblt_control, data%slblt_inform, job = 1_ip_ )
        ELSE IF ( part == 'D' ) THEN
          IF ( data%must_be_definite ) THEN
            inform%status = 0
            GO TO 900
          ELSE
-           CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,&
-                           data%ssids_control, data%ssids_inform, job = 2_ip_ )
+           CALL SLBLT_solve( X( : data%n ), data%slblt_akeep, data%slblt_fkeep,&
+                           data%slblt_control, data%slblt_inform, job = 2_ip_ )
          END IF
        ELSE  IF ( part == 'U' ) THEN
-         CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
-                           data%ssids_control, data%ssids_inform, job = 3_ip_ )
+         CALL SLBLT_solve( X( : data%n ), data%slblt_akeep, data%slblt_fkeep,  &
+                           data%slblt_control, data%slblt_inform, job = 3_ip_ )
        ELSE
-         CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
-                           data%ssids_control, data%ssids_inform, job = 1_ip_ )
-         CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+         CALL SLBLT_solve( X( : data%n ), data%slblt_akeep, data%slblt_fkeep,  &
+                           data%slblt_control, data%slblt_inform, job = 1_ip_ )
+         CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          CALL SPACE_resize_array( data%n, data%WORK,                           &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          data%WORK( : data%n ) = X( : data%n )
-         CALL SSIDS_solve( data%WORK( : data%n ), data%ssids_akeep,            &
-                           data%ssids_fkeep,                                   &
-                           data%ssids_control, data%ssids_inform, job = 2_ip_ )
-         CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+         CALL SLBLT_solve( data%WORK( : data%n ), data%slblt_akeep,            &
+                           data%slblt_fkeep,                                   &
+                           data%slblt_control, data%slblt_inform, job = 2_ip_ )
+         CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
            IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
@@ -8872,7 +8990,7 @@
            END IF
          END DO
        END IF
-       CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+       CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
 
 !  = PARDISO =
 
@@ -9220,7 +9338,7 @@
 
 !  skip solvers that have sparse option
 
-     CASE ( 'ma57', 'ma87', 'ma97', 'ssids' )
+     CASE ( 'ma57', 'ma87', 'ma97', 'slblt' )
 
 !  those that don't
 
@@ -9488,18 +9606,18 @@
 !      END IF
        CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
        inform%status = GALAHAD_unavailable_option
        GO TO 900
 !      CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-!      CALL SSIDS_sparse_fwd_solve( nnz_b, INDEX_b, B, data%ORDER, data%LFLAG, &
+!      CALL SLBLT_sparse_fwd_solve( nnz_b, INDEX_b, B, data%ORDER, data%LFLAG, &
 !                                   nnz_x, INDEX_x, X,                         &
-!                                   data%ssids_akeep, data%ssids_fkeep,        &
-!                                   data%ssids_control, data%ssids_inform )
+!                                   data%slblt_akeep, data%slblt_fkeep,        &
+!                                   data%slblt_control, data%slblt_inform )
 !      data%LFLAG( INDEX_x( : nnz_x ) ) = .FALSE.
-!      CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+!      CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
 
 !  = PARDISO =
 
@@ -9728,7 +9846,7 @@
 
 !  skip solvers that have sparse option
 
-     CASE ( 'ma57', 'ma87', 'ma97', 'ssids' )
+     CASE ( 'ma57', 'ma87', 'ma97', 'slblt' )
 
 !  those that don't
 
@@ -9948,9 +10066,9 @@
          X( : data%n ) = data%X2( : data%n, 1 )
        END IF
 
-!  = SSIDS =
+!  = SLBLT =
 
-     CASE ( 'ssids' )
+     CASE ( 'slblt' )
        inform%status = GALAHAD_unavailable_option
        GO TO 900
 !      CALL SPACE_resize_array( data%n, 2_ip_, data%X2, inform%status,         &
@@ -9958,13 +10076,13 @@
 !      IF ( inform%status /= GALAHAD_ok ) THEN
 !        inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
 !      data%X2( : data%n, 1 ) = X( : data%n )
-!      CALL SLS_copy_control_to_ssids( control, data%ssids_control )
+!      CALL SLS_copy_control_to_slblt( control, data%slblt_control )
 !      CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-!      CALL SSIDS_solve_fredholm( 1_ip_, flag_out, data%X2, data%n,            &
-!                                 data%ssids_akeep, data%ssids_fkeep,          &
-!                                 data%ssids_control, data%ssids_inform )
+!      CALL SLBLT_solve_fredholm( 1_ip_, flag_out, data%X2, data%n,            &
+!                                 data%slblt_akeep, data%slblt_fkeep,          &
+!                                 data%slblt_control, data%slblt_inform )
 !      inform%alternative = .NOT. flag_out( 1 )
-!      CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+!      CALL SLS_copy_inform_from_slblt( inform, data%slblt_inform )
 !      IF ( inform%status /= GALAHAD_ok ) GO TO 800
 !      IF ( inform%alternative ) THEN
 !        X( : data%n ) = data%X2( : data%n, 2 )
@@ -10601,7 +10719,7 @@
                                          alloc_status )
 
 !  Compute a mapping from the co-ordinate scheme to the row storage scheme
-!  used by MA86, MA87, MA97, SSIDS, MC61, MC68, PARDISO and WSMP. The mapping
+!  used by MA86, MA87, MA97, SLBLT, MC61, MC68, PARDISO and WSMP. The mapping
 !  records out-of-range components and flags duplicates for summation.
 !
 !  Entry l is mapped to positions MAP( l ) for j = 1, l = 1, ne.
@@ -10960,7 +11078,7 @@
 !                                       alloc_status )
 !
 !!  Compute a mapping from the co-ordinate scheme to the row storage scheme
-!!  used by MA86, MA87, MA97, SSIDS, MC61, MC68, PARDISO and WSMP. The mapping
+!!  used by MA86, MA87, MA97, SLBLT, MC61, MC68, PARDISO and WSMP. The mapping
 !!  records out-of-range components and flags duplicates for summation.
 !!
 !!  Entry l is mapped to positions MAP( l ) for j = 1, l = 1, ne.

@@ -13,13 +13,13 @@ The method provides a common interface to a variety of well-known
 solvers from HSL and elsewhere. Currently supported solvers include
 ``MA27/SILS``, ``HSL_MA57``, ``HSL_MA77`` , ``HSL_MA86``,
 ``HSL_MA87`` and ``HSL_MA97`` from {HSL},
-``SSIDS`` from {SPRAL},
+``SLBLT`` from {GALAHAD},
 ``MUMPS`` from Mumps Technologies,
 ``PARDISO`` both from the Pardiso Project and Intel's MKL,
 ``PaStiX`` from Inria, and
 ``WSMP`` from the IBM alpha Works, 
 as well as ``POTR``, ``SYTR`` and ``SBTR`` from LAPACK.
-Note that, with the exception of ``SSIDS`` and the Netlib
+Note that, with the exception of ``SLBLT`` and the Netlib
 reference LAPACK codes,
 **the solvers themselves do not form part of this package and
 must be obtained/linked to separately.**
@@ -88,11 +88,11 @@ given in the following table:
      - yes 
      - no 
      - OpenMP core
-   * - ``SSIDS`` 
+   * - ``SLBLT``
      - multifrontal 
      - yes 
      - no 
-     - CUDA core
+     - OpenMP core
    * - ``MUMPS`` 
      - multifrontal 
      - yes 
@@ -159,9 +159,6 @@ are all part of HSL 2011.
 To obtain HSL 2011 packages, see
 
 - http://hsl.rl.ac.uk .
-
-The solver ``SSIDS`` is from the SPRAL sparse-matrix collection,
-and is available as part of GALAHAD.
 
 The solver ``MUMPS`` is available from Mumps Technologies in France, and 
 version 5.5.1 or above is sufficient.

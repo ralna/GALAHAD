@@ -230,7 +230,7 @@ module hsl_ma87_real
    end type MA87_info
 
    type ma87_keep
-      type(zd11_type) :: a ! Holds lower and upper triangular parts of A
+      private
       type(block_type), dimension(:), allocatable :: blocks ! block info
       integer(ip_),  dimension(:), allocatable :: flag_array ! allocated to
         ! have size equal to the number of threads. For each thread, holds

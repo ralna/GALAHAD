@@ -135,7 +135,7 @@ int main(void) {
     mnm = imax( m_r, n );
     lp = 0;
     ipc_ eval_status, lvl, lvu, index;
-    ipc_ iv[mnm], ip[m_r];
+    ipc_ iv[mnm], ip[mnm];
     rpc_ v[mnm], p[mnm];
     bool got_jr;
 

@@ -76,11 +76,11 @@ are given in the following table.
      - yes 
      - no 
      - OpenMP core
-   * - ``SSIDS`` 
+   * - ``SLBLT``
      - multifrontal 
      - yes 
      - no 
-     - CUDA core
+     - OpenMP core
    * - ``MUMPS`` 
      - multifrontal 
      - yes 
@@ -122,7 +122,7 @@ are given in the following table.
      - no 
      - with parallel LAPACK
 
-Note that, with the exception of ``SSIDS`` and the Netlib
+Note that, with the exception of ``SLBLT`` and the Netlib
 reference LAPACK codes,
 **the solvers themselves do not form part of this package and
 must be obtained/linked to separately.** See the documentation for ``sls``

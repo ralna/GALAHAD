@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 10:44 GMT.
 
 #include "galahad_modules.h"
 
@@ -87,7 +87,16 @@
       REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: infeas = ten ** ( - 10 )
+
+!  the trust-region radius for the subspace step; any finite value is
+!  allowed by the theory, and it is smaller in single precision to limit the
+!  size of the quantities computed within it
+
+#ifdef REAL_32
+      REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 4
+#else
       REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 10
+#endif
       REAL ( KIND = rp_ ), PARAMETER :: alpha_search = one
       REAL ( KIND = rp_ ), PARAMETER :: beta_search = half
       REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
@@ -458,7 +467,6 @@
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -494,7 +502,7 @@
       inform%obj = - one
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
 
 !  basic single line of output per iteration
@@ -1914,11 +1922,15 @@
       IF ( printi ) WRITE( out, "( /, A, '  new quadratic perturbation ',      &
      &   'should be no larger than', ES9.2 )" ) prefix, new_perturbation
 
+!  record whether the optional status arrays are present (they are used in
+!  both of the following cases)
+
+      c_stat_required = PRESENT( C_stat )
+      x_stat_required = PRESENT( X_stat )
+
       IF ( new_perturbation < infeas ) THEN
         extrapolation_ok = .TRUE.
         perturbation = zero
-        c_stat_required = PRESENT( C_stat )
-        x_stat_required = PRESENT( X_stat )
         IF ( x_stat_required ) X_stat  = 0
         IF ( c_stat_required ) THEN
           C_stat( : dims%c_equality ) = - 1

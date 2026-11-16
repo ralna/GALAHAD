@@ -319,12 +319,11 @@ and length 30, that specifies the external package to be used to
 solve any symmetric positive-definite linear system involving $\bmH$ 
 that might arise. Current possible
 choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
-{\tt 'ma86'}, {\tt 'ma87'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'},
+{\tt 'ma86'}, {\tt 'ma87'}, {\tt 'ma97'}, {\tt slblt}, {\tt 'pardiso'},
 {\tt 'wsmp'}, {\tt 'sytr'}, {\tt 'potr'} and {\tt 'pbtr'}
-although only {\tt 'sytr'}, {\tt 'potr'}, {\tt 'pbtr'} and, for 
-OMP 4.0-compliant compilers, {\tt 'ssids'} are installed by default.
+although only {\tt 'sytr'}, {\tt 'potr'}, {\tt 'pbtr'} and {\tt 'slblt'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt linear\_solver = 'ssids'}, but we recommend
+The default is {\tt linear\_solver = 'slblt'}, but we recommend
 {\tt 'pbtr'} instead if $\bmH$ is banded with a small bandwidth.
 
 \itt{linear\_solver\_for\_S} is a scalar variable of type default \character\
@@ -332,12 +331,11 @@ and length 30, that specifies the external package to be used to
 solve any symmetric positive-definite linear system involving the optional
 $\bmS$ that might arise. Current possible
 choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
-{\tt 'ma86'}, {\tt 'ma87'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'},
+{\tt 'ma86'}, {\tt 'ma87'}, {\tt 'ma97'}, {\tt slblt}, {\tt 'pardiso'},
 {\tt 'wsmp'}, {\tt 'sytr'}, {\tt 'potr'} and {\tt 'pbtr'}
-although only {\tt 'sytr'}, {\tt 'potr'}, {\tt 'pbtr'} and, for 
-OMP 4.0-compliant compilers, {\tt 'ssids'} are installed by default.
+although only {\tt 'sytr'}, {\tt 'potr'}, {\tt 'pbtr'} and {\tt 'slblt'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt linear\_solver = 'ssids'}, but we recommend
+The default is {\tt linear\_solver = 'slblt'}, but we recommend
 {\tt 'pbtr'} instead if $\bmS$ is banded with a small bandwidth.
 
 \itt{prefix} is a scalar variable of type default \character\

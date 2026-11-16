@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-10-23 AT 10:10 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -98,7 +98,7 @@
 
 !  symmetric indefinite linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "slblt" //         &
                                                              REPEAT( ' ', 25 )
 
 !  all output lines will be prefixed by
@@ -308,7 +308,7 @@
 !  print-level                                       0
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
-!  symmetric-linear-equation-solver                  ssids
+!  symmetric-linear-equation-solver                  slblt
 !  output-line-prefix                                ""
 ! END SSLS SPECIFICATIONS
 

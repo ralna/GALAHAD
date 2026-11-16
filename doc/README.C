@@ -120,7 +120,7 @@ this should provide a template for users' actual problems.
 
 To link with other applications, you should use
 
-  -lgalahad_c -lgalahad_hsl_c -lgalahad -lgalahad_hsl -lgalahad_spral \
+  -lgalahad_c -lgalahad_hsl_c -lgalahad -lgalahad_hsl \
   -lgalahad_mkl_pardiso -lgalahad_pardiso -lgalahad_wsmp \
   -lgalahad_pastix -lgalahad_mumps -lgalahad_mpi -galahad_umfpack \
   -lgalahad_metis_dummy -lgalahad_lapack -lgalahad_blas

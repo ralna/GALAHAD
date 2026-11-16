@@ -94,7 +94,6 @@ module hsl_ma97_real
 
   type MA97_control ! The scalar control of this type controls the action
     logical(lp_) :: action = .true. ! pos_def = .false. only.
-    real(rp_) :: consist_tol = epsilon(one)
     integer(long_) :: factor_min = 20000000
     integer(ip_) :: nemin = nemin_default
     real(rp_) :: multiplier = 1.1
@@ -111,6 +110,7 @@ module hsl_ma97_real
     integer(ip_) :: unit_warning = 6 ! unit number for warning messages
     integer(long_) :: min_subtree_work = 1e5 ! Minimum amount of work
     integer(ip_) :: min_ldsrk_work = 1e4 ! Minimum amount of work to aim
+    real(rp_) :: consist_tol = epsilon(one)
   end type MA97_control
 
   type MA97_info ! The scalar info of this type returns information to user.
@@ -123,6 +123,7 @@ module hsl_ma97_real
     integer(ip_) :: matrix_missing_diag = 0 ! Number of missing diag. entries
     integer(ip_) :: maxdepth = 0 ! Maximum depth of the tree.
     integer(ip_) :: maxfront = 0 ! Maximum front size.
+    integer(ip_) :: maxsupernode = 0 ! max no. columns in a supernode
     integer(long_)  :: num_factor = 0_long_ ! Number of entries in the factor.
     integer(long_)  :: num_flops = 0_long_ ! Number of flops to calculate L.
     integer(ip_) :: num_delay = 0 ! Number of delayed eliminations.
@@ -133,13 +134,62 @@ module hsl_ma97_real
     integer(ip_) :: stat = 0 ! STAT value (when available).
    end type MA97_info
 
-  type MA97_akeep ! proper version has many componets!
+  type smalloc_type
+  end type smalloc_type
+
+  type node_type
+  end type node_type
+
+  type MA97_akeep
+    private
+    logical(lp_) :: check
+    integer(ip_) :: flag
+    integer(ip_) :: maxmn
     integer(ip_) :: n
     integer(ip_) :: ne
+    integer(long_) :: nfactor
+    integer(ip_) :: nnodes = -1
+    integer(ip_) :: num_two
+    integer(ip_), dimension(:), allocatable :: child_ptr
+    integer(ip_), dimension(:), allocatable :: child_list
+    integer(ip_), dimension(:), allocatable :: invp
+    integer(ip_), dimension(:), allocatable :: level
+    integer(ip_), dimension(:,:), allocatable :: nlist
+    integer(ip_), dimension(:), allocatable :: nptr
+    integer(ip_), dimension(:), allocatable :: rlist
+    integer(long_), dimension(:), allocatable :: rptr
+    integer(ip_), dimension(:), allocatable :: sparent
+    integer(ip_), dimension(:), allocatable :: sptr
+    integer(long_), dimension(:), allocatable :: subtree_work
+    integer(ip_), allocatable :: ptr(:)
+    integer(ip_), allocatable :: row(:)
+    integer(ip_) :: lmap
+    integer(ip_), allocatable :: map(:)
+    integer(ip_) :: matrix_dup
+    integer(ip_) :: matrix_outrange
+    integer(ip_) :: matrix_missing_diag
+    integer(ip_) :: maxdepth
+    integer(long_) :: num_flops
+    integer(ip_) :: num_sup
+    integer(ip_) :: ordering
+    real(rp_), dimension(:), allocatable :: scaling
   end type MA97_akeep
 
-  type MA97_fkeep ! proper version has many componets!
-    integer(ip_) :: n
+  type MA97_fkeep
+    private
+    integer(ip_) :: flag
+    real(rp_), dimension(:), allocatable :: scaling
+    type(node_type), dimension(:), allocatable :: nodes
+    type(smalloc_type), pointer :: alloc=>null()
+    logical(lp_) :: pos_def
+    integer(ip_) :: matrix_rank
+    integer(ip_) :: maxfront
+    integer(ip_) :: maxsupernode
+    integer(ip_) :: num_delay
+    integer(long_) :: num_factor
+    integer(long_) :: num_flops
+    integer(ip_) :: num_neg
+    integer(ip_) :: num_two
   end type MA97_fkeep
 
 contains
@@ -192,13 +242,14 @@ contains
   end subroutine analyse_real
 
   subroutine MA97_analyse_coord_real( n, ne, row, col, akeep,                &
-                                        control, info, order)
+                                        control, info, order, val)
    integer(ip_),  intent(in) :: n, ne
    integer(ip_),  intent(in) :: row(:), col(:)
    type (MA97_akeep), intent (out) :: akeep
    type (MA97_control), intent(in) :: control
    type (MA97_info), intent(out) :: info
    integer(ip_), OPTIONAL, intent (inout) :: order(:)
+   real(rp_), optional, intent(in) :: val(:)
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
      WRITE( control%unit_error,                                                &
@@ -218,9 +269,9 @@ contains
    integer(ip_),  intent(in) :: matrix_type
    real(rp_), intent(in) :: val(*)
    type (MA97_akeep), intent (in) :: akeep
-   type (MA97_fkeep), intent (out) :: fkeep
+   type (MA97_fkeep), intent(inout) :: fkeep
    type (MA97_control), intent (in) :: control
-   type (MA97_info), intent (inout) :: info
+   type (MA97_info), intent(out) :: info
    real(rp_), intent(inout), optional :: scale(:)
    integer(ip_), intent(in), optional :: ptr(akeep%n+1)
    integer(ip_), intent(in), optional :: row(*)
@@ -238,16 +289,16 @@ contains
 
   end subroutine MA97_factor_real
 
-  subroutine MA97_factor_solve_real(matrix_type,val,nrhs,x,lx,akeep,fkeep,   &
+  subroutine MA97_factor_solve_real(matrix_type,val,nrhs,x,ldx,akeep,fkeep,   &
                                       control,info,scale,ptr,row)
    integer(ip_),  intent(in) :: matrix_type
    real(rp_), intent(in) :: val(*)
-   integer(ip_) :: lx, nrhs
-   real(rp_), intent(inout) :: x(lx,nrhs)
+   integer(ip_) :: ldx, nrhs
+   real(rp_), intent(inout) :: x(ldx,nrhs)
    type (MA97_akeep), intent (in) :: akeep
-   type (MA97_fkeep), intent (out) :: fkeep
+   type (MA97_fkeep), intent(inout) :: fkeep
    type (MA97_control), intent (in) :: control
-   type (MA97_info), intent (inout) :: info
+   type (MA97_info), intent(out) :: info
    real(rp_), intent(inout), optional :: scale(:)
    integer(ip_), intent(in), optional :: ptr(akeep%n+1)
    integer(ip_), intent(in), optional :: row(*)
@@ -271,9 +322,9 @@ contains
    real(rp_), intent(in) :: val(*)
    real(rp_), intent(inout) :: x1(:)
    type (MA97_akeep), intent (in) :: akeep
-   type (MA97_fkeep), intent(out) :: fkeep
+   type (MA97_fkeep), intent(inout) :: fkeep
    type (MA97_control), intent (in) :: control
-   type (MA97_info), intent (inout) :: info
+   type (MA97_info), intent(out) :: info
    real(rp_), intent(inout), optional :: scale(:)
    integer(ip_), intent(in), optional :: ptr(akeep%n+1)
    integer(ip_), intent(in), optional :: row(*)
@@ -325,13 +376,12 @@ contains
    integer(ip_), optional, intent(in) :: job
   end subroutine ma97_solve_mult_real
 
-  subroutine MA97_solve_one_real(x,akeep,fkeep,control,info,scale,job)
+  subroutine MA97_solve_one_real(x,akeep,fkeep,control,info,job)
    real(rp_), intent (inout) :: x(:)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (in) :: fkeep
    type (MA97_control), intent (in) :: control
-   type (MA97_info), intent (inout) :: info
-   real(rp_), intent(in), optional :: scale(:)
+   type (MA97_info), intent(out) :: info
    integer(ip_), optional, intent (in) :: job
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
@@ -421,8 +471,8 @@ contains
     real(rp_), dimension( : ), intent(out) :: d
     type (MA97_akeep), intent (in) :: akeep
     type (MA97_fkeep), intent(in) :: fkeep
-    type (MA97_control), intent (inout) :: control
-    type (MA97_info), intent (inout) :: info
+    type (MA97_control), intent(in) :: control
+    type (MA97_info), intent(out) :: info
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
      WRITE( control%unit_error,                                                &
@@ -442,8 +492,8 @@ contains
     real(rp_), optional, intent(out) :: d(:,:)
     type (MA97_akeep), intent (in) :: akeep
     type (MA97_fkeep), intent (in) :: fkeep
-    type (MA97_control), intent (inout) :: control
-    type (MA97_info), intent (inout) :: info
+    type (MA97_control), intent(in) :: control
+    type (MA97_info), intent(out) :: info
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
      WRITE( control%unit_error,                                                &
@@ -461,9 +511,9 @@ contains
   subroutine MA97_alter_real(d,akeep,fkeep,control,info)
     real(rp_), intent (in) :: d(:,:)
     type (MA97_akeep), intent (in) :: akeep
-    type (MA97_fkeep), intent (in) :: fkeep
-    type (MA97_control), intent (inout) :: control
-    type (MA97_info), intent (inout) :: info
+    type (MA97_fkeep), intent (inout) :: fkeep
+    type (MA97_control), intent(in) :: control
+    type (MA97_info), intent(out) :: info
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
      WRITE( control%unit_error,                                                &

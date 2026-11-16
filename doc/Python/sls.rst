@@ -19,7 +19,7 @@ functions
       solver : str
         the name of the solver required to solve $Ax=b$. 
         It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 
-        'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 
+        'ma87', 'ma97', 'slblt', 'mumps', 'pardiso', 'mkl pardiso',
         'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr';
         lower or upper case variants are allowed.
 
@@ -154,6 +154,23 @@ functions
 
                ordering chosen depending on matrix characteristics
                (not yet implemented).
+          pastix_ordering : int
+             controls the ordering used by the PaStiX solver
+             (IPARM_ORDERING); ignored by every other solver.
+             Possible values are
+
+             * **<0**
+
+               use PaStiX's own default ordering (the first one
+               compiled in)
+
+             * **0**
+
+               SCOTCH ordering (PastixOrderScotch)
+
+             * **1**
+
+               METIS ordering (PastixOrderMetis).
           full_row_threshold : int
              controls threshold for detecting full rows in analyse,
              registered as percentage of matrix order. If 100, only
@@ -571,8 +588,8 @@ functions
              the output structure from ma87.
           ma97_info : dict
              the output structure from ma97.
-          ssids_inform : dict
-             the output structure from ssids.
+          slblt_inform : dict
+             the output structure from slblt.
           nodend_inform : dict
              the output structure from nodend.
           mc61_info : int

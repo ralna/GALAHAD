@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -12,6 +12,8 @@
    TYPE ( SLS_control_type ) control
    TYPE ( SLS_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i, ordering, scaling, solver, type, s
+   INTEGER ( KIND = ip_ ) :: iord, n_pord, pord_list( 2 )
+   CHARACTER ( LEN = 32 ) :: pastix_ord_env
    LOGICAL :: mpi_flag
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
    INTEGER ( KIND = ip_ ), PARAMETER :: sils = 1
@@ -28,8 +30,8 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: potr = 12
    INTEGER ( KIND = ip_ ), PARAMETER :: sytr = 13
    INTEGER ( KIND = ip_ ), PARAMETER :: pbtr = 14
-   INTEGER ( KIND = ip_ ), PARAMETER :: ssids = 15
-   INTEGER ( KIND = ip_ ), PARAMETER :: all = ssids
+   INTEGER ( KIND = ip_ ), PARAMETER :: slblt = 15
+   INTEGER ( KIND = ip_ ), PARAMETER :: all = slblt
    INTEGER ( KIND = ip_ ) :: ORDER( n )
    REAL ( KIND = rp_ ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 ), D( 2, n )
    REAL ( KIND = rp_ ) :: B_diag( n )
@@ -57,6 +59,18 @@
                  5.0_rp_ /)
    REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
      drhs = (/ 11.0_rp_,  20.0_rp_,  13.0_rp_,  16.0_rp_,  26.0_rp_ /)
+
+! Remove any stale HSL out-of-core scratch files (fixed names, used by MA77)
+! left by an earlier run so that successive precisions do not clash on their
+! direct-access record length
+   OPEN( 77, FILE = 'factor_integer_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
+   OPEN( 77, FILE = 'factor_real_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
+   OPEN( 77, FILE = 'work_real_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
+   OPEN( 77, FILE = 'work_indefinite_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
 
 ! Choose optional ordering
    DO i = 1, n
@@ -119,12 +133,12 @@
 !      DO solver = 12, 12  ! potr
 !      DO solver = 13, 13  ! sytr
 !      DO solver = 14, 14  ! pbtr
-!      DO solver = 15, 15  ! ssids
+!      DO solver = 15, 15  ! slblt
 
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
-                wsmp, pastix, mumps, sytr, ssids ) ! indefinite
+                wsmp, pastix, mumps, sytr, slblt ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
            CASE ( 1 )
@@ -160,6 +174,7 @@
            END SELECT
            B = drhs
          END SELECT
+         CALL SLS_terminate( data, control, inform )
 ! Initialize the structures
          IF ( solver == sils ) THEN
            WRITE( 6, "( '         sils ' )", advance = 'no' )
@@ -203,9 +218,9 @@
          ELSE IF ( solver == pbtr ) THEN
            WRITE( 6, "( '         pbtr ' )", advance = 'no' )
            CALL SLS_initialize( 'pbtr', data, control, inform )
-         ELSE IF ( solver == ssids ) THEN
-           WRITE( 6, "( '        ssids ' )", advance = 'no' )
-           CALL SLS_initialize( 'ssids', data, control, inform )
+         ELSE IF ( solver == slblt ) THEN
+           WRITE( 6, "( '        slblt ' )", advance = 'no' )
+           CALL SLS_initialize( 'slblt', data, control, inform )
          END IF
          control%scaling = 0
 ! Analyse
@@ -386,11 +401,11 @@
 !      DO solver = 12, 12  ! potr
 !      DO solver = 13, 13  ! sytr
 !      DO solver = 14, 14  ! pbtr
-!      DO solver = 15, 15  ! ssids
+!      DO solver = 15, 15  ! slblt
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
-                wsmp, pastix, mumps, sytr, ssids ) ! indefinite
+                wsmp, pastix, mumps, sytr, slblt ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
            CASE ( 1 )
@@ -426,6 +441,7 @@
            END SELECT
            B = drhs
          END SELECT
+         CALL SLS_terminate( data, control, inform )
 ! Initialize the structures
          IF ( solver == sils ) THEN
            WRITE( 6, "( '         sils ' )", advance = 'no' )
@@ -469,9 +485,9 @@
          ELSE IF ( solver == pbtr ) THEN
            WRITE( 6, "( '         pbtr ' )", advance = 'no' )
            CALL SLS_initialize( 'pbtr', data, control, inform )
-         ELSE IF ( solver == ssids ) THEN
-           WRITE( 6, "( '        ssids ' )", advance = 'no' )
-           CALL SLS_initialize( 'ssids', data, control, inform )
+         ELSE IF ( solver == slblt ) THEN
+           WRITE( 6, "( '        slblt ' )", advance = 'no' )
+           CALL SLS_initialize( 'slblt', data, control, inform )
          END IF
          control%ordering = 0
 ! Analyse
@@ -582,6 +598,63 @@
          WRITE( 6, "( '' )" )
        END DO
      END DO
+
+!  exercise the PaStiX solver with each ordering listed in the environment
+!  variable GALAHAD_PASTIX_ORDERINGS (0 = Scotch, 1 = Metis) so that both
+!  orderings are covered in a single run; PaStiX aborts if an uncompiled
+!  ordering is requested, so only the compiled ones must be listed
+
+     IF ( type == 1 ) THEN
+       CALL GET_ENVIRONMENT_VARIABLE( 'GALAHAD_PASTIX_ORDERINGS',               &
+                                      pastix_ord_env )
+       n_pord = 0
+       IF ( INDEX( pastix_ord_env, '0' ) > 0 ) THEN
+         n_pord = n_pord + 1 ; pord_list( n_pord ) = 0
+       END IF
+       IF ( INDEX( pastix_ord_env, '1' ) > 0 ) THEN
+         n_pord = n_pord + 1 ; pord_list( n_pord ) = 1
+       END IF
+       IF ( n_pord > 0 ) THEN
+         WRITE( 6, "( ' PaStiX ordering tests' )" )
+         WRITE( 6, "( ' ordering    1 RHS' )" )
+       END IF
+       DO iord = 1, n_pord
+         matrix%ne = ne
+         matrix%row = row ; matrix%col = col ; matrix%val = val
+         B = rhs
+         CALL SLS_terminate( data, control, inform )
+         CALL SLS_initialize( 'pastix', data, control, inform )
+         control%pastix_ordering = pord_list( iord )
+         control%ordering = 0
+         control%scaling = 0
+         IF ( pord_list( iord ) == 0 ) THEN
+           WRITE( 6, "( '   scotch ' )", advance = 'no' )
+         ELSE
+           WRITE( 6, "( '    metis ' )", advance = 'no' )
+         END IF
+         CALL SLS_analyse( matrix, data, control, inform )
+         IF ( inform%status < 0 ) THEN
+           WRITE( 6, "( '  fail in analyse, status = ', I0 )" ) inform%status
+           CYCLE
+         END IF
+         CALL SLS_factorize( matrix, data, control, inform )
+         IF ( inform%status < 0 ) THEN
+           WRITE( 6, "( '  fail in factorize, status = ', I0 )" ) inform%status
+           CYCLE
+         END IF
+         control%max_iterative_refinements = 0
+         X = B
+         CALL SLS_solve( matrix, X, data, control, inform )
+         IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1 : n ) ) )                        &
+                <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
+           WRITE( 6, "( '   ok  ' )" )
+         ELSE
+           WRITE( 6, "( '  fail ' )" )
+         END IF
+         CALL SLS_terminate( data, control, inform )
+       END DO
+     END IF
+
      SELECT CASE( type )
      CASE ( 1 )
        DEALLOCATE( matrix%val, matrix%row, matrix%col )
@@ -685,7 +758,7 @@
 !      DO solver = 12, 12  ! potr
 !      DO solver = 13, 13  ! sytr
 !      DO solver = 14, 14  ! pbtr
-!      DO solver = 15, 15  ! ssids
+!      DO solver = 15, 15  ! slblt
 
 ! Initialize the structures
 
@@ -733,9 +806,9 @@
      ELSE IF ( solver == pbtr ) THEN
        WRITE( 6, "( '         pbtr ' )", advance = 'no' )
        CALL SLS_initialize( 'pbtr', data, control, inform )
-     ELSE IF ( solver == ssids ) THEN
-       WRITE( 6, "( '        ssids ' )", advance = 'no' )
-       CALL SLS_initialize( 'ssids', data, control, inform )
+     ELSE IF ( solver == slblt ) THEN
+       WRITE( 6, "( '        slblt ' )", advance = 'no' )
+       CALL SLS_initialize( 'slblt', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
      control%out = - 1 ; control%statistics = - 1 ; control%print_level = - 1
@@ -780,8 +853,8 @@
        CALL SLS_initialize( 'sytr', data, control, inform )
      ELSE IF ( solver == pbtr ) THEN
        CALL SLS_initialize( 'pbtr', data, control, inform )
-     ELSE IF ( solver == ssids ) THEN
-       CALL SLS_initialize( 'ssids', data, control, inform )
+     ELSE IF ( solver == slblt ) THEN
+       CALL SLS_initialize( 'slblt', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
      control%out = - 1 ; control%statistics = - 1 ; control%print_level = - 1

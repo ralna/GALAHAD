@@ -14,6 +14,6 @@
 ! new-values                                        F
 ! space-critical                                    F
 ! deallocate-error-fatal                            F
-! linear-equation-solver                            ssids
-! linear-equation-solver-for-S                      ssids
+! linear-equation-solver                            slblt
+! linear-equation-solver-for-S                      slblt
 ! output-line-prefix                                ""

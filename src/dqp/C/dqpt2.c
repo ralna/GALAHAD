@@ -79,8 +79,8 @@ int main(void) {
     printf("fdc sls ma97 %" d_ipc_ "\n", 
            inform.fdc_inform.sls_inform.ma97_info.flag);
 
-//    printf("fdc sls ssids %" d_ipc_ "\n", 
-//           inform.fdc_inform.sls_inform.ssids_inform.flag);
+//    printf("fdc sls slblt %" d_ipc_ "\n",
+//           inform.fdc_inform.sls_inform.slblt_inform.flag);
       printf("fdc sls mc61(0) %" d_ipc_ "\n", 
               inform.fdc_inform.sls_inform.mc61_info[0]);
       printf("fdc sls mc61(1) %" d_ipc_ "\n",

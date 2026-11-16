@@ -24,7 +24,6 @@ and by default are set as
 BLAS = -lgalahad_blas
 LAPACK = -lgalahad_lapack
 HSL = -lgalahad_hsl
-SPRAL = -lgalahad_spral
 METIS = -lgalahad_metis_dummy
 PARDISO = -lgalahad_pardiso
 MKL_PARDISO = -lgalahad_mkl_pardiso
@@ -46,7 +45,6 @@ by default are
 BLAS="-lgalahad_blas"
 LAPACK="-lgalahad_lapack"
 HSL="-lgalahad_hsl"
-SPRAL="-lgalahad_spral"
 METIS="-lgalahad_metis_dummy"
 PARDISO="-lgalahad_pardiso"
 MKL_PARDISO="-lgalahad_mkl_pardiso"

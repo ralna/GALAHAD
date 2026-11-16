@@ -18,9 +18,9 @@
 !> @author Selmane Lebdaoui
 !> @date 2024-06-08
 
- MODULE pastixf_enums
+ MODULE galahad_pastixf_enums
 
-   USE spmf_enums
+   USE galahad_spmf_enums
    USE iso_c_binding, ONLY : c_int, c_ptr, c_int32_t, c_int64_t
 
 #ifdef INTEGER_64
@@ -52,8 +52,8 @@
    INTEGER, PARAMETER :: PASTIX_SUCCESS = 0
    INTEGER, PARAMETER :: PASTIX_ERR_OUTOFMEMORY = 4
    INTEGER, PARAMETER :: PASTIX_ERR_BADPARAMETER = 7
-   INTEGER, PARAMETER :: IPARM_SIZE = 75
-   INTEGER, PARAMETER :: DPARM_SIZE = 24
+   INTEGER, PARAMETER :: IPARM_SIZE = 80
+   INTEGER, PARAMETER :: DPARM_SIZE = 26
    INTEGER, PARAMETER :: DPARM_EPSILON_REFINEMENT = 2
 
- END MODULE pastixf_enums
+ END MODULE galahad_pastixf_enums

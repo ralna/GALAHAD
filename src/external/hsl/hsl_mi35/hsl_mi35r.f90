@@ -53,6 +53,7 @@
       real(rp_) :: tau2 = 0.0001_rp_
       integer(ip_) :: unit_error = 6
       integer(ip_) :: unit_warning = 6
+      real(rp_) :: weight_tol
     end type mi35_control
 
     type mi35_info

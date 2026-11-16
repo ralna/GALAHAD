@@ -88,7 +88,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
@@ -758,7 +758,7 @@
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total time, clock = ', F0.2, ', ', F0.2 )" )         &
         times + timet, clocks + clockt
-!$    n_threads = OMP_GET_MAX_THREADS( )
+!$    n_threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       WRITE( out, "( ' number of threads = ', I0 )" ) n_threads
       WRITE( out, "( /, ' Problem: ', A10, //,                                 &
      &                  '          < ------ time ----- > ',                    &

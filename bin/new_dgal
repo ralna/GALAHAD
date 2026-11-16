@@ -236,19 +236,6 @@ HSL=""
 
 METIS4=""
 
-#  If there is a compiled, library version of the SPRAL sparse factorization
-#  package (http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/), set SPRAL
-#  to -lx, where the object library libx.so contains SPRAL.  For instance if
-#  SPRAL is contained in the object library libspral.so, SPRAL should be
-#  set to "-lspral". If the library is in a "non-standard place", SPRAL
-#  should also point to the full path to the library. For example, if
-#  libspral.so is in the directory /mylibrary, SPRAL should be set to
-#  "-L/mylibrary -lspral" If a compiled version of SPRAL is unavailable,
-#  SPRAL should be set to "-lgalahad_spral".
-#  N.B. SPRAL is only optionally required but may improve performance.
-
-SPRAL=""
-
 #  If there is a compiled, library version of the PARDISO sparse factorization
 #  package (http://www.pardiso-project.org/) , set PARDISO to -lx,
 #  where the object library libx.so contains PARDISO.  For instance if PARDISO
@@ -346,7 +333,7 @@ eval "`cat $GALAHAD/bin/sys/$1`"
 
 GALOBJ=$GALAHAD/objects/$1/$PRECIS
 
-#  libraries for BLAS, LAPACK, HSL, METIS4, SPRAL, PARDISO, MKL_PARDISO WSMP,
+#  libraries for BLAS, LAPACK, HSL, METIS4, PARDISO, MKL_PARDISO WSMP,
 #  PASTIX, MUMPS and UMFPACK
 
 if [[ "$BLAS" == "" ]]; then
@@ -371,12 +358,6 @@ if [[ "$METIS4" == "" ]]; then
   METISLIB="-lgalahad_metis4"
 else
   METISLIB="$METIS4"
-fi
-
-if [[ "$SPRAL" == "" ]]; then
-  SPRALLIB="-lgalahad_spral"
-else
-  SPRALLIB="$SPRAL"
 fi
 
 if [[ "$PARDISO" == "" ]]; then
@@ -600,7 +581,7 @@ fi
 
 #EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN \
 #  -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
-#  $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP \
+#  $HSLLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP \
 #  $PASTIXLIB $MUMPSLIB $UMFPACKLIB $SUITESPARSELIB \
 #  $METISLIB $LAPACKLIB $BLASLIB $PLPLOT"
 

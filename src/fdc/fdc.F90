@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-24 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -122,7 +122,7 @@
 
 !  symmetric (indefinite) linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "slblt" //         &
                                          REPEAT( ' ', len_solver - 5 )
 
 !  unsymmetric linear equation solver
@@ -358,7 +358,7 @@
 !  scale-A                                           F
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
-!  symmetric-linear-equation-solver                  ssids
+!  symmetric-linear-equation-solver                  slblt
 !  unsymmetric-linear-equation-solver                gls
 !  output-line-prefix                                ""
 ! END FDC SPECIFICATIONS (DEFAULT)
@@ -873,7 +873,7 @@
            WRITE( data%control%error,                                          &
            "( A, '   **  Error return ', I0, ' from SLS_analyse' )")           &
           prefix, inform%SLS_inform%status
-!       write(6,*) ' ssids flag ', inform%SLS_inform%ssids_inform%flag
+!       write(6,*) ' slblt flag ', inform%SLS_inform%slblt_inform%flag
         inform%status = GALAHAD_error_analysis ; RETURN
       END IF
 

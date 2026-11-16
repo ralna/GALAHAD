@@ -18,7 +18,8 @@ libgalahad_cutest_src += files('useqpa.F90')
 galahad_cutest_binaries += [['runqpa_sif', files('runqpa_sif.F90')]]
 
 galahad_tests += [['qpa', 'qpat', files('qpat.F90')],
-                  ['qpa', 'qpati', files('qpati.F90')]]
+                  ['qpa', 'qpati', files('qpati.F90')],
+                  ['qpa', 'qpa_edget', files('qpa_edget.F90')]]
 
 galahad_c_tests += [['qpa', 'qpat_c', files('C/qpat.c')],
                     ['qpa', 'qpatf_c', files('C/qpatf.c')]]

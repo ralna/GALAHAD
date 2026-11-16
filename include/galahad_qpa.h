@@ -1,7 +1,7 @@
 //* \file galahad_qpa.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2026-11-09 AT 15:29 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_QPA C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -657,6 +657,15 @@ struct qpa_control_type {
     ipc_ infeas_check_interval;
 
     /// \brief
+    /// when solve_qp or solve_within_bounds (see below) is .TRUE., the
+    /// problem will be declared infeasible if its infeasibility has failed
+    /// to decrease by the factor relative_decrease_required (see below) over
+    /// ncrit consecutive increases of the penalty parameters. Likewise, ncrit
+    /// consecutive feasible but unbounded subproblems will cause the problem
+    /// to be declared unbounded
+    ipc_ ncrit;
+
+    /// \brief
     /// the maximum number of CG iterations allowed. If cg_maxit < 0,
     /// this number will be reset to the dimension of the system + 1
     ipc_ cg_maxit;
@@ -761,6 +770,12 @@ struct qpa_control_type {
     rpc_ infeas_b_improved_by_factor;
 
     /// \brief
+    /// the infeasibility will be regarded as having decreased (see ncrit
+    /// above) if it is smaller than relative_decrease_required times its
+    /// value before the penalty parameters were last increased
+    rpc_ relative_decrease_required;
+
+    /// \brief
     /// the threshold pivot used by the matrix factorization.
     /// See the documentation for SLS for details                        (OBSOLE
     rpc_ pivot_tol;
@@ -786,9 +801,10 @@ struct qpa_control_type {
     rpc_ inner_stop_absolute;
 
     /// \brief
-    /// any dual variable or Lagrange multiplier which is less than multiplier_t
-    /// outside its optimal interval will be regarded as being acceptable when
-    /// checking for optimality
+    /// any dual variable or Lagrange multiplier which lies outside its optimal
+    /// interval by less than multiplier_tol times the largest of ||g||_inf,
+    /// ||H x||_inf and the largest multiplier in absolute value will be
+    /// regarded as being acceptable when checking for optimality
     rpc_ multiplier_tol;
 
     /// \brief

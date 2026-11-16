@@ -1,0 +1,1061 @@
+#  Main body of the installation makefile for the SPRAL SLBLT package
+#  SPRAL SLBLT was developed as part of SPRAL by Jonathan Hogg (now at Apple)
+#  and is available under a BSD licence as part of GALAHAD
+
+#  Nick Gould, for GALAHAD production
+#  This version: 2025-08-31
+
+SHELL = /bin/$(BINSHELL)
+
+ifeq "$(PRECIS)" "single_64"
+  DPREC = -DREAL_32 -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "quadruple_64"
+  DPREC = -DREAL_128 -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "double_64"
+  DPREC = -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "single"
+  DPREC = -DREAL_32 $(QUADREAL)
+  METIS_64 =
+else ifeq "$(PRECIS)" "quadruple"
+  DPREC = -DREAL_128 $(QUADREAL)
+  METIS_64 =
+else
+  DPREC = $(QUADREAL)
+  METIS_64 =
+endif
+
+ifeq "$(MULTIVERSIONS)" "yes"
+  MULTI = -DMULTIPRECISION
+else
+  MULTI = 
+endif
+
+CPPDEFINES = $(DPREC) $(MULTI)
+
+GALINCLUDE = $(GALAHAD)/include
+
+VALGRIND = -v --tool=memcheck --leak-check=full --show-reachable=yes \
+--track-origins=yes -s
+
+#  compiler flags
+
+FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+         $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+          $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSN = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+          $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGS77 = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+           $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+            $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+             $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
+
+#  C compiler flags
+
+CFLAGS     = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+CFLAGSN    = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+
+#  linking and run flags
+
+RUNFFLAGS     = $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP  = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(SOMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+LGQ = $(OBJQ)/libgalahad.a
+LGS64 = $(OBJS64)/libgalahad.a
+LGD64 = $(OBJD64)/libgalahad.a
+LGQ64 = $(OBJQ64)/libgalahad.a
+
+CLG  = $(OBJ)/libgalahad_c.a
+CLGS = $(OBJS)/libgalahad_c.a
+CLGD = $(OBJD)/libgalahad_c.a
+CLGQ = $(OBJQ)/libgalahad_c.a
+CLGS64 = $(OBJS64)/libgalahad_c.a
+CLGD64 = $(OBJD64)/libgalahad_c.a
+CLGQ64 = $(OBJQ64)/libgalahad_c.a
+
+
+RLG  = $(LG)
+RLGS = $(LGS)
+RLGD = $(LGD)
+RLGQ = $(LGQ)
+RLGS64 = $(LGS64)
+RLGD64 = $(LGD64)
+RLGQ64 = $(LGQ64)
+
+#  Libraries used
+
+ifeq "$(METIS_64)" "_64"
+# LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64) $(HSL)
+  LIBS = -L$(OBJ)  -lgalahad $(LAPACK) $(BLAS) \
+          $(METIS464ND) $(METIS564ND) $(HSL)
+else
+  LIBS = -L$(OBJ) -lgalahad $(LAPACK) $(BLAS) \
+         $(METIS4ND) $(METIS5ND) $(HSL) 
+endif
+
+PLIBS = $(LIBS) -lgalahad_problem
+#CLIBS = -lgalahad_c -lhsl_c $(LIBS)
+CLIBS = -lgalahad_c $(LIBS)
+
+#  Archive manipulation strings
+
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+#RARR = $(AR) $(ARREPFLAGS) $(RLG)
+#RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
+
+RARR = $(AR) $(ARREPFLAGS) $(LG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+
+CARR = $(AR) $(ARREPFLAGS) $(CLG)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+
+#  sed scripts
+
+BLASLAPACKSEDS = $(GALAHAD)/seds/blaslapack_$(PRECIS).sed
+
+#  strings
+
+SUCC = precision version) compiled successfully
+
+#  compilation agenda
+
+SLBLTSS = $(SLBLTS) $(OBJS)/slblts_single.o
+SLBLTDS = $(SLBLTD) $(OBJD)/slblts_double.o
+SLBLTQS = $(SLBLTQ) $(OBJQ)/slblts_quadruple.o
+SLBLTST = $(SLBLTS) $(OBJS)/slbltt_single.o
+SLBLTST2 = $(SLBLTS) $(OBJS)/slbltt2_single.o
+SLBLTDT = $(SLBLTD) $(OBJD)/slbltt_double.o
+SLBLTDT2 = $(SLBLTD) $(OBJD)/slbltt2_double.o
+SLBLTQT = $(SLBLTQ) $(OBJQ)/slbltt_quadruple.o
+SLBLTQT2 = $(SLBLTQ) $(OBJQ)/slbltt2_quadruple.o
+
+SLBLTSS64 = $(SLBLTS64) $(OBJS64)/slblts_single_64.o
+SLBLTDS64 = $(SLBLTD64) $(OBJD64)/slblts_double_64.o
+SLBLTQS64 = $(SLBLTQ64) $(OBJQ64)/slblts_quadruple_64.o
+SLBLTST64 = $(SLBLTS64) $(OBJS64)/slbltt_single_64.o
+SLBLTST264 = $(SLBLTS64) $(OBJS64)/slbltt2_single_64.o
+SLBLTDT64 = $(SLBLTD64) $(OBJD64)/slbltt_double_64.o
+SLBLTDT264 = $(SLBLTD64) $(OBJD64)/slbltt2_double_64.o
+SLBLTQT64 = $(SLBLTQ64) $(OBJQ64)/slbltt_quadruple_64.o
+SLBLTQT264 = $(SLBLTQ64) $(OBJQ64)/slbltt2_quadruple_64.o
+
+SLBLTFTS = $(SLBLTS) $(OBJS)/slblt_factort_single.o
+SLBLTFTD = $(SLBLTD) $(OBJD)/slblt_factort_double.o
+SLBLTFTQ = $(SLBLTQ) $(OBJQ)/slblt_factort_quadruple.o
+SLBLTFTS64 = $(SLBLTS64) $(OBJS64)/slblt_factort_single_64.o
+SLBLTFTD64 = $(SLBLTD64) $(OBJD64)/slblt_factort_double_64.o
+SLBLTFTQ64 = $(SLBLTQ64) $(OBJQ64)/slblt_factort_quadruple_64.o
+
+RSLBLTSS = $(OBJS)/slblts_single.o -L$(OBJS) $(LIBS)
+RSLBLTDS = $(OBJD)/slblts_double.o -L$(OBJD) $(LIBS)
+RSLBLTQS = $(OBJQ)/slblts_quadruple.o -L$(OBJQ) $(LIBS)
+RSLBLTST = $(OBJS)/slbltt_single.o -L$(OBJS) $(LIBS)
+RSLBLTST2 = $(OBJS)/slbltt2_single.o -L$(OBJS) $(LIBS)
+RSLBLTDT = $(OBJD)/slbltt_double.o -L$(OBJD) $(LIBS)
+RSLBLTDT2 = $(OBJD)/slbltt2_double.o -L$(OBJD) $(LIBS)
+RSLBLTQT = $(OBJQ)/slbltt_quadruple.o -L$(OBJQ) $(LIBS)
+RSLBLTQT2 = $(OBJQ)/slbltt2_quadruple.o -L$(OBJQ) $(LIBS)
+
+RSLBLTSS64 = $(OBJS64)/slblts_single_64.o -L$(OBJS64) $(LIBS)
+RSLBLTDS64 = $(OBJD64)/slblts_double_64.o -L$(OBJD64) $(LIBS)
+RSLBLTQS64 = $(OBJQ64)/slblts_quadruple_64.o -L$(OBJQ64) $(LIBS)
+RSLBLTST64 = $(OBJS64)/slbltt_single_64.o -L$(OBJS64) $(LIBS)
+RSLBLTST264 = $(OBJS64)/slbltt2_single_64.o -L$(OBJS64) $(LIBS)
+RSLBLTDT64 = $(OBJD64)/slbltt_double_64.o -L$(OBJD64) $(LIBS)
+RSLBLTDT264 = $(OBJD64)/slbltt2_double_64.o -L$(OBJD64) $(LIBS)
+RSLBLTQT64 = $(OBJQ64)/slbltt_quadruple_64.o -L$(OBJQ64) $(LIBS)
+RSLBLTQT264 = $(OBJQ64)/slbltt2_quadruple_64.o -L$(OBJQ64) $(LIBS)
+
+RSLBLTFTS = $(OBJS)/slblt_factort_single.o -L$(OBJS) $(LIBS)
+RSLBLTFTD = $(OBJD)/slblt_factort_double.o -L$(OBJD) $(LIBS)
+RSLBLTFTQ = $(OBJQ)/slblt_factort_quadruple.o -L$(OBJQ) $(LIBS)
+RSLBLTFTS64 = $(OBJS64)/slblt_factort_single_64.o -L$(OBJS64) $(LIBS)
+RSLBLTFTD64 = $(OBJD64)/slblt_factort_double_64.o -L$(OBJD64) $(LIBS)
+RSLBLTFTQ64 = $(OBJQ64)/slblt_factort_quadruple_64.o -L$(OBJQ64) $(LIBS)
+
+#  test agenda for C interfaces
+
+SLBLTCST = $(SLBLTCS) $(TESTDEPS) $(OBJS)/slbltct_single.o
+SLBLTCDT = $(SLBLTCD) $(TESTDEPS) $(OBJD)/slbltct_double.o
+SLBLTCQT = $(SLBLTCQ) $(TESTDEPS) $(OBJQ)/slbltct_quadruple.o
+SLBLTCST64 = $(SLBLTCS64) $(TESTDEPS) $(OBJS64)/slbltct_single_64.o
+SLBLTCDT64 = $(SLBLTCD64) $(TESTDEPS) $(OBJD64)/slbltct_double_64.o
+SLBLTCQT64 = $(SLBLTCQ64) $(TESTDEPS) $(OBJQ64)/slbltct_quadruple_64.o
+
+SLBLTCSTF = $(SLBLTCS) $(TESTDEPS) $(OBJS)/slbltctf_single.o
+SLBLTCDTF = $(SLBLTCD) $(TESTDEPS) $(OBJD)/slbltctf_double.o
+SLBLTCQTF = $(SLBLTCQ) $(TESTDEPS) $(OBJQ)/slbltctf_quadruple.o
+SLBLTCSTF64 = $(SLBLTCS64) $(TESTDEPS) $(OBJS64)/slbltctf_single_64.o
+SLBLTCDTF64 = $(SLBLTCD64) $(TESTDEPS) $(OBJD64)/slbltctf_double_64.o
+SLBLTCQTF64 = $(SSIDCCQ64) $(TESTDEPS) $(OBJQ64)/slbltctf_quadruple_64.o
+
+RSLBLTCST = $(OBJS)/slbltct_single.o -L$(OBJS) $(CLIBS)
+RSLBLTCSTF = $(OBJS)/slbltctf_single.o -L$(OBJS) $(CLIBS)
+RSLBLTCDT = $(OBJD)/slbltct_double.o -L$(OBJD) $(CLIBS)
+RSLBLTCDTF = $(OBJD)/slbltctf_double.o -L$(OBJD) $(CLIBS)
+RSLBLTCQT = $(OBJQ)/slbltct_quadruple.o -L$(OBJQ) $(CLIBS)
+RSLBLTCQTF = $(OBJQ)/slbltctf_quadruple.o -L$(OBJQ) $(CLIBS)
+RSLBLTCST64 = $(OBJS64)/slbltct_single_64.o -L$(OBJS64) $(CLIBS)
+RSLBLTCSTF64 = $(OBJS64)/slbltctf_single_64.o -L$(OBJS64) $(CLIBS)
+RSLBLTCDT64 = $(OBJD64)/slbltct_double_64.o -L$(OBJD64) $(CLIBS)
+RSLBLTCDTF64 = $(OBJD64)/slbltctf_double_64.o -L$(OBJD64) $(CLIBS)
+RSLBLTCQT64 = $(OBJQ64)/slbltct_quadruple_64.o -L$(OBJQ64) $(CLIBS)
+RSLBLTCQTF64 = $(OBJQ64)/slbltctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
+
+SPRALRBS = mu rb
+SPRALRBD = mu rb
+SPRALRBQ = mu rb
+SPRALRBS64 = mu rb
+SPRALRBD64 = mu rb
+SPRALRBQ64 = mu rb
+
+SLBLTS = basics $(SPRALRBS) ms mo topology \
+         $(RLGS)(types_single.o) $(RLGS)(subtree_single.o) \
+         $(RLGS)(slblt_factor_single.o) $(RLGS)(numeric_subtree_single.o) \
+         $(RLGS)(contrib_iface_single.o) $(RLGS)(slblt_single.o)
+
+SLBLTD = basics $(SPRALRBD) ms mo topology \
+         $(RLGD)(types_double.o) $(RLGD)(subtree_double.o) \
+         $(RLGD)(slblt_factor_double.o) $(RLGD)(numeric_subtree_double.o) \
+         $(RLGD)(contrib_iface_double.o) $(RLGD)(slblt_double.o)
+
+SLBLTQ = basics $(SPRALRBQ) ms mo topology \
+         $(RLGQ)(types_quadruple.o) $(RLGQ)(subtree_quadruple.o) \
+         $(RLGQ)(slblt_factor_quadruple.o) $(RLGQ)(numeric_subtree_quadruple.o) \
+         $(RLGQ)(contrib_iface_quadruple.o) $(RLGQ)(slblt_quadruple.o)
+
+SLBLTS64 = basics $(SPRALRBS64) ms mo topology \
+         $(RLGS64)(types_single_64.o) $(RLGS64)(subtree_single_64.o) \
+         $(RLGS64)(slblt_factor_single_64.o) $(RLGS64)(numeric_subtree_single_64.o) \
+         $(RLGS64)(contrib_iface_single_64.o) $(RLGS64)(slblt_single_64.o)
+
+SLBLTD64 = basics $(SPRALRBD64) ms mo topology \
+         $(RLGD64)(types_double_64.o) $(RLGD64)(subtree_double_64.o) \
+         $(RLGD64)(slblt_factor_double_64.o) $(RLGD64)(numeric_subtree_double_64.o) \
+         $(RLGD64)(contrib_iface_double_64.o) $(RLGD64)(slblt_double_64.o)
+
+SLBLTQ64 = basics $(SPRALRBQ64) ms mo topology \
+         $(RLGQ64)(types_quadruple_64.o) $(RLGQ64)(subtree_quadruple_64.o) \
+         $(RLGQ64)(slblt_factor_quadruple_64.o) \
+         $(RLGQ64)(numeric_subtree_quadruple_64.o) \
+         $(RLGQ64)(contrib_iface_quadruple_64.o) $(RLGQ64)(slblt_quadruple_64.o)
+
+SLBLTCS = $(SLBLTS) nodend_c $(CLGS)(slblt_ciface_single.o)
+SLBLTCD = $(SLBLTD) nodend_c $(CLGD)(slblt_ciface_double.o)
+SLBLTCQ = $(SLBLTQ) nodend_c $(CLGQ)(slblt_ciface_quadruple.o)
+SLBLTCS64 = $(SLBLTS64) nodend_c $(CLGS64)(slblt_ciface_single_64.o)
+SLBLTCD64 = $(SLBLTD64) nodend_c $(CLGD64)(slblt_ciface_double_64.o)
+SLBLTCQ64 = $(SLBLTQ64) nodend_c $(CLGQ64)(slblt_ciface_quadruple_64.o)
+
+#  main compilations and runs
+
+all: slblt
+
+# slblt
+
+slblt_silent: slblt_silent_$(PRECIS)
+slblt_silent_single: $(SLBLTS)
+	$(RANLIB) $(RLGS)
+slblt_silent_double: $(SLBLTD)
+	$(RANLIB) $(RLGD)
+slblt_silent_quadruple: $(SLBLTQ)
+	$(RANLIB) $(RLGQ)
+slblt_silent_single_64: $(SLBLTS64)
+	$(RANLIB) $(RLGS64)
+slblt_silent_double_64: $(SLBLTD64)
+	$(RANLIB) $(RLGD64)
+slblt_silent_quadruple_64: $(SLBLTQ64)
+	$(RANLIB) $(RLGQ64)
+
+slblt: slblt_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SLBLT ($(PRECIS) $(SUCC)"
+slblt_single: $(SLBLTS)
+	$(RANLIB) $(RLGS)
+slblt_double: $(SLBLTD)
+	$(RANLIB) $(RLGD)
+slblt_quadruple: $(SLBLTQ)
+	$(RANLIB) $(RLGQ)
+slblt_single_64: $(SLBLTS64)
+	$(RANLIB) $(RLGS64)
+slblt_double_64: $(SLBLTD64)
+	$(RANLIB) $(RLGD64)
+slblt_quadruple_64: $(SLBLTQ64)
+	$(RANLIB) $(RLGQ64)
+
+slblt_ciface: slblt_ciface_$(PRECIS)
+	@printf ' %-21s\n' "SLBLT C routines ($(PRECIS) $(SUCC)"
+slblt_ciface_silent: slblt_ciface_$(PRECIS)
+slblt_ciface_single: $(SLBLTCS)
+slblt_ciface_double: $(SLBLTCD)
+slblt_ciface_quadruple: $(SLBLTCQ)
+slblt_ciface_single_64: $(SLBLTCS64)
+slblt_ciface_double_64: $(SLBLTCD64)
+slblt_ciface_quadruple_64: $(SLBLTCQ64)
+
+# spralrb
+
+spralrb_silent: spralrb_silent_$(PRECIS)
+spralrb_silent_single: $(SPRALRBS)
+	$(RANLIB) $(RLGS)
+spralrb_silent_double: $(SPRALRBD)
+	$(RANLIB) $(RLGD)
+spralrb_silent_quadruple: $(SPRALRBQ)
+	$(RANLIB) $(RLGQ)
+spralrb_silent_single_64: $(SPRALRBS64)
+	$(RANLIB) $(RLGS64)
+spralrb_silent_double_64: $(SPRALRBD64)
+	$(RANLIB) $(RLGD64)
+spralrb_silent_quadruple_64: $(SPRALRBQ64)
+	$(RANLIB) $(RLGQ64)
+
+spralrb: spralrb_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SPRALRB ($(PRECIS) $(SUCC)"
+spralrb_single: $(SPRALRBS)
+	$(RANLIB) $(RLGS)
+spralrb_double: $(SPRALRBD)
+	$(RANLIB) $(RLGD)
+spralrb_quadruple: $(SPRALRBQ)
+	$(RANLIB) $(RLGQ)
+spralrb_single_64: $(SPRALRBS64)
+	$(RANLIB) $(RLGS64)
+spralrb_double_64: $(SPRALRBD64)
+	$(RANLIB) $(RLGD64)
+spralrb_quadruple_64: $(SPRALRBQ64)
+	$(RANLIB) $(RLGQ64)
+
+# run spec-sheet example tests
+
+slbltss: $(SLBLTSS)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTSS)
+#	- ../slblt/run_slblt < ../slblt/slblts.data
+	- ../slblt/run_slblt < ../slblt/slblts.data \
+                             > ../slblt/slblts.output 2>&1
+	cat ../slblt/slblts.output
+	rm ../slblt/run_slblt
+
+slbltds: $(SLBLTDS)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDS)
+#	- ../slblt/run_slblt < ../slblt/slblts.data
+	- ../slblt/run_slblt < ../slblt/slblts.data \
+                             > ../slblt/slbltds.output 2>&1
+	cat ../slblt/slbltds.output
+	rm ../slblt/run_slblt
+
+slbltqs: $(SLBLTQS)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTQS)
+#	- ../slblt/run_slblt < ../slblt/slblts.data
+	- ../slblt/run_slblt < ../slblt/slblts.data \
+                             > ../slblt/slbltds.output 2>&1
+	cat ../slblt/slbltds.output
+	rm ../slblt/run_slblt
+
+slbltds_valgrind: $(SLBLTDS)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDS)
+	- valgrind $(VALGRIND) ../slblt/run_slblt < ../slblt/slblts.data
+	rm ../slblt/run_slblt
+
+slbltss_64: $(SLBLTSS64)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTSS64)
+#	- ../slblt/run_slblt < ../slblt/slblts.data
+	- ../slblt/run_slblt < ../slblt/slblts.data \
+                             > ../slblt/slblts_64.output 2>&1
+	cat ../slblt/slblts_64.output
+	rm ../slblt/run_slblt
+
+slbltds_64: $(SLBLTDS64)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDS64)
+#	- ../slblt/run_slblt < ../slblt/slblts.data
+	- ../slblt/run_slblt < ../slblt/slblts.data \
+                             > ../slblt/slbltds_64.output 2>&1
+	cat ../slblt/slbltds_64.output
+	rm ../slblt/run_slblt
+
+slbltqs_64: $(SLBLTDQ64)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDQ64)
+	- ../slblt/run_slblt < ../slblt/slblts.data \
+                             > ../slblt/slbltds_64.output 2>&1
+	cat ../slblt/slbltds_64.output
+	rm ../slblt/run_slblt
+
+slbltds_64_valgrind: $(SLBLTDS64)
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDS64)
+	- valgrind $(VALGRIND) ../slblt/run_slblt < ../slblt/slblts.data
+	rm ../slblt/run_slblt
+
+# run full tests
+
+slbltst: $(SLBLTST)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTST)
+#	- ../slblt/run_slblt < ../slblt/slblts.data
+	- ../slblt/run_slblt > ../slblt/slbltt.output 2>&1
+	cat ../slblt/slbltt.output
+	rm ../slblt/run_slblt
+
+slbltst2: $(SLBLTST2)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt2 $(RSLBLTST2)
+#	- ../slblt/run_slblt2
+	- ../slblt/run_slblt2 > ../slblt/slbltt2.output 2>&1
+	cat ../slblt/slbltt2.output
+	rm ../slblt/run_slblt2
+
+slbltdt: $(SLBLTDT)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDT)
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt  > ../slblt/slbltdt.output 2>&1
+	cat ../slblt/slbltdt.output
+#	rm ../slblt/run_slblt
+
+slbltdt2: $(SLBLTDT2)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt2 $(RSLBLTDT2)
+#	- ../slblt/run_slblt2
+	- ../slblt/run_slblt2  > ../slblt/slbltdt2.output 2>&1
+	cat ../slblt/slbltdt2.output
+	rm ../slblt/run_slblt2
+
+slbltqt: $(SLBLTQT)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTQT)
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt  > ../slblt/slbltqt.output 2>&1
+	cat ../slblt/slbltqt.output
+	rm ../slblt/run_slblt
+
+slbltqt2: $(SLBLTQT2)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt2 $(RSLBLTQT2)
+#	- ../slblt/run_slblt2
+	- ../slblt/run_slblt2  > ../slblt/slbltqt2.output 2>&1
+	cat ../slblt/slbltqt2.output
+	rm ../slblt/run_slblt
+
+slbltst_64: $(SLBLTST64)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTST64)
+#	- ../slblt/run_slblt < ../slblt/slblts.data
+	- ../slblt/run_slblt > ../slblt/slbltt_64.output 2>&1
+	cat ../slblt/slbltt_64.output
+	rm ../slblt/run_slblt
+
+slbltst2_64: $(SLBLTST264)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt2 $(RSLBLTST264)
+#	- ../slblt/run_slblt2 < ../slblt/slblts.data
+	- ../slblt/run_slblt2 > ../slblt/slbltt2_64.output 2>&1
+	cat ../slblt/slbltt2_64.output
+	rm ../slblt/run_slblt2
+
+slbltdt_64: $(SLBLTDT64)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDT64)
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt  > ../slblt/slbltdt_64.output 2>&1
+	cat ../slblt/slbltdt_64.output
+	rm ../slblt/run_slblt
+
+slbltdt2_64: $(SLBLTDT264)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt2 $(RSLBLTDT264)
+#	- ../slblt/run_slblt2
+	- ../slblt/run_slblt2  > ../slblt/slbltdt2_64.output 2>&1
+	cat ../slblt/slbltdt2_64.output
+	rm ../slblt/run_slblt2
+
+slbltqt_64: $(SLBLTQT64)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTQT64)
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt  > ../slblt/slbltdt_64.output 2>&1
+	cat ../slblt/slbltdt_64.output
+	rm ../slblt/run_slblt
+
+slbltqt2_64: $(SLBLTQT264)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt2 $(RSLBLTQT264)
+#	- ../slblt/run_slblt2
+	- ../slblt/run_slblt2  > ../slblt/slbltdt2_64.output 2>&1
+	cat ../slblt/slbltdt2_64.output
+	rm ../slblt/run_slblt2
+
+slbltdt_gdb: $(SLBLTDT)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDT)
+	- gdb $(GDB) ./run_slblt
+	rm ../slblt/run_slblt
+
+slbltdt_valgrind: $(SLBLTDT)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDT)
+#	- ../slblt/run_slblt
+	- valgrind $(VALGRIND) ../slblt/run_slblt
+	rm ../slblt/run_slblt
+
+#  run debugging tests
+
+slbltdt_64_gdb: $(SLBLTDT64)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDT64)
+	- gdb $(GDB) ./run_slblt
+	rm ../slblt/run_slblt
+
+slbltdt_64_valgrind: $(SLBLTDT64)
+	echo " Exhaustive test of subroutine interface to slblt"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt $(RSLBLTDT64)
+#	- ../slblt/run_slblt
+	- valgrind $(VALGRIND) ../slblt/run_slblt
+	rm ../slblt/run_slblt
+
+#  run full (comprehensive) C example tests
+
+slbltcst: $(SLBLTCST)
+	echo ""
+	echo " Exhaustive test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCST)
+	- ./run_slblt > slbltcst.output 2>&1
+	cat slbltcst.output
+	rm ./run_slblt
+
+slbltcstf: $(SLBLTCSTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCSTF)
+	- ./run_slblt > slbltcstf.output 2>&1
+	cat slbltcstf.output
+	rm ./run_slblt
+
+slbltcdt: $(SLBLTCDT)
+	echo ""
+	echo " Exhaustive test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCDT)
+	- ./run_slblt > slbltdt.output 2>&1
+	cat slbltdt.output
+	rm ./run_slblt
+
+slbltcdtf: $(SLBLTCDTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCDTF)
+	- ./run_slblt
+#	- ./run_slblt > slbltdtf.output 2>&1
+#	cat slbltdtf.output
+	rm ./run_slblt
+
+slbltcqt: $(SLBLTCQT)
+	echo ""
+	echo " Exhaustive test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQT)
+	- ./run_slblt > slbltcqt.output 2>&1
+	cat slbltcqt.output
+	rm ./run_slblt
+
+slbltcqtf: $(SLBLTCQTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQTF)
+	- ./run_slblt > slbltcqtf.output 2>&1
+	cat slbltcqtf.output
+	rm ./run_slblt
+
+slbltcst_64: $(SLBLTCST64)
+	echo ""
+	echo " Exhaustive test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCST64)
+	- ./run_slblt > slbltcst64.output 2>&1
+	cat slbltcst64.output
+	rm ./run_slblt
+
+slbltcstf_64: $(SLBLTCSTF64)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCSTF64)
+	- ./run_slblt > slbltcstf64.output 2>&1
+	cat slbltcstf64.output
+	rm ./run_slblt
+
+slbltcdt_64: $(SLBLTCDT64)
+	echo ""
+	echo " Exhaustive test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCDT64)
+	- ./run_slblt > slbltcdt64.output 2>&1
+	cat slbltcdt64.output
+	rm ./run_slblt
+
+slbltcdtf_64: $(SLBLTCDTF64)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCDTF64)
+	- ./run_slblt > slbltcdtf64.output 2>&1
+	cat slbltcdtf64.output
+	rm ./run_slblt
+
+slbltcqt_64: $(SLBLTCQT64)
+	echo ""
+	echo " Exhaustive test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQT64)
+	- ./run_slblt > slbltcqt64.output 2>&1
+	cat slbltcqt64.output
+	rm ./run_slblt
+
+slbltcqtf_64: $(SLBLTCQTF64)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQTF64)
+	- ./run_slblt > slbltcqtf64.output 2>&1
+	cat slbltcqtf64.output
+	rm ./run_slblt
+
+#  run debugging C example tests
+
+slbltcst_valgrind: $(SLBLTCST)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCST)
+	- valgrind $(VALGRIND) ./run_slblt > \
+           slbltcst_valgrind.output 2>&1
+	cat slbltcst_valgrind.output
+	rm ./run_slblt
+
+slbltcstf_valgrind: $(SLBLTCSTF)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCSTF)
+	- valgrind $(VALGRIND) ./run_slblt > \
+           slbltcstf_valgrind.output 2>&1
+	cat slbltcstf_valgrind.output
+	rm ./run_slblt
+
+slbltcst_gdb: $(SLBLTCST)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCST)
+	- gdb $(GDB) ./run_slblt
+	rm ./run_slblt
+
+slbltcdt_valgrind: $(SLBLTCDT)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCDT)
+	- ./run_slblt > slbltdt.output 2>&1
+	- valgrind $(VALGRIND) ./run_slblt > \
+           slbltdt_valgrind.output 2>&1
+	cat slbltdt_valgrind.output
+	rm ./run_slblt
+
+slbltcdt_gdb: $(SLBLTCDT)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCDT)
+	$(RMOOC)
+	- gdb $(GDB) ./run_slblt
+	rm ./run_slblt
+
+slbltcqt_valgrind: $(SLBLTCQT)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQT)
+	- valgrind $(VALGRIND) ./run_slblt > \
+           slbltcqt_valgrind.output 2>&1
+	cat slbltcqt_valgrind.output
+	rm ./run_slblt
+
+slbltcqt_gdb: $(SLBLTCQT)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQT)
+	- gdb $(GDB) ./run_slblt
+	rm ./run_slblt
+
+slbltcst_64_valgrind: $(SLBLTCST64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCST64)
+	- valgrind $(VALGRIND) ./run_slblt > \
+           slbltcst64_valgrind.output 2>&1
+	cat slbltcst64_valgrind.output
+	rm ./run_slblt
+
+slbltcstf_64_valgrind: $(SLBLTCSTF64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCSTF64)
+	- valgrind $(VALGRIND) ./run_slblt > \
+           slbltcstf64_valgrind.output 2>&1
+	cat slbltcstf64_valgrind.output
+	rm ./run_slblt
+
+slbltcst_64_gdb: $(SLBLTCST64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCST64)
+	- gdb $(GDB) ./run_slblt
+	rm ./run_slblt
+
+slbltcdt_64_gdb: $(SLBLTCDT64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCDT64)
+	- gdb $(GDB) ./run_slblt
+	rm ./run_slblt
+
+slbltcqt_64_gdb: $(SLBLTCQT64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQT64)
+	- gdb $(GDB) ./run_slblt
+	rm ./run_slblt
+
+slbltcqtf_64_valgrind: $(SLBLTCQTF64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to slblt"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_slblt $(RSLBLTCQTF64)
+	- valgrind $(VALGRIND) ./run_slblt > \
+           slbltcqtf64_valgrind.output 2>&1
+	cat slbltcqtf64_valgrind.output
+	rm ./run_slblt
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+topology:
+	( cd ../topology ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            topology_silent PRECIS=$(PRECIS) PWD=$(PWD)/../topology )
+mo:
+	( cd ../mo ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mo_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mo )
+ms:
+	( cd ../ms ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ms_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ms )
+mu:
+	( cd ../mu ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mu_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mu )
+rb:
+	( cd ../rb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            rb_silent PRECIS=$(PRECIS) PWD=$(PWD)/../rb )
+nodend_c:
+	( cd ../nodend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nodend_ciface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../nodend )
+
+#  individual compilations
+
+types.o: $(RLG)(types_$(PRECIS).o)
+
+$(RLG)(types_$(PRECIS).o): ../slblt/types.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "types  "
+	$(CP) ../slblt/types.F90 $(OBJ)/types.F90
+	cd $(OBJ) ; $(FORTRAN) -o types_$(PRECIS).o \
+                      $(FFLAGSOMP) types.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o types_$(PRECIS).o \
+                      $(FFLAGSNOMP) types.F90 )
+	cd $(OBJ) ; $(RARR) types_$(PRECIS).o ; \
+                      $(RM) types.F90 types_$(PRECIS).o
+	$(RRMARFILE) numeric_subtree_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+subtree.o: $(RLG)(subtree_$(PRECIS).o)
+
+$(RLG)(subtree_$(PRECIS).o): ../slblt/subtree.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "subtree  "
+	$(CP) ../slblt/subtree.F90 $(OBJ)/subtree.F90
+	cd $(OBJ) ; $(FORTRAN) -o subtree_$(PRECIS).o \
+                      $(FFLAGSOMP) subtree.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o subtree_$(PRECIS).o \
+                      $(FFLAGSNOMP) subtree.F90 )
+	cd $(OBJ) ; $(RARR) subtree_$(PRECIS).o ; \
+                      $(RM) subtree.F90 subtree_$(PRECIS).o
+	$(RRMARFILE) numeric_subtree_$(PRECIS).o
+	$(RRMARFILE) akeep_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+akeep.o: $(RLG)(akeep_$(PRECIS).o)
+
+$(RLG)(akeep_$(PRECIS).o): ../slblt/akeep.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "akeep  "
+	$(CP) ../slblt/akeep.F90 $(OBJ)/akeep.F90
+	cd $(OBJ) ; $(FORTRAN) -o akeep_$(PRECIS).o $(FFLAGSOMP) akeep.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o akeep_$(PRECIS).o $(FFLAGSNOMP) akeep.F90 )
+	cd $(OBJ) ; $(RARR) akeep_$(PRECIS).o ; \
+                      $(RM) akeep.F90 akeep_$(PRECIS).o
+	$(RRMARFILE) slblt_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+slblt_factor.o: $(RLG)(slblt_factor_$(PRECIS).o)
+
+$(RLG)(slblt_factor_$(PRECIS).o): ../slblt/slblt_factor.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slblt_factor  "
+	$(CP) ../slblt/slblt_factor.F90 $(OBJ)/slblt_factor.F90
+	cd $(OBJ) ; $(FORTRAN) -o slblt_factor_$(PRECIS).o \
+                      $(FFLAGSOMP) slblt_factor.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o slblt_factor_$(PRECIS).o \
+                      $(FFLAGSNOMP) slblt_factor.F90 )
+	cd $(OBJ) ; $(RARR) slblt_factor_$(PRECIS).o ; \
+                      $(RM) slblt_factor.F90 slblt_factor_$(PRECIS).o
+	$(RRMARFILE) numeric_subtree_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+numeric_subtree.o: $(RLG)(numeric_subtree_$(PRECIS).o)
+
+$(RLG)(numeric_subtree_$(PRECIS).o): ../slblt/numeric_subtree.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "numeric_subtree  "
+	$(CP) ../slblt/numeric_subtree.F90 $(OBJ)/numeric_subtree.F90
+	cd $(OBJ) ; $(FORTRAN) -o numeric_subtree_$(PRECIS).o \
+                      $(FFLAGSOMP) numeric_subtree.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o numeric_subtree_$(PRECIS).o \
+                      $(FFLAGSNOMP) numeric_subtree.F90 )
+	cd $(OBJ) ; $(RARR) numeric_subtree_$(PRECIS).o ; \
+                      $(RM) numeric_subtree.F90 numeric_subtree_$(PRECIS).o
+	$(RRMARFILE) slblt_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+contrib_iface.o: $(RLG)(contrib_iface_$(PRECIS).o)
+
+$(RLG)(contrib_iface_$(PRECIS).o): ../slblt/contrib_iface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "contrib_iface  "
+	$(CP) ../slblt/contrib_iface.F90 $(OBJ)/contrib_iface.F90
+	cd $(OBJ) ; $(FORTRAN) -o contrib_iface_$(PRECIS).o $(FFLAGSOMP) \
+                     contrib_iface.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o contrib_iface_$(PRECIS).o $(FFLAGSNOMP) \
+                       contrib_iface.F90 )
+	cd $(OBJ) ; $(RARR) contrib_iface_$(PRECIS).o ; \
+          $(RM) contrib_iface.F90 contrib_iface_$(PRECIS).o
+#	$(MVMODS)
+	@printf '[ OK ]\n'
+
+slblt.o: $(RLG)(slblt_$(PRECIS).o)
+
+$(RLG)(slblt_$(PRECIS).o): ../slblt/slblt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slblt  "
+	$(CP) ../slblt/slblt.F90 $(OBJ)/slblt.F90
+	cd $(OBJ) ; $(FORTRAN) -o slblt_$(PRECIS).o $(FFLAGSOMP) slblt.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o slblt_$(PRECIS).o $(FFLAGSNOMP) slblt.F90 )
+	cd $(OBJ) ; $(RARR) slblt_$(PRECIS).o ; \
+                      $(RM) slblt.F90 slblt_$(PRECIS).o
+	$(RMARFILE) sls_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  C interface
+
+slblt_ciface.o: $(CLG)(slblt_ciface_$(PRECIS).o)
+
+$(CLG)(slblt_ciface_$(PRECIS).o): ../slblt/C/slblt_ciface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slblt_ciface"
+	$(CP) ../slblt/C/slblt_ciface.F90 $(OBJ)/slblt_ciface.F90
+	cd $(OBJ) ; $(FORTRAN) -o slblt_ciface_$(PRECIS).o $(FFLAGSOMP) \
+                      slblt_ciface.F90
+	cd $(OBJ) ; $(CARR) slblt_ciface_$(PRECIS).o ; \
+                    $(RM) slblt_ciface.F90 slblt_ciface_$(PRECIS).o
+	$(CRMARFILE) sls_ciface_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+slblts.o: $(OBJ)/slblts_$(PRECIS).o
+
+$(OBJ)/slblts_$(PRECIS).o: ../slblt/slblts.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slblts  "
+	$(SED) -f $(SEDS) ../slblt/slblts.f90 > $(OBJ)/slblts.f90
+	cd $(OBJ) ; $(FORTRAN) -o slblts_$(PRECIS).o $(FFLAGSOMP) slblts.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+slbltt.o: $(OBJ)/slbltt_$(PRECIS).o
+
+$(OBJ)/slbltt_$(PRECIS).o: ../slblt/slbltt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slbltt  "
+	$(CP) ../slblt/slbltt.F90 $(OBJ)/slbltt.F90
+	cd $(OBJ) ; $(FORTRAN) -o slbltt_$(PRECIS).o $(FFLAGSS) slbltt.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+slblt_factort.o: $(OBJ)/slblt_factort_$(PRECIS).o
+
+$(OBJ)/slblt_factort_$(PRECIS).o: ../slblt/slblt_factort.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slblt_factort  "
+	$(CP) ../slblt/slblt_factort.F90 $(OBJ)/slblt_factort.F90
+	cd $(OBJ) ; $(FORTRAN) -o slblt_factort_$(PRECIS).o $(FFLAGSS) slblt_factort.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+slblt_factort: slblt_factort_$(PRECIS)
+
+slblt_factort_single: $(SLBLTFTS)
+	echo " Unit tests of the SLBLT Fortran factor kernels"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt_factort $(RSLBLTFTS)
+	- ../slblt/run_slblt_factort > ../slblt/slblt_factort_single.output 2>&1
+	cat ../slblt/slblt_factort_single.output
+	rm ../slblt/run_slblt_factort
+
+slblt_factort_double: $(SLBLTFTD)
+	echo " Unit tests of the SLBLT Fortran factor kernels"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt_factort $(RSLBLTFTD)
+	- ../slblt/run_slblt_factort > ../slblt/slblt_factort_double.output 2>&1
+	cat ../slblt/slblt_factort_double.output
+	rm ../slblt/run_slblt_factort
+
+slblt_factort_quadruple: $(SLBLTFTQ)
+	echo " Unit tests of the SLBLT Fortran factor kernels"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt_factort $(RSLBLTFTQ)
+	- ../slblt/run_slblt_factort > ../slblt/slblt_factort_quadruple.output 2>&1
+	cat ../slblt/slblt_factort_quadruple.output
+	rm ../slblt/run_slblt_factort
+
+slblt_factort_single_64: $(SLBLTFTS64)
+	echo " Unit tests of the SLBLT Fortran factor kernels"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt_factort $(RSLBLTFTS64)
+	- ../slblt/run_slblt_factort > ../slblt/slblt_factort_single_64.output 2>&1
+	cat ../slblt/slblt_factort_single_64.output
+	rm ../slblt/run_slblt_factort
+
+slblt_factort_double_64: $(SLBLTFTD64)
+	echo " Unit tests of the SLBLT Fortran factor kernels"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt_factort $(RSLBLTFTD64)
+	- ../slblt/run_slblt_factort > ../slblt/slblt_factort_double_64.output 2>&1
+	cat ../slblt/slblt_factort_double_64.output
+	rm ../slblt/run_slblt_factort
+
+slblt_factort_quadruple_64: $(SLBLTFTQ64)
+	echo " Unit tests of the SLBLT Fortran factor kernels"
+	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_slblt_factort $(RSLBLTFTQ64)
+	- ../slblt/run_slblt_factort > ../slblt/slblt_factort_quadruple_64.output 2>&1
+	cat ../slblt/slblt_factort_quadruple_64.output
+	rm ../slblt/run_slblt_factort
+
+
+slbltt2.o: $(OBJ)/slbltt2_$(PRECIS).o
+
+$(OBJ)/slbltt2_$(PRECIS).o: ../slblt/slbltt2.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slbltt2  "
+	$(CP) ../slblt/slbltt2.F90 $(OBJ)/slbltt2.F90
+	cd $(OBJ) ; $(FORTRAN) -o slbltt2_$(PRECIS).o $(FFLAGSS) slbltt2.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+#  test programs for C programs
+
+slbltct.o: $(OBJ)/slbltct_$(PRECIS).o
+
+$(OBJ)/slbltct_$(PRECIS).o: ../slblt/C/slbltt.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "slbltct  "
+	$(CP) ../slblt/C/slbltt.c $(OBJ)/slbltct.c
+	cd $(OBJ) ; $(CC) -o slbltct_$(PRECIS).o $(CFLAGS) \
+                      slbltct.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+slbltctf.o: $(OBJ)/slbltctf_$(PRECIS).o
+
+$(OBJ)/slbltctf_$(PRECIS).o: ../slblt/C/slblttf.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "slbltctf  "
+	$(CP) ../slblt/C/slblttf.c $(OBJ)/slbltctf.c
+	cd $(OBJ) ; $(CC) -o slbltctf_$(PRECIS).o $(CFLAGS) \
+                      slbltctf.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s %-15s\t\t' "Cleaning $(PRECIS) precision spral"
+	$(RM) $(LGS) $(LGD) $(OBJ)/slblt*.o \
+                            $(MOD)/spral*
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmslblt:
+	@printf ' %-9s %-15s\t\t' "Removing" "slblt from archive "
+	$(RRMARFILE) slblt_$(PRECIS).o
+	@printf '[ OK ]\n'

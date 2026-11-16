@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-10-03 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RQS_test_deck
    USE GALAHAD_KINDS_precision
@@ -322,7 +322,7 @@
      IF ( pass == 6 .OR. pass == 13 ) control%stop_normal = epsmch ** 0.666
 
      CALL RQS_solve( n, p, sigma, f, C, H, X, data, control, inform, M = M )
-!write(6,*) 'ssids flag = ', inform%sls_inform%ssids_inform%flag
+!write(6,*) 'slblt flag = ', inform%sls_inform%slblt_inform%flag
 !write( 6, * ) ' solver used is ', inform%sls_inform%solver
      WRITE( 6, "( ' pass  ', I3, ': RQS_solve exit status = ', I6 )" )         &
             pass, inform%status

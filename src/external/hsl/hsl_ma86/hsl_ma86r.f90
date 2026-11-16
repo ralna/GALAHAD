@@ -260,32 +260,36 @@ module hsl_ma86_real
       integer(ip_) :: num_delay = 0          ! Number of delayed pivots
       integer(long_) :: num_factor = 0_long_ ! Number of entries in the factor.
       integer(long_) :: num_flops = 0_long_  ! Number of flops for factor.
+      integer(ip_) :: num_neg = 0            ! Number of negative pivots
       integer(ip_) :: num_nodes = 0          ! Number of nodes
 !     integer(ip_) :: num_sup = 0            ! Number of supervariables
-      integer(ip_) :: num_two = 0            ! Number of 2x2 pivots
-      integer(ip_) :: num_neg = 0            ! Number of negative pivots
       integer(ip_) :: num_nothresh = 0       ! Number of pivots not satisfying u
       integer(ip_) :: num_perturbed = 0      ! Number of perturbed pivots
+      integer(ip_) :: num_two = 0            ! Number of 2x2 pivots
       integer(ip_) :: pool_size = pool_default  ! Maximum size of task pool used
       integer(ip_) :: stat = 0               ! STAT value on error return -1.
       real(rp_) :: usmall = zero         ! smallest threshold parameter used
    end type MA86_info
 
+   type lmap_type
+      integer(long_) :: len_map
+      integer(long_), allocatable :: map(:,:)
+   end type lmap_type
+
    type ma86_keep
-      type(zd11_type) :: a ! Holds lower and upper triangular parts of A
-      type(block_type), dimension(:), allocatable :: blocks ! block info
-      integer(ip_),  dimension(:), allocatable :: flag_array ! allocated to
-        ! have size equal to the number of threads. For each thread, holds
-        ! error flag
-      integer(long_) :: final_blk = 0 ! Number of blocks. Used for destroying
-        ! locks in finalise
-      type(ma86_info) :: info ! Holds copy of info
-      integer(ip_) :: maxmn ! holds largest block dimension
-      integer(ip_) :: n  ! Order of the system.
-      type(node_type), dimension(:), allocatable :: nodes ! nodal info
-      integer(ip_) :: nbcol = 0 ! number of block columns in L
+      private
+      type(block_type), dimension(:), allocatable :: blocks
+      integer(ip_), dimension(:), allocatable :: flag_array
+      integer(long_) :: final_blk = 0
+      type(ma86_info) :: info
+      integer(ip_) :: maxm
+      integer(ip_) :: maxn
+      integer(ip_) :: n
+      type(node_type), dimension(:), allocatable :: nodes
+      integer(ip_) :: nbcol = 0
       type(lfactor), dimension(:), allocatable :: lfact
-         ! holds block cols of L
+      type(lmap_type), dimension(:), allocatable :: lmap
+      real(rp_), dimension(:), allocatable :: scaling
    end type ma86_keep
 
    type dagtask
@@ -358,7 +362,7 @@ subroutine MA86_analyse_real(n, ptr, row, order, keep, control, info)
       ! order(i) must hold position of i in the pivot sequence.
       ! On exit, holds the pivot order to be used by MA86_factor.
    ! For details of keep, control, info : see derived type descriptions
-   type(MA86_keep) :: keep
+   type(MA86_keep), intent(out) :: keep
    type(MA86_control), intent(in) :: control
    type(MA86_info), intent(inout) :: info
 
@@ -379,7 +383,7 @@ subroutine MA86_analyse_real(n, ptr, row, order, keep, control, info)
    info%stat = 0
 end subroutine MA86_analyse_real
 
-subroutine MA86_factor_real(n, ptr, row, val, order, keep, control, info)
+subroutine MA86_factor_real(n, ptr, row, val, order, keep, control, info, scale)
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
@@ -388,7 +392,8 @@ subroutine MA86_factor_real(n, ptr, row, val, order, keep, control, info)
       ! since the analyse phase)
    type(MA86_keep), intent(inout) :: keep ! see description of derived type
    type(MA86_control), intent(in) :: control ! see description of derived type
-   type(MA86_info) :: info ! see description of derived type
+   type(MA86_info), intent(out) :: info ! see description of derived type
+   real(rp_), optional, intent(inout) :: scale(*)
 
         IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
      "( ' We regret that the solution options that you have ', /,              &
@@ -409,7 +414,7 @@ subroutine MA86_factor_real(n, ptr, row, val, order, keep, control, info)
 end subroutine MA86_factor_real
 
 subroutine MA86_factor_solve_one_real(n, ptr, row, val, order, keep, control,&
-      info, x)
+      info, x, scale)
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
@@ -418,7 +423,8 @@ subroutine MA86_factor_solve_one_real(n, ptr, row, val, order, keep, control,&
       ! since the analyse phase)
    type(MA86_keep), intent(inout) :: keep ! see description of derived type
    type(MA86_control), intent(in) :: control ! see description of derived type
-   type(MA86_info) :: info ! see description of derived type
+   type(MA86_info), intent(out) :: info ! see description of derived type
+   real(rp_), optional, intent(inout) :: scale(*)
    real(rp_), intent(inout) :: x(keep%n) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i) is the corresponding component of the right-hand side.
@@ -443,7 +449,7 @@ subroutine MA86_factor_solve_one_real(n, ptr, row, val, order, keep, control,&
 end subroutine MA86_factor_solve_one_real
 
 subroutine MA86_factor_solve_mult_real(n, ptr, row, val, order, keep, &
-      control, info, nrhs, lx, x)
+      control, info, nrhs, lx, x, scale)
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
@@ -452,7 +458,8 @@ subroutine MA86_factor_solve_mult_real(n, ptr, row, val, order, keep, &
       ! since the analyse phase)
    type(MA86_keep), intent(inout) :: keep ! see description of derived type
    type(MA86_control), intent(in) :: control ! see description of derived type
-   type(MA86_info) :: info ! see description of derived type
+   type(MA86_info), intent(out) :: info ! see description of derived type
+   real(rp_), optional, intent(inout) :: scale(*)
    integer(ip_),  intent(in) :: nrhs ! number of right-hand sides to solver for
    integer(ip_),  intent(in) :: lx ! first dimension of x
    real(rp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
@@ -479,7 +486,7 @@ subroutine MA86_factor_solve_mult_real(n, ptr, row, val, order, keep, &
    info%stat = 0
 end subroutine MA86_factor_solve_mult_real
 
-subroutine MA86_solve_one_real(x,order,keep,control,info,job)
+subroutine MA86_solve_one_real(x,order,keep,control,info,job, scale)
    type(MA86_keep), intent(inout) :: keep
    real(rp_), intent(inout) :: x(keep%n) ! On entry, x must
       ! be set so that if i has been used to index a variable,
@@ -489,7 +496,8 @@ subroutine MA86_solve_one_real(x,order,keep,control,info,job)
    integer(ip_),  intent(in) :: order(:) ! pivot order. must be unchanged
    ! For details of keep, control, info : see derived type description
    type(MA86_control), intent(in) :: control
-   type(MA86_info) :: info
+   type(MA86_info), intent(out) :: info
+   real(rp_), optional, intent(in) :: scale(*)
    integer(ip_),  optional, intent(in) :: job  ! used to indicate whether
       ! partial solution required
       ! job = 0 or absent: complete solve performed
@@ -513,7 +521,7 @@ subroutine MA86_solve_one_real(x,order,keep,control,info,job)
    info%stat = 0
 end subroutine MA86_solve_one_real
 
-subroutine MA86_solve_mult_real(nrhs,lx,x,order,keep, control,info,job)
+subroutine MA86_solve_mult_real(nrhs,lx,x,order,keep, control,info,job, scale)
    integer(ip_),  intent(in) :: nrhs ! number of right-hand sides to solver for
    integer(ip_),  intent(in) :: lx ! first dimension of x
    real(rp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
@@ -526,7 +534,8 @@ subroutine MA86_solve_mult_real(nrhs,lx,x,order,keep, control,info,job)
    ! For details of keep, control, info : see derived type description
    type(MA86_keep), intent(inout) :: keep
    type(MA86_control), intent(in) :: control
-   type(MA86_info) :: info
+   type(MA86_info), intent(out) :: info
+   real(rp_), optional, intent(in) :: scale(*)
    integer(ip_),  optional, intent(in) :: job  ! used to indicate whether
       ! partial solution required
       ! job = 0 or absent: complete solve performed

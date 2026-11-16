@@ -15,6 +15,7 @@ struct qpa_control_type{T,INT}
   valmin::INT
   itref_max::INT
   infeas_check_interval::INT
+  ncrit::INT
   cg_maxit::INT
   precon::INT
   nsemib::INT
@@ -31,6 +32,7 @@ struct qpa_control_type{T,INT}
   infeas_g_improved_by_factor::T
   increase_rho_b_factor::T
   infeas_b_improved_by_factor::T
+  relative_decrease_required::T
   pivot_tol::T
   pivot_tol_for_dependencies::T
   zero_pivot::T

@@ -19,7 +19,7 @@ Documentation is available online from [https://ralna.github.io/galahad_docs/htm
 
 ## Environment variables
 
-Note that the following environment variables must be set before starting Julia for the default sparse linear solver `SSIDS`:
+Note that the following environment variables must be set before starting Julia for the default sparse linear solver `SLBLT`:
 ```raw
 export OMP_CANCELLATION=TRUE
 export OMP_PROC_BIND=TRUE
@@ -29,11 +29,12 @@ export OMP_PROC_BIND=TRUE
 
 We highly recommend to download [libHSL](https://licences.stfc.ac.uk/products/Software/HSL/LibHSL) and install the official version of `HSL_jll.jl`.
 This optional dependency provides access to more reliable and powerful linear solvers in `GALAHAD.jl`.
-Note that this requires at least version `5.3.0` of `GALAHAD` and version `2025.7.21` of `libHSL`, both of which are provided via `GALAHAD_jll.jl` and `HSL_jll.jl`.
+Note that this requires at least version `6.0.0` of `GALAHAD` and version `2026.8.4` of `libHSL`, both of which are provided via `GALAHAD_jll.jl` and `HSL_jll.jl`.
 
 ## BLAS and LAPACK demuxer
 
-`GALAHAD_jll.jl` is compiled with [libblastrampoline](https://github.com/JuliaLinearAlgebra/libblastrampoline) (LBT), a library that can change between BLAS and LAPACK backends at runtime such as OpenBLAS, Intel MKL, BLIS, and Apple Accelerate.
+`GALAHAD_jll.jl` is compiled with [libblastrampoline](https://github.com/JuliaLinearAlgebra/libblastrampoline) (LBT), a library that can change between BLAS and LAPACK backends at runtime such as Intel MKL (Intel CPUs), AOCL (AMD CPUs), and Apple Accelerate (Apple Silicon).
+Because GALAHAD and the linear solvers heavily rely on BLAS and LAPACK routines, using an optimized backend for a particular platform can improve the performance.
 The default BLAS and LAPACK backend used in the Julia interface `GALAHAD.jl` is [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS).
 
 ### Display backends
@@ -63,6 +64,16 @@ switch to MKL by adding `using MKL` to your code:
 
 ```julia
 using MKL
+using GALAHAD
+```
+
+### AOCL
+
+If you have [AOCL.jl](https://github.com/JuliaLinearAlgebra/AOCL.jl) installed,
+switch to AOCL by adding `using AOCL` to your code:
+
+```julia
+using AOCL
 using GALAHAD
 ```
 

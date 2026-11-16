@@ -96,7 +96,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 

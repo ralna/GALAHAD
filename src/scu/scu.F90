@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-05 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2026-11-10 AT 08:08 GMT.
 
 #include "galahad_modules.h"
 
@@ -462,11 +462,12 @@
                  matrix%BD_col_start( data%jcol + 1 ) - 1
             j = matrix%BD_row( k )
             IF ( j <= matrix%n ) THEN
-              VECTOR( j ) = matrix%BD_val( k )
+              VECTOR( j ) = VECTOR( j ) + matrix%BD_val( k )
             ELSE
               irow = j - matrix%n
               IF ( irow <= data%jcol )                                         &
-                data%R( newclr + irow ) = matrix%BD_val( k )
+                data%R( newclr + irow )                                        &
+                  = data%R( newclr + irow ) + matrix%BD_val( k )
             END IF
           END DO
 
@@ -477,11 +478,12 @@
                  matrix%BD_col_start( data%jcol + 1 ) - 1
             j = matrix%BD_row( k )
             IF ( j <= matrix%n ) THEN
-              VECTOR( j ) = - matrix%BD_val( k )
+              VECTOR( j ) = VECTOR( j ) - matrix%BD_val( k )
             ELSE
               irow = j - matrix%n
               IF ( irow <= data%jcol )                                         &
-                data%R( newclr + irow ) = - matrix%BD_val( k )
+                data%R( newclr + irow )                                        &
+                  = data%R( newclr + irow ) - matrix%BD_val( k )
             END IF
           END DO
         END IF
@@ -498,11 +500,12 @@
                matrix%BD_col_start( data%jcol + 1 ) - 1
           j = matrix%BD_row( k )
           IF ( j <= matrix%n ) THEN
-            VECTOR( j ) = matrix%BD_val( k )
+            VECTOR( j ) = VECTOR( j ) + matrix%BD_val( k )
           ELSE
             irow = j - matrix%n
             IF ( irow <= data%jcol )                                           &
-              data%Q( irow, data%jcol ) = matrix%BD_val( k )
+              data%Q( irow, data%jcol )                                        &
+                = data%Q( irow, data%jcol ) + matrix%BD_val( k )
           END IF
         END DO
       END IF
@@ -1001,9 +1004,9 @@
       DO k = matrix%BD_col_start( mnew ), matrix%BD_col_start( mnew + 1 ) - 1
         j = matrix%BD_row( k )
         IF ( j <= matrix%n ) THEN
-          VECTOR( j ) = matrix%BD_val( k )
+          VECTOR( j ) = VECTOR( j ) + matrix%BD_val( k )
         ELSE
-          data%W( j - matrix%n ) = matrix%BD_val( k )
+          data%W( j - matrix%n ) = data%W( j - matrix%n ) + matrix%BD_val( k )
         END IF
       END DO
       data%dianew = data%W( mnew )
@@ -1096,9 +1099,9 @@
       DO k = matrix%CD_row_start( mnew ), matrix%CD_row_start( mnew + 1 ) - 1
         j = matrix%CD_col( k )
         IF ( j <= matrix%n ) THEN
-          VECTOR( j ) = matrix%CD_val( k )
+          VECTOR( j ) = VECTOR( j ) + matrix%CD_val( k )
         ELSE
-          data%W( j - matrix%n ) = matrix%CD_val( k )
+          data%W( j - matrix%n ) = data%W( j - matrix%n ) + matrix%CD_val( k )
         END IF
       END DO
 
@@ -1282,7 +1285,7 @@
       INTEGER ( KIND = ip_ ) :: i, idrop, irow, j, jcol, k, k2, kirn, kjcn, row
       INTEGER ( KIND = ip_ ) :: njcol, mm1, mp1, njdrop, irow2, jcol2, nirow
       INTEGER ( KIND = ip_ ) :: last, nidrop, newlst, nextr, sign_determinant
-      REAL ( KIND = rp_ ) :: c, s, x, y
+      REAL ( KIND = rp_ ) :: c, s, x, y, r_max
       LOGICAL :: qused
 
 !  Ensure that optional arguments are present when required
@@ -1637,10 +1640,15 @@
 
         END DO
 
-!  Check that the new Schur complement is nonsingular
+!  Check that the new Schur complement is nonsingular, i.e., that no
+!  diagonal entry of R is negligible relative to the largest
 
+        r_max = zero
         DO j = 1, mm1
-          IF ( abs( data%R( j * ( j + 1 ) / 2 ) ) <= epsmch ) THEN
+          r_max = MAX( r_max, ABS( data%R( j * ( j + 1 ) / 2 ) ) )
+        END DO
+        DO j = 1, mm1
+          IF ( ABS( data%R( j * ( j + 1 ) / 2 ) ) <= epsmch * r_max ) THEN
 !           write(6,*) ' new diag = ', abs( data%R( j * ( j + 1 ) / 2 ) )
             status = - 9 ; RETURN
           END IF
@@ -1793,7 +1801,7 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: j, k, mnew, nextr, nextw
-      REAL ( KIND = rp_ ) :: c, s, x, y
+      REAL ( KIND = rp_ ) :: c, s, x, y, r_max
 
       mnew = msofar + 1
 
@@ -1838,11 +1846,16 @@
         END DO
       END IF
 
-!  Check that the new diagonal entry of R is non-zero
+!  Check that the new diagonal entry of R is not negligible relative to
+!  the largest diagonal entry
 
       R( mnew * ( mnew + 1 ) / 2 ) = SPIKE( mnew )
 !     write(6,*) ' new diag = ', abs( SPIKE( mnew ) )
-      IF ( ABS( SPIKE( mnew ) ) > epsmch ) THEN
+      r_max = zero
+      DO j = 1, mnew
+        r_max = MAX( r_max, ABS( R( j * ( j + 1 ) / 2 ) ) )
+      END DO
+      IF ( ABS( SPIKE( mnew ) ) > epsmch * r_max ) THEN
         status = GALAHAD_ok
       ELSE
         status = - 9

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-09-04 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 09:44 GMT.
 
 #include "galahad_modules.h"
 
@@ -164,11 +164,11 @@
 
 !  symmetric linear equation solver for systems involving H
 
-       CHARACTER ( LEN = 30 ) :: linear_solver = "ssids" // REPEAT( ' ', 25 )
+       CHARACTER ( LEN = 30 ) :: linear_solver = "slblt" // REPEAT( ' ', 25 )
 
 !  symmetric linear equation solver for systems involving S (if needed)
 
-       CHARACTER ( LEN = 30 ) :: linear_solver_for_S = "ssids" //              &
+       CHARACTER ( LEN = 30 ) :: linear_solver_for_S = "slblt" //              &
                                                           REPEAT( ' ', 25 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
@@ -480,8 +480,8 @@
 !  new-values                                        F
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
-!  linear-equation-solver                            ssids
-!  linear-equation-solver-for-S                      ssids
+!  linear-equation-solver                            slblt
+!  linear-equation-solver-for-S                      slblt
 !  output-line-prefix                                ""
 ! END TREK SPECIFICATIONS (DEFAULT)
 
@@ -2882,6 +2882,16 @@
       IF ( inform%SLS_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%bad_alloc = 'trek: data%SLS'
+        IF ( control%deallocate_error_fatal ) RETURN
+      END IF
+
+!  Deallocate all arrays allocated within SLS for the S-factorization
+
+      CALL SLS_terminate( data%SLS_S_data, control%SLS_S_control,              &
+                          inform%SLS_S_inform )
+      IF ( inform%SLS_S_inform%status /= 0 ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%bad_alloc = 'trek: data%SLS_S'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 

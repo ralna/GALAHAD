@@ -14,8 +14,8 @@ excluded_fortran_fields = Dict(
   "presolve_control_type" => ["get_q", "get_f", "get_g", "get_H", "get_A", "get_x", "get_x_bounds", "get_z", "get_z_bounds", "get_c", "get_c_bounds", "get_y", "get_y_bounds"],
   "wcp_inform_type" => ["x_status", "c_status"],
   "sbls_inform_type" => ["sils_analyse_status", "sils_factorize_status", "sils_solve_status", "sls_analyse_status", "sls_factorize_status", "sls_solve_status", "uls_analyse_status", "uls_factorize_status", "uls_solve_status"],
-  "ssids_control_type" => ["auction", "rb_dump"],
-  "ssids_inform_type" => ["auction"],
+  "slblt_control_type" => ["auction", "rb_dump"],
+  "slblt_inform_type" => ["auction"],
 )
 
 function extract_type_fields(text, typename)

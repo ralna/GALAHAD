@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-01-22 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 11:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -22,7 +22,7 @@
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    CHARACTER ( len = 2 ) :: st
    CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
-!  symmetric_linear_solver = 'ssids'
+!  symmetric_linear_solver = 'slblt'
 !  symmetric_linear_solver = 'ma97 '
    symmetric_linear_solver = 'sytr '
 

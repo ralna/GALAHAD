@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -19,12 +19,12 @@
   MODULE GALAHAD_RB_precision
 
     USE GALAHAD_KINDS_precision
-    USE GALAHAD_MU_precision, ONLY: SSIDS_MATRIX_UNSPECIFIED,                  &
-                                    SSIDS_MATRIX_REAL_RECT,                    &
-                                    SSIDS_MATRIX_REAL_UNSYM,                   &
-                                    SSIDS_MATRIX_REAL_SYM_PSDEF,               &
-                                    SSIDS_MATRIX_REAL_SYM_INDEF,               &
-                                    SSIDS_MATRIX_REAL_SKEW,                    &
+    USE GALAHAD_MU_precision, ONLY: SLBLT_MATRIX_UNSPECIFIED,                  &
+                                    SLBLT_MATRIX_REAL_RECT,                    &
+                                    SLBLT_MATRIX_REAL_UNSYM,                   &
+                                    SLBLT_MATRIX_REAL_SYM_PSDEF,               &
+                                    SLBLT_MATRIX_REAL_SYM_INDEF,               &
+                                    SLBLT_MATRIX_REAL_SKEW,                    &
                                     MU_half_to_full                       
     USE GALAHAD_RAND_precision, ONLY: RAND_random_state_lcg,                   &
                                       RAND_random_real_lcg
@@ -1167,17 +1167,17 @@
     INTEGER( ip_ ), INTENT( IN ) :: matrix_type
 
     SELECT CASE ( matrix_type )
-    CASE( SSIDS_MATRIX_UNSPECIFIED )
+    CASE( SLBLT_MATRIX_UNSPECIFIED )
       matrix_type_to_sym = "r"
-    CASE( SSIDS_MATRIX_REAL_RECT )
+    CASE( SLBLT_MATRIX_REAL_RECT )
       matrix_type_to_sym = "r"
-    CASE( SSIDS_MATRIX_REAL_UNSYM )
+    CASE( SLBLT_MATRIX_REAL_UNSYM )
       matrix_type_to_sym = "u"
-    CASE( SSIDS_MATRIX_REAL_SYM_PSDEF )
+    CASE( SLBLT_MATRIX_REAL_SYM_PSDEF )
       matrix_type_to_sym = "s"
-    CASE( SSIDS_MATRIX_REAL_SYM_INDEF )
+    CASE( SLBLT_MATRIX_REAL_SYM_INDEF )
       matrix_type_to_sym = "s"
-    CASE( SSIDS_MATRIX_REAL_SKEW )
+    CASE( SLBLT_MATRIX_REAL_SKEW )
       matrix_type_to_sym = "z"
     END SELECT
     RETURN
@@ -1195,15 +1195,15 @@
 
     SELECT CASE ( sym )
     CASE( "r" )
-      sym_to_matrix_type = SSIDS_MATRIX_REAL_RECT
+      sym_to_matrix_type = SLBLT_MATRIX_REAL_RECT
     CASE( "s" )
-      sym_to_matrix_type = SSIDS_MATRIX_REAL_SYM_INDEF
+      sym_to_matrix_type = SLBLT_MATRIX_REAL_SYM_INDEF
     CASE( "u" )
-      sym_to_matrix_type = SSIDS_MATRIX_REAL_UNSYM
+      sym_to_matrix_type = SLBLT_MATRIX_REAL_UNSYM
     CASE( "z" )
-      sym_to_matrix_type = SSIDS_MATRIX_REAL_SKEW
+      sym_to_matrix_type = SLBLT_MATRIX_REAL_SKEW
     CASE DEFAULT !  this should never happen
-      sym_to_matrix_type = SSIDS_MATRIX_UNSPECIFIED
+      sym_to_matrix_type = SLBLT_MATRIX_UNSPECIFIED
     END SELECT
     RETURN
 

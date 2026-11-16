@@ -54,17 +54,17 @@ module hsl_ma48_real
    end interface
 
    type ma48_factors
-     private
-      integer(ip_),  allocatable :: keep(:)
-      integer(ip_),  allocatable :: irn(:)
-      integer(ip_),  allocatable :: jcn(:)
+      integer(long_), allocatable :: keep(:)
+      integer(long_), allocatable :: irn(:)
+      integer(long_), allocatable :: jcn(:)
       real(rp_), allocatable :: val(:)
       integer(ip_) :: m       ! Number of rows in matrix
       integer(ip_) :: n       ! Number of columns in matrix
-      integer(ip_) :: lareq   ! Size for further factorization
+      integer(long_) :: lareq   ! Size for further factorization
+      integer(long_) :: lirnreq
       integer(ip_) :: partial ! Number of columns kept to end for partial
                          ! factorization
-      integer(ip_) :: ndrop   ! Number of entries dropped from data structure
+      integer(long_) :: ndrop   ! Number of entries dropped from data structure
       integer(ip_) :: first   ! Flag to indicate whether it is first call to
                          ! factorize after analyse (set to 1 in analyse).
    end type ma48_factors
@@ -77,6 +77,9 @@ module hsl_ma48_real
       real(rp_) :: drop   ! Drop tolerance
       real(rp_) :: tolerance ! anything less than this is considered zero
       real(rp_) :: cgce  ! Ratio for required reduction using IR
+      real(rp_) :: reduce
+      integer(ip_) :: la
+      integer(ip_) :: maxla
       integer(ip_) :: lp     ! Unit for error messages
       integer(ip_) :: wp     ! Unit for warning messages
       integer(ip_) :: mp     ! Unit for monitor output
@@ -100,9 +103,11 @@ module hsl_ma48_real
       integer(ip_) :: more = 0   ! More information on failure
       integer(long_) :: lena_analyse  = 0! Size for analysis (main arrays)
       integer(long_) :: lenj_analyse  = 0! Size for analysis (integer aux array)
+      integer(long_) :: len_analyse  = 0
 !! For the moment leni_factorize = lena_factorize because of BTF structure
       integer(long_) :: lena_factorize  = 0 ! Size for factorize (real array)
       integer(long_) :: leni_factorize  = 0 ! Size for factorize (integer array)
+      integer(long_) :: len_factorize  = 0
       integer(ip_) :: ncmpa   = 0 ! Number of compresses in analyse
       integer(ip_) :: rank   = 0  ! Estimated rank
       integer(long_) :: drop   = 0  ! Number of entries dropped
@@ -123,6 +128,7 @@ module hsl_ma48_real
 !! For the moment leni_factorize = lena_factorize because of BTF structure
       integer(long_) :: lena_factorize  = 0 ! Size for factorize (real array)
       integer(long_) :: leni_factorize  = 0 ! Size for factorize (integer array)
+      integer(long_) :: len_factorize  = 0
       integer(long_) :: drop   = 0 ! Number of entries dropped
       integer(ip_) :: rank   = 0  ! Estimated rank
       integer(ip_) :: stat   = 0  ! STAT value after allocate failure
@@ -146,14 +152,14 @@ contains
     end subroutine ma48_initialize_real
 
    subroutine ma48_analyse_real(matrix,factors,control,ainfo,finfo,          &
-                                  perm,lastcol)
+                                  perm,endcol)
       type(zd11_type), Intent(in) :: matrix
       type(ma48_factors), intent(inout) :: factors
       type(ma48_control), intent(in) :: control
       type(ma48_ainfo) :: ainfo
       type(ma48_finfo), optional :: finfo
       integer(ip_),  intent(in), optional :: perm(matrix%m+matrix%n) ! Init perm
-      integer(ip_),  intent(in), optional :: lastcol(matrix%n) ! last cols
+      integer(ip_),  intent(in), optional :: endcol(matrix%n) ! last cols
 
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
            "( ' We regret that the solution options that you have ', /,        &
@@ -230,7 +236,7 @@ contains
   end subroutine ma48_special_rows_and_cols_real
 
   subroutine ma48_get_perm_real(factors,perm)
-      type(ma48_factors), intent(in), optional :: factors
+      type(ma48_factors), intent(in) :: factors
       integer(ip_),  intent(out) :: perm(:)
   end subroutine ma48_get_perm_real
 

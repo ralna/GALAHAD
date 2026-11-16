@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-11-10 AT 15:16 GMT.
 
 #include "galahad_modules.h"
 
@@ -89,10 +89,9 @@
       REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
-      REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
-      REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_neg_restarts = 5
       REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
       REAL ( KIND = rp_ ), PARAMETER :: k_diag = one
       REAL ( KIND = rp_ ), PARAMETER :: curv_min = epsmch
@@ -178,6 +177,15 @@
 !    and infeas_b_improved_by_factor below)
 
         INTEGER ( KIND = ip_ ) :: infeas_check_interval = 100
+
+!   when solve_qp or solve_within_bounds (see below) is .TRUE., the problem
+!    will be declared infeasible if its infeasibility has failed to decrease
+!    by the factor relative_decrease_required (see below) over ncrit
+!    consecutive increases of the penalty parameters. Likewise, ncrit
+!    consecutive feasible but unbounded subproblems will cause the problem
+!    to be declared unbounded
+
+        INTEGER ( KIND = ip_ ) :: ncrit = 100
 
 !   the maximum number of CG iterations allowed. If cg_maxit < 0,
 !     this number will be reset to the dimension of the system + 1
@@ -282,6 +290,12 @@
 !
         REAL ( KIND = rp_ ) :: infeas_b_improved_by_factor = 0.75_rp_
 
+!   the infeasibility will be regarded as having decreased (see ncrit above)
+!    if it is smaller than relative_decrease_required times its value
+!    before the penalty parameters were last increased
+
+        REAL ( KIND = rp_ ) :: relative_decrease_required = 0.99_rp_
+
 !   the threshold pivot used by the matrix factorization.
 !    See the documentation for SLS for details                        (OBSOLETE)
 
@@ -306,9 +320,10 @@
         REAL ( KIND = rp_ ) :: inner_stop_relative = point01
         REAL ( KIND = rp_ ) :: inner_stop_absolute = epsmch
 
-!   any dual variable or Lagrange multiplier which is less than multiplier_tol
-!    outside its optimal interval will be regarded as being acceptable when
-!    checking for optimality
+!   any dual variable or Lagrange multiplier which lies outside its optimal
+!    interval by less than multiplier_tol times the largest of ||g||_inf,
+!    ||H x||_inf and the largest multiplier in absolute value will be
+!    regarded as being acceptable when checking for optimality
 
         REAL ( KIND = rp_ ) :: multiplier_tol = epsmch
 
@@ -366,12 +381,12 @@
 
 !  indefinite linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "slblt" //         &
                                                              REPEAT( ' ', 25 )
 
 !  definite linear equation solver
 
-!       CHARACTER ( LEN = 30 ) :: definite_linear_solver = "ssids" //          &
+!       CHARACTER ( LEN = 30 ) :: definite_linear_solver = "slblt" //          &
 !                                                           REPEAT( ' ', 25 )
 
 !  name of generated SIF file containing input problem
@@ -571,9 +586,16 @@
 
       CALL RAND_initialize( data%seed )
 
-!  Real parameters
+!  Real parameters. In single precision, the feasibility tolerance is
+!  relatively larger, so that the bound perturbation that remains after
+!  the randomization is removed (a tenth of feas_tol) stays well clear of
+!  rounding errors
 
+#ifdef REAL_32
+      control%feas_tol = epsmch ** 0.65
+#else
       control%feas_tol = epsmch ** 0.75
+#endif
       control%obj_unbounded = - epsmch ** ( - 2.0 )
       control%pivot_tol = point1 * epsmch ** 0.5
       control%zero_pivot = epsmch ** 0.75
@@ -652,6 +674,7 @@
 !  initial-real-workspace                            1000
 !  maximum-refinements                               1
 !  maximum-infeasible-iterations-before-rho-increase 100
+!  maximum-non-decreasing-penalty-increases          100
 !  maximum-number-of-cg-iterations                   -1
 !  preconditioner-used                               0
 !  semi-bandwidth-for-band-preconditioner            5
@@ -668,6 +691,7 @@
 !  increase-rho-b-factor                             2.0
 !  infeasible-g-required-improvement-factor          0.75
 !  infeasible-b-required-improvement-factor          0.75
+!  relative-decrease-in-infeasibility-required       0.99
 !  pivot-tolerance-used                              1.0D-8
 !  pivot-tolerance-used-for-dependencies             0.5
 !  zero-pivot-tolerance                              1.0D-12
@@ -696,7 +720,7 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 45
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 47
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'QPA'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -726,6 +750,7 @@
       spec( 20 )%keyword = 'residual-monitor-interval'
       spec( 21 )%keyword = 'cold-start-strategy'
       spec( 41 )%keyword = 'sif-file-device'
+      spec( 46 )%keyword = 'maximum-non-decreasing-penalty-increases'
 
 !  Real key-words
 
@@ -736,6 +761,7 @@
       spec( 26 )%keyword = 'increase-rho-b-factor'
       spec( 27 )%keyword = 'infeasible-g-required-improvement-factor'
       spec( 28 )%keyword = 'infeasible-b-required-improvement-factor'
+      spec( 47 )%keyword = 'relative-decrease-in-infeasibility-required'
       spec( 29 )%keyword = 'pivot-tolerance-used'
       spec( 30 )%keyword = 'pivot-tolerance-used-for-dependencies'
       spec( 31 )%keyword = 'zero-pivot-tolerance'
@@ -797,6 +823,8 @@
                                   control%error )
       CALL SPECFILE_assign_value( spec( 13 ), control%infeas_check_interval,   &
                                   control%error )
+      CALL SPECFILE_assign_value( spec( 46 ), control%ncrit,                   &
+                                  control%error )
       CALL SPECFILE_assign_value( spec( 14 ), control%cg_maxit,                &
                                   control%error )
       CALL SPECFILE_assign_value( spec( 15 ), control%precon,                  &
@@ -830,6 +858,9 @@
                                   control%error )
       CALL SPECFILE_assign_value( spec( 27 ),                                  &
                                   control%infeas_g_improved_by_factor,         &
+                                  control%error )
+      CALL SPECFILE_assign_value( spec( 47 ),                                  &
+                                  control%relative_decrease_required,          &
                                   control%error )
       CALL SPECFILE_assign_value( spec( 28 ),                                  &
                                   control%infeas_b_improved_by_factor,         &
@@ -1637,19 +1668,48 @@
 
       ELSE IF ( control%cold_start /= 0 ) THEN
         B_stat = 0 ; C_stat = 0
+
+!  warm start: normalise the given statuses to -1, 0 or 1, and ignore any
+!  that refer to a bound that is not present (e.g. on a free variable, or an
+!  upper bound on a variable or constraint that is only bounded from below)
+
       ELSE
-        DO i = 1, prob%n
-          IF ( B_stat( i ) < 0 ) THEN
-            B_stat( i ) = - 1
-          ELSE IF ( B_stat( i ) > 0 ) THEN
-            B_stat( i ) = 1
-          END IF
+        DO i = 1, data%dims%c_equality
+          C_stat( i ) = SIGN( MIN( ABS( C_stat( i ) ), 1_ip_ ), C_stat( i ) )
         END DO
-        DO i = 1, prob%m
+        DO i = data%dims%c_equality + 1, data%dims%c_u_start - 1
           IF ( C_stat( i ) < 0 ) THEN
             C_stat( i ) = - 1
-          ELSE IF ( C_stat( i ) > 0 ) THEN
+          ELSE
+            C_stat( i ) = 0
+          END IF
+        END DO
+        DO i = data%dims%c_u_start, data%dims%c_l_end
+          C_stat( i ) = SIGN( MIN( ABS( C_stat( i ) ), 1_ip_ ), C_stat( i ) )
+        END DO
+        DO i = data%dims%c_l_end + 1, prob%m
+          IF ( C_stat( i ) > 0 ) THEN
             C_stat( i ) = 1
+          ELSE
+            C_stat( i ) = 0
+          END IF
+        END DO
+        B_stat( : data%dims%x_free ) = 0
+        DO i = data%dims%x_free + 1, data%dims%x_u_start - 1
+          IF ( B_stat( i ) < 0 ) THEN
+            B_stat( i ) = - 1
+          ELSE
+            B_stat( i ) = 0
+          END IF
+        END DO
+        DO i = data%dims%x_u_start, data%dims%x_l_end
+          B_stat( i ) = SIGN( MIN( ABS( B_stat( i ) ), 1_ip_ ), B_stat( i ) )
+        END DO
+        DO i = data%dims%x_l_end + 1, prob%n
+          IF ( B_stat( i ) > 0 ) THEN
+            B_stat( i ) = 1
+          ELSE
+            B_stat( i ) = 0
           END IF
         END DO
       END IF
@@ -2320,7 +2380,7 @@
 !  Solution loop: gradually reduce any perturbations
 !  =============
 
-      pass = 0 ; icrit = 0 ; ncrit = 9
+      pass = 0 ; icrit = 0 ; ncrit = control%ncrit
       last_infeas_g = biginf / two ; last_infeas_b = biginf / two
       DO
         pass = pass + 1
@@ -2475,7 +2535,8 @@
 
             IF ( control%solve_qp ) THEN
               IF ( inform%infeas_g + inform%infeas_b                           &
-                   > 0.99_rp_ * ( last_infeas_g + last_infeas_b ) ) THEN
+                   > control%relative_decrease_required *                      &
+                       ( last_infeas_g + last_infeas_b ) ) THEN
                 icrit = icrit + 1
                 IF ( icrit >= ncrit ) THEN
                   IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2490,7 +2551,8 @@
               rho_g = control%increase_rho_g_factor * rho_g
               rho_b = control%increase_rho_b_factor * rho_b
             ELSE IF ( control%solve_within_bounds ) THEN
-              IF ( inform%infeas_b > 0.99_rp_ * last_infeas_b ) THEN
+              IF ( inform%infeas_b >                                           &
+                   control%relative_decrease_required * last_infeas_b ) THEN
                 icrit = icrit + 1
                 IF ( icrit >= ncrit ) THEN
                   IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2516,7 +2578,8 @@
               icrit = icrit + 1
               IF ( icrit >= ncrit ) EXIT
             ELSE IF ( inform%infeas_g + inform%infeas_b                        &
-                      > 0.99_rp_ * ( last_infeas_g + last_infeas_b ) ) THEN
+                      > control%relative_decrease_required *                   &
+                          ( last_infeas_g + last_infeas_b ) ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) THEN
                 IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2535,7 +2598,8 @@
                  inform%status == GALAHAD_error_unbounded ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) EXIT
-            ELSE IF ( inform%infeas_b > 0.99_rp_ * last_infeas_b ) THEN
+            ELSE IF ( inform%infeas_b >                                        &
+                      control%relative_decrease_required * last_infeas_b ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) THEN
                 IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2979,15 +3043,20 @@
       INTEGER ( KIND = ip_ ) :: QPA_delete_constraint_status
       INTEGER ( KIND = ip_ ) :: QPA_add_constraint_status
       REAL ( KIND = rp_ ) :: g_s, s_hs, t_opt, mult, hmax, G_perturb
+      REAL ( KIND = rp_ ) :: q_eqp, q_x, s_max
       REAL ( KIND = rp_ ) :: last_infeas_g, last_infeas_b
       REAL ( KIND = rp_ ) :: a_x, mult_min, mult_max, ats, mult_zero, res_max
       REAL ( KIND = rp_ ) :: inner_stop_absolute, inner_stop_relative
-      REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s
+      REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s, h_max, a_max
+      REAL ( KIND = rp_ ) :: g_scale, gzero, hzero
+      INTEGER ( KIND = ip_ ) :: j_add_failed, n_neg_restarts
+      LOGICAL :: exact_g_fallback
       REAL :: time_record, time_now
       REAL ( KIND = rp_ ) :: clock_record, clock_now
       LOGICAL :: set_printt, set_printi, set_printm, set_printd, set_printe
       LOGICAL :: printt, printi, printm, printd, printe, warmer_start
       LOGICAL :: stop_now, negative_curvature, G_eq_H, minor_start
+      LOGICAL :: indefinite
       LOGICAL :: x_r0, y0, x_f0, z0, still_adding
       LOGICAL :: move_infeasible, move_infeas, check_dependent
       CHARACTER ( LEN = 1 ) :: mo
@@ -3161,6 +3230,10 @@
       END DO
       K_part%c_ref = K_part%m_ref
 
+!  free variables have no bounds that might be active
+
+      B_stat( : dims%x_free ) = 0
+
 !  simple non-negativity
 
       DO i = dims%x_free + 1, dims%x_l_start - 1
@@ -3169,6 +3242,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
@@ -3180,6 +3255,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
@@ -3203,6 +3280,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
@@ -3214,6 +3293,8 @@
           K_part%m_ref = K_part%m_ref + 1
           B_stat( i ) = - K_part%m_ref
           REF( K_part%m_ref ) = ii
+        ELSE
+          B_stat( i ) = 0
         END IF
       END DO
 
@@ -3241,6 +3322,18 @@
 !     tiny_cosine = epsmch ** 0.75
       G_perturb = zero
       addel = '          '
+
+!  Record the largest entry of H and the largest norm of a row of the
+!  working-set matrix (a simple bound has a row of norm one), used to decide
+!  whether a search direction is simply the result of rounding errors
+
+      j_add_failed = 0
+      n_neg_restarts = 0 ; exact_g_fallback = .FALSE.
+      h_max = zero
+      IF ( H_ptr( n + 1 ) > 1 )                                                &
+        h_max = MAXVAL( ABS( H_val( : H_ptr( n + 1 ) - 1 ) ) )
+      a_max = one
+      IF ( m > 0 ) a_max = MAX( a_max, MAXVAL( A_norms( : m ) ) )
 
       SLS_control%relative_pivot_tolerance =                                   &
         control%SLS_control%relative_pivot_tolerance
@@ -3313,7 +3406,7 @@
                     dims, n, m, jumpto_factorize_reference,                    &
                     k_n_max, print_level, m_link, max_col, factor, precon,     &
                     nsemib, hmax, G_perturb, out, prec_hist, printi, printt,   &
-                    printe, G_eq_H, auto_prec, auto_fact,                      &
+                    printe, G_eq_H, indefinite, auto_prec, auto_fact,          &
                     check_dependent, mo, PERM, REF, C_stat, B_stat,            &
                     A_ptr, A_col, H_ptr, H_col, A_val, H_val, K, K_part, S,    &
                     Abycol_row, Abycol_ptr, S_row, S_col, S_colptr,            &
@@ -3494,7 +3587,15 @@
 !           write(6,"('============ warmer start !!! ')" )
             warmer_start = .FALSE.
 
-!  Since this is the first iteration, solve the current EQP
+!  Since this is the first iteration, solve the current EQP. If the
+!  preconditioner G is H, the factorization gives its solution directly.
+!  Otherwise (for instance if H has been perturbed as it is not positive
+!  definite on the working set), the solution of the EQP with G in place of
+!  H is a good starting point when G is close to H, but it may be worse
+!  than X, and if the EQP is nonconvex the latter has no solution. So also
+!  move X onto the working set (using the smallest change in the G norm),
+!  and start the minimization of the quadratic from whichever of these two
+!  points gives the smaller objective value
 
             IF ( inform%iter <= 1 ) THEN
               S( : n ) = - G
@@ -3533,6 +3634,11 @@
               END DO
 !             write( 6, "( I6, ES12.4 )" ) ( i, S( i ), i = 1, K_part%k_ref )
 
+!  record the values of the working constraints for later use
+
+              IF ( .NOT. G_eq_H .AND. indefinite )                             &
+                DX( : K_part%m_ref ) = S( n + 1 : n + K_part%m_ref )
+
 !  Find a point that satisfies the constraints
 
               S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
@@ -3545,7 +3651,103 @@
               IF ( printm ) WRITE( out, "( ' ' )" )
 
               S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
-              X = S( : n )
+              IF ( G_eq_H .OR. .NOT. indefinite ) THEN
+                X = S( : n )
+              ELSE
+
+!  record the solution of the EQP with G in place of H, and its objective value
+
+                VECTOR( : n ) = S( : n )
+                H_s( : n ) = zero
+                CALL QPA_HX( dims, n, H_s( : n ), H_ptr( n + 1 ) - 1,         &
+                             H_val, H_col, H_ptr, VECTOR( : n ), '+' )
+                q_eqp = DOT_PRODUCT( VECTOR( : n ),                           &
+                                     half * H_s( : n ) + G( : n ) )
+
+!  now move X onto the working set; the right-hand side is the residual of
+!  the working constraints at X
+
+                S( : n ) = zero
+                DO i = 1, K_part%m_ref
+                  j = REF( i )
+                  IF ( j <= m ) THEN
+                    a_x = zero
+                    DO ii = A_ptr( j ), A_ptr( j + 1 ) - 1
+                      a_x = a_x + A_val( ii ) * X( A_col( ii ) )
+                    END DO
+                    S( n + i ) = DX( i ) - a_x
+                  ELSE
+                    S( n + i ) = DX( i ) - X( j - m )
+                  END IF
+                END DO
+                S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
+                x_r0 = .FALSE. ; y0 = .FALSE. ; x_f0 = .FALSE. ; z0 = .FALSE.
+                CALL QPA_ir( K, SLS_data, K_part, S_perm( : K_part%k_ref ),    &
+                             B( : K_part%k_ref ), RES( : K_part%k_ref ),       &
+                             x_r0, y0, x_f0, z0, SLS_control, itref_max + 1,   &
+                             out, printm, RES_print, inform )
+                inform%factorization_status = inform%status
+                S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
+                S( : n ) = X + S( : n )
+                H_s( : n ) = zero
+                CALL QPA_HX( dims, n, H_s( : n ), H_ptr( n + 1 ) - 1,         &
+                             H_val, H_col, H_ptr, S( : n ), '+' )
+                q_x = DOT_PRODUCT( S( : n ), half * H_s( : n ) + G( : n ) )
+
+!  start from the better of the two
+
+                IF ( q_x < q_eqp ) THEN
+                  X = S( : n )
+                ELSE
+                  X = VECTOR( : n )
+                END IF
+
+!  if X is (nearly) a stationary point of the quadratic on the working set,
+!  the minimization cannot make progress from it, even though H is not
+!  positive definite there. Find the projected gradient (in the G norm)
+
+                H_s( : n ) = zero
+                CALL QPA_HX( dims, n, H_s( : n ), H_ptr( n + 1 ) - 1,         &
+                             H_val, H_col, H_ptr, X, '+' )
+                H_s( : n ) = - H_s( : n ) - G( : n )
+                S( : n ) = H_s( : n ) ; S( n + 1 : K_part%k_ref ) = zero
+                S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
+                x_r0 = .FALSE. ; y0 = .FALSE. ; x_f0 = .FALSE. ; z0 = .FALSE.
+                CALL QPA_ir( K, SLS_data, K_part, S_perm( : K_part%k_ref ),    &
+                             B( : K_part%k_ref ), RES( : K_part%k_ref ),       &
+                             x_r0, y0, x_f0, z0, SLS_control, itref_max + 1,   &
+                             out, printm, RES_print, inform )
+                S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
+
+!  if so, move X a small distance along a (fixed, arbitrary) direction in
+!  the working set, so that negative curvature may be detected from there
+
+                IF ( SQRT( ABS( DOT_PRODUCT( H_s( : n ), S( : n ) ) ) )        &
+                       <= SQRT( epsmch ) ) THEN
+                  DO i = 1, n
+                    S( i ) = SIN( REAL( i, KIND = rp_ ) )
+                  END DO
+                  S( n + 1 : K_part%k_ref ) = zero
+                  S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
+                  x_r0 = .FALSE. ; y0 = .FALSE. ; x_f0 = .FALSE. ; z0 = .FALSE.
+                  CALL QPA_ir( K, SLS_data, K_part,                            &
+                               S_perm( : K_part%k_ref ),                       &
+                               B( : K_part%k_ref ), RES( : K_part%k_ref ),     &
+                               x_r0, y0, x_f0, z0, SLS_control,                &
+                               itref_max + 1, out, printm, RES_print, inform )
+                  S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
+                  s_max = MAXVAL( ABS( S( : n ) ) )
+                  IF ( s_max > zero ) THEN
+                    X = X + ( epsmch ** 0.25                                   &
+                              * MAX( one, MAXVAL( ABS( X ) ) ) / s_max )       &
+                            * S( : n )
+                    IF ( printi ) WRITE( out, "( A, ' stationary starting',   &
+                   &  ' point with H indefinite: moving away from it' )" )     &
+                      prefix
+                  END IF
+                END IF
+                inform%factorization_status = inform%status
+              END IF
 
 !  From this point, try to minimize the quadratic on the current working set
 
@@ -3712,6 +3914,11 @@
               END DO
               RES_u( i ) = C_u( i ) - a_x
             END DO
+
+!  Remove any residuals that are simply the result of rounding errors
+
+            CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,        &
+                                     A_norms, RES_l, RES_u )
 
             res_max = zero
 
@@ -4035,7 +4242,7 @@
 !  simple bound from below and above
 
             DO i = dims%x_u_start, dims%x_l_end
-              IF ( ABS( m + i ) == j_del ) THEN
+              IF ( m + i == ABS( j_del ) ) THEN
                 IF ( move_infeasible ) THEN
                   IF ( j_del < 0 ) THEN
                     RHS( i ) = RHS( i ) + rho_b
@@ -4154,9 +4361,28 @@
                 IF ( pcg_status < - 2 ) THEN
 
 !  If a negative inner product has occured on the first minor iteration,
-!  modify the preconditioner and restart
+!  modify the preconditioner and restart. If this has happened more than
+!  max_neg_restarts times in succession, the preconditioner is unlikely to
+!  be at fault; use G = H instead, and if this fails as well, give up
 
                   IF ( pcg_status == - 3 .AND. minor_start ) THEN
+                    n_neg_restarts = n_neg_restarts + 1
+                    IF ( n_neg_restarts > max_neg_restarts ) THEN
+                      IF ( exact_g_fallback ) THEN
+                        IF ( printe ) WRITE( out, 2160 ) prefix,               &
+                          max_neg_restarts
+                        inform%status = GALAHAD_error_preconditioner
+                        EXIT major
+                      END IF
+                      IF ( printi ) WRITE( out, 2170 ) prefix,                 &
+                        max_neg_restarts
+                      exact_g_fallback = .TRUE. ; n_neg_restarts = 0
+                      precon = 1 ; auto_prec = .FALSE.
+                      G_perturb = zero ; mo = ' '
+                      pcount = 0 ; minor_start = .FALSE.
+                      jumpto_factorize_reference = 0
+                      GO TO 10
+                    END IF
                     IF ( mo == ' ' ) THEN
                       inform%nmods = inform%nmods + 1
                       mo = 'm'
@@ -4196,6 +4422,7 @@
                   EXIT minor
                 END IF
               END IF
+              IF ( pcg_status >= 0 ) n_neg_restarts = 0
               inform%cg_iter = inform%cg_iter + pcg_iter
 
               IF ( printm ) WRITE( out,                                        &
@@ -4212,14 +4439,17 @@
                 prefix, time_now
             END IF
 
-! If the search direction is essentially rounding errors, reset it to zero
+! If the search direction is essentially rounding errors, reset it to zero.
+! The test compares the sizes of H s and A^T y, so that it is unaffected by
+! the scaling of the problem, with a margin of ten times the rounding
+! errors expected in computing them; it is skipped when H is zero
 
             s_norm = SQRT( DOT_PRODUCT( S( : n ), S( : n ) ) )
             IF ( printt ) WRITE( out, "( A, ' s vs y ', 2ES12.4 )" ) prefix,   &
                s_norm, SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-            IF ( s_norm /= zero ) THEN
-              y_norm = SQRT( SUM( S( n + 1 : n_all ) ** 2 ) )
-              IF ( s_norm <= y_norm * epsmch ** 0.66 ) THEN
+            IF ( s_norm /= zero .AND. h_max > zero .AND. n_all > n ) THEN
+              y_norm = MAXVAL( ABS( S( n + 1 : n_all ) ) )
+              IF ( s_norm * h_max <= teneps * y_norm * a_max ) THEN
                 IF ( printt ) WRITE( out, "( ' tiny S = ', ES10.4, ' (',       &
                & 'compared with Y = ', ES10.4, ') has been reset to zero' )" ) &
                   s_norm, y_norm
@@ -4328,14 +4558,30 @@
               g_s = DOT_PRODUCT( GRAD, S( : n ) )
               s_hs = DOT_PRODUCT( S( : n ), H_s )
 
-!  Perform the linesearch
+!  The slope and curvature of the penalty function along s are regarded as
+!  zero if they are smaller than ten times epsmch relative to the sizes of
+!  the data, i.e., to those of g, H x and A^T y for the slope, and of H for
+!  the curvature
+
+              g_scale = MAX( zero, MAXVAL( ABS( G( : n ) ) ),                  &
+                             MAXVAL( ABS( GRAD( : n ) - G( : n ) ) ),          &
+                             a_max * MAXVAL( ABS( S( n + 1 : n_all ) ) ) )
+              gzero = teneps * s_norm * g_scale
+              hzero = teneps * s_norm ** 2 * h_max
+
+!  Perform the linesearch. A constraint whose normal makes an angle with s
+!  whose cosine is at most epsmch ** 0.4 is regarded as unaffected by the
+!  step; this is the threshold below which QPA_most_independent will not
+!  add a constraint to the working set, so that every breakpoint found by
+!  the linesearch may be added
 
               CALL QPA_linesearch( dims, n, m, inform%obj, g_s, s_hs, s_norm,  &
                                   rho_g, rho_b, X, X_l, X_u, RES_l, RES_u,     &
                                   S( : n ), A_s, A_norms,                      &
                                   C_stat, B_stat, REF, IBREAK, BREAKP, lbreak, &
                                   m_link, out, printt, printm, printd, t_opt,  &
-                                  too_small_a_s, active, linesearch_inform )
+                                  epsmch ** 0.4 * s_norm, gzero, hzero,        &
+                                  active, linesearch_inform )
 
 !  The problem is unbounded from below
 
@@ -4364,6 +4610,11 @@
 
               RES_l = RES_l + t_opt * A_s( : dims%c_l_end )
               RES_u = RES_u - t_opt * A_s( dims%c_u_start : m )
+
+!  Remove any residuals that are simply the result of rounding errors
+
+              CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,      &
+                                       A_norms, RES_l, RES_u )
               GRAD = GRAD + t_opt * H_s
 
               IF ( printt ) THEN
@@ -4487,6 +4738,17 @@
             CASE ( 2 )
               IF ( printe ) WRITE ( out, 2062 ) prefix, inform%iter, addel
               IF ( printe ) WRITE ( out, 2120 ) prefix, scu_status
+
+!  if the same constraint could not be added immediately after the
+!  matrices were refactorized, give up rather than repeat the attempt
+!  indefinitely
+
+              IF ( active == j_add_failed ) THEN
+                IF ( printe ) WRITE( out, 2150 ) prefix, active
+                inform%status = GALAHAD_error_ill_conditioned
+                EXIT major
+              END IF
+              j_add_failed = active
               EXIT minor
             CASE ( 3 )
               IF ( printe ) WRITE ( out, 2062 ) prefix, inform%iter, addel
@@ -4498,6 +4760,7 @@
               IF ( printe ) WRITE ( out, 2062 ) prefix, inform%iter, addel
               EXIT minor
             END SELECT
+            j_add_failed = 0
 
 !  ====================
 !  Check for optimality
@@ -4515,6 +4778,15 @@
 !  as appropriate
 
 !  Pick the appropriate deletion strategy
+
+!  A multiplier is only considered to lie outside its interval if it does
+!  so by more than multiplier_tol relative to the sizes of g, H x and the
+!  multipliers (GRAD = g + H x, and the multipliers are in S( n + 1 : ))
+
+            mult_zero = - control%multiplier_tol *                             &
+              MAX( zero, MAXVAL( ABS( G( : n ) ) ),                            &
+                   MAXVAL( ABS( GRAD( : n ) - G( : n ) ) ),                    &
+                   MAXVAL( ABS( S( n + 1 : n_all ) ) ) )
 
             SELECT CASE( control%deletion_strategy )
 
@@ -5531,6 +5803,11 @@
             RES_u( i ) = C_u( i ) - a_x
           END DO
 
+!  Remove any residuals that are simply the result of rounding errors
+
+          CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,          &
+                                   A_norms, RES_l, RES_u )
+
 !  Compute the resulting gradient
 
           GRAD = G
@@ -5640,6 +5917,11 @@
           END DO
           RES_u( i ) = C_u( i ) - a_x
         END DO
+
+!  Remove any residuals that are simply the result of rounding errors
+
+        CALL QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,            &
+                                 A_norms, RES_l, RES_u )
 
 !  Compute the resulting gradient
 
@@ -5838,6 +6120,12 @@
                  ' Perturbing G', :, ' by ', ES12.4, ' and restarting',        &
                  ' (pivtol = ', ES9.2, ')', / )
  2120 FORMAT( /, A, '  on exit from SCU_append,   status = ', I0 )
+ 2150 FORMAT( /, A, '  constraint ', I0, ' cannot be added to the working',   &
+              ' set even after refactorization' )
+ 2160 FORMAT( /, A, '  the preconditioner gave a negative inner product ', I0, &
+              ' times in succession, even with G = H' )
+ 2170 FORMAT( /, A, '  the preconditioner gave a negative inner product ', I0, &
+              ' times in succession; using G = H instead' )
  2130 FORMAT( /, A, '  on exit from SCU_delete,   status = ', I0 )
  2140 FORMAT( /, A, ' =+=> Inertia should be (', I0, ',', I0, ',  0)',         &
                               ' but is    (', I0, ',', I0, ',  0)' )
@@ -6329,6 +6617,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'qpa: data%prob%H%type'
+     CALL SPACE_dealloc_array( data%prob%H%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'qpa: data%prob%H%ptr'
      CALL SPACE_dealloc_array( data%prob%H%ptr,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -6349,6 +6643,12 @@
 
      array_name = 'qpa: data%prob%H%val'
      CALL SPACE_dealloc_array( data%prob%H%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'qpa: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -6390,8 +6690,8 @@
                                  X, X_l, X_u, RES_l, RES_u, S, A_s, A_norms,   &
                                  C_stat, B_stat, REF, IBREAK, BREAKP, lbreak,  &
                                  m_link, out, print_1line, print_detail,       &
-                                 print_debug, t_opt, too_small, active,        &
-                                 inform )
+                                 print_debug, t_opt, too_small, gzero, hzero,  &
+                                 active, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -6458,6 +6758,17 @@
 !  A_norms is a REAL array of length m, which must be set by the user to
 !   the estimates of the norms of the rows of $A$.
 !
+!  too_small is a REAL variable, which must be set by the user to a small
+!   positive multiple of ||s||_2. A general constraint for which
+!   |<a_i,s>| <= too_small ||a_i||_2, or a simple bound for which
+!   |s_i| <= too_small, is considered to be unaffected by the step, i.e.,
+!   the cosine of the angle between s and the constraint normal is
+!   negligible
+!
+!  gzero and hzero are REAL variables, which must be set by the user to
+!   the values below which the absolute values of the slope and curvature
+!   of the penalty function along s are regarded as zero
+!
 !  C_stat, B_stat, REF are INTEGER arrays described in QPA_solve
 !
 !  IBREAK is an INTEGER workspace array of length lbreak
@@ -6502,6 +6813,7 @@
       LOGICAL, INTENT( IN ) :: print_1line, print_detail, print_debug
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, s_norm
       REAL ( KIND = rp_ ), INTENT( IN ) :: rho_g, rho_b, too_small
+      REAL ( KIND = rp_ ), INTENT( IN ) :: gzero, hzero
       REAL ( KIND = rp_ ), INTENT( OUT ) :: t_opt
       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_norms
@@ -6566,7 +6878,7 @@
         infeas_g = infeas_g + ABS( res )
 
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
         IF ( res + t_pert * as > zero ) slope_infeas_g = slope_infeas_g + as
@@ -6611,7 +6923,7 @@
         IF ( res < zero ) infeas_g = infeas_g - res
 
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
 
@@ -6653,7 +6965,7 @@
         IF ( res < zero ) infeas_g = infeas_g - res
 
         as = - A_s( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
 !       IF ( res + t_pert * as < zero ) write(6,*) ' slope_term = u ', i
@@ -6695,7 +7007,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -6735,7 +7047,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -6775,7 +7087,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = - S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -6815,7 +7127,7 @@
         IF ( res < zero ) infeas_b = infeas_b - res
 
         as = - S( i )
-        IF ( ABS( as ) < too_small ) CYCLE
+        IF ( ABS( as ) <= too_small ) CYCLE
 
         IF ( res + t_pert * as < zero ) slope_infeas_b = slope_infeas_b - as
 
@@ -6853,8 +7165,8 @@
         CALL QPA_p_val_and_slope( dims, n, m,                                  &
                                   f, g_s, s_hs, rho_g, rho_b, X, X_l,          &
                                   X_u, RES_l, RES_u, S, A_s, 0.0_rp_, t_pert,  &
-                                  too_small, REF, m_link, C_stat, B_stat,      &
-                                  eval, eslope )
+                                  too_small, A_norms, REF, m_link, C_stat,     &
+                                  B_stat, eval, eslope )
         write( out, 2010 ) '  val', val, eval
       END IF
 
@@ -6912,7 +7224,7 @@
 !  is positive, exit
 
         IF ( ABS( gradient ) <= gzero ) THEN
-          IF ( curv > - hzero ) THEN
+          IF ( curv >= - hzero ) THEN
             IF ( inform == 0 ) t_opt = t_break
             EXIT
           END IF
@@ -6956,7 +7268,8 @@
             IF ( print_debug ) THEN
               eval = QPA_p_val( dims, n, m,                                    &
                                 f, g_s, s_hs, rho_g, rho_b, X, X_l, X_u,       &
-                                RES_l, RES_u, S, A_s, t_opt, too_small )
+                                RES_l, RES_u, S, A_s, t_opt, too_small,        &
+                                A_norms )
               write( out, 2010 ) '  val', fun, eval
             END IF
             IF ( beyond_first_breakpoint ) inform = 0
@@ -7052,8 +7365,8 @@
             CALL QPA_p_val_and_slope( dims, n, m,                              &
                                       f, g_s, s_hs, rho_g, rho_b, X,           &
                                       X_l, X_u, RES_l, RES_u, S, A_s, t_break, &
-                                      t_pert, too_small, REF, m_link, C_stat,  &
-                                      B_stat, eval, eslope )
+                                      t_pert, too_small, A_norms, REF, m_link, &
+                                      C_stat, B_stat, eval, eslope )
             WRITE( out, 2010 ) '  val', fun, eval
             WRITE( out, 2010 ) 'slope', gradient, eslope
           END IF
@@ -7072,8 +7385,8 @@
             CALL QPA_p_val_and_slope( dims, n, m,                              &
                                       f, g_s, s_hs, rho_g, rho_g, X,           &
                                       X_l, X_u, RES_l, RES_u, S, A_s, t_break, &
-                                      t_pert, too_small, REF, m_link, C_stat,  &
-                                      B_stat, val, slope )
+                                      t_pert, too_small, A_norms, REF, m_link, &
+                                      C_stat, B_stat, val, slope )
 
             gradient = slope + t_break * curv
             IF ( print_debug )                                                 &
@@ -7092,8 +7405,8 @@
 
           CALL QPA_p_val_and_slope( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, &
                                     X_l, X_u, RES_l, RES_u, S, A_s, t_break,   &
-                                    t_pert, too_small, REF, m_link, C_stat,    &
-                                    B_stat, val, slope )
+                                    t_pert, too_small, A_norms, REF, m_link,   &
+                                    C_stat, B_stat, val, slope )
           gradient = slope + t_break * curv
           nbreak = 0
           cluster_end = nbreak_total
@@ -7138,7 +7451,7 @@
 !  value
 
       val = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, X_l, X_u,    &
-                       RES_l, RES_u, S, A_s, t_opt, too_small )
+                       RES_l, RES_u, S, A_s, t_opt, too_small, A_norms )
       recover =                                                                &
         f + rho_g * infeas_g + rho_b * infeas_b + epsmch ** 0.33 <= val
 
@@ -7160,8 +7473,8 @@
 
       CALL QPA_p_val_and_slope( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,     &
                                 X_l, X_u, RES_l, RES_u, S, A_s, 0.0_rp_,t_pert,&
-                                too_small, REF, m_link, C_stat, B_stat,        &
-                                val, slope )
+                                too_small, A_norms, REF, m_link, C_stat,       &
+                                B_stat, val, slope )
       curv = s_hs
 
 !  Record the function value and gradient at (just on the other side of)
@@ -7207,7 +7520,7 @@
 !  is positive, exit
 
         IF ( ABS( gradient ) <= gzero ) THEN
-          IF ( curv > - hzero ) THEN
+          IF ( curv >= - hzero ) THEN
             IF ( inform == 0 ) t_opt = t_break
             EXIT
           END IF
@@ -7242,7 +7555,8 @@
 !  Calculate the function value for the piecewise quadratic
 
             val = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,        &
-                             X_l, X_u, RES_l, RES_u, S, A_s, t_opt, too_small )
+                             X_l, X_u, RES_l, RES_u, S, A_s, t_opt, too_small, &
+                             A_norms )
 
 !  If the function value has risen in the current interval, search the
 !  interval for a better value, and exit
@@ -7252,7 +7566,8 @@
                                             f, g_s, s_hs, rho_g, rho_b,        &
                                             X, X_l, X_u, RES_l, RES_u, S, A_s, &
                                             t_old, val_old, t_opt, val,        &
-                                            too_small, out, print_detail )
+                                            too_small, A_norms, out,           &
+                                            print_detail )
             END IF
 
             IF ( print_detail ) WRITE( out, 2000 )
@@ -7261,7 +7576,8 @@
                  iter, t_opt, '      -      -', fun, zero, curv
             IF ( print_debug ) THEN
               eval = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, X_l,&
-                                X_u, RES_l, RES_u, S, A_s, t_opt, too_small )
+                                X_u, RES_l, RES_u, S, A_s, t_opt, too_small,   &
+                                A_norms )
               WRITE( out, 2010 ) '  val', fun, eval
             END IF
             IF ( beyond_first_breakpoint ) inform = 0
@@ -7339,8 +7655,8 @@
         CALL QPA_p_val_and_slope( dims, n, m,                                  &
                                   f, g_s, s_hs, rho_g, rho_b, X, X_l,          &
                                   X_u, RES_l, RES_u, S, A_s, t_break, t_pert,  &
-                                  too_small, REF, m_link, C_stat, B_stat,      &
-                                  val, slope )
+                                  too_small, A_norms, REF, m_link, C_stat,     &
+                                  B_stat, val, slope )
         gradient = slope + t_break * curv
 
         IF ( print_debug )                                                     &
@@ -7351,7 +7667,7 @@
                                         f, g_s, s_hs, rho_g, rho_b, X,         &
                                         X_l, X_u, RES_l, RES_u, S, A_s,        &
                                         t_old, val_old, t_opt, val,            &
-                                        too_small, out, print_detail )
+                                        too_small, A_norms, out, print_detail )
           EXIT
         END IF
         val_old = val
@@ -7413,7 +7729,7 @@
                                           f, g_s, s_hs, rho_g, rho_b, X,       &
                                           X_l, X_u,  RES_l, RES_u, S, A_s,     &
                                           t_lower, val_lower, t_opt, val_opt,  &
-                                          too_small, out, print_debug )
+                                          too_small, A_norms, out, print_debug )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -7437,7 +7753,7 @@
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b, too_small
       REAL ( KIND = rp_ ), INTENT( INOUT ) :: t_lower, val_lower, t_opt, val_opt
       LOGICAL, INTENT( IN ) :: print_debug
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_end ) ::  RES_l
@@ -7468,7 +7784,8 @@
         END IF
         t_new = half * ( t_lower + t_opt )
         val_new = QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X, X_l,   &
-                             X_u, RES_l, RES_u, S, A_s, t_new, too_small )
+                             X_u, RES_l, RES_u, S, A_s, t_new, too_small,      &
+                             A_norms )
         IF ( val_opt < val_lower ) THEN
           t_lower = t_new ; val_lower = val_new
         ELSE
@@ -7517,6 +7834,9 @@
       INTEGER ( KIND = ip_ ) :: i, j
       REAL ( KIND = rp_ ) :: cos_current, small_cos, small_cosine
 
+!  NB. the linesearch uses the same threshold, and they should be changed
+!  together
+
       small_cosine = epsmch ** 0.4
       cos_best = zero
       cluster_best = 0
@@ -7562,7 +7882,8 @@
 !-*-*-*-*-*-*-*-*-*-   Q P A _ P _ V A L   F U N C T I O N   -*-*-*-*-*-*-*-*-*-
 
       FUNCTION QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,           &
-                          X_l, X_u, RES_l, RES_u, S, A_s, t, too_small )
+                          X_l, X_u, RES_l, RES_u, S, A_s, t, too_small,        &
+                          A_norms )
       REAL ( KIND = rp_ ) QPA_p_val
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -7577,7 +7898,7 @@
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
       REAL ( KIND = rp_ ), INTENT( IN ) :: t, too_small
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_end ) ::  RES_l
@@ -7595,7 +7916,7 @@
 
       DO i = 1, dims%c_equality
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g + ABS( RES_l( i ) )
         ELSE
           infeas_g = infeas_g + ABS( RES_l( i ) + t * as )
@@ -7606,7 +7927,7 @@
 
       DO i = dims%c_equality + 1, dims%c_l_end
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_l( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_l( i ) + t * as, zero )
@@ -7617,7 +7938,7 @@
 
       DO i = dims%c_u_start, m
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_u( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_u( i ) - t * as, zero )
@@ -7628,7 +7949,7 @@
 
       DO i = dims%x_free + 1, dims%x_l_start - 1
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) + t * as, zero )
@@ -7639,7 +7960,7 @@
 
       DO i = dims%x_l_start, dims%x_l_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ) + t * as, zero )
@@ -7650,7 +7971,7 @@
 
       DO i = dims%x_u_start, dims%x_u_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ) - t * as, zero )
@@ -7661,7 +7982,7 @@
 
       DO i = dims%x_u_end + 1, n
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( - X( i ) - t * as, zero )
@@ -7681,7 +8002,7 @@
 
       SUBROUTINE QPA_p_val_and_slope( dims, n, m, f, g_s, s_hs, rho_g, rho_b,  &
                                       X, X_l, X_u, RES_l, RES_u, S, A_s, t,    &
-                                      t_pert, too_small, REF, m_link,          &
+                                      t_pert, too_small, A_norms, REF, m_link, &
                                       C_stat, B_stat, val, slope )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -7701,7 +8022,7 @@
       REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
       REAL ( KIND = rp_ ), INTENT( IN ) :: t, t_pert, too_small
       REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_end ) ::  RES_l
@@ -7724,7 +8045,7 @@
 
       DO i = 1, dims%c_equality
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g + ABS( RES_l( i ) )
         ELSE
           infeas_g = infeas_g + ABS( RES_l( i ) + t * as )
@@ -7745,7 +8066,7 @@
 
       DO i = dims%c_equality + 1, dims%c_l_end
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_l( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_l( i ) + t * as, zero )
@@ -7764,7 +8085,7 @@
 
       DO i = dims%c_u_start, m
         as = A_s( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small * A_norms( i ) ) THEN
           infeas_g = infeas_g - MIN( RES_u( i ), zero )
         ELSE
           infeas_g = infeas_g - MIN( RES_u( i ) - t * as, zero )
@@ -7783,7 +8104,7 @@
 
       DO i = dims%x_free + 1, dims%x_l_start - 1
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) + t * as, zero )
@@ -7802,7 +8123,7 @@
 
       DO i = dims%x_l_start, dims%x_l_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X( i ) - X_l( i ) + t * as, zero )
@@ -7821,7 +8142,7 @@
 
       DO i = dims%x_u_start, dims%x_u_end
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( X_u( i ) - X( i ) - t * as, zero )
@@ -7840,7 +8161,7 @@
 
       DO i = dims%x_u_end + 1, n
         as = S( i )
-        IF ( ABS( as ) < too_small ) THEN
+        IF ( ABS( as ) <= too_small ) THEN
           infeas_b = infeas_b - MIN( - X( i ), zero )
         ELSE
           infeas_b = infeas_b - MIN( - X( i ) - t * as, zero )
@@ -7864,6 +8185,93 @@
 !  End of subroutine QPA_p_val_and_slope
 
       END SUBROUTINE QPA_p_val_and_slope
+
+!-*-*-*-*-   Q P A _ S N A P _ R E S I D U A L S   S U B R O U T I N E   -*-*-*-
+
+      SUBROUTINE QPA_snap_residuals( dims, n, m, X, X_l, X_u, C_l, C_u,        &
+                                     A_norms, RES_l, RES_u )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Set to zero any residual of a general constraint, and any distance of a
+!  variable from one of its simple bounds, that is no larger than the
+!  rounding errors that may be expected in computing it, namely
+!  10 epsmch ( |c_i| + ||a_i|| ||x||_inf ) for a general constraint a_i^T x
+!  with bound c_i, and 10 epsmch ( |x_b| + ||x||_inf ) for a simple bound
+!  x_b (in which case the variable is moved onto the bound). Whether a
+!  constraint is violated is decided by the sign of its residual in several
+!  places (the search direction, the linesearch and the final multipliers),
+!  and this ensures that these decisions are consistent
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+      TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u, A_norms
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_l_end ) :: RES_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_u_start : m ) :: RES_u
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: x_max
+
+      IF ( n <= 0 ) RETURN
+      x_max = MAXVAL( ABS( X ) )
+
+!  general constraints with lower bounds (including equalities)
+
+      DO i = 1, dims%c_l_end
+        IF ( ABS( RES_l( i ) ) <=                                              &
+             teneps * ( ABS( C_l( i ) ) + A_norms( i ) * x_max ) )             &
+          RES_l( i ) = zero
+      END DO
+
+!  general constraints with upper bounds
+
+      DO i = dims%c_u_start, m
+        IF ( ABS( RES_u( i ) ) <=                                              &
+             teneps * ( ABS( C_u( i ) ) + A_norms( i ) * x_max ) )             &
+          RES_u( i ) = zero
+      END DO
+
+!  simple non-negativity
+
+      DO i = dims%x_free + 1, dims%x_l_start - 1
+        IF ( ABS( X( i ) ) <= teneps * x_max ) X( i ) = zero
+      END DO
+
+!  simple lower bounds (including those of variables with both bounds)
+
+      DO i = dims%x_l_start, dims%x_l_end
+        IF ( ABS( X( i ) - X_l( i ) ) <=                                       &
+             teneps * ( ABS( X_l( i ) ) + x_max ) ) X( i ) = X_l( i )
+      END DO
+
+!  simple upper bounds (including those of variables with both bounds)
+
+      DO i = dims%x_u_start, dims%x_u_end
+        IF ( ABS( X_u( i ) - X( i ) ) <=                                       &
+             teneps * ( ABS( X_u( i ) ) + x_max ) ) X( i ) = X_u( i )
+      END DO
+
+!  simple non-positivity
+
+      DO i = dims%x_u_end + 1, n
+        IF ( ABS( X( i ) ) <= teneps * x_max ) X( i ) = zero
+      END DO
+
+      RETURN
+
+!  End of subroutine QPA_snap_residuals
+
+      END SUBROUTINE QPA_snap_residuals
 
 !-*-*-   Q P A _ R E M O V E _ D E P E N D E N T  S U B R O U T I N E   -*-*-
 
@@ -7917,6 +8325,7 @@
       REAL ( KIND = rp_ ) :: u, tolerance, scale, res, res_max, a_abs
       LOGICAL ::  twobytwo, scale_a, rhs
       CHARACTER ( LEN = 80 ) :: array_name
+      CHARACTER ( LEN = LEN( control%symmetric_linear_solver ) ) :: solver
 
       out = control%out
 
@@ -8087,7 +8496,12 @@
       SLS_control%relative_pivot_tolerance = control%pivot_tol_for_dependencies
       SLS_control%zero_tolerance = epsmch ** 2
 
-      CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
+!  the dependency check needs the pivots and diagonal blocks of the factors.
+!  If the chosen solver cannot provide them, sytr is used instead (see below)
+
+      solver = control%symmetric_linear_solver
+  100 CONTINUE
+      CALL SLS_initialize_solver( solver,                                      &
                                   SLS_data, SLS_control%error,                 &
                                   inform%SLS_inform, check = .TRUE. )
       IF ( inform%SLS_inform%status < 0 ) THEN
@@ -8170,6 +8584,28 @@
 !  Determine the block diagonal part of the factors and the pivot order
 
       CALL SLS_enquire( SLS_data, inform%SLS_inform, PIVOTS = P, D = D )
+
+!  some solvers (e.g. PaStiX and MUMPS) cannot provide the pivots and diagonal
+!  blocks. If so, release that solver's data and refactorize using sytr
+
+      IF ( inform%SLS_inform%status == GALAHAD_error_access_pivots .OR.        &
+           inform%SLS_inform%status == GALAHAD_error_access_diagonal ) THEN
+        IF ( TRIM( solver ) /= 'sytr' ) THEN
+          IF ( out > 0 .AND. control%print_level >= 1 ) WRITE( out,            &
+            "( A, ' solver ', A, ' cannot provide the pivots needed to',       &
+         &     ' find dependent constraints, using sytr instead' )" )          &
+              prefix, TRIM( solver )
+          CALL SLS_terminate( SLS_data, SLS_control, inform%SLS_inform )
+          solver = 'sytr'
+          GO TO 100
+        END IF
+        inform%status = inform%SLS_inform%status ; GO TO 990
+      END IF
+
+!  a negative rank means that the solver did not report it; the factors are
+!  then taken to be nonsingular
+
+      IF ( inform%SLS_inform%rank < 0 ) inform%SLS_inform%rank = K%n
 !write(6,"( ' P ', ( 20I4 ) )" ) P( : K%n )
 !write(6,"( ' dia ', 4ES12.4 )" ) D( 1, 1 : K%n )
 !write(6,"( ' off ', 4ES12.4 )" ) D( 2, 1 : K%n-1 )
@@ -9872,7 +10308,8 @@ main: DO
       SUBROUTINE QPA_factorize_reference(                                      &
                     dims, n, m, jumpto, k_n_max, print_level, &
                     m_link, max_col, factor, precon, nsemib, hmax, G_perturb,  &
-                    out, prec_hist, printi, printt, printe, G_eq_H, auto_prec, &
+                    out, prec_hist, printi, printt, printe, G_eq_H,            &
+                    indefinite, auto_prec,                                     &
                     auto_fact, check_dependent, mo, PERM, REF, C_stat, B_stat, &
                     A_ptr, A_col, H_ptr, H_col, A_val, H_val, K, K_part, S,    &
                     Abycol_row, Abycol_ptr, S_row, S_col, S_colptr,            &
@@ -9894,6 +10331,11 @@ main: DO
       REAL ( KIND = rp_ ), INTENT( INOUT ) :: G_perturb
       LOGICAL, INTENT( IN ) :: printi, printt, printe
       LOGICAL, INTENT( INOUT ) :: G_eq_H
+
+!  indefinite is set .TRUE. if the factorization of the reference matrix
+!  showed that H is not positive definite on the working set
+
+      LOGICAL, INTENT( OUT ) :: indefinite
       LOGICAL, INTENT( INOUT ) :: auto_prec, auto_fact, check_dependent
       CHARACTER ( LEN = 1 ), INTENT( INOUT ) :: mo
 
@@ -9989,6 +10431,7 @@ main: DO
       DO i = K_part%k_ref + 1, k_n_max + control%max_sc
         PERM( i ) = i
       END DO
+      indefinite = .FALSE.
 
 !  Print a header indicating the method selected
 
@@ -11361,6 +11804,21 @@ main: DO
                           prefix, inform%SLS_inform%status, 'SLS_factorize'
         END IF
 
+!  the test for convexity below needs the inertia of the factors. Some
+!  solvers (e.g. PaStiX) do not report it, so their factorizations are not
+!  suitable for QPA
+
+        IF ( inform%SLS_inform%negative_eigenvalues < 0 ) THEN
+          IF ( printi ) WRITE( control%out, "( /, A, ' solver ', A,           &
+         &  ' does not provide the inertia required by QPA' )" ) prefix,       &
+            TRIM( control%symmetric_linear_solver )
+          inform%status = GALAHAD_unsuitable_option ; jumpto = 1 ; RETURN
+        END IF
+
+!  a negative rank means that the solver did not report it; the factors are
+!  then taken to be nonsingular
+
+        IF ( inform%SLS_inform%rank < 0 ) inform%SLS_inform%rank = K%n
         zeig = K%n - inform%SLS_inform%rank
         IF ( zeig > 0 .AND. printt ) WRITE( control%out,                       &
           "( A, ' ** Matrix has ', I0, ' zero eigenvalues ' )" ) prefix, zeig
@@ -11384,6 +11842,7 @@ main: DO
 !  Test that the problem is convex in the null-space of the constraints
 
         modify_k = zeig + inform%SLS_inform%negative_eigenvalues > K_part%c_ref
+        IF ( modify_k .AND. G_eq_H ) indefinite = .TRUE.
 
 !  As a precaution, check that the pivots are not too small
 
@@ -11396,6 +11855,14 @@ main: DO
 !  Determine the block diagonal part of the factors
 
           CALL SLS_enquire( SLS_data, inform%SLS_inform, D = DIAG )
+
+!  some solvers (e.g. PaStiX and MUMPS) cannot provide the diagonal blocks,
+!  in which case this precautionary check is skipped
+
+          IF ( inform%SLS_inform%status /= GALAHAD_ok ) THEN
+            inform%SLS_inform%status = GALAHAD_ok
+            GO TO 40
+          END IF
 !write(6,"( ' dia ', 4ES12.4 )" ) DIAG( 1, 1 : K%n )
 !write(6,"( ' off ', 4ES12.4 )" ) DIAG( 2, 1 : K%n-1 )
 
@@ -11454,6 +11921,7 @@ main: DO
           IF ( printt .AND. modify_k ) WRITE( control%out,                     &
             "( A, ' ** Matrix has at least one zero eigenvalue ' )" ) prefix
         END IF
+  40    CONTINUE
 
         IF ( modify_k ) THEN
           IF ( mo == ' ' ) THEN

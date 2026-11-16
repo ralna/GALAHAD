@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
+! THIS VERSION: GALAHAD 5.1 - 2026-11-08 AT 10:16 GMT
 
 #include "galahad_modules.h"
 
@@ -983,7 +983,6 @@
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1027,7 +1026,7 @@
       inform%iter = - 1
       inform%obj = - one
       inform%feasible = .FALSE.
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
       warm_start = control%warm_start .AND. stat_required
 
@@ -1906,6 +1905,12 @@
 
      array_name = 'lpa: data%prob%C_u'
      CALL SPACE_dealloc_array( data%prob%C_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

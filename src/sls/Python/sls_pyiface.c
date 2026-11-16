@@ -1,7 +1,7 @@
 //* \file sls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.2 - 2025-03-26 AT 13:50 GMT.
+ * THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -33,7 +33,7 @@ PyObject* nodend_make_inform_dict(const struct nodend_inform_type *inform);
 //PyObject* ma86_make_inform_dict(const struct ma86_inform_type *inform);
 //PyObject* ma87_make_inform_dict(const struct ma87_inform_type *inform);
 //PyObject* ma97_make_inform_dict(const struct ma97_inform_type *inform);
-//PyObject* ssids_make_inform_dict(const struct ssids_inform_type *inform);
+//PyObject* slblt_make_inform_dict(const struct slblt_inform_type *inform);
 //PyObject* mc64_make_inform_dict(const struct mc64_inform_type *inform);
 //PyObject* mc68_make_inform_dict(const struct mc68_inform_type *inform);
 
@@ -195,6 +195,12 @@ bool sls_update_control(struct sls_control_type *control,
         if(strcmp(key_name, "ordering") == 0){
             if(!parse_int_option(value, "ordering",
                                   &control->ordering))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "pastix_ordering") == 0){
+            if(!parse_int_option(value, "pastix_ordering",
+                                  &control->pastix_ordering))
                 return false;
             continue;
         }
@@ -439,6 +445,8 @@ PyObject* sls_make_options_dict(const struct sls_control_type *control){
                          PyLong_FromLong(control->pivot_control));
     PyDict_SetItemString(py_options, "ordering",
                          PyLong_FromLong(control->ordering));
+    PyDict_SetItemString(py_options, "pastix_ordering",
+                         PyLong_FromLong(control->pastix_ordering));
     PyDict_SetItemString(py_options, "full_row_threshold",
                          PyLong_FromLong(control->full_row_threshold));
     PyDict_SetItemString(py_options, "row_search_indefinite",
@@ -658,8 +666,8 @@ PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
     //                     ma87_make_inform_dict(&inform->ma87_inform));
     //PyDict_SetItemString(py_inform, "ma97_inform",
     //                     ma97_make_inform_dict(&inform->ma97_inform));
-    //PyDict_SetItemString(py_inform, "ssids_inform",
-    //                     ssids_make_inform_dict(&inform->ssids_inform));
+    //PyDict_SetItemString(py_inform, "slblt_inform",
+    //                     slblt_make_inform_dict(&inform->slblt_inform));
     //PyDict_SetItemString(py_inform, "mc61_info",
     //                     PyLong_FromLong(inform->mc61_info));
     //PyDict_SetItemString(py_inform, "mc61_rinfo",
@@ -733,8 +741,9 @@ static PyObject* py_sls_initialize(PyObject *self, PyObject *args, PyObject *key
 
 static PyObject* py_sls_analyse_matrix(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
+    PyArrayObject *tmp_A_row = NULL, *tmp_A_col = NULL, *tmp_A_ptr = NULL;
     PyObject *py_options = NULL;
-    int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
+    const ipc_ *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
     const char *A_type;
     int n, A_ne;
 
@@ -752,7 +761,6 @@ static PyObject* py_sls_analyse_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&
@@ -760,25 +768,25 @@ static PyObject* py_sls_analyse_matrix(PyObject *self, PyObject *args, PyObject 
         ))
         return NULL;
 
-    // Convert 64bit integer A_row array to 32bit
+    // Convert NumPy integer A_row array to ipc_
     if((PyObject *) py_A_row != Py_None){
-        A_row = malloc(A_ne * sizeof(int));
-        long int *A_row_long = (long int *) PyArray_DATA(py_A_row);
-        for(int i = 0; i < A_ne; i++) A_row[i] = (int) A_row_long[i];
+       tmp_A_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_row == NULL) goto conversion_error;
+       A_row = (const ipc_ *) PyArray_DATA(tmp_A_row);
     }
 
-    // Convert 64bit integer A_col array to 32bit
+    // Convert NumPy integer A_col array to ipc_
     if((PyObject *) py_A_col != Py_None){
-        A_col = malloc(A_ne * sizeof(int));
-        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
-        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+       tmp_A_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_col == NULL) goto conversion_error;
+       A_col = (const ipc_ *) PyArray_DATA(tmp_A_col);
     }
 
-    // Convert 64bit integer A_ptr array to 32bit
+    // Convert NumPy integer A_ptr array to ipc_
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((n+1) * sizeof(int));
-        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+       tmp_A_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_ptr == NULL) goto conversion_error;
+       A_ptr = (const ipc_ *) PyArray_DATA(tmp_A_ptr);
     }
 
     // Reset control options
@@ -792,10 +800,10 @@ static PyObject* py_sls_analyse_matrix(PyObject *self, PyObject *args, PyObject 
     sls_analyse_matrix(&control, &data, &status, n,
                        A_type, A_ne, A_row, A_col, A_ptr);
 
-    // Free allocated memory
-    if(A_row != NULL) free(A_row);
-    if(A_col != NULL) free(A_col);
-    if(A_ptr != NULL) free(A_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_A_row);
+    Py_XDECREF(tmp_A_col);
+    Py_XDECREF(tmp_A_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -804,7 +812,15 @@ static PyObject* py_sls_analyse_matrix(PyObject *self, PyObject *args, PyObject 
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_A_row);
+        Py_XDECREF(tmp_A_col);
+        Py_XDECREF(tmp_A_ptr);
+        return NULL;
 }
+
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SLS_FACTORIZE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
 
 static PyObject* py_sls_factorize_matrix(PyObject *self, PyObject *args, PyObject *keywds){
@@ -991,11 +1007,11 @@ PyDoc_STRVAR(sls_module_doc,
 "\n"
 "The method provides a common interface to a variety of well-known solvers \n"
 "from HSL and elsewhere. Currently supported solvers include MA27/SILS, \n"
-"HSL_MA57, HSL_MA77 , HSL_MA86, HSL_MA87 and HSL_MA97 from HSL, SSIDS \n"
-"from SPRAL, MUMPS from Mumps Technologies, PARDISO both from the \n"
+"HSL_MA57, HSL_MA77 , HSL_MA86, HSL_MA87 and HSL_MA97 from HSL, SLBLT, \n"
+"MUMPS from Mumps Technologies, PARDISO both from the \n"
 "Pardiso Project and Intel’s MKL, PaStiX from Inria, and WSMP from the \n"
 "IBM alpha Works, as well as POTR, SYTR and SBTR from LAPACK. Note\n"
-"that, with the exception of SSIDS and the Netlib reference LAPACK codes, \n"
+"that, with the exception of SLBLT and the Netlib reference LAPACK codes, \n"
 "the solvers themselves do not form part of this package and must be \n"
 "obtained/linked to separately. Dummy instances are provided for solvers \n"
 "that are unavailable. Also note that additional flexibility may be \n"

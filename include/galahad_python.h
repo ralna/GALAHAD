@@ -1,17 +1,34 @@
-// This version 2023-03-29 at 09:15 GMT
+// This version 2026-09-29 at 10:15 GMT
 
 #define NPY_NO_DEPRECATED_API NPY_1_20_API_VERSION
-
-#include <stdbool.h>
-#include <stdint.h>
 
 // include guard
 #ifndef GALAHAD_PYTHON_H
 #define GALAHAD_PYTHON_H
 
+// Fix POSIX macro collision
+#ifdef _POSIX_C_SOURCE
+#undef _POSIX_C_SOURCE
+#endif
+#ifdef _XOPEN_SOURCE
+#undef _XOPEN_SOURCE
+#endif
+
 // Python and NumPy C APIs
 #include <Python.h>
 #include <numpy/arrayobject.h>
+
+// GALAHAD C types
+#include "galahad_precision.h"
+
+#include <stdbool.h>
+
+
+/*
+ * Set integer type for conversion from NumPy
+ */
+static const int NPY_IPC = (sizeof(ipc_) == 8) ? NPY_INT64 : NPY_INT32;
+
 
 /*
  * Check and handle general status error codes
@@ -265,7 +282,7 @@ static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
     if((PyObject *) arr == Py_None) // allowed to be None
         return true;
     if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) &&
-         PyArray_TYPE(arr)==NPY_LONG &&
+         (PyArray_TYPE(arr)==NPY_LONG || PyArray_TYPE(arr)==NPY_INTP) &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
                      "%s must be a 1D int array of length %i not given %i", 
@@ -385,7 +402,7 @@ static inline bool parse_int_array_option(PyArrayObject *value,
                                           char *option_name, int *out,
                                           int outsize){
     if(!(PyArray_Check(value) && PyArray_ISINTEGER(value) &&
-         PyArray_TYPE(value)==NPY_LONG &&
+         (PyArray_TYPE(value)==NPY_LONG || PyArray_TYPE(value)==NPY_INTP) &&
          PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
            PyErr_Format(PyExc_TypeError,
               "%s must be a 1D int array of length %i", option_name, outsize);

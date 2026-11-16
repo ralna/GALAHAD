@@ -227,7 +227,7 @@ exit if any deallocation fails
 
 	char linear_solver[31]
 
-the name of the linear equation solver used to solve any symmetric positive-definite linear system involving $H$ that might arise. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', ssids, 'pardiso', 'wsmp', 'sytr', 'potr' and 'pbtr' although only 'sytr', 'potr', 'pbtr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
+the name of the linear equation solver used to solve any symmetric positive-definite linear system involving $H$ that might arise. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', slblt, 'pardiso', 'wsmp', 'sytr', 'potr' and 'pbtr' although only 'sytr', 'potr', 'pbtr' and 'slblt' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
 
 .. index:: pair: variable; definite_linear_solver_for_s
 .. _doxid-structtrek__control__type_linear_solver_for_s:
@@ -237,7 +237,7 @@ the name of the linear equation solver used to solve any symmetric positive-defi
 
 	char linear_solver_for_s[31]
 
-the name of the linear equation solver used to solve any symmetric positive-definite linear system involving the optional $S$ that might arise. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', ssids, 'pardiso', 'wsmp', 'sytr', 'potr' and 'pbtr' although only 'sytr', 'potr', 'pbtr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
+the name of the linear equation solver used to solve any symmetric positive-definite linear system involving the optional $S$ that might arise. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', slblt, 'pardiso', 'wsmp', 'sytr', 'potr' and 'pbtr' although only 'sytr', 'potr', 'pbtr' and 'slblt' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
 
 .. index:: pair: variable; prefix
 .. _doxid-structtrek__control__type_prefix:

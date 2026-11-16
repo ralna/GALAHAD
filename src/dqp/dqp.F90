@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 10:44 GMT.
 
 #include "galahad_modules.h"
 
@@ -118,8 +118,16 @@
 !     REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 20 )
       REAL ( KIND = rp_ ), PARAMETER :: hzero = zero
+
+!  the trust-region radius for the subspace step; any finite value is
+!  allowed by the theory, and it is smaller in single precision to limit the
+!  size of the quantities computed within it
+
+#ifdef REAL_32
+      REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 4
+#else
       REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 10
-!     REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 20
+#endif
       REAL ( KIND = rp_ ), PARAMETER :: alpha_search = one
       REAL ( KIND = rp_ ), PARAMETER :: beta_search = half
       REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
@@ -288,7 +296,9 @@
 
         REAL ( KIND = rp_ ) :: final_perturbation = ten ** ( - 6 )
 
-!   are the factors of the optimal augmented matrix required?
+!   are the factors of the optimal augmented matrix required? (if so, the
+!    matrix of constraints active at the solution is assembled in any case,
+!    but it is only factorized if subspace_direct is .TRUE.)
 
         LOGICAL :: factor_optimal_matrix = .FALSE.
 
@@ -350,12 +360,12 @@
 
 !  indefinite linear equation solver set in symmetric_linear_solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "slblt" //         &
                                                              REPEAT( ' ', 25 )
 
 !  definite linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: definite_linear_solver = "ssids" //          &
+        CHARACTER ( LEN = 30 ) :: definite_linear_solver = "slblt" //          &
                                                             REPEAT( ' ', 25 )
 
 !  unsymmetric linear equation solver
@@ -1494,7 +1504,6 @@
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1538,7 +1547,7 @@
       inform%obj = - one
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
 
 !  basic single line of output per iteration
@@ -4588,10 +4597,12 @@
 !  if required, form and factorize the matrix K_0 = (   H     J^T_F_k )
 !                                                   ( J_F_k      0    )
 
-          IF ( control%factor_optimal_matrix .AND. control%subspace_direct     &
-               .AND. change_subspace > 0 ) THEN
+          IF ( control%factor_optimal_matrix .AND.                             &
+               ( .NOT. control%subspace_direct .OR. change_subspace > 0 ) ) THEN
 
-!  form the matrix of primal-active rows of A
+!  form the matrix of primal-active rows of A (this is required even if the
+!  subspace step is computed iteratively, since the matrix is then used to
+!  compute products with the active constraints, e.g., by DLP)
 
 !  components from the general constraints
 
@@ -4623,6 +4634,12 @@
 !do i = 1, A_sbls%ne
 !  if ( A_sbls%row( i ) > m_ref ) write( 6, * ) m_ref, A_sbls%row( i ), i
 !end do
+
+!  the matrix K_0 is only factorized if the subspace step is computed directly
+
+            IF ( .NOT. control%subspace_direct ) THEN
+              inform%status = GALAHAD_ok ; GO TO 600
+            END IF
 
 !  factorize the matrix K_0
 
@@ -4949,6 +4966,11 @@
         ZC_u( dims%x_u_start : n ) = VT( zu_start : zu_end )
 
         IF (  inform%status == GALAHAD_error_primal_infeasible ) GO TO 700
+
+!  a genuine failure in the arc search (e.g. a linear solver that cannot perform
+!  the required sparse forward solve) is fatal
+
+        IF ( inform%status < 0 ) GO TO 900
 
 !  if required compute the dual objective value. Record sol = J^T v_k - g
 
@@ -6597,6 +6619,11 @@
           Z_u( dims%x_u_start : n ) = VT( zu_start : zu_end )
 
           IF (  inform%status == GALAHAD_error_primal_infeasible ) GO TO 700
+
+!  a genuine failure in the arc search (e.g. a linear solver that cannot perform
+!  the required sparse forward solve) is fatal
+
+          IF ( inform%status < 0 ) GO TO 900
 
 !  record the status of the general constraints and simple bounds
 
@@ -8469,6 +8496,14 @@
         ELSE
           CALL SLS_sparse_forward_solve( nnz_r, INDEX_r, R, nnz_w, INDEX_w, W, &
                                          SLS_data, SLS_control, SLS_inform )
+
+!  the sparse forward solve is not provided by every linear solver (e.g. PaStiX
+!  and MUMPS do not offer it). Bail out cleanly rather than use the undefined
+!  nnz_w/INDEX_w that such a solver returns
+
+          IF ( SLS_inform%status /= GALAHAD_ok ) THEN
+            status = SLS_inform%status ; RETURN
+          END IF
         END IF
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         solve = solve + REAL( time_now - time_record, rp_ )

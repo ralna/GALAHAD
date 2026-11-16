@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-26 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 09:58 GMT.
 
 #include "galahad_modules.h"
 
@@ -650,6 +650,9 @@
 !              -2 an array deallocation has failed
 !              -3 n and/or radius is not positive
 !              -15 the matrix M appears to be indefinite
+!              -16 the Lanczos process has broken down (a value that is not
+!                  finite has arisen), as may happen if the problem is very
+!                  ill-conditioned
 !              -18 the iteration limit has been exceeded
 !              -30 the trust-region has been encountered in Steihaug-Toint mode
 !              -31 the function value is smaller than control%f_min
@@ -1033,6 +1036,11 @@
 !       data%offdiag = - SQRT( data%beta ) / data%alpha
         data%offdiag = SQRT( data%beta ) / ABS( data%alpha )
 
+!  stop if the Lanczos process has broken down (a NaN fails the comparison)
+
+        IF ( .NOT. ( ABS( data%diag ) <= HUGE( one ) .AND.                     &
+                     ABS( data%offdiag ) <= HUGE( one ) ) ) GO TO 980
+
 !  Compute the stopping tolerance
 
       ELSE
@@ -1208,6 +1216,7 @@
                           data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),    &
                           data%seed, data%printd, control%out, prefix,         &
                           inform%hard_case, data%hard_case_step )
+          IF ( data%ttrs_info == 5 ) GO TO 980
 
 !         IF ( data%printi ) WRITE( control%out, 2020 )                        &
 !         WRITE( control%out, 2020 ) data%MIN_f(dim_sub-1), dim_sub, data%iter
@@ -1273,6 +1282,11 @@
       IF ( inform%curv /= zero ) THEN
         data%alpha = data%rminvr / inform%curv
         data%diag = data%diag + one / data%alpha
+
+!  stop if the Lanczos process has broken down (a NaN fails the comparison)
+
+        IF ( .NOT. ( ABS( data%alpha ) <= HUGE( one ) .AND.                    &
+                     ABS( data%diag ) <= HUGE( one ) ) ) GO TO 980
       ELSE
         data%alpha = HUGE( one ) ** 0.25
         data%switch_to_Lanczos = .TRUE.
@@ -1419,6 +1433,7 @@
                         data%W( : data%itm1 ), data%seed,                      &
                         data%printd, control%out, prefix, inform%hard_case,    &
                         data%hard_case_step )
+        IF ( data%ttrs_info == 5 ) GO TO 980
         data%try_warm = .TRUE.
 
         data%LAMBDA( data%iter ) = data%LAMBDA( data%itm1 )
@@ -1507,6 +1522,7 @@
                       data%W( : data%dim_sub - 1 ), data%seed, data%printd,    &
                       control%out, prefix, inform%hard_case,                   &
                       data%hard_case_step )
+      IF ( data%ttrs_info == 5 ) GO TO 980
 !write(6,*) ' GLTR_ttrs info ', data%ttrs_info
 
 !     IF ( data%printi ) WRITE( control%out, 2020 )                            &
@@ -1695,6 +1711,15 @@
          "( A, ' The objective function value is smaller than', ES12.4 )" )    &
         prefix, control%f_min
       inform%status = GALAHAD_error_f_min ; inform%iter = data%iter
+      RETURN
+
+!  the Lanczos process has broken down (e.g., a non-finite value has arisen)
+
+  980 CONTINUE
+      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
+        WRITE( control%error,                                                  &
+         "( A, ' The Lanczos process has broken down' )" ) prefix
+      inform%status = GALAHAD_error_ill_conditioned ; inform%iter = data%iter
       RETURN
 
 !  Non-executable statements
@@ -2046,6 +2071,9 @@
 !         info = 3  n is not positive
 !         info = 4  Failure to converge after itmax iterations.
 !                   On exit x is the best available approximation
+!         info = 5  T or c has an entry that is not finite (as may happen
+!                   after a breakdown), or the leftmost eigenvalue of T
+!                   could not be found
 
 !    iter is an integer (out) variable.
 !      On exit iter gives the total number of iterations required
@@ -2103,6 +2131,7 @@
       INTEGER ( KIND = ip_ ) :: indef, i, it
       REAL ( KIND = rp_ ) :: lambda_pert, utx, rxnorm2, distx, xnorm, tol,     &
                             leftmost, delta_lambda, macheps, pert_l
+      LOGICAL :: failed
 
 !  Initialization
 
@@ -2111,6 +2140,16 @@
       IF ( n <= 0 ) THEN
         f = zero
         info = 3
+        RETURN
+      END IF
+
+!  check that the data is finite (a NaN fails both comparisons)
+
+      IF ( .NOT. ( ALL( ABS( D( : n ) ) <= HUGE( one ) ) .AND.                 &
+                   ALL( ABS( OFFD( : n - 1 ) ) <= HUGE( one ) ) .AND.          &
+                   ALL( ABS( C( : n ) ) <= HUGE( one ) ) ) ) THEN
+        f = zero ; X( : n ) = zero
+        info = 5
         RETURN
       END IF
       macheps = EPSILON( one )
@@ -2222,7 +2261,12 @@
 
       IF ( indef > 0 ) THEN
         leftmost = GLTR_leftmost_eigenvalue( n, D, OFFD, tol, use_old,        &
-                     old_leftmost, it, debug, out, prefix )
+                     old_leftmost, it, debug, out, prefix, failed )
+        IF ( failed ) THEN
+          f = zero ; X( : n ) = zero
+          info = 5
+          RETURN
+        END IF
 
         IF ( .NOT. equality ) leftmost = MIN( leftmost, zero )
 
@@ -2417,7 +2461,7 @@
 !-*-*-*-*-*-*-*-*-  GLTR_leftmost_eigenvalue F U N C T I O N  -*-*-*-*-*-*-*-*-*
 
       FUNCTION GLTR_leftmost_eigenvalue( n, D, OFFD, tol, use_old,             &
-         old_leftmost, iter, debug, out, prefix  )
+         old_leftmost, iter, debug, out, prefix, failed )
 
       REAL ( KIND = rp_ ) :: GLTR_leftmost_eigenvalue
 
@@ -2434,11 +2478,18 @@
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: D
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
+      LOGICAL, OPTIONAL, INTENT( OUT ) :: failed
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
+!  bisection can halve the bracket [l,u] at most this many times before its
+!  end points are adjacent floating-point numbers, so more iterations than
+!  this indicate a failure (e.g., if T is not finite)
+
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_iter = DIGITS( 1.0_rp_ )       &
+        + MAXEXPONENT( 1.0_rp_ ) - MINEXPONENT( 1.0_rp_ )
       INTEGER ( KIND = ip_ ) :: i, neg, nroots
       REAL ( KIND = rp_ ) :: l, u, e, piv, dpiv, e_trial, infinity
       REAL ( KIND = rp_ ) :: root1, root2, tol_interval, sum, prod
@@ -2447,6 +2498,7 @@
 !  Special case: n = 1
 
       iter = 0
+      IF ( PRESENT( failed ) ) failed = .FALSE.
       IF ( n == 1 ) THEN
         GLTR_leftmost_eigenvalue = D( 1 )
         RETURN
@@ -2483,7 +2535,15 @@
 
       ITER_LOOP : DO
         iter = iter + 1
-!       IF ( iter > 10 ) EXIT
+
+!  stop if the bracket is not finite or the iteration limit is exceeded
+
+        IF ( iter > max_iter .OR. .NOT. ( ABS( l ) <= HUGE( one ) .AND.        &
+                                          ABS( u ) <= HUGE( one ) ) ) THEN
+          IF ( PRESENT( failed ) ) failed = .TRUE.
+          GLTR_leftmost_eigenvalue = e
+          RETURN
+        END IF
 
 !  Compute the inertia of T - e I by implicitly factoring the matrix
 

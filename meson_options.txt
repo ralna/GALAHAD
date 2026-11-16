@@ -43,11 +43,6 @@ option('quadruple',
        value : false,
        description : 'whether to generate the quadruple precision library, tests and examples')
 
-option('ssids',
-       type : 'boolean',
-       value : true,
-       description : 'whether to build ssids')
-
 option('libblas',
        type : 'string',
        value : 'openblas',
@@ -88,15 +83,15 @@ option('libpardiso',
        value : 'pardiso',
        description : 'PARDISO library against which to link')
 
-option('libspmf',
-       type : 'string',
-       value : 'spmf',
-       description : 'SPMF library against which to link')
-
 option('libpastixf',
        type : 'string',
        value : 'pastixf',
-       description : 'PASTIXF library against which to link')
+       description : 'PaStiX Fortran library against which to link')
+
+option('libspmf',
+       type : 'string',
+       value : 'spmf',
+       description : 'SPM Fortran library (shipped with PaStiX) against which to link')
 
 option('libsmumps',
        type : 'string',
@@ -112,11 +107,6 @@ option('libasl',
        type : 'string',
        value : 'asl',
        description : 'AMPL solver library against which to link')
-
-option('libhwloc',
-       type : 'string',
-       value : 'hwloc',
-       description : 'HWLOC library against which to link')
 
 option('libblas_path',
        type : 'array',
@@ -148,15 +138,15 @@ option('libpardiso_path',
        value : [],
        description : 'Additional directories to search for the PARDISO library')
 
-option('libspmf_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the SPMF library')
-
 option('libpastixf_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the PASTIXF library')
+       description : 'Additional directories to search for the PaStiX Fortran library')
+
+option('libspmf_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the SPM Fortran library')
 
 option('libmumps_path',
        type : 'array',
@@ -167,16 +157,6 @@ option('libasl_path',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the AMPL solver library')
-
-option('libhwloc_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directory to search for the HWLOC library')
-
-option('libhwloc_include',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the HWLOC header files')
 
 option('libasl_include',
        type : 'array',

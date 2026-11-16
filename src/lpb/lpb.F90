@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-07-28 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 09:44 GMT.
 
 #include "galahad_modules.h"
 
@@ -146,7 +146,7 @@
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
       REAL ( KIND = rp_ ), PARAMETER :: rminvr_zero = epsmch
       REAL ( KIND = rp_ ), PARAMETER :: twentyeps = two * teneps
-      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( -15 )
+      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten * epsmch
       REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
 
 !-------------------------------------------------
@@ -1428,7 +1428,6 @@
 
 !  functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -7203,6 +7202,12 @@ END DO
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'lpb: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'lpb: data%prob%A%ptr'
      CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -8290,7 +8295,6 @@ END DO
 
 !  Functions
 
-!$    INTEGER :: OMP_GET_THREAD_NUM
 
       IF ( inform%threads == 1 ) parallel = .FALSE.
       inform%status = GALAHAD_ok

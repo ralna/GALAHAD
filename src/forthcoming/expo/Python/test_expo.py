@@ -8,6 +8,7 @@ options = expo.initialize()
 
 # set some non-default options
 #options['print_level'] = 1
+options['ssls_options']['symmetric_linear_solver'] = 'sytr '
 options['max_it'] = 20
 options['max_eval'] = 100
 options['stop_abs_p'] = 0.00001

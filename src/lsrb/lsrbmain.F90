@@ -72,7 +72,7 @@
     TYPE ( SLLS_control_type ) :: SLLS_control
     TYPE ( SLLS_inform_type ) :: SLLS_inform
 
-!$  INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$  INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  read the specfile
 

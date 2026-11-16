@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 08:10 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPB_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -636,8 +636,8 @@
      SUBROUTINE WHICH_sls( control )
      TYPE ( QPB_control_type ) :: control
 #include "galahad_sls_defaults.h"
-!symmetric_linear_solver = 'ssids'
-!definite_linear_solver = 'ssids'
+!symmetric_linear_solver = 'slblt'
+!definite_linear_solver = 'slblt'
      control%FDC_control%use_sls = use_sls
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver

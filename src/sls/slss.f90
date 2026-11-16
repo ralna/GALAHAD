@@ -21,8 +21,8 @@
 ! problem setup complete
 ! set right-hand side
    B( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
-! specify the solver (in this case ssids)
-   CALL SLS_initialize( 'ssids', data, control, inform, check = .TRUE. )
+! specify the solver (in this case slblt)
+   CALL SLS_initialize( 'slblt', data, control, inform, check = .TRUE. )
    WRITE( 6, "( ' solver ', A, ' used' )" ) TRIM( inform%solver )
 ! analyse
    CALL SLS_analyse( matrix, data, control, inform )

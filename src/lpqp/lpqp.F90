@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-12 AT 13:42 GMT.
 
 #include "galahad_modules.h"
 
@@ -103,10 +103,9 @@
 !    'SPARSE_BY_ROWS'
 !    'DIAGONAL'
 !    'NONE'
-!  any other value defaults to 'SPARSE_BY_ROWS', except if input format is
-!  'LBFGS' which defaults to 'LBFGS'. 'DIAGONAL' will result in an error
-!  if the matrix is not diagonal, while 'NONE' will do the same if the matrix
-!  has any nonzeros
+!  any other value defaults to 'SPARSE_BY_ROWS'. 'DIAGONAL' will result in an
+!  error if the matrix is not diagonal, while 'NONE' will do the same if the
+!  matrix has any nonzeros
 
        CHARACTER ( LEN = 30 ) :: h_output_format = 'SPARSE_BY_ROWS'
 
@@ -462,7 +461,7 @@
 !
 !       %H%type( 1 : 4 ) = 'ZERO' or 'NONE'
 !
-!   viii) L-BFGS Hessian
+!   viii) L-BFGS Hessian (not yet supported; an error will be reported)
 !
 !       In this case, the following must be set:
 !
@@ -770,11 +769,15 @@
 !  record the Hessian input array type
 
      IF ( prob%Hessian_kind < 0 ) THEN
+
+!  L-BFGS Hessians are not yet supported, as the reformulated problem
+!  requires the Hessian to be extended by zero rows and columns for the
+!  additional variables
+
        IF ( SMT_get( prob%H%type ) == 'LBFGS' ) THEN
-         data%h_output_format = h_output_lbfgs
-         h_row_wanted = .FALSE. ; h_col_wanted = .FALSE. ; h_ptr_wanted =.FALSE.
-         h_val_wanted = .FALSE.
-         h_diagonal = .FALSE. ; h_none = .FALSE.
+         IF ( printe ) WRITE( error, "( A, ' LPQP error: prob%H%type = ',      &
+        &   A, ' is not yet supported' )" ) prefix, SMT_get( prob%H%type )
+         inform%status = GALAHAD_not_yet_implemented ; GO TO 800
        ELSE
          IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
            h_ne_orig = ( n * ( n + 1 ) ) / 2 ; h_ne = h_ne_orig

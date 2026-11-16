@@ -61,7 +61,7 @@
 
 !  Functions
 
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$   INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  Problem characteristics
 
@@ -230,7 +230,7 @@
        WRITE( control%out, "( /, ' non-zeros and fill-in ', I0, 1X, I0,        &
       &    ', solver: ', A )" ) nnzh, inform%SLS_inform%entries_in_factors,    &
          TRIM( control%symmetric_linear_solver )
-!$    n_threads = OMP_GET_MAX_THREADS( )
+!$    n_threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       WRITE( out, "( ' number of threads = ', I0 )" ) n_threads
 
 !  If required, append results to a file,
