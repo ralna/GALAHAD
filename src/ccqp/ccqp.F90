@@ -3158,6 +3158,7 @@
       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_level
       INTEGER ( KIND = ip_ ) :: nbnds, nbnds_x, nbnds_c, muzero_fixed
       INTEGER ( KIND = ip_ ) :: nbact, iorder, sorder, b_change, c_change
+      INTEGER ( KIND = ip_ ) :: status_before_pounce
       INTEGER ( KIND = ip_ ) :: out, error, it_best, infeas_max, n_sbls
       INTEGER ( KIND = ip_ ) :: primal_nonopt, dual_nonopt, cs_nonopt
       INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: iorder_array
@@ -7166,6 +7167,7 @@
               "( A, 7X, ' changes in predicted X/C_stat = ',                   &
             &    I0, ', ', I0, ', pouncing for solution ...' )" )              &
                prefix, b_change, c_change
+            status_before_pounce = inform%status
             CALL CCQP_pounce( n, m, A_val, A_col, A_ptr, C_l, C_u,             &
                               X_l, X_u, X_last, C_last, Y_last, Z_last,        &
                               Hessian_kind, gradient_kind, target_kind,        &
@@ -7184,15 +7186,19 @@
               WRITE( out, "( ' Z ', /, ( 5ES12.4 ) )" ) Z_last
             END IF
 
+!  CCQP_pounce resets inform%status, so record the outcome explicitly
+
             IF ( optimal ) THEN
               IF ( printi ) WRITE( out, "( A, 7X,                              &
              &   ' pounce successful, optimal solution found' )" ) prefix
               X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
               stat_known = .TRUE.
+              inform%status = GALAHAD_ok
               GO TO 500
             ELSE
               IF ( printi ) WRITE( out, "( A, 7X,                              &
              &   ' pounce unsuccessful, continuing' )" ) prefix
+              inform%status = status_before_pounce
             END IF
           END IF
         END IF
@@ -7296,9 +7302,9 @@
         pjgnrm = MAX( pjgnrm, ABS( gi ) )
       END DO
 
-
 !  compute the final objective function value
 
+  650 CONTINUE
       IF ( Hessian_kind == 0 ) THEN
         inform%obj = f
       ELSE IF ( Hessian_kind == 1 ) THEN
@@ -7545,6 +7551,7 @@
             "( A, 7X, ' changes in predicted X/C_stat = ',                     &
           &    I0, ', ', I0, ', pouncing for solution ...' )" )                &
              prefix, b_change, c_change
+          status_before_pounce = inform%status
           CALL CCQP_pounce( n, m, A_val, A_col, A_ptr, C_l, C_u,               &
                             X_l, X_u, X_last, C_last, Y_last, Z_last,          &
                             Hessian_kind, gradient_kind, target_kind,          &
@@ -7552,14 +7559,20 @@
                             SBLS_pounce_data, control, inform, optimal,        &
                             H_val = H_val, h_col = H_col, h_ptr = H_ptr,       &
                             h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
+!  CCQP_pounce resets inform%status, so record the outcome explicitly. If
+!  the pounce succeeded, the objective function must be recomputed
+
           IF ( optimal ) THEN
             IF ( printi ) WRITE( out, "( A, 7X,                                &
            &   ' pounce successful, optimal solution found' )" ) prefix
             X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
             stat_known = .TRUE.
+            inform%status = GALAHAD_ok
+            GO TO 650
           ELSE
             IF ( printi ) WRITE( out, "( A, 7X,                                &
            &   ' pounce unsuccessful' )" ) prefix
+            inform%status = status_before_pounce
           END IF
         END IF
       END IF
