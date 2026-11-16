@@ -18,7 +18,8 @@ PACKAGE = CCQP
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpd_deps make_qpd make_checkpoint make_rpd make_cqp
+DEPENDENCIES = make_qpd_deps make_qpd make_checkpoint make_rpd make_cqp \
+               make_convert make_userdata make_reverse make_blls
 
 #  other packages that depend on package
 
