@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 11:18 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 11:52 GMT.
 
 #include "galahad_modules.h"
 
@@ -8598,7 +8598,7 @@
                 i = H_col( l )
                 ii = X_free( i )
                 IF ( ii > 0 ) THEN
-                  SOL( ii ) = SOL( ii ) + H_val( l ) * X( j )
+                  SOL( ii ) = SOL( ii ) - H_val( l ) * X( j )
                 END IF
               END DO
             END IF
