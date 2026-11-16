@@ -8405,10 +8405,12 @@
 
       INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, alloc_status
       INTEGER ( KIND = ip_ ) :: n_free, m_active, nz_a_active, nz_h_free
-      REAL ( KIND = rp_ ) :: ci, ei, gj
+      REAL ( KIND = rp_ ) :: ci, ei, gj, g_max, hx_max, aty_max, z_max
       REAL ( KIND = rp_ ) :: feas = epsmch * 100.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: tol_act = epsmch ** 0.75_rp_
-      LOGICAL :: x_feas, c_feas, y_feas, z_feas, lmh
+      REAL ( KIND = rp_ ), PARAMETER :: tol_stat = epsmch ** 0.75_rp_
+      LOGICAL :: x_feas, c_feas, y_feas, z_feas, stationary, lmh
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SMT_type ) :: C_zero
 
@@ -9099,8 +9101,95 @@
         END IF
       END DO
 
+!  check that the solution is stationary, i.e., that each component of the
+!  residual r = g + H x - A^T y - z (with g and H x including any target
+!  terms) is small relative to the largest components of g, H x, A^T y and z
+
+      array_name = 'ccqp: R'
+      CALL SPACE_resize_array( n, R,                                           &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  r = g (including any contribution from the target)
+
+      DO j = 1, n
+        IF ( gradient_kind == 0 ) THEN
+          gj = zero
+        ELSE IF ( gradient_kind == 1 ) THEN
+          gj = one
+        ELSE
+          gj = G( j )
+        END IF
+        IF ( Hessian_kind == 1 ) THEN
+          IF ( target_kind == 1 ) THEN
+            gj = gj - one
+          ELSE IF ( target_kind /= 0 ) THEN
+            gj = gj - X0( j )
+          END IF
+        ELSE IF ( Hessian_kind == 2 ) THEN
+          IF ( target_kind == 1 ) THEN
+            gj = gj - WEIGHT( j )
+          ELSE IF ( target_kind /= 0 ) THEN
+            gj = gj - WEIGHT( j ) * X0( j )
+          END IF
+        END IF
+        R( j ) = gj
+      END DO
+      g_max = MAXVAL( ABS( R ) )
+
+!  compute H x in SOL( : n ), and add it to r
+
+      IF ( Hessian_kind == 0 ) THEN
+        SOL( : n ) = zero
+      ELSE IF ( Hessian_kind == 1 ) THEN
+        SOL( : n ) = X
+      ELSE IF ( Hessian_kind == 2 ) THEN
+        SOL( : n ) = WEIGHT * X
+      ELSE IF ( lmh ) THEN
+        CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = SOL( : n ) )
+        IF ( i /= 0 ) THEN
+          inform%status = i ; GO TO 900
+        END IF
+      ELSE
+        SOL( : n ) = zero
+        DO j = 1, n
+          DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
+            i = H_col( l )
+            SOL( j ) = SOL( j ) + H_val( l ) * X( i )
+            IF ( i /= j ) SOL( i ) = SOL( i ) + H_val( l ) * X( j )
+          END DO
+        END DO
+      END IF
+      hx_max = MAXVAL( ABS( SOL( : n ) ) )
+      R = R + SOL( : n )
+
+!  compute A^T y in SOL( : n ), and subtract it and z from r
+
+      SOL( : n ) = zero
+      DO i = 1, m
+        DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+          j = A_col( l )
+          SOL( j ) = SOL( j ) + A_val( l ) * Y( i )
+        END DO
+      END DO
+      aty_max = MAXVAL( ABS( SOL( : n ) ) )
+      z_max = MAXVAL( ABS( Z ) )
+      R = R - SOL( : n ) - Z
+
+      stationary = MAXVAL( ABS( R ) ) <= tol_stat *                            &
+                     ( one + g_max + hx_max + aty_max + z_max )
+
+      array_name = 'ccqp: R'
+      CALL SPACE_dealloc_array( R,                                             &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
 !write(6,*) ' x_feas, c_feas, y_feas, z_feas ', x_feas, c_feas, y_feas, z_feas
-      optimal = x_feas .AND. c_feas .AND. y_feas .AND. z_feas
+      optimal = x_feas .AND. c_feas .AND. y_feas .AND. z_feas .AND. stationary
 
       RETURN
 
@@ -9108,6 +9197,7 @@
 
   900 CONTINUE
       optimal = .FALSE.
+      IF ( ALLOCATED( R ) ) DEALLOCATE( R, STAT = alloc_status )
 
       RETURN
 
