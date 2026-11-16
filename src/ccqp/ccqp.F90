@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 08:53 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 11:52 GMT.
 
 #include "galahad_modules.h"
 
@@ -1761,6 +1761,33 @@
         END IF
       END IF
 
+!  make sure that X_status, C_status and C have been allocated and are
+!  large enough
+
+      array_name = 'ccqp: prob%X_status'
+      CALL SPACE_resize_array( prob%n, prob%X_status,                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: prob%C_status'
+      CALL SPACE_resize_array( prob%m, prob%C_status,                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: prob%C'
+      CALL SPACE_resize_array( prob%m, prob%C,                                 &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
 !  if the problem has no general constraints, check to see if it is separable
 
       IF ( data%a_ne <= 0 ) THEN
@@ -1799,33 +1826,6 @@
           END SELECT
         END IF
  10     CONTINUE
-
-!  make sure that X_status, C_status and C have been allocated and are
-!  large enough
-
-        array_name = 'ccqp: prob%X_status'
-        CALL SPACE_resize_array( prob%n, prob%X_status,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'ccqp: prob%C_status'
-        CALL SPACE_resize_array( prob%m, prob%C_status,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'ccqp: prob%C'
-        CALL SPACE_resize_array( prob%m, prob%C,                               &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  the problem is a separable bound-constrained QP. Solve it explicitly
 
@@ -8598,7 +8598,7 @@
                 i = H_col( l )
                 ii = X_free( i )
                 IF ( ii > 0 ) THEN
-                  SOL( ii ) = SOL( ii ) + H_val( l ) * X( j )
+                  SOL( ii ) = SOL( ii ) - H_val( l ) * X( j )
                 END IF
               END DO
             END IF
