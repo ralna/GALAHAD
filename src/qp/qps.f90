@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 10/01/2011 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-15 AT 10:50 GMT.
    PROGRAM GALAHAD_QP_EXAMPLE
    USE GALAHAD_QP_double         ! double precision version
    IMPLICIT NONE
@@ -16,7 +16,8 @@
 !  CHARACTER ( LEN = 20 ) :: solver = "bqpd" // REPEAT( ' ', 16 )
 !  CHARACTER ( LEN = 20 ) :: solver = "highs" // REPEAT( ' ', 15 )
 !  CHARACTER ( LEN = 20 ) :: solver = "osqp" // REPEAT( ' ', 16 )
-   CHARACTER ( LEN = 20 ) :: solver = "qpalm" // REPEAT( ' ', 15 )
+!  CHARACTER ( LEN = 20 ) :: solver = "qpalm" // REPEAT( ' ', 15 )
+   CHARACTER ( LEN = 20 ) :: solver = "qpoases" // REPEAT( ' ', 13 )
 !  CHARACTER ( LEN = 20 ) :: solver = "e04nqf" // REPEAT( ' ', 14 )
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
@@ -51,6 +52,7 @@
 !  control%scale = 7                            ! Sinkhorn-Knopp scaling
 !  control%presolve = .TRUE.                    ! Pre-solve the problem
 !  control%CQP_control%print_level = 1
+   control%QPOASES_control%options%printlevel = 2
    CALL QP_solve( p, data, control, inform, C_stat, B_stat ) ! Solve
    IF ( inform%status == 0 ) THEN               !  Successful return
      WRITE( 6, "( ' QP: ', I0, 1X, A, ' iterations  ', /,                      &

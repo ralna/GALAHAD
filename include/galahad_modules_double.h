@@ -116,6 +116,7 @@
 #define GALAHAD_QP_precision GALAHAD_QP_double_64
 #define GALAHAD_QPALM_precision GALAHAD_QPALM_double_64
 #define GALAHAD_QPOASES_precision GALAHAD_QPOASES_double_64
+#define GALAHAD_QPOASES_F_precision GALAHAD_QPOASES_F_double_64
 #define GALAHAD_SCS_precision GALAHAD_SCS_double_64
 #define GALAHAD_QPP_precision GALAHAD_QPP_double_64
 #define GALAHAD_QPS_precision GALAHAD_QPS_double_64
@@ -268,6 +269,7 @@
 #define GALAHAD_USETRS_precision GALAHAD_USETRS_double_64
 #define GALAHAD_USETRTN_precision GALAHAD_USETRTN_double_64
 #define GALAHAD_USETRU_precision GALAHAD_USETRU_double_64
+#define GALAHAD_USEUGO_precision GALAHAD_USEUGO_double_64
 #define GALAHAD_USEWARM_precision GALAHAD_USEWARM_double_64
 #define GALAHAD_USEWCP_precision GALAHAD_USEWCP_double_64
 #define LANCELOT_ASMBL_precision LANCELOT_ASMBL_double_64
@@ -598,6 +600,7 @@
 #define GALAHAD_QP_precision GALAHAD_QP_double
 #define GALAHAD_QPALM_precision GALAHAD_QPALM_double
 #define GALAHAD_QPOASES_precision GALAHAD_QPOASES_double
+#define GALAHAD_QPOASES_F_precision GALAHAD_QPOASES_F_double
 #define GALAHAD_SCS_precision GALAHAD_SCS_double
 #define GALAHAD_QPP_precision GALAHAD_QPP_double
 #define GALAHAD_QPS_precision GALAHAD_QPS_double
@@ -750,6 +753,7 @@
 #define GALAHAD_USETRS_precision GALAHAD_USETRS_double
 #define GALAHAD_USETRTN_precision GALAHAD_USETRTN_double
 #define GALAHAD_USETRU_precision GALAHAD_USETRU_double
+#define GALAHAD_USEUGO_precision GALAHAD_USEUGO_double
 #define GALAHAD_USEWARM_precision GALAHAD_USEWARM_double
 #define GALAHAD_USEWCP_precision GALAHAD_USEWCP_double
 #define LANCELOT_ASMBL_precision LANCELOT_ASMBL_double

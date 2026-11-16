@@ -9,7 +9,7 @@
 PROGRAM qpOASES_example
 
   USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
-  USE GALAHAD_QPOASES_precision, ONLY: qpOASES_solve, qpOASES_options_type
+  USE GALAHAD_QPOASES_F_precision, ONLY: qpOASES_solve, qpOASES_options_type
 
   IMPLICIT NONE
 
@@ -61,7 +61,7 @@ PROGRAM qpOASES_example
 
 !  adjust default option values
 
-   options%printLevel = - 1
+   options%printLevel = 0
 
 !  solve the problem
 

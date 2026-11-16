@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-10-06 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-15 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -140,6 +140,11 @@
       USE GALAHAD_QPALM_precision, ONLY: QPALM_data_type, QPALM_control_type,  &
                                          QPALM_inform_type, QPALM_initialize,  &
                                          QPALM_solve, QPALM_terminate
+      USE GALAHAD_QPOASES_precision, ONLY: QPOASES_data_type,                  &
+                                           QPOASES_control_type,               &
+                                           QPOASES_inform_type,                &
+                                           QPOASES_initialize,                 &
+                                           QPOASES_solve, QPOASES_terminate
 
       IMPLICIT NONE ( TYPE, EXTERNAL )
 
@@ -293,6 +298,10 @@
 
         TYPE ( QPALM_control_type ) :: QPALM_control
 
+!  control parameters for QPOASES
+
+        TYPE ( QPOASES_control_type ) :: QPOASES_control
+
       END TYPE QP_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -434,6 +443,10 @@
 
         TYPE ( QPALM_inform_type ) :: QPALM_inform
 
+!  inform parameters for QPOASES
+
+        TYPE ( QPOASES_inform_type ) :: QPOASES_inform
+
       END TYPE QP_inform_type
 
 !  - - - - - - - - - - - - - - - - - - - - --
@@ -446,16 +459,6 @@
         TYPE ( SMT_type ) :: A, H
       END TYPE QP_CLARABEL_data_type
 
-!  - - - - - - - - - - - - - - - - - - - -
-!   extended data derived type for QPOASES
-!  - - - - - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: QP_QPOASES_data_type
-        LOGICAL :: original_a, original_h
-        LOGICAL :: new_structure = .TRUE.
-        TYPE ( SMT_type ) :: A, H
-      END TYPE QP_QPOASES_data_type
-      
 !  - - - - - - - - - - - - - - - - - -
 !   extended data derived type for SCS
 !  - - - - - - - - - - - - - - - - - -
@@ -486,6 +489,7 @@
         TYPE ( HIGHS_data_type ) :: HIGHS_data
         TYPE ( OSQP_data_type ) :: OSQP_data
         TYPE ( QPALM_data_type ) :: QPALM_data
+        TYPE ( QPOASES_data_type ) :: QPOASES_data
       END TYPE QP_data_type
 
    CONTAINS
@@ -603,6 +607,13 @@
         CALL QPALM_initialize( data%QPALM_data, control%QPALM_control,         &
                                inform%QPALM_inform )
         control%QPALM_control%settings%verbose = 0
+
+!  == QPOASES ==
+
+      CASE ( 'qpoases', 'QPOASES' )
+        CALL QPOASES_initialize( data%QPOASES_data, control%QPOASES_control,   &
+                                 inform%QPOASES_inform )
+        control%QPOASES_control%options%printlevel = 0
       END SELECT
 
       inform%status = GALAHAD_ok
@@ -1744,6 +1755,19 @@
 !  == qpOASES ==
 
         CASE ( 'qpoases', 'QPOASES', 'qpOASES' )
+          IF ( printi ) WRITE( control%out,                                    &
+              "( A, ' ** QPOASES solver used **' )" ) prefix
+          CALL QPOASES_solve( prob, data%QPOASES_data,                         &
+                              control%QPOASES_control,                         &
+                              inform%QPOASES_inform )
+          inform%status = inform%QPOASES_inform%status
+          inform%iter = inform%QPOASES_inform%iter
+          inform%obj = inform%QPOASES_inform%obj
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            IF ( printi ) WRITE( control%out, "( A,                            &
+           &  ' QPOASES solve error status = ', I0 )" ) prefix, inform%status
+            GO TO 800
+          END IF
 
 !  == SCS ==
 
@@ -1963,31 +1987,6 @@
 !!$
 !!$      END SUBROUTINE QP_clarabel_solve
 !!$
-!!$!-*-*-*-*-*-*-   Q P _ qpOASES _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
-!!$
-!!$      SUBROUTINE QP_qpOASES_solve( prob, data, settings, info, out )
-!!$
-!!$!  solve the quadratic program using the qpOASES package
-!!$
-!!$!  A - by columns
-!!$!  H - both triangles by columns
-!!$
-!!$!  dummy arguments
-!!$
-!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-!!$      TYPE ( QP_qpOASES_data_type ), INTENT( INOUT ) :: data
-!!$      TYPE ( qpOASES_control_type ), INTENT( IN ) :: control
-!!$      TYPE ( qpOASES_inform_type ), INTENT( OUT ) :: inform
-!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-!!$
-!!$!  local variables
-!!$
-!!$      RETURN
-!!$
-!!$!  End of QP_qpOASES_solve
-!!$
-!!$      END SUBROUTINE QP_qpOASES_solve
-!!$
 !!$!-*-*-*-*-*-*-   Q P _ S C S _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
 !!$
 !!$      SUBROUTINE QP_SCS_solve( prob, data, settings, info, out )
@@ -2204,6 +2203,13 @@
 !  == qpOASES ==
 
       CASE ( 'qpoases', 'QPOASES', 'qpOASES' )
+        CALL QPOASES_terminate( data%QPOASES_data, control%QPOASES_control,    &
+                                inform%QPOASES_inform )
+        IF ( inform%QPOASES_inform%status == GALAHAD_error_deallocate ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%QPOASES_inform%alloc_status
+          inform%bad_alloc = inform%QPOASES_inform%bad_alloc
+        END IF
 
 !  == SCS ==
 

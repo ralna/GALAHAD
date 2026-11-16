@@ -54,9 +54,9 @@ RQPALMDQ64 = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 ROLDQPALMST = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
 ROLDQPALMDT = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
 ROLDQPALMQT = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
-ROLDQPALMS64T = $(OBJold_)/qpalmt.o -L$(OBJ) $(LIBS)
-ROLDQPALMD64T = $(OBJold_)/qpalmt.o -L$(OBJ) $(LIBS)
-ROLDQPALMDQ64 = $(OBJold_)/qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMS64T = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMD64T = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
+ROLDQPALMDQ64 = $(OBJ)/old_qpalmt.o -L$(OBJ) $(LIBS)
 
 #  qpalm
 

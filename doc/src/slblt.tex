@@ -54,19 +54,35 @@ The package returns bit-compatible results.
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galattributes
-\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
-\galuses {\tt \libraryname\_SMT}.
+\galuses
+{\tt GALAHAD\_KINDS},
+{\tt GALAHAD\_TOPOLOGY},
+{\tt GALAHAD\_MU},
+{\tt GALAHAD\_MS},
+{\tt GALAHAD\_MO},
+{\tt GALAHAD\_RB} and
+{\tt GALAHAD\_NODEND},
 \galdate August 2026.
 \galorigin J.\ Fowkes and N.\ I.\ M.\ Gould,
 Rutherford Appleton Laboratory, and A.\ Montoison, AMD Inc., 
 translated and extended as a fork of the open-source {\tt SSIDS} 
-package, {\tt https://github.com/ralna/spral},
+package, {\tt https://github.\-com/ralna/spral},
 by J.\ Hogg and J.\ A.\ Scott.
-\gallanguage Fortran~2003. 
+\gallanguage Fortran~2003 + TR 15581 or Fortran~2003.
+\galparallelism OpenMP and its runtime library.
 
 %%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galhowto
+
+The package provides both high-level calls that support a variety of
+commonly occurring matrix storage formats, and more sophisticated, low-level 
+calls that are aimed specifically at matrices presented in the co-ordinate 
+or CSC (compressed sparse-column) formats, as provided by the originating 
+{\tt SSIDS}  package. The former are described in this section,
+while the latter appear in Section~\ref{sophisticated}.
+We note that the GPU features supported by {\tt SSIDS} are {\bf not}
+yet supported by {\tt \packagename}.
 
 \subsection{Calling sequences}
 
@@ -137,6 +153,8 @@ definite.
 
 \galmatrix
 The matrix $\bmA$ may be stored in a variety of input formats.
+%The matrix $\bmA$ may currently be stored in a single input format.
+%Other formats will be provided in due course.
 
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the lower-triangular part of $\bmA$ are stored.
@@ -145,26 +163,47 @@ its row index $i$, column index $j$ and value $a_{ij}$
 are stored in the $l$-th components of the integer arrays {\tt row},
 {\tt col} and real array {\tt val}, respectively.
 The order is unimportant, but the total number of entries
-{\tt ne} is also required.
+{\tt ne} is also required. 
+
+\noindent
+This format is supported in both the high- and low-level solver variants
+provided by the package.
+
+\subsubsection{Sparse column-wise storage format}\label{columnwise}
+As before,
+only the nonzero entries of the lower-triangular part are stored,
+but this time they are ordered so that those in column $j$ appear directly
+before those in column $j+1$. For the $j$-th column of $\bmA$, the $j$-th 
+component of an integer array {\tt ptr} holds the position of the first entry 
+in this column, while {\tt ptr} $(m+1)$ holds the total number of entries 
+plus one. The row indices $i$ and values $a_{ij}$ of the entries in the 
+$j$-th column are stored in components 
+$l =$ {\tt ptr}$(j)$, \ldots ,{\tt ptr} $(j+1)-1$ of the
+integer array {\tt row}, and real array {\tt val}, respectively.
+
+\noindent
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor. It is often known as CSC (compressed sparse-column) format,
+and specifically is one of the two used in the low-level calls described
+in Section~\ref{sophisticated}.
 
 \subsubsection{Sparse row-wise storage format}\label{rowwise}
 Again only the nonzero entries of the lower-triangular part are stored,
 but this time they are ordered so that those in row $i$ appear directly
 before those in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component
-of an integer array {\tt ptr} holds the position of the first entry in this row,
-while {\tt ptr} $(m+1)$ holds the total number of entries plus one.
+of an integer array {\tt ptr} holds the position of the first entry in this
+row, while {\tt ptr} $(m+1)$ holds the total number of entries plus one.
 The column indices $j$ and values $a_{ij}$ of the entries in the $i$-th row
 are stored in components
 $l =$ {\tt ptr}$(i)$, \ldots ,{\tt ptr} $(i+1)-1$ of the
 integer array {\tt col}, and real array {\tt val}, respectively.
 
-For sparse matrices, this scheme almost always requires less storage than
-its predecessor. It is often known as CSR (compressed sparse-row) format.
+This scheme is often called the CSR (compressed sparse-row) format.
 
 \subsubsection{Dense storage format}\label{dense}
 The matrix $\bmA$ is stored as a compact
-dense matrix by rows, that is, the values of the entries of each row in turn are
-stored in order within an appropriate real one-dimensional array.
+dense matrix by rows, that is, the values of the entries of each row in turn 
+are stored in order within an appropriate real one-dimensional array.
 Since $\bmA$ is symmetric, only the lower triangular part (that is the part
 $a_{ij}$ for $1 \leq j \leq i \leq n$) need be held, and this part will be
 stored by rows, that is component
@@ -172,11 +211,11 @@ $i \ast (i-1)/2 + j$ of the storage array {\tt val}
 will hold the value $a_{ij}$ (and, by symmetry, $a_{ji}$)
 for $1 \leq j \leq i \leq n$.
 
-%\subsubsection{Diagonal storage format}\label{diagonal}
-%If $\bmA$ is diagonal (i.e., $a_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
-%only the diagonals entries $a_{ii}$, $1 \leq i \leq n$,  need be stored,
-%and the first $n$ components of the array {\tt A\%val} may be used for
-%the purpose.
+\subsubsection{Diagonal storage format}\label{diagonal}
+If $\bmA$ is diagonal (i.e., $a_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the diagonals entries $a_{ii}$, $1 \leq i \leq n$,  need be stored,
+and the first $n$ components of the array {\tt A\%val} may be used for
+the purpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -203,12 +242,15 @@ The components of {\tt SMT\_type} used are:
 the order $n$ of the matrix  $\bmA$.
 \restriction {\tt n} $\geq$ {\tt 1}.
 
-\itt{type} is an allocatable array of rank one and type default \character, that
-indicates the storage scheme used. If the
+\itt{type} is an allocatable array of rank one and type default \character,
+that indicates the storage scheme used. If the
 sparse co-ordinate scheme (see \S\ref{coordinate}) is used
 the first ten components of {\tt type} must contain the
 string {\tt COORDINATE}.
-For the sparse row-wise storage scheme (see \S\ref{rowwise}),
+For the sparse column-wise storage scheme (see \S\ref{columnwise}),
+the first seventeenteen components of {\tt type} must contain the
+string {\tt SPARSE\_BY\_COLUMNS},
+for the sparse row-wise storage scheme (see \S\ref{rowwise}),
 the first fourteen components of {\tt type} must contain the
 string {\tt SPARSE\_BY\_ROWS}, and
 for dense storage scheme (see \S\ref{dense})
@@ -248,11 +290,14 @@ Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
 \itt{row} is a rank-one allocatable array of type \integer,
-that holds the row indices of the {\bf lower triangular} part of $\bmA$
-in the sparse co-ordinate storage
-scheme (see \S\ref{coordinate}).
+that holds the row indices of the {\bf lower triangular} part of
+$\bmA$ in either the sparse co-ordinate
+(see \S\ref{coordinate}), or the sparse row-column
+(see \S\ref{columnwise}) storage scheme.
 It need not be allocated for any of the other schemes.
-Any entry whose row index lies out of the range $[$1,n$]$ will be ignored.
+Any entry whose row index lies out of the range $[$1,n$]$ will be ignored,
+while the row and column indices of any entry from the
+{\bf strict upper triangle} will implicitly be swapped.
 
 \itt{col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of the {\bf lower triangular} part of
@@ -274,9 +319,9 @@ scheme (see \S\ref{rowwise}). It need not be allocated for the
 other schemes.
 
 \end{description}
-Although any of the above-mentioned matrix storage formats may be used
-with each supported solver, {\tt MA27/SILS} and {\tt HSL\_MA57}
-from HSL are most efficient if co-ordinate input is provided.
+%Although any of the above-mentioned matrix storage formats may be used
+%with each supported solver, {\tt MA27/SILS} and {\tt HSL\_MA57}
+%from HSL are most efficient if co-ordinate input is provided.
 
 %%%%%%%%%%% control type %%%%%%%%%%%
 
@@ -357,16 +402,16 @@ is a scalar variable of type default \logical, that, if \true, specifies
 that all CPUs and GPUs are treated as belonging to a single NUMA region.
 The default is {\tt ignore\_numa = \true}.
 
-\itt{use\_gpu}
-is a scalar variable of type default \logical, that, if \true, requests to
-use an NVIDIA GPU, if present.
-The default is {\tt use\_gpu = \true}.
+%\itt{use\_gpu}
+%is a scalar variable of type default \logical, that, if \true, requests to
+%use an NVIDIA GPU, if present.
+%The default is {\tt use\_gpu = \true}.
 
-\itt{min\_gpu\_work}
-is a scalar variable of type \longinteger,
-that gives the minimum number of flops
-in subtree before scheduling on a GPU.
-The default is {\tt min\_gpu\_work = 5.0E9}.
+%\itt{min\_gpu\_work}
+%is a scalar variable of type \longinteger,
+%that gives the minimum number of flops
+%in subtree before scheduling on a GPU.
+%The default is {\tt min\_gpu\_work = 5.0E9}.
 
 \itt{max\_load\_inbalance}
 is a scalar variable of type \realdp, that specifies the maximum permissible 
@@ -374,11 +419,11 @@ load inbalance for leaf subtree allocations. Values less than 1.0 are treated
 as 1.0.
 The default is {\tt max\_load\_inbalance = 1.2}.
 
-\itt{gpu\_perf\_coeff}
-is a scalar variable of type \realdp, that holds the
-GPU performance coefficient, that is how many
-times faster a GPU is than CPU is at factoring a subtree.
-The default is {\tt gpu\_perf\_coeff = 1.0}.
+%\itt{gpu\_perf\_coeff}
+%is a scalar variable of type \realdp, that holds the
+%GPU performance coefficient, that is how many
+%times faster a GPU is than CPU is at factoring a subtree.
+%The default is {\tt gpu\_perf\_coeff = 1.0}.
 
 \itt{scaling}
 is a scalar variable of type \integer,
@@ -470,24 +515,22 @@ that gives the number of flops performed on the CPUs.
 
 \itt{cublas\_error}
 is a scalar variable of type \integer,
-that gives 
-
-CUBLAS error code in the event of a CUBLAS error
-(0 otherwise).
+that gives the CUBLAS error code in the event of a CUBLAS error
+(0 otherwise) (not used at present).
 
 \itt{cuda\_error}
 is a scalar variable of type \integer,
 that gives the CUDA error code in the event of a CUDA error
 (0 otherwise). Note that due to asynchronous execution, CUDA errors may
-not be reported by the call that caused them.
+not be reported by the call that caused them  (not used at present).
 
 \itt{flag}
 is a scalar variable of type \integer,
 that gives the exit status of the algorithm (see table below).
 
-\itt{gpu\_flops}
-is a scalar variable of type \longinteger,
-number of flops performed on the GPUs.
+%\itt{gpu\_flops}
+%is a scalar variable of type \longinteger,
+%number of flops performed on the GPUs.
 
 \itt{matrix\_dup}
 is a scalar variable of type \integer,
@@ -597,7 +640,8 @@ The derived data types
 may be used to hold the data for the symbolic and factorization phases 
 for a particular problem,
 or sequences of problems with the same structure, between calls to
-low-level {\tt \packagename} procedures.
+low-level {\tt \packagename} procedures that
+appear in Section~\ref{sophisticated}.
 %This data should be preserved, untouched, from the initial call to
 %{\tt \packagename\_initialize}
 %to the final call to
@@ -871,11 +915,11 @@ returned in inform\%stat.
 
 \itt{-51}
 CUDA error. The CUDA error return value is returned in
-inform\%cuda\_error.
+inform\%cuda\_error (not used at present).
 
 \itt{-52}
 CUBLAS error. The CUBLAS error return value is returned in
-inform\%cublas\_error.
+inform\%cublas\_error (not used at present).
 
 \itt{-53}
 OpenMP cancellation is disabled. Please set the environment
@@ -1086,14 +1130,14 @@ For other return values of {\tt status}, see \S\ref{galerrors}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% SOPHISTICATED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Sophisticated usage}\label{sophisticated}
+\section{Sophisticated (lower-level) usage}\label{sophisticated}
 For convenience, \packagename\ also provides lower-level interfaces to its core
 subroutines, more akin to those in provided by {\tt SSIDS}.
 
 \subsection{Usage overview}
 \label{usage-overview}
 
-Solving $\bmA\bmX=\bmB$ using \packagename\ is a four stage process.
+Solving $\bmA\bmX=\bmB$ using \packagename\ is now a four stage process.
 \begin{enumerate}
 \item
 Call {\tt \packagename\_analyse} to perform a symbolic factorization, stored
@@ -1130,26 +1174,25 @@ If used with bit-compatible BLAS and compiler options, this routine will
 return bit compatible results. That is, consecutive runs with the same data
 on the same machine produces exactly the same solution.
 
-
 \subsection{Basic subroutines}
 \label{basic-subroutines}
 
 Note:
-For the most efficient use of the package, Sparse row-wise storage (CSR) 
+For the most efficient use of the package, sparse column-wise storage (CSC) 
 format (see \S\ref{rowwise}) should be used, without checking.
 
 %%%%%%%%% analysis subroutine %%%%%%
 
 \subsubsection{The analysis subroutine}
 
-\hskip0.3in
-{\tt CALL \packagename\_analyse( check, n, PTR, COL, akeep, control, inform{[}, ORDER, VAL, topology{]})}
-
-
 Perform the analyse (symbolic) phase of the factorization for a matrix
-supplied in CSR format. The resulting symbolic factors
+supplied in CSC format (see \S\ref{columnwise}). The resulting symbolic factors
 stored in {\tt akeep} should be passed unaltered in the subsequent calls to
-{\tt \packagename\_factor}.
+{\tt \packagename\_factor}. \\
+
+\hskip0.3in
+{\tt CALL \packagename\_analyse( check, n, PTR, ROW, akeep, control, inform{[}, ORDER, VAL, topology{]})}
+
 \begin{description}
 \itt{check}
 is a scalar \intentin\ variable of type default \logical, 
@@ -1160,14 +1203,14 @@ Out-of-range entries are dropped and duplicate entries are summed.
 the gives the number of columns of $\bmA$.
 
 \itt{PTR} is a rank-one array \intentin\ variable of type \longinteger\
-and length at least {\tt n+1} that gives the starting addresses
-for each row of the lower triangle of $\bmA$ in CSR format 
-(see \S\ref{rowwise}), while {\tt ptr(n+1)} gives the total number of nonzeros
+and length at least {\tt n+1} that gives the starting addresses for each column
+ of the lower triangle of $\bmA$ in CSC format (see \S\ref{rowcolumn}), 
+while {\tt ptr(n+1)} gives the total number of nonzeros
 the lower triangle of $\bmA$ plus one.
 
-\itt{COL} is a rank-one array \intentin\ variable of type \integer\
+\itt{ROW} is a rank-one array \intentin\ variable of type \integer\
 and length at least {\tt PTR(n+1)-1} that give the 
-column indices for the lower triangle of $\bmA$ in CSR format.
+row indices for the lower triangle of $\bmA$ in CSC format.
 
 \itt{akeep} is a scalar \intentinout argument of type
 {\tt \packagename\_control\_akeep}
@@ -1191,7 +1234,7 @@ On return, the actual ordering used is provided (if present).
 
 \itt{VAL} is an \optional\ rank-one array \intentin\ variable of type \realdp\
 and length at least {\tt PTR(n+1)-1} that give the values of the
-nonzero entries for the lower triangle of $\bmA$ in CSR format.
+nonzero entries for the lower triangle of $\bmA$ in CSC format.
 This is only used if a matching-based ordering is requested.
 
 \itt{topology} is an \optional\ rank-one allocatable \intentin\ array argument 
@@ -1214,7 +1257,8 @@ been amalgamated, a topographic ordering may have been applied to the
 assembly tree and the order of columns within a supernode may have been
 adjusted to improve cache locality.
 
-Note:
+\noindent
+Note also:
 A version {\tt \packagename\_analyse\_ptr32},
 where {\tt ptr} is of kind default \integer, is also provided for
 backwards compatibility.
@@ -1224,10 +1268,11 @@ backwards compatibility.
 \subsubsection{The analysis subroutine for coordinate storage}
 
 Just as in {\tt \packagename\_analyse}, but for $\bmA$ stored in
-sparse co-ordinate storage format (see \S\ref{coordinate}).
+sparse co-ordinate storage format (see \S\ref{coordinate}). \\
 
 \hskip0.1in
 {\tt CALL \packagename\_analyse\_coord( n, ne, ROW, COL, akeep, options, inform{[}, ORDER, VAL, topology{]})}
+\\
 
 \noindent
 The additional parameters are:
@@ -1248,6 +1293,8 @@ column indices for the lower triangle of $\bmA$ in co-ordinate format.
 %%%%%%%%% factorization subroutine %%%%%%
 
 \subsubsection{The factorization subroutine}
+
+Once it has been analysed, the matrix $\bmA$ may be factorized as follows: \\
 
 \hskip0.5in
 {\tt CALL \packagename\_factor( posdef, VAL, akeep, fkeep, options, inform{[}, SCALE, PTR, ROW{]})}
@@ -1300,7 +1347,6 @@ On return, the actual scalings used are provided (if present).
 {\tt check} =.true., in which case it must be unchanged since that call.
 
 \end{description}
-
 Note:
 A version {\tt \packagename\_factor\_ptr32},
 where {\tt ptr} is of kind default \integer, is also provided for
@@ -1311,7 +1357,7 @@ backwards compatibility.
 \subsubsection{The solution subroutine for a single right-hand side}
 
 Given factors of $\bmA$, solve (for a single right-hand side) a relevant 
-system of equations.
+system of equations.\\
 
 \hskip0.5in
 {\tt CALL \packagename\_solve( X, akeep, fkeep, options, inform{[}, job{]})}
@@ -1366,7 +1412,7 @@ For other return values of {\tt status}, see \S\ref{galerrors}.
 \subsubsection{The solution subroutine for multiple right-hand sides}
 
 Given factors of $\bmA$, solve (for a multiple right-hand sides) relevant 
-system of equations.
+system of equations.\\
 
 \hskip0.5in
 {\tt CALL \packagename\_solve( nrhs, X, ldx, akeep, fkeep, options, inform{[}, job{]})}
@@ -1421,10 +1467,16 @@ For other return values of {\tt status}, see \S\ref{galerrors}.
 \subsubsection{The termination subroutine}
 
 Free memory and resources associated with {\tt akeep} and/or
-{\tt fkeep}, at least one of which must be present.
+{\tt fkeep}.\\
 
 \hskip0.5in
-{\tt CALL \packagename\_free({ [}akeep, fkeep,{]} cuda\_error )}
+{\tt CALL \packagename\_free( akeep, fkeep, flag )}
+
+\hskip0.5in
+{\tt CALL \packagename\_free( akeep, flag )}
+
+\hskip0.5in
+{\tt CALL \packagename\_free( fkeep, flag )}
 
 \begin{description}
 
@@ -1437,17 +1489,18 @@ to {\tt \packagename\_analyse} or {\tt \packagename\_analyse\_coord}.
 {\tt \packagename\_control\_fkeep} (see \S\ref{typefkeep}) that contains the 
 numeric factorization returned by preceding call to {\tt \packagename\_factor}.
 
-\itt{cuda\_error} is an \intentout\ scalar variable of type \integer,
-\integer that is {\tt 0} on a successful call, or a CUDA error code following
-a failure.
+\itt{flag} is an \intentout\ scalar variable of type \integer,
+that is {\tt 0} on a successful call, or nonzero following a failure.
 
 \end{description}
 
 Warning:
-{\tt \packagename\_free} must be called by the user. Merely deallocating
-{\tt akeep} or {\tt fkeep}, or allowing them to go out of scope
-will result in memory leaks due to underlying memory allocation performed
-using C++ and CUDA mechanisms. {\tt akeep} should only be deallocated
+{\tt \packagename\_free} must be called by the user. 
+%Merely deallocating
+%{\tt akeep} or {\tt fkeep}, or allowing them to go out of scope
+%will result in memory leaks due to underlying memory allocation performed
+%using C++ and CUDA mechanisms. 
+Arrays in {\tt akeep} should only be deallocated
 after all associated numeric factorizations {\tt fkeep} have been
 freed.
 
@@ -1457,10 +1510,11 @@ freed.
 
 \subsubsection{The enquire subroutine for positive-definite matrices}
 
+Return the diagonal entries of the Cholesky factor. \\
+
 \hskip0.5in
 {\tt CALL \packagename\_enquire\_posdef(akeep,fkeep,options,inform,D)}
 
-Return the diagonal entries of the Cholesky factor.
 \begin{description}
 \itt{akeep} is a scalar \intentin argument of type
 {\tt \packagename\_control\_akeep} (see \S\ref{typeakeep}) that contains the 
@@ -1490,13 +1544,13 @@ stores the entry $l_{ii}$.
 
 \subsubsection{The enquire subroutine for indefinite matrices}
 
+Return the pivot order and/or values of $\bmB$ of the symmetric indefinite
+factorization. \\
 
 \hskip0.5in
 {\tt CALL \packagename\_enquire\_indef( akeep, fkeep, options, inform{[}, PIV\_ORDER, B{]})}
 
 
-Return the pivot order and/or values of $\bmB$ of the Symmetric Indefinite
-Factorization.
 \begin{description}
 \itt{akeep} is a scalar \intentin argument of type
 {\tt \packagename\_control\_akeep} (see \S\ref{typeakeep}) that contains the 
@@ -1534,9 +1588,8 @@ returns the $2\times2$ block diagonals of $\bmB$. The component
 
 \subsubsection{The alter subroutine}
 
-
 Alter the entries of the diagonal factor $\bmB$ for a symmetric indefinite
-factorization. The pivot order remains the same.
+factorization. The pivot order remains the same. \\
 
 \hskip0.5in
 {\tt CALL \packagename\_alter( B, akeep, fkeep, options, inform)}
@@ -1741,24 +1794,14 @@ will be printed on unit {\tt control\%error}.
 
 %\galcommon None.
 \galworkspace Provided automatically by the module.
-\galmodules {\tt GALAHAD\_CLOCK},
-{\tt GALAHAD\_SYMBOLS},
-{\tt GALAHAD\_SORT\_single/double},
-{\tt GALAHAD\_SPACE\-\_single/double},
-{\tt GALAHAD\_SPECFILE\_single/double},
-{\tt GALAHAD\_STRING\_single/double},
-{\tt GALAHAD\_SMT\-\_sin\-gle/double},
-{\tt GALAHAD\_SILS\_single/double},
-{\tt GALAHAD\_NODEND\_single/double}
-and optionally
-{\tt HSL\_MA57\_single/double},
-{\tt HSL\_MA77\_single/\-double},
-{\tt HSL\_MA86\_single/double},
-{\tt HSL\_MA87\_single/double},
-{\tt HSL\_MA97\_single/double},
-{\tt HSL\_MC64\_single\-/double} and
-{\tt HSL\_MC68\_single\-/double}.
-\galroutines Optionally {\tt MC61}, {\tt MC77} and {\tt METIS}.
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt GALAHAD\_KINDS},
+{\tt GALAHAD\_TOPOLOGY},
+{\tt GALAHAD\_MU},
+{\tt GALAHAD\_MS},
+{\tt GALAHAD\_MO},
+{\tt GALAHAD\_RB} and
+{\tt GALAHAD\_NODEND},
 \galio Output is under control of the arguments
 {\tt control\%error},
 {\tt control\%warning},
@@ -1770,9 +1813,10 @@ and {\tt control\%print\_level}.
 {\tt matrix\%type = 'COORDINATE'},
 {\tt matrix\%type}
 one of
-{\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} or   {\tt 'DENSE'}.
+{\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} , {\tt 'SPARSE\_BY\_COLUMNS'} 
+or   {\tt 'DENSE'}.
 % or {\tt 'DIAGONAL'}.
-\galportability ISO Fortran~95 + TR 15581 or Fortran~2003 and optionally OpenMP.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003 and OpenMP.
 The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
@@ -1785,7 +1829,9 @@ Once the ordering has been determined and the assembly tree determined in the
 analyse phase, the tree is broken into a number of leaf subtrees rooted at a
 single node, leaving a root subtree/forest consisting of all remaining nodes
 above those. Each leaf subtree is pre-assigned to a particular 
-NUMA region or GPU for the factorization phase. Details of the algorithm 
+NUMA region 
+%or GPU 
+for the factorization phase. Details of the algorithm 
 used for finding these subtrees and their assignment can be found in 
 Duff, Hogg and Lopez (2020), \S~\ref{galreferences}.
 

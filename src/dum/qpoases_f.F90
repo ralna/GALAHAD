@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-07-20 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-10 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*- G A L A H A D  -  Q P O A S E S    M O D U L E -*-*-*-*-*-*-*-
+!-*-*-*-*- G A L A H A D  -  D U M M Y   Q P O A S E S  _ F  M O D U L E -*-*-*-
 
-  MODULE GALAHAD_QPOASES_precision
+  MODULE GALAHAD_QPOASES_F_precision
 
     USE GALAHAD_KINDS_precision, ONLY: ipc_, rpc_, c_ptr, c_loc
     USE QPOASES_TYPES_precision, ONLY: qpOASES_options_type
@@ -12,7 +12,7 @@
     IMPLICIT NONE
 
     PRIVATE
-    PUBLIC :: qpOASES_solve
+    PUBLIC :: qpOASES_options_type, qpOASES_solve
 
   CONTAINS
 
@@ -46,4 +46,4 @@
 
     END SUBROUTINE qpOASES_solve
 
-  END MODULE GALAHAD_QPOASES_precision
+  END MODULE GALAHAD_QPOASES_F_precision
