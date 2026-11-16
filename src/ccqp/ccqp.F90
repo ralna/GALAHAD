@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 14:48 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 07:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -8407,6 +8407,7 @@
       INTEGER ( KIND = ip_ ) :: n_free, m_active, nz_a_active, nz_h_free
       REAL ( KIND = rp_ ) :: ci, ei, gj
       REAL ( KIND = rp_ ) :: feas = epsmch * 100.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: tol_act = epsmch ** 0.75_rp_
       LOGICAL :: x_feas, c_feas, y_feas, z_feas, lmh
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SMT_type ) :: C_zero
@@ -9008,17 +9009,14 @@
         END DO
       END IF
 
-!  compute c and an estimate e of the error in c (stored in SOL(:m))
+!  compute c
 
-!     ALLOCATE( E( m ), STAT = alloc_status )
-!write( 6, "( '     c_l          c          c_u' )" )
       DO i = 1, m
-        ci = zero ; ei = zero
+        ci = zero
         DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
           ci = ci + A_val( l ) * X( A_col( l ) )
-          ei = ei + ABS( A_val( l ) ) * ABS( X( A_col( l ) ) )
         END DO
-        C( i ) = ci ; SOL( i ) = ei * epsmch
+        C( i ) = ci
       END DO
 
       x_feas = .TRUE. ; c_feas = .TRUE. ; y_feas = .TRUE. ; z_feas = .TRUE.
@@ -9027,9 +9025,10 @@
 
       DO i = 1, m
 
-!  equality constraint
+!  equality constraint. Constraints within ei of a bound are regarded as
+!  active, where ei allows for the error in solving the pounce system
 
-        ei = SOL( i )
+        ei = tol_act * ( one + ABS( C( i ) ) )
         IF ( C_l( i ) == C_u( i ) ) THEN
 
 !  infeasible inequality constraint
