@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:20 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:12 GMT.
 
 #include "galahad_modules.h"
 
@@ -7728,11 +7728,17 @@
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  initialize the first terms in the right hand sides
-!    (       0        )
+!    (  weight x_sF   )
 !    (  b - Ao_B x_b  )
 !    ( c_A - A_AB x_b )
 
-        SOL( 1 : n_free ) = zero
+        IF ( PRESENT( X_s ) ) THEN
+          DO j = 1, n
+            IF ( X_free( j ) > 0 ) SOL( X_free( j ) ) = weight * X_s( j )
+          END DO
+        ELSE
+          SOL( 1 : n_free ) = zero
+        END IF
         SOL( n_free + 1 : nfpo ) = B( 1 : o )
 
 
@@ -7878,10 +7884,14 @@
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  set the right hand sides
-!     (  0  )
-!     (  b  )
+!     ( weight x_s )
+!     (     b      )
 
-        SOL( 1 : n ) = zero
+        IF ( PRESENT( X_s ) ) THEN
+          SOL( 1 : n ) = weight * X_s( 1 : n )
+        ELSE
+          SOL( 1 : n ) = zero
+        END IF
         SOL( n + 1 : npo ) = B( 1 : o )
 
 !  fill in the values of K: the 1,1 block weight I

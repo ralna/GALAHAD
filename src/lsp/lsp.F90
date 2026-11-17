@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:12 GMT.
 
 #include "galahad_modules.h"
 
@@ -1014,6 +1014,11 @@
       CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_l( : map%n ) )
       CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_u( : map%n ) )
       CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X( : map%n ) )
+      IF ( ALLOCATED( prob%X_s ) ) THEN
+        IF ( SIZE( prob%X_s ) >= map%n )                                       &
+          CALL SORT_inplace_permute( map%n, map%x_map,                         &
+                                     X = prob%X_s( : map%n ) )
+      END IF
       IF ( apz )                                                               &
         CALL SORT_inplace_permute( map%n, map%x_map, X = prob%Z( : map%n ) )
       IF ( apzl )                                                              &
@@ -2304,6 +2309,11 @@
            PRESENT( get_x_bounds ) ) THEN
         CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_l )
         CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_u )
+        IF ( ALLOCATED( prob%X_s ) ) THEN
+          IF ( SIZE( prob%X_s ) >= map%n )                                     &
+            CALL SORT_inplace_permute( map%n, map%x_map,                       &
+                                       X = prob%X_s( : map%n ) )
+        END IF
       END IF
 
 !  permute the bounds on dx
@@ -2972,6 +2982,11 @@
            PRESENT( get_x_bounds ) ) THEN
         CALL SORT_inverse_permute( map%n, map%x_map, X = prob%X_l )
         CALL SORT_inverse_permute( map%n, map%x_map, X = prob%X_u )
+        IF ( ALLOCATED( prob%X_s ) ) THEN
+          IF ( SIZE( prob%X_s ) >= map%n )                                     &
+            CALL SORT_inverse_permute( map%n, map%x_map,                       &
+                                       X = prob%X_s( : map%n ) )
+        END IF
       END IF
 
 !  restore the bounds on dx
