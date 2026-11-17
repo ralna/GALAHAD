@@ -136,9 +136,11 @@ def test_sllsb_shift(w):
     x, y, z, r, x_stat, inform = solve('coordinate', None, w, x_s)
     assert inform['status'] == 0
     assert inform['obj'] == pytest.approx(objective(x, w, x_s))
-    # unlike for x_star, sllsb stops here at an interior point that is only
-    # optimal to within its default stopping tolerances (stop_abs_p,
-    # stop_abs_d and stop_abs_c, all about 7e-6), so check to within 1e-4
+    # unlike for x_star, sllsb's final "pounce" solve ignores the shifts
+    # (see https://github.com/ralna/GALAHAD/issues/599), so its result is
+    # rejected and sllsb stops at an interior point that is only optimal to
+    # within its default stopping tolerances (stop_abs_p, stop_abs_d and
+    # stop_abs_c, all about 7e-6), so check to within 1e-4
     tol = 1e-4
     g = gradient(x, w, x_s)
     check_optimality(x, g, tol=tol, feas_tol=tol)
