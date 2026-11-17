@@ -127,10 +127,6 @@ def test_snls_solution(solution):
     assert inform['obj'] == pytest.approx(f_star, abs=1e-8)
 
 
-@pytest.mark.xfail(strict=True, reason='snls returns the y and z of its '
-                   'last slls subproblem, for which slls returns y = 0 and '
-                   'z = g, violating z >= 0 and x^T z = 0 (see '
-                   'https://github.com/ralna/GALAHAD/issues/583)')
 def test_snls_multipliers(solution):
     x, y, z, r, g, x_stat, inform = solution
     assert g == pytest.approx(E @ y + z, abs=tol)

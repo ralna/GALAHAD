@@ -88,10 +88,7 @@ RUNS = {
 }
 
 STORAGE = ['coordinate', 'sparse_by_rows', 'sparse_by_columns',
-           'dense_by_rows', 'dense_by_columns',
-           pytest.param('dense', marks=pytest.mark.skip(
-               reason="SLLS_import does not accept Ao_type 'dense' (see "
-               'https://github.com/ralna/GALAHAD/issues/585)'))]
+           'dense_by_rows', 'dense_by_columns', 'dense']
 
 @pytest.fixture(params=RUNS.keys())
 def run(request):
@@ -139,9 +136,6 @@ def test_slls_shift(w):
     assert x == pytest.approx(np.r_[np.zeros(n - 1), 1.0], abs=1e-6)
 
 
-@pytest.mark.xfail(strict=True, reason='slls returns y = 0 and z = g, '
-                   'violating z >= 0 and x^T z = 0 (see '
-                   'https://github.com/ralna/GALAHAD/issues/583)')
 def test_slls_multipliers(solution):
     x, y, z, r, g, x_stat, inform = solution
     assert g == pytest.approx(y[0] + z, abs=1e-6)
