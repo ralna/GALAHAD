@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 14:48 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 07:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -59,7 +59,9 @@
                                  GALAHAD_error_hessian_type
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
                                 STRING_ies, STRING_are, STRING_ordinal
-      USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array, SPACE_dealloc_array
+      USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array,                   &
+                                         SPACE_dealloc_array,                  &
+                                         SPACE_dealloc_smt_type
       USE GALAHAD_SMT_precision, ONLY: SMT_TYPE, SMT_GET, SMT_PUT
       USE GALAHAD_QPT_precision, ONLY: CCQP_dims_type => QPT_dimensions_type,  &
                                        QPT_keyword_A, QPT_problem_type,        &
@@ -89,6 +91,10 @@
                                          ROOTS_solve, ROOTS_quadratic,         &
                                          ROOTS_smallest_root_in_interval
       USE GALAHAD_LMS_precision, ONLY: LMS_data_type, LMS_apply_lbfgs
+      USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
+      USE GALAHAD_BLLS_precision, ONLY: BLLS_data_type, BLLS_control_type,     &
+                                        BLLS_inform_type, BLLS_initialize,     &
+                                        BLLS_solve, BLLS_terminate
       USE GALAHAD_SORT_precision, ONLY: SORT_inverse_permute
       USE GALAHAD_FDC_precision, ONLY: FDC_data_type, FDC_control_type,        &
                                        FDC_inform_type, FDC_initialize,        &
@@ -8355,8 +8361,8 @@
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: Y
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_stat
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_free
@@ -8399,15 +8405,26 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is likely not in the active set
 
+!  Y and Z are REAL arrays of lengths m and n that must be set on entry to
+!   the current estimates of the Lagrange multipliers and dual variables
+!   (these are used as a starting point if the multipliers from the EQP
+!   have the wrong signs and are recomputed). On exit, they hold the
+!   multipliers and dual variables at the EQP solution
+
 !  Report whether the solution to this EQP is optimal for the original problem
 
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, alloc_status
       INTEGER ( KIND = ip_ ) :: n_free, m_active, nz_a_active, nz_h_free
-      REAL ( KIND = rp_ ) :: ci, ei, gj
+      REAL ( KIND = rp_ ) :: ci, ei, gj, g_max, hx_max, aty_max, z_max
       REAL ( KIND = rp_ ) :: feas = epsmch * 100.0_rp_
-      LOGICAL :: x_feas, c_feas, y_feas, z_feas, lmh
+      REAL ( KIND = rp_ ), PARAMETER :: tol_act = epsmch ** 0.75_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: tol_stat = epsmch ** 0.75_rp_
+      REAL ( KIND = rp_ ) :: r_max, stat_scale
+      LOGICAL :: x_feas, c_feas, y_feas, z_feas, stationary, lmh
+      LOGICAL :: multipliers_recomputed, success
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GHX, Y_in, Z_in
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SMT_type ) :: C_zero
 
@@ -8430,6 +8447,25 @@
 !     z_B = g_B + H_BB x_B + H_BF^T x_F - A_AB^T y_A         (3)
 
       lmh = PRESENT( H_lm )
+
+!  record the input multiplier and dual variable estimates
+
+      array_name = 'ccqp: Y_in'
+      CALL SPACE_resize_array( m, Y_in,                                        &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: Z_in'
+      CALL SPACE_resize_array( n, Z_in,                                        &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+      Y_in = Y ; Z_in = Z
 
 !  -------------------------------
 !  1. solve via the reduced system
@@ -9008,28 +9044,94 @@
         END DO
       END IF
 
-!  compute c and an estimate e of the error in c (stored in SOL(:m))
+!  compute c
 
-!     ALLOCATE( E( m ), STAT = alloc_status )
-!write( 6, "( '     c_l          c          c_u' )" )
       DO i = 1, m
-        ci = zero ; ei = zero
+        ci = zero
         DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
           ci = ci + A_val( l ) * X( A_col( l ) )
-          ei = ei + ABS( A_val( l ) ) * ABS( X( A_col( l ) ) )
         END DO
-        C( i ) = ci ; SOL( i ) = ei * epsmch
+        C( i ) = ci
       END DO
 
+!  compute g + H x (with g and H x including any target terms), along with
+!  the largest components of g and H x
+
+      array_name = 'ccqp: GHX'
+      CALL SPACE_resize_array( n, GHX,                                         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  set GHX = g (including any contribution from the target)
+
+      DO j = 1, n
+        IF ( gradient_kind == 0 ) THEN
+          gj = zero
+        ELSE IF ( gradient_kind == 1 ) THEN
+          gj = one
+        ELSE
+          gj = G( j )
+        END IF
+        IF ( Hessian_kind == 1 ) THEN
+          IF ( target_kind == 1 ) THEN
+            gj = gj - one
+          ELSE IF ( target_kind /= 0 ) THEN
+            gj = gj - X0( j )
+          END IF
+        ELSE IF ( Hessian_kind == 2 ) THEN
+          IF ( target_kind == 1 ) THEN
+            gj = gj - WEIGHT( j )
+          ELSE IF ( target_kind /= 0 ) THEN
+            gj = gj - WEIGHT( j ) * X0( j )
+          END IF
+        END IF
+        GHX( j ) = gj
+      END DO
+      g_max = MAXVAL( ABS( GHX ) )
+
+!  compute H x in SOL( : n ), and add it to GHX
+
+      IF ( Hessian_kind == 0 ) THEN
+        SOL( : n ) = zero
+      ELSE IF ( Hessian_kind == 1 ) THEN
+        SOL( : n ) = X
+      ELSE IF ( Hessian_kind == 2 ) THEN
+        SOL( : n ) = WEIGHT * X
+      ELSE IF ( lmh ) THEN
+        CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = SOL( : n ) )
+        IF ( i /= 0 ) THEN
+          inform%status = i ; GO TO 900
+        END IF
+      ELSE
+        SOL( : n ) = zero
+        DO j = 1, n
+          DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
+            i = H_col( l )
+            SOL( j ) = SOL( j ) + H_val( l ) * X( i )
+            IF ( i /= j ) SOL( i ) = SOL( i ) + H_val( l ) * X( j )
+          END DO
+        END DO
+      END IF
+      hx_max = MAXVAL( ABS( SOL( : n ) ) )
+      GHX = GHX + SOL( : n )
+      multipliers_recomputed = .FALSE.
+
+!  check the optimality of the EQP solution (x,y,z) for the original problem
+
+  100 CONTINUE
       x_feas = .TRUE. ; c_feas = .TRUE. ; y_feas = .TRUE. ; z_feas = .TRUE.
 
 !  check for feasibility of the general constraints
 
       DO i = 1, m
 
-!  equality constraint
+!  equality constraint. Constraints within ei of a bound are regarded as
+!  active, where ei allows for the error in solving the pounce system
 
-        ei = SOL( i )
+        ei = tol_act * ( one + ABS( C( i ) ) )
         IF ( C_l( i ) == C_u( i ) ) THEN
 
 !  infeasible inequality constraint
@@ -9100,8 +9202,63 @@
         END IF
       END DO
 
+!  check that the solution is stationary, i.e., that each component of the
+!  residual r = g + H x - A^T y - z is small relative to the largest
+!  components of g, H x, A^T y and z. Compute A^T y in SOL( : n )
+
+      SOL( : n ) = zero
+      DO i = 1, m
+        DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+          j = A_col( l )
+          SOL( j ) = SOL( j ) + A_val( l ) * Y( i )
+        END DO
+      END DO
+      aty_max = MAXVAL( ABS( SOL( : n ) ) )
+      z_max = MAXVAL( ABS( Z ) )
+      r_max = MAXVAL( ABS( GHX - SOL( : n ) - Z ) )
+      stat_scale = one + g_max + hx_max + aty_max + z_max
+      stationary = r_max <= tol_stat * stat_scale
+
 !write(6,*) ' x_feas, c_feas, y_feas, z_feas ', x_feas, c_feas, y_feas, z_feas
-      optimal = x_feas .AND. c_feas .AND. y_feas .AND. z_feas
+      optimal = x_feas .AND. c_feas .AND. y_feas .AND. z_feas .AND. stationary
+
+!  if x is feasible, but the multipliers and dual variables from the EQP
+!  are not acceptable (as may happen when the active constraints are linearly
+!  dependent, and thus the multipliers not unique), recompute them by finding
+!  those of the correct sign that best satisfy the stationarity condition
+!  A^T y + z = g + H x, starting from the input estimates, and check again
+
+      IF ( .NOT. optimal .AND. x_feas .AND. c_feas .AND.                       &
+           .NOT. multipliers_recomputed ) THEN
+        multipliers_recomputed = .TRUE.
+        CALL CCQP_pounce_multipliers( n, m, A_val, A_col, A_ptr, C_l, C_u,     &
+                                      X_l, X_u, C_stat, X_stat, GHX,           &
+                                      Y_in, Z_in, Y, Z,                        &
+                                      tol_stat * ( one + g_max + hx_max ),     &
+                                      control, inform, success )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        IF ( success ) GO TO 100
+      END IF
+
+!  deallocate workspace
+
+      array_name = 'ccqp: GHX'
+      CALL SPACE_dealloc_array( GHX,                                           &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: Y_in'
+      CALL SPACE_dealloc_array( Y_in,                                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: Z_in'
+      CALL SPACE_dealloc_array( Z_in,                                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       RETURN
 
@@ -9109,12 +9266,288 @@
 
   900 CONTINUE
       optimal = .FALSE.
+      IF ( ALLOCATED( GHX ) ) DEALLOCATE( GHX, STAT = alloc_status )
+      IF ( ALLOCATED( Y_in ) ) DEALLOCATE( Y_in, STAT = alloc_status )
+      IF ( ALLOCATED( Z_in ) ) DEALLOCATE( Z_in, STAT = alloc_status )
 
       RETURN
 
 !  End of CCQP_pounce
 
       END SUBROUTINE CCQP_pounce
+
+!-*-*-  C C Q P _ P O U N C E _ M U L T I P L I E R S  S U B R O U T I N E -*-*-
+
+      SUBROUTINE CCQP_pounce_multipliers( n, m, A_val, A_col, A_ptr, C_l, C_u, &
+                                          X_l, X_u, C_stat, X_stat, GHX,       &
+                                          Y_in, Z_in, Y, Z, stop_d,            &
+                                          control, inform, success )
+
+!  Given the solution x of the EQP in CCQP_pounce, find Lagrange multipliers
+!  y_A for the active constraints and dual variables z_B for the active
+!  bounds that best satisfy the stationarity condition
+
+!     A_A^T y_A + I_B^T z_B = g + H x
+
+!  in the least-squares sense, subject to their having the correct signs,
+!  i.e., solve the bound-constrained linear least-squares problem
+
+!     minimize 1/2 || A_o w - b ||^2 subject to w_l <= w <= w_u
+
+!  with w = ( y_A, z_B ), A_o = ( A_A^T  I_B^T ) and b = g + H x, using BLLS.
+!  Multipliers of active lower bounds must be non-negative, those of active
+!  upper bounds non-positive, and those of equality constraints and fixed
+!  variables are unrestricted. The current estimates Y_in and Z_in, projected
+!  onto these bounds, provide the starting point
+
+!  Arguments:
+
+!  n, m, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u, C_stat and X_stat are as
+!   for CCQP_pounce
+!  GHX is a REAL array of length n that holds g + H x
+!  Y_in and Z_in are REAL arrays of lengths m and n that hold the current
+!   estimates of the multipliers and dual variables
+!  Y and Z are REAL arrays of lengths m and n that will be set to the
+!   recomputed multipliers and dual variables if success is .TRUE., and
+!   are otherwise unchanged
+!  stop_d is the required accuracy of the projected gradient in BLLS
+!  control and inform are as for CCQP_pounce. inform%status will be set
+!   to a nonzero value only if an allocation or deallocation error occurs
+!  success is set .TRUE. if BLLS succeeded, and .FALSE. otherwise
+
+!  Dummy arguments
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_stat
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: GHX, Z_in
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y_in
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = rp_ ), INTENT( IN ) :: stop_d
+      TYPE ( CCQP_control_type ), INTENT( IN ) :: control
+      TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
+      LOGICAL, INTENT( OUT ) :: success
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, nw, ne, alloc_status
+      INTEGER ( KIND = ip_ ) :: dstat, dalloc
+      CHARACTER ( LEN = 80 ) :: array_name
+      TYPE ( QPT_problem_type ) :: lls
+      TYPE ( BLLS_data_type ) :: blls_data
+      TYPE ( BLLS_control_type ) :: blls_control
+      TYPE ( BLLS_inform_type ) :: blls_inform
+      TYPE ( USERDATA_type ) :: userdata
+
+      success = .FALSE.
+
+!  count the unknowns (the multipliers of the active constraints and bounds)
+!  and the nonzeros in A_o
+
+      nw = 0 ; ne = 0
+      DO i = 1, m
+        IF ( C_stat( i ) /= 0 ) THEN
+          nw = nw + 1 ; ne = ne + A_ptr( i + 1 ) - A_ptr( i )
+        END IF
+      END DO
+      DO j = 1, n
+        IF ( X_stat( j ) /= 0 ) THEN
+          nw = nw + 1 ; ne = ne + 1
+        END IF
+      END DO
+      IF ( nw == 0 ) RETURN
+
+!  allocate space for the least-squares problem
+
+      lls%n = nw ; lls%o = n
+      lls%Ao%m = n ; lls%Ao%n = nw ; lls%Ao%ne = ne
+
+      array_name = 'ccqp: lls%B'
+      CALL SPACE_resize_array( n, lls%B,                                       &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: lls%X'
+      CALL SPACE_resize_array( nw, lls%X,                                      &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: lls%X_l'
+      CALL SPACE_resize_array( nw, lls%X_l,                                    &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: lls%X_u'
+      CALL SPACE_resize_array( nw, lls%X_u,                                    &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: lls%X_status'
+      CALL SPACE_resize_array( nw, lls%X_status,                               &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: lls%Ao%val'
+      CALL SPACE_resize_array( ne, lls%Ao%val,                                 &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: lls%Ao%row'
+      CALL SPACE_resize_array( ne, lls%Ao%row,                                 &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'ccqp: lls%Ao%ptr'
+      CALL SPACE_resize_array( nw + 1, lls%Ao%ptr,                             &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  store A_o = ( A_A^T  I_B^T ) by columns; column k of A_o is the transpose
+!  of the k-th active row of A, or the k-th active column of the identity.
+!  Also set the bounds on, and the starting values of, the unknowns
+
+      CALL SMT_put( lls%Ao%type, 'SPARSE_BY_COLUMNS', alloc_status )
+      lls%B = GHX
+      k = 0 ; ne = 0
+      lls%Ao%ptr( 1 ) = 1
+      DO i = 1, m
+        IF ( C_stat( i ) /= 0 ) THEN
+          k = k + 1
+          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+            ne = ne + 1
+            lls%Ao%row( ne ) = A_col( l )
+            lls%Ao%val( ne ) = A_val( l )
+          END DO
+          lls%Ao%ptr( k + 1 ) = ne + 1
+          IF ( C_l( i ) == C_u( i ) ) THEN
+            lls%X_l( k ) = - control%infinity
+            lls%X_u( k ) = control%infinity
+          ELSE IF ( C_stat( i ) < 0 ) THEN
+            lls%X_l( k ) = zero
+            lls%X_u( k ) = control%infinity
+          ELSE
+            lls%X_l( k ) = - control%infinity
+            lls%X_u( k ) = zero
+          END IF
+          lls%X( k ) = MIN( MAX( Y_in( i ), lls%X_l( k ) ), lls%X_u( k ) )
+        END IF
+      END DO
+      DO j = 1, n
+        IF ( X_stat( j ) /= 0 ) THEN
+          k = k + 1
+          ne = ne + 1
+          lls%Ao%row( ne ) = j
+          lls%Ao%val( ne ) = one
+          lls%Ao%ptr( k + 1 ) = ne + 1
+          IF ( X_l( j ) == X_u( j ) ) THEN
+            lls%X_l( k ) = - control%infinity
+            lls%X_u( k ) = control%infinity
+          ELSE IF ( X_stat( j ) < 0 ) THEN
+            lls%X_l( k ) = zero
+            lls%X_u( k ) = control%infinity
+          ELSE
+            lls%X_l( k ) = - control%infinity
+            lls%X_u( k ) = zero
+          END IF
+          lls%X( k ) = MIN( MAX( Z_in( j ), lls%X_l( k ) ), lls%X_u( k ) )
+        END IF
+      END DO
+
+!  solve the least-squares problem
+
+      CALL BLLS_initialize( blls_data, blls_control, blls_inform )
+      blls_control%error = control%error
+      blls_control%out = control%out
+      blls_control%infinity = control%infinity
+      blls_control%stop_d = stop_d
+
+!  the least-squares problem is often rank deficient, so any stabilisation
+!  would prevent the residual from being reduced to the required level
+
+      blls_control%stabilisation_weight = zero
+      blls_control%space_critical = control%space_critical
+      blls_control%deallocate_error_fatal = control%deallocate_error_fatal
+      blls_inform%status = 1
+      CALL BLLS_solve( lls, blls_data, blls_control, blls_inform, userdata )
+
+!  if the solve succeeded, record the multipliers and dual variables
+
+      IF ( blls_inform%status == GALAHAD_ok ) THEN
+        success = .TRUE.
+        k = 0
+        DO i = 1, m
+          IF ( C_stat( i ) /= 0 ) THEN
+            k = k + 1
+            Y( i ) = lls%X( k )
+          ELSE
+            Y( i ) = zero
+          END IF
+        END DO
+        DO j = 1, n
+          IF ( X_stat( j ) /= 0 ) THEN
+            k = k + 1
+            Z( j ) = lls%X( k )
+          ELSE
+            Z( j ) = zero
+          END IF
+        END DO
+      END IF
+
+!  delete workspace
+
+      CALL BLLS_terminate( blls_data, blls_control, blls_inform )
+      IF ( blls_inform%status /= GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%alloc_status = blls_inform%alloc_status
+        inform%bad_alloc = blls_inform%bad_alloc
+        GO TO 900
+      END IF
+
+  900 CONTINUE
+      CALL SPACE_dealloc_array( lls%B, dstat, dalloc )
+      CALL SPACE_dealloc_array( lls%X, dstat, dalloc )
+      CALL SPACE_dealloc_array( lls%X_l, dstat, dalloc )
+      CALL SPACE_dealloc_array( lls%X_u, dstat, dalloc )
+      CALL SPACE_dealloc_array( lls%X_status, dstat, dalloc )
+      CALL SPACE_dealloc_array( lls%Z, dstat, dalloc )
+      CALL SPACE_dealloc_array( lls%R, dstat, dalloc )
+      CALL SPACE_dealloc_array( lls%G, dstat, dalloc )
+      CALL SPACE_dealloc_smt_type( lls%Ao, dstat, dalloc )
+      RETURN
+
+!  End of CCQP_pounce_multipliers
+
+      END SUBROUTINE CCQP_pounce_multipliers
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================
