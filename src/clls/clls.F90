@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:12 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:13 GMT.
 
 #include "galahad_modules.h"
 
@@ -2266,6 +2266,30 @@
   700 CONTINUE
       data%trans = data%trans - 1
       IF ( data%trans == 0 ) THEN
+
+!  add the contributions to the objective function from the observations
+!  that involve only fixed variables, 1/2 sum w_i b_i^2 (b has been adjusted
+!  to remove the contributions from the fixed variables), and from the
+!  regularization of the fixed variables, sigma/2 sum ( x_j - x_sj )^2
+
+        DO i = data%LSP_map%o_reordered + 1, data%LSP_map%o
+          IF ( present_weights ) THEN
+            inform%obj = inform%obj + half * prob%W( i ) * prob%B( i ) ** 2
+          ELSE
+            inform%obj = inform%obj + half * prob%B( i ) ** 2
+          END IF
+        END DO
+        IF ( weight > zero ) THEN
+          DO j = data%LSP_map%n_reordered + 1, data%LSP_map%n
+            IF ( present_shifts ) THEN
+              inform%obj = inform%obj                                          &
+                + half * weight * ( prob%X( j ) - prob%X_s( j ) ) ** 2
+            ELSE
+              inform%obj = inform%obj + half * weight * prob%X( j ) ** 2
+            END IF
+          END DO
+        END IF
+
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         prob%C_status( prob%m + 1 : data%LSP_map%m ) = 0
         CALL SORT_inverse_permute( data%LSP_map%m, data%LSP_map%c_map,         &

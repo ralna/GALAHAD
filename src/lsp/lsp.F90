@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:12 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:13 GMT.
 
 #include "galahad_modules.h"
 
@@ -514,7 +514,7 @@
       INTEGER ( KIND = ip_ ) :: ao_free, ao_fixed, d_nonpos, d_fixed
       INTEGER ( KIND = ip_ ) :: d_free, d_nonneg, d_lower, d_range, d_upper
       REAL ( KIND = rp_ ) :: xl, xu, cl, cu, val
-      LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
+      LOGICAL :: apy, apyl, apyu, apz, apzl, apzu, weights
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  check that Y or Y_l/Y_u and Z or Z_l/Z_u has been allocated
@@ -1114,6 +1114,8 @@
 !  run through the rows of A_o to build the mapping array, and set the constant
 !  term in the objective for rows with no free variables
 
+      weights = .FALSE.
+      IF ( ALLOCATED( prob%W ) ) weights = SIZE( prob%W ) >= map%o
       ao_free = 0 ; ao_fixed = prob%o ; prob%f = zero
       DO i = 1, map%o
         IF ( map%IW( i ) > 0 ) THEN
@@ -1122,13 +1124,22 @@
         ELSE
           ao_fixed = ao_fixed + 1
           map%ao_map( i ) = ao_fixed
-          prob%f = prob%f + half * prob%B( i ) ** 2
+          IF ( weights ) THEN
+            prob%f = prob%f + half * prob%W( i ) * prob%B( i ) ** 2
+          ELSE
+            prob%f = prob%f + half * prob%B( i ) ** 2
+          END IF
         END IF
       END DO
 
 !  move the observations
 
       CALL SORT_inplace_permute( map%o, map%ao_map, X = prob%B )
+      IF ( ALLOCATED( prob%W ) ) THEN
+        IF ( SIZE( prob%W ) >= map%o )                                         &
+          CALL SORT_inplace_permute( map%o, map%ao_map,                        &
+                                     X = prob%W( : map%o ) )
+      END IF
       IF ( PRESENT( parametric ) )                                             &
         CALL SORT_inplace_permute( map%o, map%ao_map, X = prob%DB )
 
@@ -2359,6 +2370,11 @@
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_b ) ) THEN
         CALL SORT_inplace_permute( map%o, map%ao_map, X = prob%B )
+        IF ( ALLOCATED( prob%W ) ) THEN
+          IF ( SIZE( prob%W ) >= map%o )                                       &
+            CALL SORT_inplace_permute( map%o, map%ao_map,                      &
+                                       X = prob%W( : map%o ) )
+        END IF
       END IF
 
 !  permute the bounds on db
@@ -2547,7 +2563,8 @@
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: i, j, k, l
-      LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
+      LOGICAL :: apy, apyl, apyu, apz, apzl, apzu, residuals, weights, shifts
+      REAL ( KIND = rp_ ) :: sigma, z_j
 
 !  check that Y or Y_l/Y_u and Z or Z_l/Z_u has been allocated
 
@@ -2615,16 +2632,59 @@
         RETURN
       END IF
 
-!  if there are fixed variables, compute suitable dual variables
+!  compute the residuals r = A_o x - b for the observations that involve
+!  only fixed variables (b has been adjusted to remove their contributions)
+
+      residuals = .FALSE.
+      IF ( ALLOCATED( prob%R ) ) residuals = SIZE( prob%R ) >= map%o
+      IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
+             PRESENT( get_x ) .OR. PRESENT( get_z ) ) .AND. residuals .AND.    &
+           map%o_reordered < map%o )                                           &
+        prob%R( map%o_reordered + 1 : map%o )                                  &
+          = - prob%B( map%o_reordered + 1 : map%o )
+
+!  if there are fixed variables, compute their dual variables from the
+!  dual feasibility condition z = A_o^T W r + sigma ( x - x_s ) - A^T y
 
       IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
              PRESENT( get_z ) ) .AND. map%n_reordered < map%n ) THEN
-
-        IF ( apz ) THEN
-          prob%Z( map%n_reordered + 1 : map%n ) = zero
-        ELSE
-          prob%Z_l( map%n_reordered + 1 : map%n ) = zero
-        END IF
+        weights = .FALSE.
+        IF ( ALLOCATED( prob%W ) ) weights = SIZE( prob%W ) >= map%o
+        shifts = .FALSE.
+        IF ( ALLOCATED( prob%X_s ) ) shifts = SIZE( prob%X_s ) >= map%n
+        sigma = MAX( prob%regularization_weight, zero )
+        DO j = map%n_reordered + 1, map%n
+          IF ( shifts ) THEN
+            z_j = sigma * ( prob%X( j ) - prob%X_s( j ) )
+          ELSE
+            z_j = sigma * prob%X( j )
+          END IF
+          IF ( residuals ) THEN
+            DO l = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1
+              i = prob%Ao%row( l )
+              IF ( weights ) THEN
+                z_j = z_j + prob%Ao%val( l ) * prob%W( i ) * prob%R( i )
+              ELSE
+                z_j = z_j + prob%Ao%val( l ) * prob%R( i )
+              END IF
+            END DO
+          END IF
+          IF ( map%m > 0 ) THEN
+            DO l = map%ptr_a_fixed( j ), map%ptr_a_fixed( j + 1 ) - 1
+              i = prob%A%col( l )   !  NB: this is the row number
+              IF ( apy ) THEN
+                z_j = z_j - prob%A%val( l ) * prob%Y( i )
+              ELSE
+                z_j = z_j - prob%A%val( l ) * ( prob%Y_l( i ) + prob%Y_u( i ) )
+              END IF
+            END DO
+          END IF
+          IF ( apz ) THEN
+            prob%Z( j ) = z_j
+          ELSE
+            prob%Z_l( j ) = z_j
+          END IF
+        END DO
 
 !  copy to Z_l and Z_u if required
 
@@ -2930,6 +2990,11 @@
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_b ) ) THEN
         CALL SORT_inverse_permute( map%o, map%ao_map, X = prob%B )
+        IF ( ALLOCATED( prob%W ) ) THEN
+          IF ( SIZE( prob%W ) >= map%o )                                       &
+            CALL SORT_inverse_permute( map%o, map%ao_map,                      &
+                                       X = prob%W( : map%o ) )
+        END IF
       END IF
 
 !  restore db
@@ -2969,11 +3034,13 @@
         END IF
       END IF
 
-!  restore x
+!  restore x and the residuals r
 
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_x ) ) THEN
         CALL SORT_inverse_permute( map%n, map%x_map, X = prob%X )
+        IF ( residuals )                                                       &
+          CALL SORT_inverse_permute( map%o, map%ao_map, X = prob%R( : map%o ) )
       END IF
 
 !  restore the bounds on x
