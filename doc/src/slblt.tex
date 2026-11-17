@@ -82,7 +82,7 @@ or CSC (compressed sparse-column) formats, as provided by the originating
 {\tt SSIDS}  package. The former are described in this section,
 while the latter appear in Section~\ref{sophisticated}.
 We note that the GPU features supported by {\tt SSIDS} are {\bf not}
-yet supported by {\tt \packagename}.
+yet provided by {\tt \packagename}.
 
 \subsection{Calling sequences}
 
@@ -1204,7 +1204,7 @@ the gives the number of columns of $\bmA$.
 
 \itt{PTR} is a rank-one array \intentin\ variable of type \longinteger\
 and length at least {\tt n+1} that gives the starting addresses for each column
- of the lower triangle of $\bmA$ in CSC format (see \S\ref{rowcolumn}), 
+ of the lower triangle of $\bmA$ in CSC format (see \S\ref{columnwise}), 
 while {\tt ptr(n+1)} gives the total number of nonzeros
 the lower triangle of $\bmA$ plus one.
 
@@ -1931,13 +1931,6 @@ single set of equations
        \vect{ 8 \\ 45 \\ 31 \\ 15 \\ 17}}
 (Note that this example does not illustrate all the facilities).
 
-
-
-\end{document}
-
-
-
-
 {\tt \small
 \VerbatimInput{\packageexample}
 }
@@ -1951,6 +1944,13 @@ This produces the following output:
 {\tt \small
 \VerbatimInput{\packageresults}
 }
+
+
+\end{document}
+
+
+
+
 \noindent
 The same problem may be solved holding the data in
 a sparse row-wise storage format by replacing the lines

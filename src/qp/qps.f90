@@ -52,7 +52,7 @@
 !  control%scale = 7                            ! Sinkhorn-Knopp scaling
 !  control%presolve = .TRUE.                    ! Pre-solve the problem
 !  control%CQP_control%print_level = 1
-   control%QPOASES_control%options%printlevel = 2
+!  control%QPOASES_control%options%printlevel = 2
    CALL QP_solve( p, data, control, inform, C_stat, B_stat ) ! Solve
    IF ( inform%status == 0 ) THEN               !  Successful return
      WRITE( 6, "( ' QP: ', I0, 1X, A, ' iterations  ', /,                      &

@@ -79,7 +79,7 @@
     REAL ( rpc_ ), INTENT( INOUT ) :: cpuTime
     TYPE ( qpOASES_options_type ) :: options
     REAL ( rpc_ ), INTENT( OUT ) :: X_sol( n )
-    REAL ( rpc_ ), INTENT( OUT ) :: Y_sol( m )
+    REAL ( rpc_ ), INTENT( OUT ) :: Y_sol( n + m )
     REAL ( rpc_ ), INTENT( OUT ) :: f_sol
     INTEGER ( ipc_ ), INTENT( OUT ) :: status
 
@@ -111,7 +111,7 @@
     REAL ( rpc_ ), INTENT( INOUT ) :: cpuTime
     TYPE ( qpOASES_options_type ), TARGET :: options
     REAL ( rpc_ ), TARGET, INTENT( OUT ) :: X_sol( n )
-    REAL ( rpc_ ), TARGET, INTENT( OUT ) :: Y_sol( m )
+    REAL ( rpc_ ), TARGET, INTENT( OUT ) :: Y_sol( n + m )
     REAL ( rpc_ ), TARGET, INTENT( OUT ) :: f_sol
     INTEGER ( ipc_ ), INTENT( OUT ) :: status
 

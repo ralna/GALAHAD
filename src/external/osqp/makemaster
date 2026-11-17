@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional OSQP procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-10-28
+#  This version: 2026-11-17
 
 #  include standard GALAHAD makefile definitions
 
@@ -184,8 +184,9 @@ $(LG)(osqp.o): ../osqp/osqp.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "osqp"
 	$(CP) ../osqp/osqp.F90 $(OBJ)/osqp.F90
 	cd $(OBJ); $(FORTRAN) -o osqp.o $(FFLAGS) osqp.F90
-	cd $(OBJ); $(ARR) osqp.o ; $(RM) osqp.F90 osqp.o
+	cd $(OBJ); $(ARR) osqp.o ; $(RM) osqp.F90 osqp.o osqpt.o old_osqpt.o
 	$(RANLIB) $(LG)
+	$(RMOBFILE) qp_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -197,6 +198,7 @@ $(OBJ)/osqpt.o: ../osqp/osqpt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "osqpt  "
 	$(CP) ../osqp/osqpt.F90 $(OBJ)/osqpt.F90
 	cd $(OBJ) ; $(FORTRAN) -o osqpt.o $(FFLAGSS) osqpt.F90
+	cd $(OBJ); $(RM) osqpt.F90
 	@printf '[ OK ]\n'
 
 old_osqpt.o: $(OBJ)/old_osqpt.o
@@ -205,6 +207,7 @@ $(OBJ)/old_osqpt.o: ../osqp/old_osqpt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "old_osqpt  "
 	$(CP) ../osqp/old_osqpt.F90 $(OBJ)/old_osqpt.F90
 	cd $(OBJ) ; $(FORTRAN) -o old_osqpt.o $(FFLAGSS) old_osqpt.F90
+	cd $(OBJ); $(RM) old_osqpt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

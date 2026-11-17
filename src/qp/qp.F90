@@ -613,7 +613,7 @@
       CASE ( 'qpoases', 'QPOASES' )
         CALL QPOASES_initialize( data%QPOASES_data, control%QPOASES_control,   &
                                  inform%QPOASES_inform )
-        control%QPOASES_control%options%printlevel = 0
+write(6,*) control%QPOASES_control%options%printlevel
       END SELECT
 
       inform%status = GALAHAD_ok

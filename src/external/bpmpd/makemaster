@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional BPMPD procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-10-28
+#  This version: 2026-11-17
 
 #  include standard GALAHAD makefile definitions
 
@@ -152,9 +152,8 @@ $(LG)(bpmpd.o): ../bpmpd/bpmpd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "bpmpd  "
 	$(CP) ../bpmpd/bpmpd.F90 $(OBJ)/bpmpd.F90
 	cd $(OBJ); $(FORTRAN) -o bpmpd.o $(FFLAGS) bpmpd.F90
-	cd $(OBJ); $(ARR) bpmpd.o ; $(RM) bpmpd.F90 bpmpd.o
+	cd $(OBJ); $(ARR) bpmpd.o ; $(RM) bpmpd.F90 bpmpd.o bpmpdt.o
 	$(RMARFILE) qp_$(PRECIS).o
-	$(RMOBFILE) bpmpdt.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -166,6 +165,7 @@ $(OBJ)/bpmpdt.o: ../bpmpd/bpmpdt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "bpmpdt  "
 	$(SED) -f $(SEDS) ../bpmpd/bpmpdt.F90 > $(OBJ)/bpmpdt.F90
 	cd $(OBJ) ; $(FORTRAN) -o bpmpdt.o $(FFLAGSS) bpmpdt.F90
+	cd $(OBJ); $(RM) bpmpdt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional BQPD procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-10-28
+#  This version: 2026-11-17
 
 #  include standard GALAHAD makefile definitions
 
@@ -152,7 +152,7 @@ $(LG)(bqpd.o): ../bqpd/bqpd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "bqpd  "
 	$(CP) ../bqpd/bqpd.F90 $(OBJ)/bqpd.F90
 	cd $(OBJ); $(FORTRAN) -o bqpd.o $(FFLAGS) bqpd.F90
-	cd $(OBJ); $(ARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o
+	cd $(OBJ); $(ARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o bqpdt.o
 	$(RMOBFILE) qp_$(PRECIS).o
 	$(RMOBFILE) qpt_$(PRECIS).o
 	$(MVMODS)
@@ -166,7 +166,6 @@ $(LG)(bqpd_gdotx.o): ../bqpd/bqpd_gdotx.F90
 	cd $(OBJ); $(FORTRAN) -o bqpd_gdotx.o $(FFLAGS) bqpd_gdotx.F90
 	cd $(OBJ); $(ARR) bqpd_gdotx.o ; $(RM) bqpd_gdotx.F90 bqpd_gdotx.o
 	$(RMOBFILE) qp_$(PRECIS).o
-	$(RMOBFILE) qpt_$(PRECIS).o
 #	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -178,6 +177,7 @@ $(OBJ)/bqpdt.o: ../bqpd/bqpdt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "bqpdt  "
 	$(SED) -f $(SEDS) ../bqpd/bqpdt.F90 > $(OBJ)/bqpdt.F90
 	cd $(OBJ) ; $(FORTRAN) -o bqpdt.o $(FFLAGSS) bqpdt.F90
+	cd $(OBJ); $(RM) bqpdt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

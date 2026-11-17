@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional QPALM procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-10-28
+#  This version: 2026-11-17
 
 #  include standard GALAHAD makefile definitions
 
@@ -176,8 +176,10 @@ $(LG)(qpalm.o): ../qpalm/qpalm.F90
 #	$(RM) $(MOD)/qpalm_fiface.mod
 	$(CP) ../qpalm/qpalm.F90 $(OBJ)/qpalm.F90
 	cd $(OBJ); $(FORTRAN) -o qpalm.o -I$(QPALMINCLUDE) $(FFLAGS) qpalm.F90
-	cd $(OBJ); $(ARR) qpalm.o ; $(RM) qpalm.F90 qpalm.o
+	cd $(OBJ); $(ARR) qpalm.o ; \
+          $(RM) qpalm.F90 qpalm.o qpalmt.o old_qpalmt.o
 	$(RANLIB) $(LG)
+	$(RMOBFILE) qp_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -188,7 +190,9 @@ qpalmt.o: $(OBJ)/qpalmt.o
 $(OBJ)/qpalmt.o: ../qpalm/qpalmt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "qpalmt  "
 	$(SED) -f $(SEDS) ../qpalm/qpalmt.F90 > $(OBJ)/qpalmt.F90
-	cd $(OBJ) ; $(FORTRAN) -o qpalmt.o -I$(QPALMINCLUDE) $(FFLAGSS) qpalmt.F90
+	cd $(OBJ) ; $(FORTRAN) -o qpalmt.o -I$(QPALMINCLUDE) \
+                      $(FFLAGSS) qpalmt.F90
+	cd $(OBJ); $(RM) qpalmt.F90
 	@printf '[ OK ]\n'
 
 old_qpalmt.o: $(OBJ)/old_qpalmt.o
@@ -198,6 +202,7 @@ $(OBJ)/old_qpalmt.o: ../qpalm/old_qpalmt.F90
 	$(SED) -f $(SEDS) ../qpalm/old_qpalmt.F90 > $(OBJ)/old_qpalmt.F90
 	cd $(OBJ) ; $(FORTRAN) -o old_qpalmt.o -I$(QPALMINCLUDE) \
                       $(FFLAGSS) old_qpalmt.F90
+	cd $(OBJ); $(RM) old_qpalmt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

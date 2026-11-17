@@ -344,66 +344,60 @@ spralrb_quadruple_64: $(SPRALRBQ64)
 slbltss: $(SLBLTSS)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTSS)
-#	- ../slblt/run_slblt < ../slblt/slblts.data
-	- ../slblt/run_slblt < ../slblt/slblts.data \
-                             > ../slblt/slblts.output 2>&1
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt > ../slblt/slblts.output 2>&1
 	cat ../slblt/slblts.output
 	rm ../slblt/run_slblt
 
 slbltds: $(SLBLTDS)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTDS)
-#	- ../slblt/run_slblt < ../slblt/slblts.data
-	- ../slblt/run_slblt < ../slblt/slblts.data \
-                             > ../slblt/slbltds.output 2>&1
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt > ../slblt/slbltds.output 2>&1
 	cat ../slblt/slbltds.output
 	rm ../slblt/run_slblt
 
 slbltqs: $(SLBLTQS)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTQS)
-#	- ../slblt/run_slblt < ../slblt/slblts.data
-	- ../slblt/run_slblt < ../slblt/slblts.data \
-                             > ../slblt/slbltds.output 2>&1
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt > ../slblt/slbltds.output 2>&1
 	cat ../slblt/slbltds.output
 	rm ../slblt/run_slblt
 
 slbltds_valgrind: $(SLBLTDS)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTDS)
-	- valgrind $(VALGRIND) ../slblt/run_slblt < ../slblt/slblts.data
+	- valgrind $(VALGRIND) ../slblt/run_slblt
 	rm ../slblt/run_slblt
 
 slbltss_64: $(SLBLTSS64)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTSS64)
-#	- ../slblt/run_slblt < ../slblt/slblts.data
-	- ../slblt/run_slblt < ../slblt/slblts.data \
-                             > ../slblt/slblts_64.output 2>&1
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt > ../slblt/slblts_64.output 2>&1
 	cat ../slblt/slblts_64.output
 	rm ../slblt/run_slblt
 
 slbltds_64: $(SLBLTDS64)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTDS64)
-#	- ../slblt/run_slblt < ../slblt/slblts.data
-	- ../slblt/run_slblt < ../slblt/slblts.data \
-                             > ../slblt/slbltds_64.output 2>&1
+#	- ../slblt/run_slblt
+	- ../slblt/run_slblt > ../slblt/slbltds_64.output 2>&1
 	cat ../slblt/slbltds_64.output
 	rm ../slblt/run_slblt
 
 slbltqs_64: $(SLBLTDQ64)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTDQ64)
-	- ../slblt/run_slblt < ../slblt/slblts.data \
-                             > ../slblt/slbltds_64.output 2>&1
+	- ../slblt/run_slblt > ../slblt/slbltds_64.output 2>&1
 	cat ../slblt/slbltds_64.output
 	rm ../slblt/run_slblt
 
 slbltds_64_valgrind: $(SLBLTDS64)
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTDS64)
-	- valgrind $(VALGRIND) ../slblt/run_slblt < ../slblt/slblts.data
+	- valgrind $(VALGRIND) ../slblt/run_slblt
 	rm ../slblt/run_slblt
 
 # run full tests
@@ -412,7 +406,7 @@ slbltst: $(SLBLTST)
 	echo " Exhaustive test of subroutine interface to slblt"
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTST)
-#	- ../slblt/run_slblt < ../slblt/slblts.data
+#	- ../slblt/run_slblt
 	- ../slblt/run_slblt > ../slblt/slbltt.output 2>&1
 	cat ../slblt/slbltt.output
 	rm ../slblt/run_slblt
@@ -466,7 +460,7 @@ slbltst_64: $(SLBLTST64)
 	echo " Exhaustive test of subroutine interface to slblt"
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt $(RSLBLTST64)
-#	- ../slblt/run_slblt < ../slblt/slblts.data
+#	- ../slblt/run_slblt
 	- ../slblt/run_slblt > ../slblt/slbltt_64.output 2>&1
 	cat ../slblt/slbltt_64.output
 	rm ../slblt/run_slblt
@@ -475,7 +469,7 @@ slbltst2_64: $(SLBLTST264)
 	echo " Exhaustive test of subroutine interface to slblt"
 	cd ../slblt ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_slblt2 $(RSLBLTST264)
-#	- ../slblt/run_slblt2 < ../slblt/slblts.data
+#	- ../slblt/run_slblt2
 	- ../slblt/run_slblt2 > ../slblt/slbltt2_64.output 2>&1
 	cat ../slblt/slbltt2_64.output
 	rm ../slblt/run_slblt2

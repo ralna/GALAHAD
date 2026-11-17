@@ -113,9 +113,17 @@
 
         INTEGER ( KIND = ip_ ) :: print_level = 0
 
+!   at most maxit inner iterations are allowed
+
+        INTEGER ( KIND = ip_ ) :: maxit = 1000
+
 !   any bound larger than infinity in modulus will be regarded as infinite
 
         REAL ( KIND = rp_ ) :: infinity = ten ** 19
+
+!   the maximum CPU time allowed (-ve means infinite)
+
+        REAL ( KIND = rp_ ) :: cpu_time_limit = infinity
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -277,7 +285,7 @@
 !  error-printout-device                             6
 !  printout-device                                   6
 !  print-level                                       0
-!  print-level                                       0
+!  maximum-number-of-iterations                      1000
 !  enable-ramping                                    1
 !  enable-far-bounds                                 1
 !  enable-flipping-bounds                            1
@@ -297,6 +305,7 @@
 !  drop-ineq-con-priority                            1
 !  print-residuals                                   0
 !  infinity-value                                    1.0D+19
+!  maximum-cpu-time-limit                            -1.0
 !  termination-tolerance                             1.0E-14
 !  bound-tolerance                                   1.0E-10
 !  bound-relaxation                                  10000.0
@@ -313,7 +322,7 @@
 !  eps-iter-ref                                      1.0E-14
 !  eps-li-tests                                      1.0E-11
 !  eps-nzc-tests                                     6.0E-12
-!  rcond-smin                                         1.0E-14
+!  rcond-smin                                        1.0E-14
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
 !  output-line-prefix                                ""
@@ -333,7 +342,8 @@
       INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: printLevel = print_level + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: enableRamping = printLevel + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: enableRamping = maxit + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: enableFarBounds = enableRamping + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: enableFlippingBounds                &
                                              = enableFarBounds + 1
@@ -368,7 +378,9 @@
       INTEGER ( KIND = ip_ ), PARAMETER :: printResiduals                      &
                                              = dropIneqConPriority + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: infinity = printResiduals + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: terminationTolerance  = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: terminationTolerance                &
+                                             = cpu_time_limit + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: boundTolerance                      &
                                              = terminationTolerance + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: boundRelaxation = boundTolerance + 1
@@ -401,7 +413,8 @@
       spec( error )%keyword = 'error-printout-device'
       spec( out )%keyword = 'printout-device'
       spec( print_level )%keyword = 'print-level'
-      spec( printLevel )%keyword = 'print-level'
+      spec( maxit )%keyword = 'maximum-number-of-iterations'
+      spec( printLevel )%keyword = 'print-level-internal'
       spec( enableRamping )%keyword = 'enable-ramping'
       spec( enableFarBounds )%keyword = 'enable-far-bounds'
       spec( enableFlippingBounds )%keyword = 'enable-flipping-bounds'
@@ -425,6 +438,7 @@
 !  Real key-words
 
       spec( infinity )%keyword = 'infinity-value'
+      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
       spec( terminationTolerance )%keyword = 'termination-tolerance'
       spec( boundTolerance )%keyword = 'bound-tolerance'
       spec( boundRelaxation )%keyword = 'bound-relaxation'
@@ -474,6 +488,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( print_level ),                          &
                                  control%print_level,                          &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( maxit ),                                &
+                                 control%maxit,                                &
                                  control%error )
      CALL SPECFILE_assign_value( spec( printLevel ),                           &
                                  control%options%printLevel,                   &
@@ -537,6 +554,9 @@
 
      CALL SPECFILE_assign_value( spec( infinity ),                             &
                                  control%infinity,                             &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
+                                 control%cpu_time_limit,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( terminationTolerance ),                 &
                                  control%options%terminationTolerance,         &
@@ -637,53 +657,6 @@
 
       n = prob%n ; m = prob%m
 
-!!$!  find the number of nonzeros in A
-!!$
-!!$      SELECT CASE ( SMT_get( prob%A%type ) )
-!!$      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
-!!$        data%a_ne = m * n
-!!$      CASE ( 'SPARSE_BY_ROWS' )
-!!$        data%a_ne = prob%A%ptr( m + 1 ) - 1
-!!$      CASE ( 'SPARSE_BY_COLUMNS' )
-!!$        data%a_ne = prob%A%ptr( n + 1 ) - 1
-!!$      CASE ( 'COORDINATE' )
-!!$        data%a_ne = prob%A%ne
-!!$      CASE DEFAULT
-!!$        data%a_ne = 0
-!!$      END SELECT
-!!$
-!!$!  find the number of nonzeros in one triangle of H, and the total in both
-!!$
-!!$      SELECT CASE ( SMT_get( prob%H%type ) )
-!!$      CASE ( 'IDENTITY', 'SCALED_IDENTITY', 'DIAGONAL' )
-!!$        data%h_ne = n ; data%h_ne_qp = data%h_ne
-!!$      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
-!!$        data%h_ne = ( n * ( n + 1 ) ) / 2 ; data%h_ne_qp = n * n
-!!$      CASE ( 'SPARSE_BY_ROWS' )
-!!$        data%h_ne = prob%H%ptr( n + 1 ) - 1 ; data%h_ne_qp = data%h_ne
-!!$        DO i = 1, n
-!!$          DO j = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-!!$            IF ( prob%H%col( j ) /= i ) data%h_ne_qp = data%h_ne_qp + 1
-!!$          END DO
-!!$        END DO
-!!$      CASE ( 'SPARSE_BY_COLUMNS' )
-!!$        data%h_ne = prob%H%ptr( n + 1 ) - 1 ;  ; data%h_ne_qp = data%h_ne
-!!$        DO i = 1, n
-!!$          DO j = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-!!$            IF ( prob%H%row( j ) /= i ) data%h_ne_qp = data%h_ne_qp + 1
-!!$          END DO
-!!$        END DO
-!!$      CASE ( 'COORDINATE' )
-!!$        data%h_ne = prob%H%ne ; data%h_ne_qp = data%h_ne
-!!$        DO l = 1, data%h_ne
-!!$          IF ( prob%H%row( l ) /=  prob%H%col( l ) )                        &
-!!$            data%h_ne_qp = data%h_ne_qp + 1
-!!$          END DO
-!!$        END DO
-!!$      CASE DEFAULT
-!!$        data%h_ne = 0 ; data%h_ne_qp = data%h_ne
-!!$      END SELECT
-
 !  if necessary, convert the input A into by sparse-column format
 
       data%original_a = SMT_get( prob%A%type ) == 'SPARSE_BY_COLUMNS'
@@ -693,10 +666,6 @@
                                               data%A_val, data%A_row,          &
                                               data%A_ptr, control_convert,     &
                                               inform_convert )
-!write(6,*) ' a_ptr ', data%A_ptr
-!write(6,*) ' a_row ', data%A_row
-!write(6,*) ' a_val ', data%A_val
-
       END IF
 
 !  convert the input H into by sparse-row format (both triangles)
@@ -718,6 +687,11 @@
                bad_alloc = inform%bad_alloc )
         IF ( inform%status /= GALAHAD_ok ) RETURN
       END IF 
+
+!  set upeer bounds on the number of qpoases iterations and the time taken
+
+      inform%iter = control%maxit
+      inform%cpu_time = control%cpu_time_limit
 
 !  call qpoases to solve the problem
 
@@ -810,6 +784,7 @@
 
         prob%Y( : m ) = data%Y( n + 1 : n + m )
         prob%Z( : n ) = data%Y( : n )
+        inform%obj = inform%obj + prob%f
         prob%q = inform%obj
 
 !  print details, if required
@@ -910,6 +885,7 @@
             prefix
         RETURN
       END IF
+      n = A%n
 
 !  ensure that all values are recorded if MAP is present
 
@@ -926,6 +902,8 @@
       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
         ne = ( n * ( n + 1 ) ) / 2 ; ne_out = n * n
       CASE ( 'SPARSE_BY_ROWS' )
+write(6,*) ' n ', n
+write(6,*) ' H_ptr ', A%ptr
         ne = A%ptr( n + 1 ) - 1 ; ne_out = ne
         DO i = 1, n
           DO j = A%ptr( i ), A%ptr( i + 1 ) - 1

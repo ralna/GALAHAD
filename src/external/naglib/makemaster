@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional NAG procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-10-28
+#  This version: 2026-11-17
 
 #  include standard GALAHAD makefile definitions
 
@@ -156,6 +156,7 @@ $(LG)(naglib_interface.o): ../naglib/naglib_interface.F90
                       naglib_interface.F90
 	cd $(OBJ); $(ARR) naglib_interface.o ; \
           $(RM) naglib_interface.F90 naglib_interface.o
+	$(RMOBFILE) qp_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -176,6 +177,7 @@ $(OBJ)/e04nqt.o: ../naglib/e04nqt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "e04nqt"
 	$(SED) -f $(SEDS) ../naglib/e04nqt.F90 > $(OBJ)/e04nqt.F90
 	cd $(OBJ) ; $(FORTRAN) -o e04nqt.o $(FFLAGSS) e04nqt.F90
+	cd $(OBJ); $(RM) e04nqt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

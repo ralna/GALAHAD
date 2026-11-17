@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional qpOASES procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-10-28
+#  This version: 2026-11-17
 
 #  include standard GALAHAD makefile definitions
 
@@ -226,8 +226,10 @@ $(LG)(qpoases.o): ../qpoases/qpoases.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "qpoases"
 	$(CP) ../qpoases/qpoases.F90 $(OBJ)/qpoases.F90
 	cd $(OBJ); $(FORTRAN) -o qpoases.o $(FFLAGS) qpoases.F90
-	cd $(OBJ); $(ARR) qpoases.o ; $(RM) qpoases.F90 qpoases.o
+	cd $(OBJ); $(ARR) qpoases.o ; \
+          $(RM) qpoases.F90 qpoases.o qpoasest.o old_qpoasest.o
 	$(RANLIB) $(LG)
+	$(RMOBFILE) qp_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -239,6 +241,7 @@ $(OBJ)/qpoasest.o: ../qpoases/qpoasest.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "qpoasest  "
 	$(SED) -f $(SEDS) ../qpoases/qpoasest.F90 > $(OBJ)/qpoasest.F90
 	cd $(OBJ) ; $(FORTRAN) -o qpoasest.o $(FFLAGSS) qpoasest.F90
+	cd $(OBJ); $(RM) qpoasest.F90
 	@printf '[ OK ]\n'
 
 old_qpoasest.o: $(OBJ)/old_qpoasest.o
@@ -247,6 +250,7 @@ $(OBJ)/old_qpoasest.o: ../qpoases/old_qpoasest.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "old_qpoasest  "
 	$(SED) -f $(SEDS) ../qpoases/old_qpoasest.F90 > $(OBJ)/old_qpoasest.F90
 	cd $(OBJ) ; $(FORTRAN) -o old_qpoasest.o $(FFLAGSS) old_qpoasest.F90
+	cd $(OBJ); $(RM) old_qpoasest.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
