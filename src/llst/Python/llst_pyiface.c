@@ -232,6 +232,8 @@ PyObject* llst_make_options_dict(const struct llst_control_type *control){
                          PyUnicode_FromString(control->definite_linear_solver));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
+    PyDict_SetItemString(py_options, "sbls_options",
+                         sbls_make_options_dict(&control->sbls_control));
     PyDict_SetItemString(py_options, "sls_options",
                          sls_make_options_dict(&control->sls_control));
     PyDict_SetItemString(py_options, "ir_options",
