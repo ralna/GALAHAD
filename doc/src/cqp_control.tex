@@ -110,7 +110,8 @@ required absolute and relative accuracy for the primal infeasibility
 (see Section~\ref{galmethod}).
 The absolute value of each component of the primal infeasibility
 on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
-{\tt stop\_rel\_p} times a ``typical value'' for this component.
+{\tt stop\_rel\_p} times $s_p$, the larger of one and the largest
+absolute value of the finite constraint bounds $c^l$ and $c^u$.
 The defaults are {\tt stop\_abs\_p =} {\tt stop\_rel\_p =} $u^{1/3}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
@@ -120,8 +121,9 @@ are scalar variables of type \realdp, that hold the
 required absolute and relative accuracy for the dual infeasibility
 (see Section~\ref{galmethod}).
 The absolute value of each component of the dual infeasibility
-on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
-{\tt stop\_rel\_p} times a ``typical value'' for this component.
+on exit is required to be smaller than the larger of {\tt stop\_abs\_d} and
+{\tt stop\_rel\_d} times $s_d$, the largest of one and the largest
+absolute values of the components of $g$, $H$ and $A$.
 The defaults are {\tt stop\_abs\_d =} {\tt stop\_rel\_d =} $u^{1/3}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
@@ -132,8 +134,9 @@ required absolute and relative accuracy
 for the violation of complementary slackness
 (see Section~\ref{galmethod}).
 The absolute value of each component of the complementary slackness
-on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
-{\tt stop\_rel\_p} times a ``typical value'' for this component.
+on exit is required to be smaller than the larger of {\tt stop\_abs\_c} and
+{\tt stop\_rel\_c} times $s_d$ multiplied by the larger of one and the
+largest absolute value of the finite bounds $x^l$, $x^u$, $c^l$ and $c^u$.
 The defaults are {\tt stop\_abs\_c =} {\tt stop\_rel\_c =} $u^{1/3}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
