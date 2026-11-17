@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 08:53 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-16 AT 14:48 GMT.
 
 #include "galahad_modules.h"
 
@@ -260,17 +260,17 @@
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-        REAL ( KIND = rp_ ) :: stop_abs_p = epsmch
+        REAL ( KIND = rp_ ) :: stop_abs_p = epsmch ** 0.33_rp_
         REAL ( KIND = rp_ ) :: stop_rel_p = epsmch
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-        REAL ( KIND = rp_ ) :: stop_abs_d = epsmch
+        REAL ( KIND = rp_ ) :: stop_abs_d = epsmch ** 0.33_rp_
         REAL ( KIND = rp_ ) :: stop_rel_d = epsmch
 
 !   the required absolute and relative accuracies for the complementarity
 
-        REAL ( KIND = rp_ ) :: stop_abs_c = epsmch
+        REAL ( KIND = rp_ ) :: stop_abs_c = epsmch ** 0.33_rp_
         REAL ( KIND = rp_ ) :: stop_rel_c = epsmch
 
 !   perturb_h will be added to the Hessian
@@ -314,7 +314,7 @@
 !   if the objective function value is smaller than obj_unbounded, it will be
 !    flagged as unbounded from below.
 
-        REAL ( KIND = rp_ ) :: obj_unbounded = - one / epsmch
+        REAL ( KIND = rp_ ) :: obj_unbounded = - epsmch ** ( - 2 )
 
 !   if W=0 and the potential function value is smaller than
 !         potential_unbounded * number of one-sided bounds,
@@ -334,7 +334,7 @@
 !   if %indicator_type = 1, a constraint/bound will be
 !    deemed to be active <=> distance to nearest bound <= %indicator_p_tol
 
-        REAL ( KIND = rp_ ) :: indicator_tol_p = epsmch
+        REAL ( KIND = rp_ ) :: indicator_tol_p = epsmch ** 0.33_rp_
 
 !   if %indicator_type = 2, a constraint/bound will be deemed to be active
 !     <=> distance to nearest bound
@@ -673,17 +673,6 @@
       TYPE ( CQP_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
-
-!  Set real control parameters
-
-      control%stop_abs_p = epsmch ** 0.33
-!     control%stop_rel_p = epsmch ** 0.33
-      control%stop_abs_c = epsmch ** 0.33
-!     control%stop_rel_c = epsmch ** 0.33
-      control%stop_abs_d = epsmch ** 0.33
-!     control%stop_rel_d = epsmch ** 0.33
-      control%obj_unbounded = - epsmch ** ( - 2 )
-      control%indicator_tol_p = control%stop_abs_p
 
 !  Initalize FDC components
 
