@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2023-11-05 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -98,6 +98,7 @@
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
     ! Strings
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -163,6 +164,7 @@
     finform%max_off_diagonal_difference = cinform%max_off_diagonal_difference
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )

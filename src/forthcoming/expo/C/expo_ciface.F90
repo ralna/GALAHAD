@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-07-25 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -251,10 +251,12 @@
     CALL copy_ssls_control_in( ccontrol%ssls_control, fcontrol%ssls_control )
 
     ! Strings
+    fcontrol%alive_file = ' '
     DO i = 1, 31
       IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, 31
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -401,10 +403,12 @@
     CALL copy_ssls_inform_in( cinform%ssls_inform, finform%ssls_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, 81
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
+    finform%bad_eval = ' '
     DO i = 1, 13
       IF ( cinform%bad_eval( i ) == C_NULL_CHAR ) EXIT
       finform%bad_eval( i : i ) = cinform%bad_eval( i )

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-30 AT 13:50 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -145,10 +145,12 @@
     fcontrol%no_metis_4_use_5_instead = ccontrol%no_metis_4_use_5_instead
 
     ! Strings
+    fcontrol%version = ' '
     DO i = 1, LEN( fcontrol%version )
       IF ( ccontrol%version( i ) == C_NULL_CHAR ) EXIT
       fcontrol%version( i : i ) = ccontrol%version( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -266,10 +268,12 @@
     CALL copy_time_in( cinform%time, finform%time )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
+    finform%version = ' '
     DO i = 1, LEN( finform%version )
       IF ( cinform%version( i ) == C_NULL_CHAR ) EXIT
       finform%version( i : i ) = cinform%version( i )

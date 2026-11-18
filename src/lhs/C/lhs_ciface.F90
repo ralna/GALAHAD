@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -76,6 +76,7 @@
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
     ! Strings
+    fcontrol%prefix = ' '
     DO i = 1, 31
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -122,6 +123,7 @@
     finform%alloc_status = cinform%alloc_status
 
     ! strings
+    finform%bad_alloc = ' '
     DO i = 1, 81
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )

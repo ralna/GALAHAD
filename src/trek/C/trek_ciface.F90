@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-15 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -158,14 +158,17 @@
     CALL copy_trs_control_in( ccontrol%trs_control, fcontrol%trs_control )
 
     ! Strings
+    fcontrol%linear_solver = ' '
     DO i = 1, LEN( fcontrol%linear_solver )
       IF ( ccontrol%linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%linear_solver( i : i ) = ccontrol%linear_solver( i )
     END DO
+    fcontrol%linear_solver_for_s = ' '
     DO i = 1, LEN( fcontrol%linear_solver_for_s )
       IF ( ccontrol%linear_solver_for_s( i ) == C_NULL_CHAR ) EXIT
       fcontrol%linear_solver_for_s( i : i ) = ccontrol%linear_solver_for_s( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -302,6 +305,7 @@
     CALL copy_trs_inform_in( cinform%trs_inform, finform%trs_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )

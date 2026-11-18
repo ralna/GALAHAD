@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 11:10 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -342,40 +342,48 @@
                                  fcontrol%nodend_control )
 
     ! Strings
+    fcontrol%matrix_file_name = ' '
     DO i = 1, LEN( fcontrol%matrix_file_name )
       IF ( ccontrol%matrix_file_name( i ) == C_NULL_CHAR ) EXIT
       fcontrol%matrix_file_name( i : i ) = ccontrol%matrix_file_name( i )
     END DO
+    fcontrol%out_of_core_directory = ' '
     DO i = 1, LEN( fcontrol%out_of_core_directory )
       IF ( ccontrol%out_of_core_directory( i ) == C_NULL_CHAR ) EXIT
       fcontrol%out_of_core_directory( i : i )                                  &
         = ccontrol%out_of_core_directory( i )
     END DO
+    fcontrol%out_of_core_integer_factor_file = ' '
     DO i = 1, LEN( fcontrol%out_of_core_integer_factor_file )
       IF ( ccontrol%out_of_core_integer_factor_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%out_of_core_integer_factor_file( i : i )                        &
         = ccontrol%out_of_core_integer_factor_file( i )
     END DO
+    fcontrol%out_of_core_real_factor_file = ' '
     DO i = 1, LEN( fcontrol%out_of_core_real_factor_file )
       IF ( ccontrol%out_of_core_real_factor_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%out_of_core_real_factor_file( i : i )                           &
         = ccontrol%out_of_core_real_factor_file( i )
     END DO
+    fcontrol%out_of_core_real_work_file = ' '
     DO i = 1, LEN( fcontrol%out_of_core_real_work_file )
       IF ( ccontrol%out_of_core_real_work_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%out_of_core_real_work_file( i : i )                             &
         = ccontrol%out_of_core_real_work_file( i )
     END DO
+    fcontrol%out_of_core_indefinite_file = ' '
     DO i = 1, LEN( fcontrol%out_of_core_indefinite_file )
       IF ( ccontrol%out_of_core_indefinite_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%out_of_core_indefinite_file( i : i )                            &
         = ccontrol%out_of_core_indefinite_file( i )
     END DO
+    fcontrol%out_of_core_restart_file = ' '
     DO i = 1, LEN( fcontrol%out_of_core_restart_file )
       IF ( ccontrol%out_of_core_restart_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%out_of_core_restart_file( i : i )                               &
         = ccontrol%out_of_core_restart_file( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -639,10 +647,12 @@
                                 finform%nodend_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
+    finform%solver = ' '
     DO i = 1, LEN( finform%solver )
       IF ( cinform%solver( i ) == C_NULL_CHAR ) EXIT
       finform%solver( i : i ) = cinform%solver( i )
