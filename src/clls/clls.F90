@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:13 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 07:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -6493,7 +6493,11 @@
 !  ---------------------------------------------------------------------
 
   600 CONTINUE
-      IF ( optimal ) GO TO 800
+
+!  if the pounce succeeded, its dual variables are retained, and the solution
+!  is processed in the same way as one found by the final pounce below
+
+      IF ( optimal ) GO TO 610
 
 !  Set the dual variables
 
@@ -6513,6 +6517,8 @@
       DO i = dims%x_l_end + 1, n
         Z( i ) = Z_u( i )
       END DO
+
+  610 CONTINUE
 
 !  Unscale the constraint bounds
 
@@ -8153,6 +8159,12 @@
           END IF
         END DO
       END IF
+
+!  the residual block of the pounce system is - W^{-1}, so the recovered r is
+!  the weighted residual W ( A_o x - b ) (as required to recover z_B above);
+!  convert it to the residual A_o x - b
+
+      IF ( PRESENT( W ) ) R( : o ) = R( : o ) / W( : o )
 
 ! 4. Check if the pounced solution is feasibile
 
