@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 4.2 - 2023-12-21 AT 10:30 GMT.
+!  THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 14:08 GMT.
 
 !-*-*-  G A L A H A D _  B Q P B _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -63,6 +63,7 @@
         TYPE ( BQPB_time_pointer_type ) :: time_pointer
         TYPE ( FDC_pointer_type ) :: FDC_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
+        TYPE ( SBLS_pointer_type ) :: SBLS_pounce_pointer
       END TYPE
     CONTAINS
 
@@ -233,6 +234,12 @@
         CASE( 'crossover' )
           CALL MATLAB_get_value( ps, 'crossover',                              &
                                  pc, BQPB_control%crossover )
+        CASE( 'pounce' )
+          CALL MATLAB_get_value( ps, 'pounce',                                 &
+                                 pc, BQPB_control%pounce )
+        CASE( 'reduced_pounce_system' )
+          CALL MATLAB_get_value( ps, 'reduced_pounce_system',                  &
+                                 pc, BQPB_control%reduced_pounce_system )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
                                  pc, BQPB_control%space_critical )
@@ -252,6 +259,13 @@
           IF ( .NOT. mxIsStruct( pc ) )                                        &
             CALL mexErrMsgTxt( ' component SBLS_control must be a structure' )
           CALL SBLS_matlab_control_set( pc, BQPB_control%SBLS_control, len )
+        CASE( 'SBLS_pounce_control' )
+          pc = mxGetField( ps, 1_mwi_, 'SBLS_pounce_control' )
+          IF ( .NOT. mxIsStruct( pc ) )                                        &
+            CALL mexErrMsgTxt(                                                 &
+              ' component SBLS_pounce_control must be a structure' )
+          CALL SBLS_matlab_control_set( pc, BQPB_control%SBLS_pounce_control,  &
+                                        len )
         END SELECT
       END DO
 
@@ -286,7 +300,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 50
+      INTEGER * 4, PARAMETER :: ninform = 53
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -311,9 +325,11 @@
          'getdua                         ', 'puiseux                        ', &
          'every_order                    ', 'feasol                         ', &
          'balance_initial_complentarity  ', 'crossover                      ', &
+         'pounce                         ', 'reduced_pounce_system          ', &
          'space_critical                 ',                                    &
          'deallocate_error_fatal         ', 'prefix                         ', &
-         'FDC_control                    ', 'SBLS_control                   ' /)
+         'FDC_control                    ', 'SBLS_control                   ', &
+         'SBLS_pounce_control            ' /)
 
 !  create the structure
 
@@ -417,6 +433,10 @@
                                   BQPB_control%balance_initial_complentarity )
       CALL MATLAB_fill_component( pointer, 'crossover',                        &
                                   BQPB_control%crossover )
+      CALL MATLAB_fill_component( pointer, 'pounce',                           &
+                                  BQPB_control%pounce )
+      CALL MATLAB_fill_component( pointer, 'reduced_pounce_system',            &
+                                  BQPB_control%reduced_pounce_system )
       CALL MATLAB_fill_component( pointer, 'space_critical',                   &
                                   BQPB_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal',           &
@@ -433,6 +453,11 @@
 
       CALL SBLS_matlab_control_get( pointer, BQPB_control%SBLS_control,        &
                                     'SBLS_control' )
+
+!  create the components of sub-structure SBLS_pounce_control
+
+      CALL SBLS_matlab_control_get( pointer, BQPB_control%SBLS_pounce_control, &
+                                    'SBLS_pounce_control' )
 
       RETURN
 
@@ -465,7 +490,7 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 19
+      INTEGER * 4, PARAMETER :: ninform = 20
       CHARACTER ( LEN = 24 ), PARAMETER :: finform( ninform ) = (/             &
            'status                  ', 'alloc_status            ',             &
            'bad_alloc               ', 'iter                    ',             &
@@ -476,7 +501,7 @@
            'complementary_slackness ', 'potential               ',             &
            'non_negligible_pivot    ', 'feasible                ',             &
            'time                    ', 'FDC_inform              ',             &
-           'SBLS_inform             '   /)
+           'SBLS_inform             ', 'SBLS_pounce_inform      ' /)
       INTEGER * 4, PARAMETER :: t_ninform = 12
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
            'total                ', 'preprocess           ',                   &
@@ -569,6 +594,12 @@
 
       CALL SBLS_matlab_inform_create( BQPB_pointer%pointer,                    &
                                       BQPB_pointer%SBLS_pointer, 'SBLS_inform' )
+
+!  Define the components of sub-structure SBLS_pounce_inform
+
+      CALL SBLS_matlab_inform_create( BQPB_pointer%pointer,                    &
+                                      BQPB_pointer%SBLS_pounce_pointer,        &
+                                      'SBLS_pounce_inform' )
 
       RETURN
 
@@ -668,6 +699,8 @@
 
       CALL SBLS_matlab_inform_get( BQPB_inform%SBLS_inform,                    &
                                    BQPB_pointer%SBLS_pointer )
+      CALL SBLS_matlab_inform_get( BQPB_inform%SBLS_pounce_inform,             &
+                                   BQPB_pointer%SBLS_pounce_pointer )
 
       RETURN
 

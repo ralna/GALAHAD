@@ -234,6 +234,16 @@ functions
           crossover : bool
              if ``crossover`` is True, cross over the solution to one
              defined by linearly-independent constraints if possible.
+          pounce : bool
+             if ``pounce`` is True, try to "pounce" to the solution once
+             the barrier parameter is smaller than ``mu_pounce``, by
+             solving the equality-constrained problem defined by the
+             predicted active set, and stop if this solves the original
+             problem.
+          reduced_pounce_system : bool
+             if ``reduced_pounce_system`` is True, eliminate fixed
+             variables when solving the linear system required by an
+             attempted pounce.
           space_critical : bool
              if ``space_critical`` is True, every effort will be made to
              use as little space as possible. This may result in longer
@@ -260,6 +270,9 @@ functions
              default control options for FDC (see ``fdc.initialize``).
           sbls_options : dict
              default control options for SBLS (see ``sbls.initialize``).
+          sbls_pounce_options : dict
+             default control options for SBLS when pouncing (see
+             ``sbls.initialize``).
           fit_options : dict
              default control options for FIT (see ``fit.initialize``).
           roots_options : dict
@@ -576,6 +589,9 @@ functions
              inform parameters for FDC (see ``fdc.information``).
           sbls_inform : dict
              inform parameters for SBLS (see ``sbls.information``).
+          sbls_pounce_inform : dict
+             inform parameters for SBLS when pouncing (see
+             ``sbls.information``).
           fit_inform : dict
              return information from FIT (see ``fit.information``).
           roots_inform : dict
