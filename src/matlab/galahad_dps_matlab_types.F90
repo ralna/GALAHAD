@@ -105,7 +105,6 @@
         CASE( 'new_h' )
           CALL MATLAB_get_value( ps, 'new_h',                                  &
                                  pc, DPS_control%new_h )
-                                 pc, DPS_control%inverse_itmax )
         CASE( 'taylor_max_degree' )
           CALL MATLAB_get_value( ps, 'taylor_max_degree',                      &
                                  pc, DPS_control%taylor_max_degree )
@@ -126,7 +125,7 @@
                                  pc, DPS_control%stop_absolute_normal )
         CASE( 'goldfarb' )
           CALL MATLAB_get_value( ps, 'goldfarb',                               &
-                                 pc, DPS_control%force_Newton )
+                                 pc, DPS_control%goldfarb )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
                                  pc, DPS_control%space_critical )
