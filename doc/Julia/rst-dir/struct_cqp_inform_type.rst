@@ -37,6 +37,7 @@ cqp_inform_type structure
           time::cqp_time_type{T}
           fdc_inform::fdc_inform_type{T,INT}
           sbls_inform::sbls_inform_type{T,INT}
+          sbls_pounce_inform::sbls_inform_type{T,INT}
           fit_inform::fit_inform_type{INT}
           roots_inform::roots_inform_type{INT}
           cro_inform::cro_inform_type{T,INT}
@@ -301,6 +302,16 @@ inform parameters for FDC
 	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform parameters for SBLS
+
+.. index:: pair: variable; sbls_pounce_inform
+.. _doxid-structcqp__inform__type_sbls_pounce_inform:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_pounce_inform
+
+inform parameters for SBLS used when pouncing
 
 .. index:: pair: variable; fit_inform
 .. _doxid-structcqp__inform__type_fit_inform:

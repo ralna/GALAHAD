@@ -65,6 +65,8 @@ cqp_control_type structure
 		bool :ref:`feasol<doxid-structcqp__control__type_feasol>`;
 		bool :ref:`balance_initial_complentarity<doxid-structcqp__control__type_balance_initial_complentarity>`;
 		bool :ref:`crossover<doxid-structcqp__control__type_crossover>`;
+		bool :ref:`pounce<doxid-structcqp__control__type_pounce>`;
+		bool :ref:`reduced_pounce_system<doxid-structcqp__control__type_reduced_pounce_system>`;
 		bool :ref:`space_critical<doxid-structcqp__control__type_space_critical>`;
 		bool :ref:`deallocate_error_fatal<doxid-structcqp__control__type_deallocate_error_fatal>`;
 		bool :ref:`generate_sif_file<doxid-structcqp__control__type_generate_sif_file>`;
@@ -74,6 +76,7 @@ cqp_control_type structure
 		char :ref:`prefix<doxid-structcqp__control__type_prefix>`[31];
 		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structcqp__control__type_fdc_control>`;
 		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structcqp__control__type_sbls_control>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_pounce_control<doxid-structcqp__control__type_sbls_pounce_control>`;
 		struct :ref:`fit_control_type<doxid-structfit__control__type>` :ref:`fit_control<doxid-structcqp__control__type_fit_control>`;
 		struct :ref:`roots_control_type<doxid-structroots__control__type>` :ref:`roots_control<doxid-structcqp__control__type_roots_control>`;
 		struct :ref:`cro_control_type<doxid-structcro__control__type>` :ref:`cro_control<doxid-structcqp__control__type_cro_control>`;
@@ -608,6 +611,26 @@ if .balance_initial_complentarity is true, the initial complemetarity is require
 
 if .crossover is true, cross over the solution to one defined by linearly-independent constraints if possible
 
+.. index:: pair: variable; pounce
+.. _doxid-structcqp__control__type_pounce:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	bool pounce
+
+if .pounce is true, try to "pounce" to the solution once the barrier parameter is smaller than .mu_pounce, by solving the equality-constrained problem defined by the predicted active set, and stop if this solves the original problem
+
+.. index:: pair: variable; reduced_pounce_system
+.. _doxid-structcqp__control__type_reduced_pounce_system:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	bool reduced_pounce_system
+
+if .reduced_pounce_system is true, eliminate fixed variables when solving the linear system required by an attempted pounce
+
 .. index:: pair: variable; space_critical
 .. _doxid-structcqp__control__type_space_critical:
 
@@ -697,6 +720,16 @@ control parameters for FDC
 	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS
+
+.. index:: pair: variable; sbls_pounce_control
+.. _doxid-structcqp__control__type_sbls_pounce_control:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_pounce_control
+
+control parameters for SBLS used when pouncing
 
 .. index:: pair: variable; fit_control
 .. _doxid-structcqp__control__type_fit_control:

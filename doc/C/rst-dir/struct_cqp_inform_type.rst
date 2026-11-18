@@ -41,6 +41,7 @@ cqp_inform_type structure
 		struct :ref:`cqp_time_type<doxid-structcqp__time__type>` :ref:`time<doxid-structcqp__inform__type_time>`;
 		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structcqp__inform__type_fdc_inform>`;
 		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structcqp__inform__type_sbls_inform>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_pounce_inform<doxid-structcqp__inform__type_sbls_pounce_inform>`;
 		struct :ref:`fit_inform_type<doxid-structfit__inform__type>` :ref:`fit_inform<doxid-structcqp__inform__type_fit_inform>`;
 		struct :ref:`roots_inform_type<doxid-structroots__inform__type>` :ref:`roots_inform<doxid-structcqp__inform__type_roots_inform>`;
 		struct :ref:`cro_inform_type<doxid-structcro__inform__type>` :ref:`cro_inform<doxid-structcqp__inform__type_cro_inform>`;
@@ -305,6 +306,16 @@ inform parameters for FDC
 	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform parameters for SBLS
+
+.. index:: pair: variable; sbls_pounce_inform
+.. _doxid-structcqp__inform__type_sbls_pounce_inform:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_pounce_inform
+
+inform parameters for SBLS used when pouncing
 
 .. index:: pair: variable; fit_inform
 .. _doxid-structcqp__inform__type_fit_inform:

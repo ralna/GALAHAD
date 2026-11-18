@@ -4935,6 +4935,8 @@ struct cqp_control_type {
     bool feasol;
     bool balance_initial_complentarity;
     bool crossover;
+    bool pounce;
+    bool reduced_pounce_system;
     bool space_critical;
     bool deallocate_error_fatal;
     bool generate_sif_file;
@@ -4944,6 +4946,7 @@ struct cqp_control_type {
     char prefix[31];
     struct fdc_control_type fdc_control;
     struct sbls_control_type sbls_control;
+    struct sbls_control_type sbls_pounce_control;
     struct fit_control_type fit_control;
     struct roots_control_type roots_control;
     struct cro_control_type cro_control;
@@ -4999,6 +5002,8 @@ struct cqp_control_type_64 {
     bool feasol;
     bool balance_initial_complentarity;
     bool crossover;
+    bool pounce;
+    bool reduced_pounce_system;
     bool space_critical;
     bool deallocate_error_fatal;
     bool generate_sif_file;
@@ -5008,6 +5013,7 @@ struct cqp_control_type_64 {
     char prefix[31];
     struct fdc_control_type_64 fdc_control;
     struct sbls_control_type_64 sbls_control;
+    struct sbls_control_type_64 sbls_pounce_control;
     struct fit_control_type_64 fit_control;
     struct roots_control_type_64 roots_control;
     struct cro_control_type_64 cro_control;
@@ -5054,6 +5060,7 @@ struct cqp_inform_type {
     struct cqp_time_type time;
     struct fdc_inform_type fdc_inform;
     struct sbls_inform_type sbls_inform;
+    struct sbls_inform_type sbls_pounce_inform;
     struct fit_inform_type fit_inform;
     struct roots_inform_type roots_inform;
     struct cro_inform_type cro_inform;
@@ -5086,6 +5093,7 @@ struct cqp_inform_type_64 {
     struct cqp_time_type time;
     struct fdc_inform_type_64 fdc_inform;
     struct sbls_inform_type_64 sbls_inform;
+    struct sbls_inform_type_64 sbls_pounce_inform;
     struct fit_inform_type_64 fit_inform;
     struct roots_inform_type_64 roots_inform;
     struct cro_inform_type_64 cro_inform;

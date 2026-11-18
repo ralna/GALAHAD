@@ -1,7 +1,7 @@
 //* \file galahad_cqp.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 10:54 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CQP C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -624,6 +624,18 @@ struct cqp_control_type {
     bool crossover;
 
     /// \brief
+    /// if .pounce is true, try to "pounce" to the solution once the barrier
+    /// parameter is smaller than .mu_pounce, by solving the equality-constrained
+    /// problem defined by the predicted active set, and stop if this solves
+    /// the original problem
+    bool pounce;
+
+    /// \brief
+    /// if .reduced_pounce_system is true, eliminate fixed variables when
+    /// solving the linear system required by an attempted pounce
+    bool reduced_pounce_system;
+
+    /// \brief
     /// if .space_critical true, every effort will be made to use as little
     /// space as possible. This may result in longer computation time
     bool space_critical;
@@ -664,6 +676,10 @@ struct cqp_control_type {
     /// \brief
     /// control parameters for SBLS
     struct sbls_control_type sbls_control;
+
+    /// \brief
+    /// control parameters for SBLS used when pouncing
+    struct sbls_control_type sbls_pounce_control;
 
     /// \brief
     /// control parameters for FIT
@@ -837,6 +853,10 @@ struct cqp_inform_type {
     /// \brief
     /// inform parameters for SBLS
     struct sbls_inform_type sbls_inform;
+
+    /// \brief
+    /// inform parameters for SBLS used when pouncing
+    struct sbls_inform_type sbls_pounce_inform;
 
     /// \brief
     /// return information from FIT

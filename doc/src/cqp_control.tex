@@ -326,6 +326,19 @@ of linearly-independent constraints,
 and  \false\ otherwise.
 The default is {\tt crossover = .TRUE.}.
 
+\itt{pounce} is a scalar variable of type default \logical,
+that must be set \true\ if an attempt is to be made to ``pounce'' to the
+solution once the barrier parameter is smaller than {\tt mu\_pounce},
+by solving the equality-constrained problem defined by the predicted
+active set (see Section~\ref{galmethod}), and \false\ otherwise.
+The default is {\tt pounce = .TRUE.}.
+
+\itt{reduced\_pounce\_system} is a scalar variable of type default \logical,
+that must be set \true\ if the variables that are fixed at their bounds
+are to be eliminated from the linear system solved when attempting to
+pounce, and \false\ otherwise.
+The default is {\tt reduced\_pounce\_system = .TRUE.}.
+
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
 and  \false\ otherwise. The package may run faster if
@@ -360,6 +373,15 @@ for details, and appropriate default values.
 whose components are used to control factorizations
 performed by the package
 {\tt \libraryname\_SBLS}.
+See the specification sheet for the package
+{\tt \libraryname\_SBLS}
+for details, and appropriate default values.
+
+\itt{SBLS\_pounce\_control} is a scalar variable of type
+{\tt SBLS\_control\_type}
+whose components are used to control the factorizations
+performed by the package
+{\tt \libraryname\_SBLS} when attempting to pounce.
 See the specification sheet for the package
 {\tt \libraryname\_SBLS}
 for details, and appropriate default values.
