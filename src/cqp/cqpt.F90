@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 10:55 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -15,7 +15,7 @@
    TYPE ( LMS_inform_type ) :: LMS_inform
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
-   REAL ( KIND = rp_ ) :: delta
+   REAL ( KIND = rp_ ) :: delta, tol
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
@@ -901,6 +901,70 @@
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
+!  ============
+!  pounce tests
+!  ============
+
+!  minimize x_1^2 + x_1 x_2 + x_2^2 subject to x_2 >= 1 and x_1 + x_2 >= -10,
+!  whose solution is x = ( -0.5, 1 ), with objective 0.75. Pounce early (with
+!  the default reduced and the full pounce system), with and without the
+!  exit status, and also solve without pouncing
+
+   WRITE( 6, "( /, ' pounce tests', / )" )
+   n = 2 ; m = 1 ; h_ne = 3 ; a_ne = 2
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
+   ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
+   ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
+   ALLOCATE( B_stat( n ), C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 0.0_rp_
+   p%G = 0.0_rp_
+   p%X_l = (/ - infty, 1.0_rp_ /) ; p%X_u = infty
+   p%C_l = - 10.0_rp_ ; p%C_u = infty
+   CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
+   p%H%ne = h_ne
+   ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
+   p%H%row = (/ 1, 2, 2 /) ; p%H%col = (/ 1, 1, 2 /)
+   p%H%val = (/ 2.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
+   p%A%ne = a_ne
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   p%A%row = 1 ; p%A%col = (/ 1, 2 /) ; p%A%val = 1.0_rp_
+   DO i = 1, 4
+     CALL CQP_initialize( data, control, info )
+     CALL WHICH_sls( control )
+     control%infinity = infty
+     control%mu_pounce = 0.1_rp_
+     IF ( i == 3 ) control%pounce = .FALSE.
+     IF ( i == 4 ) control%reduced_pounce_system = .FALSE.
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+     IF ( i == 2 ) THEN
+       CALL CQP_solve( p, data, control, info )
+     ELSE
+       CALL CQP_solve( p, data, control, info, C_stat, B_stat )
+     END IF
+     WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',      &
+    &       F6.2, ' status = ', I6 )" ) i, info%iter, info%obj, info%status
+!  the pounce gives the exact solution, while without it the accuracy is
+!  limited by the stopping tolerances
+
+     IF ( i == 3 ) THEN
+       tol = EPSILON( 1.0_rp_ ) ** 0.25_rp_
+     ELSE
+       tol = SQRT( EPSILON( 1.0_rp_ ) )
+     END IF
+     IF ( info%status /= 0 .OR. ABS( info%obj - 0.75_rp_ ) > tol ) THEN
+       WRITE( 6, "( ' pounce test ', I0, ' failed' )" ) i
+       ERROR STOP
+     END IF
+     CALL CQP_terminate( data, control, info )
+   END DO
+   DEALLOCATE( p%H%val, p%H%row, p%H%col )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%A%type, p%H%type )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
@@ -911,6 +975,10 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
+     control%SBLS_pounce_control%symmetric_linear_solver                       &
+       = symmetric_linear_solver
+     control%SBLS_pounce_control%definite_linear_solver                        &
+       = definite_linear_solver
 !control%FDC_control%symmetric_linear_solver = 'ma97 '
 !control%SBLS_control%symmetric_linear_solver = 'ma97 '
 !control%SBLS_control%definite_linear_solver = 'ma97 '
