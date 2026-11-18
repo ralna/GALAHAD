@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -189,10 +189,12 @@
     CALL copy_gltr_control_in( ccontrol%gltr_control, fcontrol%gltr_control )
 
     ! Strings
+    fcontrol%sif_file_name = ' '
     DO i = 1, LEN( fcontrol%sif_file_name )
       IF ( ccontrol%sif_file_name( i ) == C_NULL_CHAR ) EXIT
       fcontrol%sif_file_name( i : i ) = ccontrol%sif_file_name( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -334,6 +336,7 @@
     CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )

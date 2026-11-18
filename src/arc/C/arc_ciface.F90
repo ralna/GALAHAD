@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-12 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -345,10 +345,12 @@
     CALL copy_sha_control_in( ccontrol%sha_control,fcontrol%sha_control )
 
     ! Strings
+    fcontrol%alive_file = ' '
     DO i = 1, LEN( fcontrol%alive_file )
       IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -520,6 +522,7 @@
     CALL copy_sha_inform_in( cinform%sha_inform, finform%sha_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )

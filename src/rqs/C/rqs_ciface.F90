@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -176,20 +176,24 @@
     CALL copy_ir_control_in( ccontrol%ir_control, fcontrol%ir_control )
 
     ! Strings
+    fcontrol%problem_file = ' '
     DO i = 1, LEN( fcontrol%problem_file )
       IF ( ccontrol%problem_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%problem_file( i : i ) = ccontrol%problem_file( i )
     END DO
+    fcontrol%symmetric_linear_solver = ' '
     DO i = 1, LEN( fcontrol%symmetric_linear_solver )
       IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%symmetric_linear_solver( i : i )                                &
         = ccontrol%symmetric_linear_solver( i )
     END DO
+    fcontrol%definite_linear_solver = ' '
     DO i = 1, LEN( fcontrol%definite_linear_solver )
       IF ( ccontrol%definite_linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%definite_linear_solver( i : i )                                 &
         = ccontrol%definite_linear_solver( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -369,6 +373,7 @@
     CALL copy_ir_inform_in( cinform%ir_inform, finform%ir_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )

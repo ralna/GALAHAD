@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -280,10 +280,12 @@
     CALL copy_sllsb_control_in( ccontrol%sllsb_control, fcontrol%sllsb_control )
 
     ! Strings
+    fcontrol%alive_file = ' '
     DO i = 1, LEN( fcontrol%alive_file )
       IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -428,10 +430,12 @@
     CALL copy_sllsb_inform_in( cinform%sllsb_inform, finform%sllsb_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, 81
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
+    finform%bad_eval = ' '
     DO i = 1, 13
       IF ( cinform%bad_eval( i ) == C_NULL_CHAR ) EXIT
       finform%bad_eval( i : i ) = cinform%bad_eval( i )

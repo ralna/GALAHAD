@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-19 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -445,10 +445,12 @@
                                fcontrol%roots_control )
 
     ! Strings
+    fcontrol%alive_file = ' '
     DO i = 1, 31
       IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, 31
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -559,11 +561,13 @@
                                 fcontrol%subproblem_control%roots_control )
 
     ! Strings
+    fcontrol%subproblem_control%alive_file = ' '
     DO i = 1, 31
       IF ( ccontrol%subproblem_control%alive_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%subproblem_control%alive_file( i : i ) =                        &
         ccontrol%subproblem_control%alive_file( i )
     END DO
+    fcontrol%subproblem_control%prefix = ' '
     DO i = 1, 31
       IF ( ccontrol%subproblem_control%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%subproblem_control%prefix( i : i ) =                            &
@@ -854,10 +858,12 @@
     CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, 81
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
+    finform%bad_eval = ' '
     DO i = 1, 13
       IF ( cinform%bad_eval( i ) == C_NULL_CHAR ) EXIT
       finform%bad_eval( i : i ) = cinform%bad_eval( i )
@@ -918,11 +924,13 @@
                                finform%subproblem_inform%roots_inform )
 
     ! Strings
+    finform%subproblem_inform%bad_alloc = ' '
     DO i = 1, 81
       IF ( cinform%subproblem_inform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%subproblem_inform%bad_alloc( i : i ) =                           &
         cinform%subproblem_inform%bad_alloc( i )
     END DO
+    finform%subproblem_inform%bad_eval = ' '
     DO i = 1, 13
       IF ( cinform%subproblem_inform%bad_eval( i ) == C_NULL_CHAR ) EXIT
       finform%subproblem_inform%bad_eval( i : i ) =                            &

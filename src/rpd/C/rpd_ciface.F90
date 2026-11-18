@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -128,10 +128,12 @@
     finform%line = cinform%line
 
     ! Strings
+    finform%p_type = ' '
     DO i = 1, LEN( finform%p_type )
       IF ( cinform%p_type( i ) == C_NULL_CHAR ) EXIT
       finform%p_type( i : i ) = cinform%p_type( i )
     END DO
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )

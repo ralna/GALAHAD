@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-02-02 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -166,6 +166,7 @@
 !   fcontrol%get_y_bounds = ccontrol%get_y_bounds
 
     ! Strings
+    fcontrol%transf_file_name = ' '
     DO i = 1, LEN( fcontrol%transf_file_name )
       IF ( ccontrol%transf_file_name( i ) == C_NULL_CHAR ) EXIT
       fcontrol%transf_file_name( i : i ) = ccontrol%transf_file_name( i )
@@ -262,6 +263,7 @@
 
     ! Strings
     DO j = 1, 3
+      finform%message( j ) = ' '
       DO i = 1, LEN( finform%message( j ) )
         IF ( cinform%message( j, i ) == C_NULL_CHAR ) EXIT
         finform%message( j )( i : i ) = cinform%message( j, i )

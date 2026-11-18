@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-23 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-17 AT 15:29 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -159,14 +159,17 @@
     CALL copy_rqs_control_in( ccontrol%rqs_control, fcontrol%rqs_control )
 
     ! Strings
+    fcontrol%linear_solver = ' '
     DO i = 1, LEN( fcontrol%linear_solver )
       IF ( ccontrol%linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%linear_solver( i : i ) = ccontrol%linear_solver( i )
     END DO
+    fcontrol%linear_solver_for_s = ' '
     DO i = 1, LEN( fcontrol%linear_solver_for_s )
       IF ( ccontrol%linear_solver_for_s( i ) == C_NULL_CHAR ) EXIT
       fcontrol%linear_solver_for_s( i : i ) = ccontrol%linear_solver_for_s( i )
     END DO
+    fcontrol%prefix = ' '
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
@@ -304,6 +307,7 @@
     CALL copy_rqs_inform_in( cinform%rqs_inform, finform%rqs_inform )
 
     ! Strings
+    finform%bad_alloc = ' '
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
