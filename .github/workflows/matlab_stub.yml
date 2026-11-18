@@ -1,0 +1,56 @@
+name: Matlab stub
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Matlab is not available on the GitHub runners, so the Matlab interfaces
+# (src/matlab) cannot be built or run here. Instead, compile (but do not link)
+# all of them against a stub of Matlab's fintrf.h, which provides only the
+# integer kinds of the mex API (see .github/matlab_stub). This catches errors
+# such as references to control or inform components that have been renamed
+# or removed, and interfaces that are inconsistent with the Fortran packages.
+
+jobs:
+  matlab-stub:
+    name: Matlab stub compile
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y ninja-build gcc gfortran libhwloc-dev
+        pip install meson
+
+    - name: Set the environment variables
+      shell: bash
+      run: |
+        echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+    - name: Setup
+      run: |
+        meson setup builddir --buildtype=debug \
+                             -Dsingle=false \
+                             -Dquadruple=false \
+                             -Dtests=false \
+                             -Dciface=false \
+                             -Dlibblas= \
+                             -Dliblapack=
+
+    - name: Build
+      run: |
+        meson compile -C builddir
+
+    - name: Compile the Matlab interfaces against the stub
+      run: |
+        .github/matlab_stub/compile_matlab.sh builddir
