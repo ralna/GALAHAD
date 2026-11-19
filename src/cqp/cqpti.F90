@@ -122,6 +122,27 @@
      END IF
      CALL CQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
+
+!  check that the solve succeeds with advanced initial values for the dual
+!  variables (getdua)
+
+   CALL CQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   control%getdua = .TRUE.
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   CALL CQP_import( control, data, status, n, m,                               &
+                    'coordinate', H_ne, H_row, H_col, H_ptr,                   &
+                    'coordinate', A_ne, A_row, A_col, A_ptr )
+   CALL CQP_solve_qp( data, status, H_val, G, f, A_val, C_l, C_u,              &
+                      X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+   CALL CQP_information( data, inform, status )
+   WRITE( 6, "( /, ' getdua: ', I0, ' iterations. Optimal objective value = ', &
+  &  F5.2, ' status = ', I0 )" ) inform%iter, inform%obj, inform%status
+   IF ( inform%status /= 0 ) THEN
+     WRITE( 6, "( ' CQP_solve failed with getdua = .TRUE.' )" )
+     STOP 1
+   END IF
+   CALL CQP_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
 
 !  shifted least-distance example
