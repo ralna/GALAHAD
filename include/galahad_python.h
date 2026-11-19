@@ -61,17 +61,18 @@ static inline bool check_error_codes(int status){
             return false; // errors return false
         case -4:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the problem bounds are infeasible, that is, one or more lower"
+            " bounds exceed the corresponding upper bounds."
             ,2); // raise in module
             return true; // warnings return true
         case -5:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the problem appears to be (locally) infeasible."
             ,2); // raise in module
             return true; // warnings return true
         case -6:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the problem appears to be (locally) dual infeasible."
             ,2); // raise in module
             return true; // warnings return true
         case -7:
@@ -81,7 +82,7 @@ static inline bool check_error_codes(int status){
             return true; // warnings return true
         case -8:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the feasible region has no analytic center."
             ,2); // raise in module
             return true; // warnings return true
         case -9:
@@ -155,7 +156,7 @@ static inline bool check_error_codes(int status){
             return true; // warnings return true
         case -20:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "the preconditioner has the wrong inertia"
+            "the matrix or preconditioner has the wrong inertia."
             ,2); // raise in module
             return true; // warnings return true
         case -21:
