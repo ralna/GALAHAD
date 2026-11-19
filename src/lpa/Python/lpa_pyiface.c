@@ -560,10 +560,10 @@ static PyObject* py_lpa_solve_lp(PyObject *self, PyObject *args, PyObject *keywd
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
     PyArrayObject *py_c_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_INT, 0);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call lpa_solve_direct

@@ -502,7 +502,7 @@ static PyObject* py_bqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call bqp_solve_direct

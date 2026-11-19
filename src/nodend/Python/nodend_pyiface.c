@@ -452,7 +452,7 @@ static PyObject* py_nodend_order(PyObject *self, PyObject *args, PyObject *keywd
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of perm
     PyArrayObject *py_perm =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *perm = (int *) PyArray_DATA(py_perm);
 
     // Convert NumPy integer A_row array to ipc_

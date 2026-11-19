@@ -578,7 +578,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call slls_solve_direct
