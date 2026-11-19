@@ -120,6 +120,28 @@
      END IF
      CALL QPB_terminate( data, control, inform )  ! delete internal workspace
    END DO
+
+!  check that a failure when finding dependent constraints is reported,
+!  by asking FDC to use an unknown linear solver
+
+   CALL QPB_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   control%FDC_control%symmetric_linear_solver = 'unknown'
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   CALL QPB_import( control, data, status, n, m,                               &
+                    'coordinate', H_ne, H_row, H_col, H_ptr,                   &
+                    'coordinate', A_ne, A_row, A_col, A_ptr )
+   CALL QPB_solve_qp( data, status, H_val, G, f, A_val, C_l, C_u,              &
+                      X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+   CALL QPB_information( data, inform, status )
+   WRITE( 6, "( /, ' unknown FDC solver: QPB_solve exit status = ', I0 )" )    &
+     inform%status
+   IF ( inform%status /= GALAHAD_error_unknown_solver ) THEN
+     WRITE( 6, "( ' expected status ', I0 )" ) GALAHAD_error_unknown_solver
+     STOP 1
+   END IF
+   CALL QPB_terminate( data, control, inform )  ! delete internal workspace
+
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
    DEALLOCATE( X, C, G, Y, Z, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
