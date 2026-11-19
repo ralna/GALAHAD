@@ -294,8 +294,7 @@ static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
          PyArray_TYPE(arr)==NPY_DOUBLE &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 1D double array of length %i not given %i", 
-                     name, n, PyArray_DIM(arr,0));
+                     "%s must be a 1D float64 array of length %i", name, n);
         return false;
     }
     return true;
@@ -308,7 +307,8 @@ static inline bool check_2darray_double(char *name, PyArrayObject *arr,
          PyArray_TYPE(arr)==NPY_DOUBLE && PyArray_NDIM(arr)==2 &&
          PyArray_DIM(arr,0)==m && PyArray_DIM(arr,1)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 2D double array of size(%i,%i)", name, m, n);
+                     "%s must be a 2D float64 array of size (%i,%i)",
+                     name, m, n);
         return false;
     }
     return true;
@@ -322,8 +322,7 @@ static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
          (PyArray_TYPE(arr)==NPY_LONG || PyArray_TYPE(arr)==NPY_INTP) &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 1D int array of length %i not given %i", 
-                      name, n, PyArray_DIM(arr,0));
+                     "%s must be a 1D int64 array of length %i", name, n);
         return false;
     }
     return true;
