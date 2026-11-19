@@ -13,7 +13,6 @@ bqp              | ok     | bound-constrained QP, proconditioned projected gradi
 bqpb             | ok     | bound-constrained QP, interior point
 bsc              | ok     | assemble the Schur complement
 buildspec        | ok     | ...
-ccqp             | beta   | QP, crossover interior-point to lunge
 cdqp             | beta   | QP, crossover interior-point to dual gradient projection
 check            | ok     | check derivatives
 checkpoint       | ok     | ...

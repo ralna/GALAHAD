@@ -19,3 +19,11 @@ No proper interface
  NLSSRT
 
 May 2021
+
+Superseded by GALAHAD_CQP, which now "pounces" to the solution in the
+same way (the C and Julia interfaces are in ccqp/C and ccqp/Julia, but
+are no longer built)
+
+ CCQP
+
+November 2026

@@ -1,6 +1,6 @@
 # Note: "hsl" is handled explicitly.
 packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc",
-            "ccqp", "clls", "convert", "cqp", "cro", "dgo", "dps", "dqp",
+            "clls", "convert", "cqp", "cro", "dgo", "dps", "dqp",
             "eqp", "expo", "fdc", "fit", "glrt", "gls", "gltr", "hash",
             "ir", "l2rt", "lhs", "llsr", "llst", "lms", "lpa", "lpb",
             "lsqp", "lsrt", "lstr", "nls", "nodend", "nrek", "presolve",
@@ -19,7 +19,7 @@ types = ("control", "time", "inform", "history", "subproblem_control",
 
 nonparametric_structures_int = ("arc_time_type", "bgo_time_type", "blls_time_type",
                                 "bllsb_time_type", "bnls_time_type", "bqp_time_type",
-                                "bqpb_time_type", "ccqp_time_type", "clls_time_type",
+                                "bqpb_time_type", "clls_time_type",
                                 "convert_time_type", "cqp_time_type", "cro_time_type",
                                 "dgo_time_type", "dps_time_type", "dqp_time_type",
                                 "eqp_time_type", "fdc_time_type", "llsr_time_type",

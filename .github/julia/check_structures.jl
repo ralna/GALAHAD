@@ -175,10 +175,12 @@ function C_structures()
   c_structures = Dict{String,Vector{String}}()
 
   # Extract the C structures from the Fortran files *_ciface.F90
+  # (the packages in src/oblivion are not built, so are not checked)
   c_struct = ""
   for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
     for file in files
       path = joinpath(root, file) |> normpath
+      contains(path, joinpath("src", "oblivion")) && continue
       if endswith(file, "_ciface.F90") && mapreduce(x -> !startswith(file, x), &, excluded_packages)
         code = read(path, String)
         lines = split(code, '\n')

@@ -201,7 +201,7 @@ the value of the complementary slackness
 
 	T init_primal_infeasibility
 
-these values at the initial point (needed bg GALAHAD_CCQP)
+these values at the initial point
 
 .. index:: pair: variable; init_dual_infeasibility
 .. _doxid-structcqp__inform__type_init_dual_infeasibility:

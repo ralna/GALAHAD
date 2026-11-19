@@ -130,9 +130,6 @@ include("wrappers/cro.jl")
 # bqpb requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd, nodend.
 include("wrappers/bqpb.jl")
 
-# ccqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
-include("wrappers/ccqp.jl")
-
 # cqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd, nodend.
 include("wrappers/cqp.jl")
 

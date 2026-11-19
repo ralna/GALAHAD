@@ -128,23 +128,6 @@ Ref{bsc_inform_type{Float64,Int64}}()[]
 Ref{bsc_inform_type{Float128,Int32}}()[]
 Ref{bsc_inform_type{Float128,Int64}}()[]
 
-# Structures for ccqp
-Ref{ccqp_control_type{Float32,Int32}}()[]
-Ref{ccqp_control_type{Float32,Int64}}()[]
-Ref{ccqp_control_type{Float64,Int32}}()[]
-Ref{ccqp_control_type{Float64,Int64}}()[]
-Ref{ccqp_control_type{Float128,Int32}}()[]
-Ref{ccqp_control_type{Float128,Int64}}()[]
-Ref{ccqp_time_type{Float32}}()[]
-Ref{ccqp_time_type{Float64}}()[]
-Ref{ccqp_time_type{Float128}}()[]
-Ref{ccqp_inform_type{Float32,Int32}}()[]
-Ref{ccqp_inform_type{Float32,Int64}}()[]
-Ref{ccqp_inform_type{Float64,Int32}}()[]
-Ref{ccqp_inform_type{Float64,Int64}}()[]
-Ref{ccqp_inform_type{Float128,Int32}}()[]
-Ref{ccqp_inform_type{Float128,Int64}}()[]
-
 # Structures for clls
 Ref{clls_control_type{Float32,Int32}}()[]
 Ref{clls_control_type{Float32,Int64}}()[]

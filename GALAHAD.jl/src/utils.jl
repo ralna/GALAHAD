@@ -31,7 +31,7 @@ and compilation will be handled automatically for the user:
     run_sif(solver::Symbol, precision::Symbol, path_sif::String)
 
 The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`,
-`:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:clls`, `:cqp`, `:demo`, `:dgo`, `:dlp`,
+`:bqp`, `:bqpb`, `:cdqp`, `:clls`, `:cqp`, `:demo`, `:dgo`, `:dlp`,
 `:dps`, `:dqp`, `:eqp`, `:expo`, `:fdh`, `:filtrane`, `:glrt`, `:gltr`, `:l1qp`,
 `:l2rt`, `:lancelot`, `:lls`, `:lpa`, `:lpb`, `:lpqp`, `:lqr`, `:lqt`, `:lsrt`,
 `:lstr`, `:miqr`, `:nls`, `:nodend`, `:nrek`, `:presolve`, 
@@ -48,7 +48,7 @@ run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::St
 """
     run_qplib(solver::Symbol, precision::Symbol, path_qplib::String)
 
-The supported solvers are: `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:cqp`,
+The supported solvers are: `:bqp`, `:bqpb`, `:cdqp`, `:cqp`,
 `:dlp`, `:dqp`, `:lpa`, `:lpb`, `:qp`, `:qpa`, `:qpb`, and `:qpc`.
 
 The supported precisions are: `:single` and `:double`

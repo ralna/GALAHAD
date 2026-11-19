@@ -1,7 +1,7 @@
 //* \file galahad_bqpb.h */
 
 /*
- * THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 14:08 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-19 AT 08:36 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BQPB C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -747,7 +747,7 @@ struct bqpb_inform_type {
     rpc_ complementary_slackness;
 
     /// \brief
-    /// these values at the initial point (needed by GALAHAD_CCQP)
+    /// these values at the initial point
     rpc_ init_primal_infeasibility;
     /// see init_primal_infeasibility
     rpc_ init_dual_infeasibility;

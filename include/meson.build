@@ -20,7 +20,6 @@ if build_ciface
                            'galahad_bqp.h',
                            'galahad_bsc.h',
                            'galahad_callbacks.h',
-                           'galahad_ccqp.h',
                            'galahad_cfunctions.h',
                            'galahad_clls.h',
                            'galahad_convert.h',
