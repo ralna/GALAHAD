@@ -82,6 +82,29 @@
      END IF
      CALL WCP_terminate( data, control, inform )  ! delete internal workspace
    END DO
+
+!  replace the constraints by the inequalities 1 <= 2 x_1 + x_2 <= 2 and
+!  1 <= x_2 + x_3 <= 3, and check that the free variable x_2 is reported as
+!  lying between its (infinite) bounds (if the solve succeeded)
+
+   C_l = (/ 1.0_rp_, 1.0_rp_ /)
+   C_u = (/ 2.0_rp_, 3.0_rp_ /)
+   G = 0.0_rp_
+   CALL WCP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   X = 0.0_rp_ ; Y_l = 0.0_rp_ ; Y_u = 0.0_rp_
+   Z_l = 0.0_rp_ ; Z_u = 0.0_rp_
+   CALL WCP_import( control, data, status, n, m,                               &
+                    'coordinate', A_ne, A_row, A_col, A_ptr )
+   CALL WCP_find_wcp( data, status, G, A_val, C_l, C_u,                        &
+                      X_l, X_u, X, C, Y_l, Y_u, Z_l, Z_u, X_stat, C_stat )
+   CALL WCP_information( data, inform, status )
+   WRITE( 6, "( ' F: WCP_solve exit status = ', I0 )" ) inform%status
+   CALL WCP_terminate( data, control, inform )  ! delete internal workspace
+   IF ( inform%status == 0 .AND. X_stat( 2 ) /= 0 ) THEN
+     WRITE( 6, "( ' free variable has X_stat = ', I0, ', not 0' )" ) X_stat( 2 )
+     STOP 1
+   END IF
    DEALLOCATE( X, C, G, Y_l, Y_u, Z_l, Z_u, X_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    WRITE( 6, "( /, ' tests completed' )" )
