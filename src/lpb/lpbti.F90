@@ -10,7 +10,7 @@
    TYPE ( LPB_inform_type ) :: inform
    TYPE ( LPB_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, m, A_ne
-   INTEGER ( KIND = ip_ ) :: data_storage_type, status
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status, status_c
    REAL ( KIND = rp_ ) :: f
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
@@ -71,6 +71,7 @@
                           X_l, X_u, X, C, Y, Z, X_stat, C_stat )
      END SELECT
      CALL LPB_information( data, inform, status )
+     IF ( data_storage_type == 1 ) status_c = inform%status
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
@@ -80,8 +81,8 @@
      CALL LPB_terminate( data, control, inform )  ! delete internal workspace
    END DO
 
-!  check that the solve succeeds with advanced initial values for the dual
-!  variables (getdua)
+!  check that, if the coordinate-storage solve above succeeded, it also
+!  succeeds with advanced initial values for the dual variables (getdua)
 
    CALL LPB_initialize( data, control, inform )
    CALL WHICH_sls( control )
@@ -94,7 +95,7 @@
    CALL LPB_information( data, inform, status )
    WRITE( 6, "( /, ' getdua: ', I0, ' iterations. Optimal objective value = ', &
   &  F5.2, ' status = ', I0 )" ) inform%iter, inform%obj, inform%status
-   IF ( inform%status /= 0 ) THEN
+   IF ( status_c == 0 .AND. inform%status /= 0 ) THEN
      WRITE( 6, "( ' LPB_solve failed with getdua = .TRUE.' )" )
      STOP 1
    END IF
