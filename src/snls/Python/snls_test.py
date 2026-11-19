@@ -80,9 +80,9 @@ def solution(request):
     options['jacobian_available'] = 2
     options['stop_pg_absolute'] = 0.00001
     options['slls_options']['sbls_options']['symmetric_linear_solver'] \
-        = 'sytr '
+        = 'sytr'
     options['slls_options']['sbls_options']['definite_linear_solver'] \
-        = 'potr '
+        = 'potr'
     snls.load(n, m_r, m_c, Jr_type, Jr_ne, Jr_r, Jr_c, 0, None,
               cohort, options)
     x0 = np.array([0.5, 0.5, 0.5, 0.5, 0.5])

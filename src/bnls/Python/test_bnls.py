@@ -29,8 +29,8 @@ options = bnls.initialize()
 options['print_level'] = 0
 options['jacobian_available'] = 2
 options['stop_pg_absolute'] =  0.00001
-options['blls_options']['sbls_options']['symmetric_linear_solver'] = 'sytr '
-options['blls_options']['sbls_options']['definite_linear_solver'] = 'potr '
+options['blls_options']['sbls_options']['symmetric_linear_solver'] = 'sytr'
+options['blls_options']['sbls_options']['definite_linear_solver'] = 'potr'
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -80,8 +80,8 @@ options = bnls.initialize()
 options['print_level'] = 0
 options['jacobian_available'] = 2
 options['stop_pg_absolute'] =  0.00001
-options['blls_options']['sbls_options']['symmetric_linear_solver'] = 'sytr '
-options['blls_options']['sbls_options']['definite_linear_solver'] = 'potr '
+options['blls_options']['sbls_options']['symmetric_linear_solver'] = 'sytr'
+options['blls_options']['sbls_options']['definite_linear_solver'] = 'potr'
 #print("options:", options)
 
 # load data (and optionally non-default options)

@@ -25,7 +25,7 @@ options = dps.initialize()
 
 # set some non-default options
 options['print_level'] = 0
-options['symmetric_linear_solver'] = 'sytr '
+options['symmetric_linear_solver'] = 'sytr'
 #print("options:", options)
 
 # load data (and optionally non-default options)

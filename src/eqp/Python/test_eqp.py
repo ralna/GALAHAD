@@ -34,9 +34,9 @@ options = eqp.initialize()
 # set some non-default options
 options['print_level'] = 0
 options['fdc_options']['use_sls'] = True
-options['fdc_options']['symmetric_linear_solver'] = 'sytr '
-options['sbls_options']['symmetric_linear_solver'] = 'sytr '
-options['sbls_options']['definite_linear_solver'] = 'sytr '
+options['fdc_options']['symmetric_linear_solver'] = 'sytr'
+options['sbls_options']['symmetric_linear_solver'] = 'sytr'
+options['sbls_options']['definite_linear_solver'] = 'sytr'
 #print("options:", options)
 
 # load data (and optionally non-default options)
