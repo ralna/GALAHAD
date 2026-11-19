@@ -169,10 +169,15 @@
    ELSE
      WRITE( 6, "( A2, ': QPA_solve exit status = ', I0 ) " ) st, inform%status
    END IF
-   IF ( inform%status /= 0 .OR. ANY( X < X_l - 0.00001_rp_ ) .OR.              &
-        ANY( X > X_u + 0.00001_rp_ ) ) THEN
-     WRITE( 6, "( /, ' bcl1qp failed to satisfy the simple bounds' )" )
-     STOP 1
+!  (skip the check if the linear solver cannot provide the inertia that QPA
+!  needs, e.g. PaStiX, as then QPA returns GALAHAD_unsuitable_option)
+
+   IF ( inform%status /= GALAHAD_unsuitable_option ) THEN
+     IF ( inform%status /= 0 .OR. ANY( X < X_l - 0.00001_rp_ ) .OR.            &
+          ANY( X > X_u + 0.00001_rp_ ) ) THEN
+       WRITE( 6, "( /, ' bcl1qp failed to satisfy the simple bounds' )" )
+       STOP 1
+     END IF
    END IF
    X_u( 1 ) = 1.0_rp_
    CALL QPA_terminate( data, control, inform )  ! delete internal workspace
