@@ -656,7 +656,7 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
 static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_val, *py_A_val, *py_C_val;
     PyArrayObject *py_D = NULL;
-    double *H_val, *A_val, *C_val, *D;
+    double *H_val = NULL, *A_val = NULL, *C_val = NULL, *D;
     int n, m, H_ne, A_ne, C_ne;
 
     // Check that package has been initialised
@@ -672,16 +672,25 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
                                     &py_A_val, &C_ne, &py_C_val, &py_D ))
         return NULL;
 
-    // Check that array inputs are of correct type, size, and shape
-    if(!(check_array_double("H_val", py_H_val, H_ne) &&
-         check_array_double("A_val", py_A_val, A_ne) &&
-         check_array_double("C_val", py_C_val, C_ne)))
-        return NULL;
-
-    // Get array data pointers
-    H_val = (double *) PyArray_DATA(py_H_val);
-    A_val = (double *) PyArray_DATA(py_A_val);
-    C_val = (double *) PyArray_DATA(py_C_val);
+    // Check that array inputs are of correct type, size, and shape.
+    // H_val and C_val may be None if there are no values to give, as for
+    // the 'identity', 'zero' and 'none' storage schemes, and A_val may be
+    // None for the 'absent' scheme
+    if((PyObject *) py_H_val != Py_None){
+        if(!check_array_double("H_val", py_H_val, H_ne))
+            return NULL;
+        H_val = (double *) PyArray_DATA(py_H_val);
+    }
+    if((PyObject *) py_A_val != Py_None){
+        if(!check_array_double("A_val", py_A_val, A_ne))
+            return NULL;
+        A_val = (double *) PyArray_DATA(py_A_val);
+    }
+    if((PyObject *) py_C_val != Py_None){
+        if(!check_array_double("C_val", py_C_val, C_ne))
+            return NULL;
+        C_val = (double *) PyArray_DATA(py_C_val);
+    }
 
     // Call sbls_factorize_matrix
     //if(py_D != NULL) D = (double *) PyArray_DATA(py_D);
