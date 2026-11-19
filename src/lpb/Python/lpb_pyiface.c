@@ -871,6 +871,9 @@ static PyObject* py_lpb_terminate(PyObject *self){
     // Call lpb_terminate
     lpb_terminate(&data, &control, &inform);
 
+    // require future calls start with lpb_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

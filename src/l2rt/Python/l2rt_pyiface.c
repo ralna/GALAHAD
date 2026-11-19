@@ -382,6 +382,9 @@ static PyObject* py_l2rt_terminate(PyObject *self){
     // Call l2rt_terminate
     l2rt_terminate(&data, &control, &inform);
 
+    // require future calls start with l2rt_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

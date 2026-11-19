@@ -497,6 +497,9 @@ static PyObject* py_cro_terminate(PyObject *self){
     // Call cro_terminate
     cro_terminate(&data, &control, &inform);
 
+    // require future calls start with cro_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

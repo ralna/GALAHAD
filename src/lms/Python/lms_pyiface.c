@@ -231,6 +231,9 @@ static PyObject* py_lms_terminate(PyObject *self){
     // Call lms_terminate
     lms_terminate(&data, &control, &inform);
 
+    // require future calls start with lms_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

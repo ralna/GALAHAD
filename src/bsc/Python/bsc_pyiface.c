@@ -361,6 +361,9 @@ static PyObject* py_bsc_terminate(PyObject *self){
     // Call bsc_terminate
     bsc_terminate(&data, &control, &inform);
 
+    // require future calls start with bsc_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

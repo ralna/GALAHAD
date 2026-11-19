@@ -180,6 +180,9 @@ static PyObject* py_hash_terminate(PyObject *self){
     // Call hash_terminate
     hash_terminate(&data, &control, &inform);
 
+    // require future calls start with hash_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

@@ -380,6 +380,9 @@ static PyObject* py_lstr_terminate(PyObject *self){
     // Call lstr_terminate
     lstr_terminate(&data, &control, &inform);
 
+    // require future calls start with lstr_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

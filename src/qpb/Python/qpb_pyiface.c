@@ -974,6 +974,9 @@ static PyObject* py_qpb_terminate(PyObject *self){
     // Call qpb_terminate
     qpb_terminate(&data, &control, &inform);
 
+    // require future calls start with qpb_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

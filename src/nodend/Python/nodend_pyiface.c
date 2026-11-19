@@ -527,6 +527,9 @@ static PyObject* py_nodend_terminate(PyObject *self){
     // Call nodend_terminate
     nodend_terminate(&data);
 
+    // require future calls start with nodend_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
