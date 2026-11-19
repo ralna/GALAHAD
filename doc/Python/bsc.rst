@@ -190,7 +190,7 @@ functions
           clock_time : float
              the total clock time spent in the package.
 
-   .. function:: bsc.finalize()
+   .. function:: bsc.terminate()
 
      Deallocate all internal private storage.
 

@@ -75,6 +75,6 @@ functions
              the name of the array for which an allocation/deallocation
              error occurred.
 
-   .. function:: fit.finalize()
+   .. function:: fit.terminate()
 
      Deallocate all internal private storage.

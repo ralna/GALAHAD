@@ -102,6 +102,6 @@ functions
           p_type : str
              problem type.
 
-   .. function:: rpd.finalize()
+   .. function:: rpd.terminate()
 
      Deallocate all internal private storage.

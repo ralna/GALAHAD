@@ -60,6 +60,6 @@ functions
 
                an update is inappropriate and has been skipped.
 
-   .. function:: sec.finalize()
+   .. function:: sec.terminate()
 
      Deallocate all internal private storage.

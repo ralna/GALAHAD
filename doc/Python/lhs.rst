@@ -86,6 +86,6 @@ functions
              the name of the array for which an allocation/deallocation
              error occurred.
 
-   .. function:: lhs.finalize()
+   .. function:: lhs.terminate()
 
      Deallocate all internal private storage.

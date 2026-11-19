@@ -94,6 +94,6 @@ functions
           norm_final_residual : float
              the infinity norm of the final residual.
 
-   .. function:: ir.finalize()
+   .. function:: ir.terminate()
 
      Deallocate all internal private storage.
