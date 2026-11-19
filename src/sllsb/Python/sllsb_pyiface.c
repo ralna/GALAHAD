@@ -911,6 +911,9 @@ static PyObject* py_sllsb_terminate(PyObject *self){
     // Call sllsb_terminate
     sllsb_terminate(&data, &control, &inform);
 
+    // require future calls start with sllsb_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

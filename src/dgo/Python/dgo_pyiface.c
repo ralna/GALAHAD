@@ -707,6 +707,9 @@ static PyObject* py_dgo_terminate(PyObject *self){
     // Call dgo_terminate
     dgo_terminate(&data, &control, &inform);
 
+    // require future calls start with dgo_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

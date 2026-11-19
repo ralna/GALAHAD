@@ -216,6 +216,9 @@ static PyObject* py_convert_terminate(PyObject *self){
     // Call convert_terminate
     convert_terminate(&data, &control, &inform);
 
+    // require future calls start with convert_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

@@ -760,6 +760,9 @@ static PyObject* py_bnls_terminate(PyObject *self){
     // Call bnls_terminate
     bnls_terminate(&data, &control, &inform);
 
+    // require future calls start with bnls_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

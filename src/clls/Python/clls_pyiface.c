@@ -975,6 +975,9 @@ static PyObject* py_clls_terminate(PyObject *self){
     // Call clls_terminate
     clls_terminate(&data, &control, &inform);
 
+    // require future calls start with clls_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
