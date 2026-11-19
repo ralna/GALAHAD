@@ -64,11 +64,8 @@ def solve(M_type, x_s):
     options = clls.initialize()
     # use the LAPACK solver sytr rather than the default slblt, which needs
     # the environment variables OMP_CANCELLATION and OMP_PROC_BIND set.
-    # The trailing space is needed as only the characters given overwrite
-    # the default, so 'sytr' would give 'sytrt' (see
-    # https://github.com/ralna/GALAHAD/issues/560)
-    options['symmetric_linear_solver'] = 'sytr '
-    options['fdc_options']['symmetric_linear_solver'] = 'sytr '
+    options['symmetric_linear_solver'] = 'sytr'
+    options['fdc_options']['symmetric_linear_solver'] = 'sytr'
     clls.load(n, o, m, M_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr,
               M_type, A_ne, A_row, A_col, A_ptr_ne, A_ptr, options)
     x0 = np.zeros(n)

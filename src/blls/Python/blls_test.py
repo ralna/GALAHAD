@@ -53,10 +53,8 @@ def solve(Ao_type):
     options = blls.initialize()
     # use the LAPACK solvers sytr and potr rather than the defaults, which
     # need the environment variables OMP_CANCELLATION and OMP_PROC_BIND set.
-    # The trailing space is needed as only the characters given overwrite
-    # the default (see https://github.com/ralna/GALAHAD/issues/560)
-    options['sbls_options']['symmetric_linear_solver'] = 'sytr '
-    options['sbls_options']['definite_linear_solver'] = 'potr '
+    options['sbls_options']['symmetric_linear_solver'] = 'sytr'
+    options['sbls_options']['definite_linear_solver'] = 'potr'
     blls.load(n, o, Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr,
               options)
     x0 = np.zeros(n)

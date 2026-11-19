@@ -51,11 +51,8 @@ def solve(Ao_type, cohort, w, x_s):
     options = sllsb.initialize()
     # use the LAPACK solver sytr rather than the default slblt, which needs
     # the environment variables OMP_CANCELLATION and OMP_PROC_BIND set.
-    # The trailing space is needed as only the characters given overwrite
-    # the default, so 'sytr' would give 'sytrt' (see
-    # https://github.com/ralna/GALAHAD/issues/560)
-    options['symmetric_linear_solver'] = 'sytr '
-    options['fdc_options']['symmetric_linear_solver'] = 'sytr '
+    options['symmetric_linear_solver'] = 'sytr'
+    options['fdc_options']['symmetric_linear_solver'] = 'sytr'
     sllsb.load(n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr,
                cohort, options)
     x0 = np.zeros(n)

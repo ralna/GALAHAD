@@ -65,9 +65,9 @@ def solution(request):
     options['jacobian_available'] = 2
     options['stop_pg_absolute'] = 0.00001
     options['blls_options']['sbls_options']['symmetric_linear_solver'] \
-        = 'sytr '
+        = 'sytr'
     options['blls_options']['sbls_options']['definite_linear_solver'] \
-        = 'potr '
+        = 'potr'
     bnls.load(n, m_r, Jr_type, Jr_ne, Jr_r, Jr_c, 0, None, options)
     x0 = np.array([0.5, 0.5, 0.5, 0.5, 0.5])
     x, z, r, g, x_stat = bnls.solve(n, m_r, x_l, x_u, x0,
