@@ -206,9 +206,6 @@ def test_qpb_linear(case):
     assert inform['obj'] == pytest.approx(1.5, abs=1e-8)
 
 
-@pytest.mark.xfail(strict=True, reason='qpb returns status 0 without '
-                   'solving when finding dependent constraints fails (see '
-                   'https://github.com/ralna/GALAHAD/pull/611)')
 def test_qpb_dependency_failure():
     # ask fdc, which qpb uses to find dependent equality constraints, for
     # an unknown linear solver, so that it fails with status -26
@@ -218,8 +215,9 @@ def test_qpb_dependency_failure():
     options['fdc_options']['symmetric_linear_solver'] = 'unknown'
     qpb.load(n, m, 'coordinate', H_ne, H_row, H_col, H_ptr,
              'coordinate', A_ne, A_row, A_col, A_ptr, options)
-    qpb.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, c_l, c_u, x_l, x_u,
-                 np.zeros(n), np.zeros(m), np.zeros(n))
+    with pytest.warns(RuntimeWarning):
+        qpb.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, c_l, c_u, x_l,
+                     x_u, np.zeros(n), np.zeros(m), np.zeros(n))
     inform = qpb.information()
     qpb.terminate()
     assert inform['fdc_inform']['status'] == -26
