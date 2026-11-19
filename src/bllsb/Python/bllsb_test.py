@@ -103,12 +103,7 @@ def test_bllsb_status(solution):
     assert inform['status'] == 0
 
 
-def test_bllsb_solution(request, run, solution):
-    if run == 'shift':
-        # not strict, as this passes once the fix in the issue is applied
-        request.applymarker(pytest.mark.xfail(
-            reason='bllsb ignores the shifts x_s when there are bounds (see '
-            'https://github.com/ralna/GALAHAD/issues/599)'))
+def test_bllsb_solution(run, solution):
     x, z, r, x_stat, inform = solution
     x_s = RUNS[run]['x_s']
     # returned values are consistent with the objective at x

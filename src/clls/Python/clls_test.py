@@ -114,12 +114,7 @@ def test_clls_status(solution):
     assert inform['status'] == 0
 
 
-def test_clls_solution(request, run, solution):
-    if run == 'shift':
-        # not strict, as this passes once the fix in the issue is applied
-        request.applymarker(pytest.mark.xfail(
-            reason='clls ignores the shifts x_s when there are bounds (see '
-            'https://github.com/ralna/GALAHAD/issues/599)'))
+def test_clls_solution(run, solution):
     x, y, z, r, c, x_stat, c_stat, inform = solution
     x_s = RUNS[run]['x_s']
     # x is feasible, c = A x, and the first-order conditions g = A^T y + z
@@ -137,12 +132,7 @@ def test_clls_solution(request, run, solution):
     assert y == pytest.approx(RUNS[run]['y'], abs=1e-6)
 
 
-@pytest.mark.xfail(reason='clls may return W (A_o x - b) in r, and an obj '
-                   'that differs from f(x) (see '
-                   'https://github.com/ralna/GALAHAD/issues/601)')
 def test_clls_residuals(run, solution):
-    # not strict, as which run is affected depends on whether the final
-    # pounce solve is accepted, which changes once issue 599 is fixed
     x, y, z, r, c, x_stat, c_stat, inform = solution
     x_s = RUNS[run]['x_s']
     assert r == pytest.approx(Ao @ x - b, abs=1e-8)
