@@ -1,7 +1,7 @@
 //* \file cqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 12:50 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 10:54 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -357,6 +357,18 @@ bool cqp_update_control(struct cqp_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "pounce") == 0){
+            if(!parse_bool_option(value, "pounce",
+                                  &control->pounce))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "reduced_pounce_system") == 0){
+            if(!parse_bool_option(value, "reduced_pounce_system",
+                                  &control->reduced_pounce_system))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "space_critical") == 0){
             if(!parse_bool_option(value, "space_critical",
                                   &control->space_critical))
@@ -409,6 +421,11 @@ bool cqp_update_control(struct cqp_control_type *control,
         }
         if(strcmp(key_name, "sbls_options") == 0){
             if(!sbls_update_control(&control->sbls_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "sbls_pounce_options") == 0){
+            if(!sbls_update_control(&control->sbls_pounce_control, value))
                 return false;
             continue;
         }
@@ -540,6 +557,10 @@ PyObject* cqp_make_options_dict(const struct cqp_control_type *control){
                          PyBool_FromLong(control->balance_initial_complentarity));
     PyDict_SetItemString(py_options, "crossover",
                          PyBool_FromLong(control->crossover));
+    PyDict_SetItemString(py_options, "pounce",
+                         PyBool_FromLong(control->pounce));
+    PyDict_SetItemString(py_options, "reduced_pounce_system",
+                         PyBool_FromLong(control->reduced_pounce_system));
     PyDict_SetItemString(py_options, "space_critical",
                          PyBool_FromLong(control->space_critical));
     PyDict_SetItemString(py_options, "deallocate_error_fatal",
@@ -558,6 +579,8 @@ PyObject* cqp_make_options_dict(const struct cqp_control_type *control){
                          fdc_make_options_dict(&control->fdc_control));
     PyDict_SetItemString(py_options, "sbls_options",
                          sbls_make_options_dict(&control->sbls_control));
+    PyDict_SetItemString(py_options, "sbls_pounce_options",
+                         sbls_make_options_dict(&control->sbls_pounce_control));
     PyDict_SetItemString(py_options, "fit_options",
                          fit_make_options_dict(&control->fit_control));
     PyDict_SetItemString(py_options, "roots_options",
@@ -678,6 +701,8 @@ PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
                          fdc_make_inform_dict(&inform->fdc_inform));
     PyDict_SetItemString(py_inform, "sbls_inform",
                         sbls_make_inform_dict(&inform->sbls_inform));
+    PyDict_SetItemString(py_inform, "sbls_pounce_inform",
+                        sbls_make_inform_dict(&inform->sbls_pounce_inform));
     PyDict_SetItemString(py_inform, "fit_inform",
                          fit_make_inform_dict(&inform->fit_inform));
     PyDict_SetItemString(py_inform, "roots_inform",
