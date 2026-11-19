@@ -117,12 +117,12 @@
                         X_l, X_u, X, C, Y_l, Y_u, Z_l, Z_u, X_stat, C_stat )
      CALL WCP_information( data, inform, status )
      WRITE( 6, "( ' I: WCP_solve exit status = ', I0 ) " ) inform%status
-     CALL WCP_terminate( data, control, inform )  ! delete internal workspace
      IF ( inform%status == GALAHAD_ok .OR.                                     &
           inform%status == GALAHAD_error_tiny_step ) THEN
        WRITE( 6, "( ' infeasible problem not flagged as infeasible' )" )
        STOP 1
      END IF
+     CALL WCP_terminate( data, control, inform )  ! delete internal workspace
      DEALLOCATE( X, C, G, Y_l, Y_u, Z_l, Z_u, X_l, X_u, C_l, C_u )
      DEALLOCATE( X_stat, C_stat, A_val, A_row, A_col, A_ptr )
    END IF
