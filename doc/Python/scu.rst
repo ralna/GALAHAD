@@ -121,6 +121,6 @@ functions
              positive, negative and zero eigenvalues of $S$
              respectively.
 
-   .. function:: scu.finalize()
+   .. function:: scu.terminate()
 
      Deallocate all internal private storage.

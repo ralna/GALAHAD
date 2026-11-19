@@ -746,6 +746,6 @@ functions
              It is printed out on device errout at the end of execution
              if control.print_level >= 1.
 
-   .. function:: presolve.finalize()
+   .. function:: presolve.terminate()
 
      Deallocate all internal private storage.
