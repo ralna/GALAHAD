@@ -11131,9 +11131,9 @@
               END IF
             ELSE IF ( Hessian_kind == 2 ) THEN
               IF ( target_kind == 1 ) THEN
-                Z( j ) = Z( j ) - WEIGHT( j )
+                Z( j ) = Z( j ) - WEIGHT( j ) ** 2
               ELSE IF ( target_kind /= 0 ) THEN
-                Z( j ) = Z( j ) - WEIGHT( j ) * X0( j )
+                Z( j ) = Z( j ) - WEIGHT( j ) ** 2 * X0( j )
               END IF
             END IF
           END IF
@@ -11160,9 +11160,9 @@
               END IF
             ELSE IF ( hessian_kind == 2 ) THEN
               IF ( target_kind == 1 ) THEN
-                gj = gj - WEIGHT( j )
+                gj = gj - WEIGHT( j ) ** 2
               ELSE IF ( target_kind /= 0 ) THEN
-                gj = gj - WEIGHT( j ) * X0( j )
+                gj = gj - WEIGHT( j ) ** 2 * X0( j )
               END IF
             ELSE IF ( Hessian_kind < 0 ) THEN
               DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
@@ -11193,7 +11193,7 @@
           DO j = 1, n
             IF ( X_stat( j ) == 0 ) THEN
               n_free = n_free + 1
-              H_free%val( n_free ) = WEIGHT( j )
+              H_free%val( n_free ) = WEIGHT( j ) ** 2
             END IF
           END DO
         ELSE IF ( hessian_kind < 0 ) THEN
@@ -11389,7 +11389,7 @@
           END DO
         ELSE IF ( Hessian_kind == 2 ) THEN
           DO j = 1, n
-            IF ( X_stat( j ) /= 0 ) Z( j ) = Z( j ) + WEIGHT( j ) * X( j )
+            IF ( X_stat( j ) /= 0 ) Z( j ) = Z( j ) + WEIGHT( j ) ** 2 * X( j )
           END DO
         ELSE IF ( hessian_kind < 0 ) THEN
           DO j = 1, n
@@ -11468,12 +11468,12 @@
                  exact_size = control%space_critical,                          &
                  bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
-          H_free%val( : n_free ) = WEIGHT( : n_free )
+          H_free%val( : n_free ) = WEIGHT( : n_free ) ** 2
           IF ( target_kind == 1 ) THEN
-            SOL( : n_free ) = SOL( : n_free ) + WEIGHT( : n_free )
+            SOL( : n_free ) = SOL( : n_free ) + WEIGHT( : n_free ) ** 2
           ELSE IF ( target_kind /= 0 ) THEN
             SOL( : n_free )                                                    &
-              = SOL( : n_free ) + WEIGHT( : n_free ) * X0( : n_free )
+              = SOL( : n_free ) + WEIGHT( : n_free ) ** 2 * X0( : n_free )
           END IF
         ELSE IF ( hessian_kind < 0 ) THEN
           IF ( lmh ) THEN
@@ -11707,9 +11707,9 @@
           END IF
         ELSE IF ( Hessian_kind == 2 ) THEN
           IF ( target_kind == 1 ) THEN
-            gj = gj - WEIGHT( j )
+            gj = gj - WEIGHT( j ) ** 2
           ELSE IF ( target_kind /= 0 ) THEN
-            gj = gj - WEIGHT( j ) * X0( j )
+            gj = gj - WEIGHT( j ) ** 2 * X0( j )
           END IF
         END IF
         GHX( j ) = gj
@@ -11723,7 +11723,7 @@
       ELSE IF ( Hessian_kind == 1 ) THEN
         SOL( : n ) = X
       ELSE IF ( Hessian_kind == 2 ) THEN
-        SOL( : n ) = WEIGHT * X
+        SOL( : n ) = WEIGHT ** 2 * X
       ELSE IF ( lmh ) THEN
         CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = SOL( : n ) )
         IF ( i /= 0 ) THEN
