@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-06-12 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-19 AT 09:13 GMT.
 
 #include "galahad_modules.h"
 
@@ -2028,8 +2028,9 @@
            IF ( data%printe )                                                  &
              WRITE( control%error, 2010 ) prefix, inform%SBLS_inform%status,   &
                'SBLS_form_and_factorize'
-           CALL SYMBOLS_status( inform%SBLS_inform%status, control%out,        &
-                                prefix, 'SBLS_form_and_factorize' )
+           IF ( data%printi )                                                  &
+             CALL SYMBOLS_status( inform%SBLS_inform%status, control%out,      &
+                                  prefix, 'SBLS_form_and_factorize' )
            inform%status = GALAHAD_error_factorization ; GO TO 910
          END IF
 
