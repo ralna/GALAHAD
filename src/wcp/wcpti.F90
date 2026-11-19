@@ -100,11 +100,11 @@
                       X_l, X_u, X, C, Y_l, Y_u, Z_l, Z_u, X_stat, C_stat )
    CALL WCP_information( data, inform, status )
    WRITE( 6, "( ' F: WCP_solve exit status = ', I0 )" ) inform%status
-   CALL WCP_terminate( data, control, inform )  ! delete internal workspace
    IF ( inform%status == 0 .AND. X_stat( 2 ) /= 0 ) THEN
      WRITE( 6, "( ' free variable has X_stat = ', I0, ', not 0' )" ) X_stat( 2 )
      STOP 1
    END IF
+   CALL WCP_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( X, C, G, Y_l, Y_u, Z_l, Z_u, X_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    WRITE( 6, "( /, ' tests completed' )" )
