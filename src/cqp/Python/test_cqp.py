@@ -40,6 +40,8 @@ options['print_level'] = 0
 options['fdc_options']['symmetric_linear_solver'] = 'sytr'
 options['sbls_options']['symmetric_linear_solver'] = 'sytr'
 options['sbls_options']['definite_linear_solver'] = 'potr'
+options['sbls_pounce_options']['symmetric_linear_solver'] = 'sytr'
+options['sbls_pounce_options']['definite_linear_solver'] = 'potr'
 #print("options:", options)
 
 # load data (and optionally non-default options)
