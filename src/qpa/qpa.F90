@@ -13771,10 +13771,12 @@ main: DO
      data%prob%C_l( : m ) = C_l( : m )
      data%prob%C_u( : m ) = C_u( : m )
 
-!  set and save values of the penalty parameters
+!  set and save values of the penalty parameters. rho_b will be increased
+!  (multiplicatively) as many times as are needed to satisfy the bounds,
+!  so it must start positive
 
     data%prob%rho_g = rho_g
-    data%prob%rho_b = zero
+    data%prob%rho_b = one
 
 !  save the initial primal and dual variables and Lagrange multipliers
 
