@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 10:55 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-19 AT 07:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -15,6 +15,7 @@
    TYPE ( LMS_inform_type ) :: LMS_inform
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
+   INTEGER ( KIND = ip_ ) :: pounce_failures
    REAL ( KIND = rp_ ) :: delta, tol
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
@@ -908,7 +909,9 @@
 !  minimize x_1^2 + x_1 x_2 + x_2^2 subject to x_2 >= 1 and x_1 + x_2 >= -10,
 !  whose solution is x = ( -0.5, 1 ), with objective 0.75. Pounce early (with
 !  the default reduced and the full pounce system), with and without the
-!  exit status, and also solve without pouncing
+!  exit status, and also solve without pouncing. The dense LAPACK solvers,
+!  which are always available, are used whatever the solvers selected for the
+!  other tests, as CQP cannot use some of the latter (e.g., MUMPS and PaStiX)
 
    WRITE( 6, "( /, ' pounce tests', / )" )
    n = 2 ; m = 1 ; h_ne = 3 ; a_ne = 2
@@ -930,9 +933,15 @@
    p%A%ne = a_ne
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
    p%A%row = 1 ; p%A%col = (/ 1, 2 /) ; p%A%val = 1.0_rp_
+   pounce_failures = 0
    DO i = 1, 4
      CALL CQP_initialize( data, control, info )
      CALL WHICH_sls( control )
+     control%SBLS_control%symmetric_linear_solver = 'sytr'
+     control%SBLS_control%definite_linear_solver = 'potr'
+     control%SBLS_pounce_control%symmetric_linear_solver = 'sytr'
+     control%SBLS_pounce_control%definite_linear_solver = 'potr'
+     control%FDC_control%symmetric_linear_solver = 'sytr'
      control%infinity = infty
      control%mu_pounce = 0.1_rp_
      IF ( i == 3 ) control%pounce = .FALSE.
@@ -955,7 +964,7 @@
      END IF
      IF ( info%status /= 0 .OR. ABS( info%obj - 0.75_rp_ ) > tol ) THEN
        WRITE( 6, "( ' pounce test ', I0, ' failed' )" ) i
-       ERROR STOP
+       pounce_failures = pounce_failures + 1
      END IF
      CALL CQP_terminate( data, control, info )
    END DO
@@ -964,6 +973,13 @@
    DEALLOCATE( p%A%type, p%H%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+
+!  report any failures of the pounce tests through the exit status
+
+   IF ( pounce_failures > 0 ) THEN
+     WRITE( 6, "( /, 1X, I0, ' of the pounce tests failed' )" ) pounce_failures
+     STOP 1
+   END IF
 
    WRITE( 6, "( /, ' tests completed' )" )
 
