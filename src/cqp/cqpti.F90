@@ -125,10 +125,10 @@
    END DO
 
 !  check that, if the coordinate-storage solve above succeeded, it also
-!  succeeds with advanced initial values for the dual variables (getdua)
+!  succeeds with advanced initial values for the dual variables (getdua),
+!  using the same (default) linear solvers
 
    CALL CQP_initialize( data, control, inform )
-   CALL WHICH_sls( control )
    control%getdua = .TRUE.
    X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    CALL CQP_import( control, data, status, n, m,                               &
