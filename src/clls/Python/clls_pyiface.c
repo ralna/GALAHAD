@@ -653,7 +653,7 @@ PyObject* clls_make_inform_dict(const struct clls_inform_type *inform){
     // include checkpoint arrays
     npy_intp idim[] = {16};
     PyArrayObject *py_iter =
-      (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
+      (PyArrayObject*) PyArray_ZEROS(1, idim, NPY_INT, 0);
     int *iter = (int *) PyArray_DATA(py_iter);
     for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
@@ -919,10 +919,10 @@ static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds)
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
     PyArrayObject *py_c_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_INT, 0);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call clls_solve_direct

@@ -682,7 +682,7 @@ PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
     // include checkpoint arrays
     npy_intp cdim[] = {16};
     PyArrayObject *py_iter =
-      (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
+      (PyArrayObject*) PyArray_ZEROS(1, cdim, NPY_INT, 0);
     int *iter = (int *) PyArray_DATA(py_iter);
     for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
@@ -928,10 +928,10 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
     PyArrayObject *py_c_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_INT, 0);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call cqp_solve_direct
@@ -1022,10 +1022,10 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
     PyArrayObject *py_c_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_INT, 0);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call cqp_solve_direct

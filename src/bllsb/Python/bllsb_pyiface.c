@@ -653,7 +653,7 @@ PyObject* bllsb_make_inform_dict(const struct bllsb_inform_type *inform){
 //printf("  bllsb_make_inform_dict before checkpoint creation\n");
     npy_intp cdim[] = {16};
     PyArrayObject *py_iter =
-      (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
+      (PyArrayObject*) PyArray_ZEROS(1, cdim, NPY_INT, 0);
     int *iter = (int *) PyArray_DATA(py_iter);
     for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
@@ -857,7 +857,7 @@ static PyObject* py_bllsb_solve(PyObject *self, PyObject *args, PyObject *keywds
       (PyArrayObject *) PyArray_SimpleNew(1, odim, NPY_DOUBLE);
     double *r = (double *) PyArray_DATA(py_r);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call bllsb_solve_direct
