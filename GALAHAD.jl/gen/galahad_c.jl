@@ -225,7 +225,7 @@ function generate_galahad_c()
   ordered_packages = ("bsc", "convert", "fit", "glrt", "gls", "gltr", "hash", "hsl", "ir", "l2rt",
                       "lhs", "lms", "lsrt", "lstr", "nodend", "presolve", "roots", "rpd", "scu", "sec",
                       "sha", "sils", "ugo", "slblt", "sls", "rqs", "dps", "psls", "arc", "trs",
-                      "trb", "bgo", "uls", "sbls", "blls", "bqp", "fdc", "cro", "bqpb", "ccqp", "cqp",
+                      "trb", "bgo", "uls", "sbls", "blls", "bqp", "fdc", "cro", "bqpb", "cqp",
                       "clls", "dgo", "dqp", "eqp", "lpa", "lpb", "lsqp", "nls", "qpa", "qpb", "slls",
                       "nrek", "trek", "tru", "wcp", "llsr", "llst", "bllsb", "ssls", "sllsb", "bnls",
                       "snls", "expo", "version")

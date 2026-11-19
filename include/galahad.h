@@ -341,7 +341,6 @@
 #include "galahad_bqp.h"
 #include "galahad_bqpb.h"
 #include "galahad_bsc.h"
-#include "galahad_ccqp.h"
 #include "galahad_clls.h"
 #include "galahad_convert.h"
 #include "galahad_cqp.h"

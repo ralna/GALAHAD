@@ -324,14 +324,6 @@ elif [[ $2 == 'dlp' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dlp update
   [[ ! -L RUNDLP.SPC ]] && ln -s ~/.galahad/specs/RUNDLP.SPC RUNDLP.SPC
 
-# ccqp
-
-elif [[ $2 == 'ccqp' ]]; then
-  RUNMAIN=$GALOBJ/runccqp_qplib_$PRECIS.o
-  [[ ! -e ~/.galahad/specs/RUNCCQP.SPC ]] && $GALOBJ/buildspec ccqp
-  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ccqp update
-  [[ ! -L RUNCCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCCQP.SPC RUNCCQP.SPC
-
 # pdqp
 
 elif [[ $2 == 'pdqp' ]]; then

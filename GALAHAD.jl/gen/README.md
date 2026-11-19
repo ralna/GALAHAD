@@ -48,7 +48,6 @@ The possible values for `library` are:
 - `"bqp"`;
 - `"bqpb"`;
 - `"bsc"`;
-- `"ccqp"`;
 - `"cdqp"`;
 - `"clls"`;
 - `"convert"`;

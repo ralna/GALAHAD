@@ -625,7 +625,7 @@ functions
           complementary_slackness : float
              the value of the complementary slackness.
           init_primal_infeasibility : float
-             these values at the initial point (needed by ``ccqp``).
+             these values at the initial point.
           init_dual_infeasibility : float
              see init_primal_infeasibility.
           init_complementary_slackness : float

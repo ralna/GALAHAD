@@ -82,11 +82,6 @@ make_cauchy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cauchy.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
 
-make_ccqp:
-	( cd $(GALAHAD)/src/ccqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
-
 make_cdqp:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp.o \
@@ -894,11 +889,6 @@ make_all_cauchy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cauchy.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
 
-make_all_ccqp:
-	( cd $(GALAHAD)/src/ccqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
-
 make_all_cdqp:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_silent \
@@ -1526,11 +1516,6 @@ make_ciface_cauchy:
 	( cd $(GALAHAD)/src/lancelot ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cauchy_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
-
-make_ciface_ccqp:
-	( cd $(GALAHAD)/src/ccqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
 
 make_ciface_cdqp:
 	( cd $(GALAHAD)/src/cdqp ; \
@@ -2244,11 +2229,6 @@ make_pyiface_cauchy:
 	( cd $(GALAHAD)/src/lancelot ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cauchy_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
-
-make_pyiface_ccqp:
-	( cd $(GALAHAD)/src/ccqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
 
 make_pyiface_cdqp:
 	( cd $(GALAHAD)/src/cdqp ; \

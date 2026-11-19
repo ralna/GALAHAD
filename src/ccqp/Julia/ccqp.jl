@@ -1,1 +1,0 @@
-../../../GALAHAD.jl/src/wrappers/ccqp.jl

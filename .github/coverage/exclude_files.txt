@@ -16,8 +16,6 @@ src/bqpb/bqpbt.F90
 src/bqpb/bqpbti.F90
 src/bsc/bsct.F90
 src/bsc/bscti.F90
-src/ccqp/ccqpt.F90
-src/ccqp/ccqpti.F90
 src/cdqp/cdqpt.F90
 src/check/checkt.F90
 src/clls/cllst.F90
@@ -160,8 +158,6 @@ src/bqpb/C/bqpbt.c
 src/bqpb/C/bqpbtf.c
 src/bsc/C/bsct.c
 src/bsc/C/bsctf.c
-src/ccqp/C/ccqpt.c
-src/ccqp/C/ccqptf.c
 src/clls/C/cllst.c
 src/clls/C/cllstf.c
 src/cqp/C/cqpt.c
