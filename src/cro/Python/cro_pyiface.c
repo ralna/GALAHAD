@@ -445,6 +445,7 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
                            A_ne, A_val, A_col, A_ptr,
                            g, c_l, c_u, x_l, x_u,
                            x, c, y, z, x_stat, c_stat);
+    status = inform.status;
 
     // Write data back to original arrays
     PyArray_ResolveWritebackIfCopy(tmp_x_stat);
