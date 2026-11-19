@@ -393,6 +393,9 @@ static PyObject* py_glrt_terminate(PyObject *self){
     // Call glrt_terminate
     glrt_terminate(&data, &control, &inform);
 
+    // require future calls start with glrt_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

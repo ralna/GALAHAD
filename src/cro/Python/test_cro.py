@@ -38,11 +38,11 @@ options = cro.initialize()
 
 # set some non-default options
 options['print_level'] = 0
-options['symmetric_linear_solver'] = 'sytr '
-options['unsymmetric_linear_solver'] = 'getr '
-options['sbls_options']['symmetric_linear_solver'] = 'sytr '
-options['sbls_options']['definite_linear_solver'] = 'sytr '
-options['sbls_options']['unsymmetric_linear_solver'] = 'getr '
+options['symmetric_linear_solver'] = 'sytr'
+options['unsymmetric_linear_solver'] = 'getr'
+options['sbls_options']['symmetric_linear_solver'] = 'sytr'
+options['sbls_options']['definite_linear_solver'] = 'sytr'
+options['sbls_options']['unsymmetric_linear_solver'] = 'getr'
 #print("options:", options)
 
 # provide optimal variables, Lagrange multipliers and dual variables

@@ -9,6 +9,7 @@ options = dgo.initialize()
 # set some non-default options
 options['print_level'] = 0
 options['ugo_options']['print_level'] = 0
+options['maxit'] = 5000
 #print("options:", options)
 
 # set parameters

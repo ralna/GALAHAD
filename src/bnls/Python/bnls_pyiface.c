@@ -712,7 +712,7 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call bnls_solve_direct
@@ -759,6 +759,9 @@ static PyObject* py_bnls_terminate(PyObject *self){
 
     // Call bnls_terminate
     bnls_terminate(&data, &control, &inform);
+
+    // require future calls start with bnls_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

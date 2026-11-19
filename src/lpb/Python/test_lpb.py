@@ -31,9 +31,9 @@ options = lpb.initialize()
 
 # set some non-default options
 options['print_level'] = 0
-options['fdc_options']['symmetric_linear_solver'] = 'sytr '
-options['sbls_options']['symmetric_linear_solver'] = 'sytr '
-options['sbls_options']['definite_linear_solver'] = 'sytr '
+options['fdc_options']['symmetric_linear_solver'] = 'sytr'
+options['sbls_options']['symmetric_linear_solver'] = 'sytr'
+options['sbls_options']['definite_linear_solver'] = 'sytr'
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -45,7 +45,6 @@ x = np.array([0.0,0.0,0.0])
 y = np.array([0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
-print("3\n*")
 # find optimum of lp
 #print("\n solve lp")
 x, c, y, z, x_stat, c_stat \

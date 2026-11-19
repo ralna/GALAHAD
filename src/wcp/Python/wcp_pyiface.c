@@ -670,7 +670,8 @@ static PyObject* py_wcp_load(PyObject *self, PyObject *args, PyObject *keywds){
 static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    PyArrayObject *py_x, *py_y_l, *py_y_u, *py_z_l, *py_z_u, *py_g;
+    PyArrayObject *py_x, *py_y_l, *py_y_u, *py_z_l, *py_z_u;
+    PyArrayObject *py_g = NULL;
     double *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y_l, *y_u, *z_l, *z_u;
     double *g = NULL;
     int n, m, A_ne;
@@ -708,12 +709,15 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
     if(!check_array_double("z_u", py_z_u, n))
         return NULL;
-    if((PyObject *) py_g == Py_None){
-      g = malloc(n * sizeof(double));
-      for(int i = 0; i < n; i++) g[i] = 0.0;
-    } else {
-      g = (double *) PyArray_DATA(py_g);
+    if(py_g != NULL) {
+      if((PyObject *) py_g != Py_None){
+        if(!check_array_double("g", py_g, n))
+            return NULL;
+        g = (double *) PyArray_DATA(py_g);
+      }
     }
+    // g is optional and defaults to zero
+    if(g == NULL) g = calloc(n, sizeof(double));
 
     // Get array data pointer
     A_val = (double *) PyArray_DATA(py_A_val);
@@ -734,10 +738,10 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywd
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
     PyArrayObject *py_c_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_INT, 0);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call wcp_solve_direct
@@ -746,7 +750,7 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywd
                  c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u, x_stat, c_stat);
 
     // Free allocated memory
-    if(py_g == NULL) free(g);
+    if(py_g == NULL || (PyObject *) py_g == Py_None) free(g);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -788,6 +792,9 @@ static PyObject* py_wcp_terminate(PyObject *self){
 
     // Call wcp_terminate
     wcp_terminate(&data, &control, &inform);
+
+    // require future calls start with wcp_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

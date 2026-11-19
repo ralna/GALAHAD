@@ -548,7 +548,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
       }
     }
     if(py_x_s != NULL) {
-      if((PyObject *) py_w != Py_None){
+      if((PyObject *) py_x_s != Py_None){
         if(!check_array_double("x_s", py_x_s, n))
             return NULL;
         x_s = (double *) PyArray_DATA(py_x_s);
@@ -578,7 +578,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call slls_solve_direct
@@ -623,6 +623,9 @@ static PyObject* py_slls_terminate(PyObject *self){
 
     // Call slls_terminate
     slls_terminate(&data, &control, &inform);
+
+    // require future calls start with slls_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

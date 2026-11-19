@@ -34,6 +34,10 @@ options = trek.initialize()
 
 # set some non-default options
 options['print_level'] = 0
+options['linear_solver'] = 'sytr'
+options['linear_solver_for_s'] = 'sytr'
+options['trs_options']['symmetric_linear_solver'] = 'sytr'
+options['trs_options']['definite_linear_solver'] = 'potr'
 #print("options:", options)
 
 # load data (and optionally non-default options)

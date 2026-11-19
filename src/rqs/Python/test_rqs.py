@@ -48,6 +48,8 @@ options = rqs.initialize()
 
 # set some non-default options
 options['print_level'] = 0
+options['symmetric_linear_solver'] = 'sytr'
+options['definite_linear_solver'] = 'potr'
 #print("options:", options)
 
 # load data (and optionally non-default options)

@@ -770,10 +770,10 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
     PyArrayObject *py_c_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_INT, 0);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call lsqp_solve_direct
@@ -820,6 +820,9 @@ static PyObject* py_lsqp_terminate(PyObject *self){
 
     // Call lsqp_terminate
     lsqp_terminate(&data, &control, &inform);
+
+    // require future calls start with lsqp_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

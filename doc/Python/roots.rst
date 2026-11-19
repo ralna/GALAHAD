@@ -85,6 +85,6 @@ functions
              the name of the array for which an allocation/deallocation
              error occurred.
 
-   .. function:: roots.finalize()
+   .. function:: roots.terminate()
 
      Deallocate all internal private storage.

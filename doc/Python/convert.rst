@@ -109,6 +109,6 @@ functions
                 clock_total : float
                    total clock time spent in the package.
 
-   .. function:: convert.finalize()
+   .. function:: convert.terminate()
 
      Deallocate all internal private storage.

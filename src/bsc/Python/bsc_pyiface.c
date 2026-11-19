@@ -304,13 +304,13 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
     npy_intp sdim[] = {S_ne}; // size of S_row, S_col an S_val
     npy_intp pdim[] = {m+1}; // size of S_ptr
     PyArrayObject *py_s_row =
-      (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, sdim, NPY_INT, 0);
     int *S_row = (int *) PyArray_DATA(py_s_row);
     PyArrayObject *py_s_col =
-      (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, sdim, NPY_INT, 0);
     int *S_col = (int *) PyArray_DATA(py_s_col);
     PyArrayObject *py_s_ptr =
-      (PyArrayObject *) PyArray_SimpleNew(1, pdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, pdim, NPY_INT, 0);
     int *S_ptr = (int *) PyArray_DATA(py_s_ptr);
     PyArrayObject *py_s_val =
       (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_DOUBLE);
@@ -360,6 +360,9 @@ static PyObject* py_bsc_terminate(PyObject *self){
 
     // Call bsc_terminate
     bsc_terminate(&data, &control, &inform);
+
+    // require future calls start with bsc_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);
