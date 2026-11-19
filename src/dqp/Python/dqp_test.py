@@ -105,7 +105,7 @@ def solve_qp(H_type, H_ne, H_row, H_col, H_ptr, H_val, A_type, g):
     dqp.terminate()
     return x, c, y, z, x_stat, c_stat, inform
 
-def solve_sldqp():
+def solve_sldqp(w=w, x0=x0):
     A_ne, A_row, A_col, A_ptr, A_val = a_storage(A, 'coordinate')
     options = initialize()
     dqp.load(n, m, 'shifted_least_distance', 0, None, None, None,
@@ -235,3 +235,24 @@ def test_dqp_sldqp():
     assert y == pytest.approx(y_star_sld, abs=1e-8)
     assert z == pytest.approx(z_star_sld, abs=1e-8)
     assert inform['obj'] == pytest.approx(f_star_sld, abs=1e-8)
+
+
+# with non-unit weights w = ( 1, 2, 3 ) and shifts x^0 = ( 1, 1, 1 ), the
+# Hessian is W^2 = diag( 1, 4, 9 ). The first constraint is active at its
+# upper bound 2 x_0 + x_1 = 2, the equality x_1 + x_2 = 2 holds and no
+# bounds are active, so solving W^2 ( x - x^0 ) + g = A^T y gives
+# x = ( 31, 44, 62 ) / 53 and y = ( -11, 81 ) / 53, with y_0 <= 0 as needed
+# at an upper bound, z = 0 and f = 311 / 106. (With w = ( 1, 1, 1 ) as in
+# test_dqp.py, w and w^2 cannot be told apart)
+def test_dqp_sldqp_weighted():
+    w_w = np.array([1.0, 2.0, 3.0])
+    x0_w = np.ones(n)
+    x, c, y, z, x_stat, c_stat, inform = solve_sldqp(w_w, x0_w)
+    assert inform['status'] == 0
+    assert inform['obj'] == pytest.approx(
+        f + g @ x + 0.5 * np.sum(w_w**2 * (x - x0_w)**2), abs=1e-8)
+    check_optimality(x, c, y, z, w_w**2 * (x - x0_w) + g)
+    assert x == pytest.approx(np.array([31.0, 44.0, 62.0]) / 53.0, abs=1e-8)
+    assert y == pytest.approx(np.array([-11.0, 81.0]) / 53.0, abs=1e-8)
+    assert z == pytest.approx(np.zeros(n), abs=1e-8)
+    assert inform['obj'] == pytest.approx(311.0 / 106.0, abs=1e-8)
