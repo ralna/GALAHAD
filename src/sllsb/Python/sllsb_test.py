@@ -133,22 +133,17 @@ def test_sllsb_shift(w):
     x, y, z, r, x_stat, inform = solve('coordinate', None, w, x_s)
     assert inform['status'] == 0
     assert inform['obj'] == pytest.approx(objective(x, w, x_s))
-    # unlike for x_star, sllsb's final "pounce" solve ignores the shifts
-    # (see https://github.com/ralna/GALAHAD/issues/599), so its result is
-    # rejected and sllsb stops at an interior point that is only optimal to
-    # within its default stopping tolerances (stop_abs_p, stop_abs_d and
-    # stop_abs_c, all about 7e-6), so check to within 1e-4
-    tol = 1e-4
     g = gradient(x, w, x_s)
-    check_optimality(x, g, tol=tol, feas_tol=tol)
+    check_optimality(x, g)
     # the shift adds -sigma x_s to g, so g_8 = 2 x_8 - 19, g_9 = 2 x_9 - 22.
     # x_8, x_9 cannot both be free, as g_8 = g_9 and x_8 + x_9 = 1 would
     # give x_8 = -1/4. So x = e_9, with y = g_9 = -20 and z_j = 9 - j for
     # j < 9 (ignoring the shift would give x_star instead)
-    assert x == pytest.approx(np.r_[np.zeros(n - 1), 1.0], abs=tol)
-    assert g == pytest.approx(y[0] + z, abs=tol)
-    assert y == pytest.approx([-20.0], abs=tol)
-    assert z == pytest.approx(np.r_[9.0 - np.arange(n - 1), 0.0], abs=tol)
+    assert np.all(x_stat[:n - 1] < 0) and x_stat[n - 1] == 0
+    assert x == pytest.approx(np.r_[np.zeros(n - 1), 1.0], abs=1e-6)
+    assert g == pytest.approx(y[0] + z, abs=1e-6)
+    assert y == pytest.approx([-20.0], abs=1e-6)
+    assert z == pytest.approx(np.r_[9.0 - np.arange(n - 1), 0.0], abs=1e-6)
 
 
 def test_sllsb_multipliers(solution):
