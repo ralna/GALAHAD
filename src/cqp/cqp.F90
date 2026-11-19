@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-19 AT 13:14 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -11995,6 +11995,9 @@
       TYPE ( BLLS_control_type ) :: blls_control
       TYPE ( BLLS_inform_type ) :: blls_inform
       TYPE ( USERDATA_type ) :: userdata
+      REAL ( KIND = rp_ ) :: a_max
+      REAL ( KIND = rp_ ), PARAMETER :: stabilisation_factor = 100.0_rp_
+      INTEGER ( KIND = ip_ ), PARAMETER :: blls_maxit = 50
 
       success = .FALSE.
 
@@ -12142,10 +12145,19 @@
       blls_control%infinity = control%infinity
       blls_control%stop_d = stop_d
 
-!  the least-squares problem is often rank deficient, so any stabilisation
-!  would prevent the residual from being reduced to the required level
+!  the least-squares problem is often rank deficient, so a small
+!  stabilisation, relative to the size of A_o, is used, as otherwise the
+!  factorization required by BLLS may fail. As BLLS then solves the problem
+!  in a few iterations when it succeeds, the number of iterations is limited
 
-      blls_control%stabilisation_weight = zero
+      a_max = one
+      IF ( m > 0 ) THEN
+        IF ( A_ptr( m + 1 ) > 1 )                                              &
+          a_max = MAX( one, MAXVAL( ABS( A_val( : A_ptr( m + 1 ) - 1 ) ) ) )
+      END IF
+      blls_control%stabilisation_weight                                        &
+        = stabilisation_factor * epsmch * a_max ** 2
+      blls_control%maxit = blls_maxit
       blls_control%space_critical = control%space_critical
       blls_control%deallocate_error_fatal = control%deallocate_error_fatal
       blls_inform%status = 1
