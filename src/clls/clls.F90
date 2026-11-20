@@ -8199,14 +8199,14 @@
 
 !  incorrect Lagrange multiplier of active constraint at lower bound
 
-        ELSE IF ( C( i ) < C_l( i ) + ei ) THEN
+        ELSE IF ( C( i ) <= C_l( i ) + ei ) THEN
           IF ( Y( i ) < - feas ) THEN
             y_feas = .FALSE. ; EXIT
           END IF
 
 !  incorrect Lagrange multiplier of active counstraint at upper bound
 
-        ELSE IF ( C( i ) > C_u( i ) - ei ) THEN
+        ELSE IF ( C( i ) >= C_u( i ) - ei ) THEN
           IF ( Y( i ) > feas ) THEN
             y_feas = .FALSE. ; EXIT
           END IF
