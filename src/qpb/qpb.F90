@@ -1932,6 +1932,10 @@
                        + DOT_PRODUCT( prob%X( : prob%n ),                      &
                                       prob%G( : prob%n ) ) + prob%f
 
+!  restore the FDC error status, which SPACE_resize_array overwrote
+
+          inform%status = inform%FDC_inform%status
+
 !  Print details of the error exit
 
           IF ( control%error > 0 .AND. control%print_level >= 1 ) THEN
@@ -2863,6 +2867,10 @@
                                                data%HX( : prob%n ) )           &
                            + DOT_PRODUCT( prob%X( : prob%n ),                  &
                                           prob%G( : prob%n ) ) + prob%f
+
+!  restore the FDC error status, which SPACE_resize_array overwrote
+
+              inform%status = inform%FDC_inform%status
 
 !  Print details of the error exit
 
