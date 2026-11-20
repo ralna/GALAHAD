@@ -8088,7 +8088,7 @@
 
         next = nfpo
         DO i = 1, m
-         IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
+         IF ( C_stat( i ) /= 0 ) THEN
             next = next + 1
             Y( i ) = - SOL( next )
           ELSE
@@ -8140,7 +8140,7 @@
 
         next = npo
         DO i = 1, m
-         IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
+         IF ( C_stat( i ) /= 0 ) THEN
             next = next + 1
             Y( i ) = - SOL( next )
           ELSE
@@ -8151,7 +8151,7 @@
 !  recover z
 
         DO j = 1, n
-          IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
+          IF ( X_stat( j ) /= 0 ) THEN
             next = next + 1
             Z( j ) = - SOL( next )
           ELSE
