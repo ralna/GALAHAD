@@ -4319,7 +4319,7 @@
             IF ( it_best > infeas_max ) THEN
               IF ( printi ) WRITE( out, "( A, /, ' ============ the problem',  &
              &  ' appears to be infeasible  =============' )" ) prefix
-              inform%status = GALAHAD_error_tiny_step ; GO TO 600
+              inform%status = GALAHAD_error_primal_infeasible ; GO TO 600
             END IF
           END IF
 
