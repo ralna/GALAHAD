@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 14:42 GMT.
 
 #include "galahad_modules.h"
 
@@ -7981,9 +7981,9 @@
           END IF
         END DO
 
-!  the 4,1 block I_B
+!  the 4,1 block I_B, whose rows follow those of A_A
 
-        next = npo
+        next = npo + m_active
         DO j = 1, n
           IF ( X_stat( j ) /= 0 ) THEN ! fixed variable
             l = l + 1
