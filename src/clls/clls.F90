@@ -5889,7 +5889,7 @@
                                          DIST_X_l, DIST_X_u,                   &
                                          DIST_C_l, DIST_C_u,                   &
                                          GRAD_L( dims%x_s : dims%x_e ),        &
-                                         control%getdua, dufeas, W, X_s )
+                                         .FALSE., dufeas, W, X_s )
 
 !  evaluate the primal and dual infeasibility and merit function
 
@@ -6135,7 +6135,7 @@
                                        A_ne, A_val, A_col, A_ptr,              &
                                        DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
                                        GRAD_L( dims%x_s : dims%x_e ),          &
-                                       control%getdua, dufeas, W, X_s )
+                                       .FALSE., dufeas, W, X_s )
 
 !  update the values of the merit function, the gradient of the Lagrangian,
 !  and the constraint residuals

@@ -10,7 +10,7 @@
    TYPE ( CQP_inform_type ) :: inform
    TYPE ( CQP_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, m, A_ne, H_ne
-   INTEGER ( KIND = ip_ ) :: data_storage_type, status
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status, status_c
    REAL ( KIND = rp_ ) :: f
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G, W, X_0
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
@@ -114,6 +114,7 @@
                           X_l, X_u, X, C, Y, Z, X_stat, C_stat )
      END SELECT
      CALL CQP_information( data, inform, status )
+     IF ( data_storage_type == 1 ) status_c = inform%status
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
@@ -122,6 +123,27 @@
      END IF
      CALL CQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
+
+!  check that, if the coordinate-storage solve above succeeded, it also
+!  succeeds with advanced initial values for the dual variables (getdua),
+!  using the same (default) linear solvers
+
+   CALL CQP_initialize( data, control, inform )
+   control%getdua = .TRUE.
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   CALL CQP_import( control, data, status, n, m,                               &
+                    'coordinate', H_ne, H_row, H_col, H_ptr,                   &
+                    'coordinate', A_ne, A_row, A_col, A_ptr )
+   CALL CQP_solve_qp( data, status, H_val, G, f, A_val, C_l, C_u,              &
+                      X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+   CALL CQP_information( data, inform, status )
+   WRITE( 6, "( /, ' getdua: ', I0, ' iterations. Optimal objective value = ', &
+  &  F5.2, ' status = ', I0 )" ) inform%iter, inform%obj, inform%status
+   IF ( status_c == 0 .AND. inform%status /= 0 ) THEN
+     WRITE( 6, "( ' CQP_solve failed with getdua = .TRUE.' )" )
+     STOP 1
+   END IF
+   CALL CQP_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
 
 !  shifted least-distance example
