@@ -10,10 +10,11 @@
    TYPE ( CQP_inform_type ) :: inform
    TYPE ( CQP_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, m, A_ne, H_ne
-   INTEGER ( KIND = ip_ ) :: data_storage_type, status, status_c
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status, l
    REAL ( KIND = rp_ ) :: f
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G, W, X_0
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
@@ -177,6 +178,38 @@
      END IF
      CALL CQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
+
+!  repeat with non-unit weights and shifts, and check that the first-order
+!  conditions W^2 ( x - x_0 ) + g = A^T y + z hold (if the solve succeeded)
+
+   W = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_ /)
+   X_0 = 1.0_rp_
+   CALL CQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   CALL CQP_import( control, data, status, n, m,                               &
+                    'shifted_least_distance', H_ne, H_row, H_col, H_ptr,       &
+                    'coordinate', A_ne, A_row, A_col, A_ptr )
+   CALL CQP_solve_sldqp( data, status, W, X_0, G, f, A_val, C_l, C_u,          &
+                         X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+   CALL CQP_information( data, inform, status )
+   WRITE( 6, "( ' W:', I6, ' iterations. Optimal objective value = ',          &
+  &  F5.2, ' status = ', I0 )" ) inform%iter, inform%obj, inform%status
+   IF ( inform%status == 0 ) THEN
+     ALLOCATE( R( n ) )
+     R = W ** 2 * ( X - X_0 ) + G - Z
+     DO l = 1, A_ne
+       R( A_col( l ) ) = R( A_col( l ) ) - A_val( l ) * Y( A_row( l ) )
+     END DO
+     IF ( MAXVAL( ABS( R ) ) > 0.0001_rp_ ) THEN
+       WRITE( 6, "( ' weighted shifted least-distance solution is not ',      &
+      &  'optimal: dual residual = ', ES10.2 )" ) MAXVAL( ABS( R ) )
+       STOP 1
+     END IF
+     DEALLOCATE( R )
+   END IF
+   CALL CQP_terminate( data, control, inform )  ! delete internal workspace
+
    DEALLOCATE( X, C, G, Y, Z, W, X_0, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    WRITE( 6, "( /, ' tests completed' )" )
