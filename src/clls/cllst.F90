@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 14:42 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -12,6 +12,9 @@
    TYPE ( CLLS_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: n, m, o, ao_ne, a_ne, tests, smt_stat
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
+   INTEGER ( KIND = ip_ ) :: prob, itype, ired, errors
+   REAL ( KIND = rp_ ) :: err, tol
+   REAL ( KIND = rp_ ) :: x_sol( 3 ), y_sol( 2 ), z_sol( 3 )
    CHARACTER ( len = 1 ) :: st
    CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
 !  symmetric_linear_solver = 'slblt'
@@ -806,6 +809,141 @@
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, p%R, p%C_status, p%X_status )
    DEALLOCATE( p%Ao%ptr, p%A%ptr )
+
+!  =================================================================
+!  pounce tests with active constraints and bounds, some of which are
+!  degenerate (active with zero multipliers), which indicators of
+!  type 1 or 3 may then flag with status +/-2
+!  =================================================================
+
+!  problem 1: minimize 1/2||x - e||^2 s.t. x_1 + x_2 <= 2 and x_3 <= 0,
+!             with solution x = (1,1,0), y = (0,-1) and z = 0
+!  problem 2: minimize 1/2||x - e||^2 s.t. x_1 + x_2 <= 2, x_1 <= 1 and
+!             x_3 <= 0, with solution x = (1,1,0), y = 0 and z = (0,0,-1)
+!  problem 3: minimize 1/2||x - e||^2 s.t. x_1 + x_2 <= 1 and x_3 <= 0,
+!             with solution x = (1/2,1/2,0), y = -1/2 and z = (0,0,-1)
+!  problem 4: minimize 1/2||x - e||^2 s.t. x_1 <= 1 and x_3 <= 0, with
+!             solution x = (1,1,0) and z = (0,0,-1)
+
+!  each is solved with indicators of types 1, 2 and 3, and of type 1 with
+!  a larger tolerance (case 4), using both the reduced and full systems
+
+   WRITE( 6, "( /, ' pounce tests with active constraints and bounds ', /)")
+   tol = EPSILON( 1.0_rp_ ) ** 0.75
+   errors = 0
+   n = 3 ; o = 3
+   DO prob = 1, 4
+     IF ( prob == 1 ) THEN
+       m = 2 ; a_ne = 3
+       x_sol = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_ /)
+       y_sol = (/ 0.0_rp_, - 1.0_rp_ /) ; z_sol = 0.0_rp_
+     ELSE IF ( prob == 2 ) THEN
+       m = 1 ; a_ne = 2
+       x_sol = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_ /)
+       y_sol = 0.0_rp_ ; z_sol = (/ 0.0_rp_, 0.0_rp_, - 1.0_rp_ /)
+     ELSE IF ( prob == 3 ) THEN
+       m = 1 ; a_ne = 2
+       x_sol = (/ 0.5_rp_, 0.5_rp_, 0.0_rp_ /)
+       y_sol = - 0.5_rp_ ; z_sol = (/ 0.0_rp_, 0.0_rp_, - 1.0_rp_ /)
+     ELSE
+       m = 0 ; a_ne = 0
+       x_sol = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_ /)
+       z_sol = (/ 0.0_rp_, 0.0_rp_, - 1.0_rp_ /)
+     END IF
+     DO itype = 1, 4
+
+!  for problems 2 to 4, the type 3 indicator predicts that x_3 <= 0 is
+!  inactive, since x_3 moves away from its bound in the final iteration;
+!  the pounce is then rightly rejected, and the solution is only as
+!  accurate as the final interior-point iterate
+
+       IF ( prob >= 2 .AND. itype == 3 ) CYCLE
+#ifdef REAL_32
+
+!  in single precision, the default stopping tolerance for complementary
+!  slackness (relative to its large initial value) allows the iteration to
+!  stop far from the solution of problems 3 and 4, where the type 1
+!  indicator then fails to predict the active set
+
+       IF ( prob >= 3 .AND. ( itype == 1 .OR. itype == 4 ) ) CYCLE
+#endif
+       DO ired = 0, 1
+         ALLOCATE( p%B( o ), p%R( o ), p%X_l( n ), p%X_u( n ), p%X( n ),       &
+                   p%Z( n ), p%X_status( n ), p%C( m ), p%C_l( m ),            &
+                   p%C_u( m ), p%Y( m ), p%C_status( m ) )
+         ALLOCATE( p%Ao%row( o ), p%Ao%col( o ), p%Ao%val( o ) )
+         ALLOCATE( p%A%row( a_ne ), p%A%col( a_ne ), p%A%val( a_ne ) )
+         CALL SMT_put( p%Ao%type, 'COORDINATE', smt_stat )
+         CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
+         p%new_problem_structure = .TRUE.
+         p%n = n ; p%o = o ; p%m = m
+         p%Ao%ne = o ; p%Ao%row = (/ 1, 2, 3 /) ; p%Ao%col = (/ 1, 2, 3 /)
+         p%Ao%val = 1.0_rp_
+         p%B = 1.0_rp_
+         p%A%ne = a_ne ; p%A%val = 1.0_rp_
+         p%C_l = - infty ; p%X_l = - infty
+         IF ( prob == 1 ) THEN
+           p%A%row = (/ 1, 1, 2 /) ; p%A%col = (/ 1, 2, 3 /)
+           p%C_u = (/ 2.0_rp_, 0.0_rp_ /)
+           p%X_u = infty
+         ELSE IF ( prob == 2 ) THEN
+           p%A%row = (/ 1, 1 /) ; p%A%col = (/ 1, 2 /)
+           p%C_u = 2.0_rp_
+           p%X_u = (/ 1.0_rp_, infty, 0.0_rp_ /)
+         ELSE IF ( prob == 3 ) THEN
+           p%A%row = (/ 1, 1 /) ; p%A%col = (/ 1, 2 /)
+           p%C_u = 1.0_rp_
+           p%X_u = (/ infty, infty, 0.0_rp_ /)
+         ELSE
+           p%X_u = (/ 1.0_rp_, infty, 0.0_rp_ /)
+         END IF
+         p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+         CALL CLLS_initialize( data, control, info )
+         control%symmetric_linear_solver = symmetric_linear_solver
+         control%FDC_control%symmetric_linear_solver                           &
+           = symmetric_linear_solver
+         control%infinity = infty
+         IF ( itype <= 3 ) THEN
+           control%indicator_type = itype
+         ELSE
+           control%indicator_type = 1
+           control%indicator_tol_p = 0.1_rp_
+         END IF
+         control%reduced_pounce_system = ired == 1
+!        control%out = 6 ; control%print_level = 1
+         CALL CLLS_solve( p, data, control, info )
+         IF ( info%status == 0 ) THEN
+           err = MAX( MAXVAL( ABS( p%X - x_sol ) ),                            &
+                      MAXVAL( ABS( p%Y - y_sol( : m ) ) ),                     &
+                      MAXVAL( ABS( p%Z - z_sol ) ) )
+           IF ( err <= tol ) THEN
+             WRITE( 6, "( ' P', I1, ' indicator ', I1, ' reduced ', L1,        &
+            &             ': solution correct' )" ) prob, itype, ired == 1
+           ELSE
+             errors = errors + 1
+             WRITE( 6, "( ' P', I1, ' indicator ', I1, ' reduced ', L1,        &
+            &             ': solution error = ', ES8.1, ' FAILED' )" )         &
+               prob, itype, ired == 1, err
+           END IF
+         ELSE
+           errors = errors + 1
+           WRITE( 6, "( ' P', I1, ' indicator ', I1, ' reduced ', L1,          &
+          &             ': CLLS_solve exit status = ', I0, ' FAILED' )" )      &
+             prob, itype, ired == 1, info%status
+         END IF
+         CALL CLLS_terminate( data, control, info )
+         DEALLOCATE( p%B, p%R, p%X_l, p%X_u, p%X, p%Z, p%X_status, p%C,        &
+                     p%C_l, p%C_u, p%Y, p%C_status )
+         DEALLOCATE( p%Ao%row, p%Ao%col, p%Ao%val, p%Ao%type )
+         DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
+       END DO
+     END DO
+   END DO
+   IF ( errors > 0 ) THEN
+     WRITE( 6, "( /, 1X, I0, ' pounce tests failed' )" ) errors
+     STOP 1
+   END IF
+
    WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_CLLS_EXAMPLE
