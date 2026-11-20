@@ -154,6 +154,32 @@
    ELSE
      WRITE( 6, "( A2, ': QPA_solve exit status = ', I0 ) " ) st, inform%status
    END IF
+
+!  repeat with an upper bound on x_1 that the l_1 minimizer violates, so
+!  that it must be active, and check that the bounds are satisfied
+
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   X_u( 1 ) = 0.0_rp_
+   CALL QPA_solve_bcl1qp( data, status, H_val, G, f, rho_g, A_val, C_l, C_u,   &
+                          X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+   CALL QPA_information( data, inform, status )
+   IF ( inform%status == 0 ) THEN
+     WRITE( 6, "( A6, I6, ' iterations. Optimal objective value = ', F5.2,     &
+   &    ' status = ', I0 )" ) 'bcl1qp', inform%iter, inform%obj, inform%status
+   ELSE
+     WRITE( 6, "( A2, ': QPA_solve exit status = ', I0 ) " ) st, inform%status
+   END IF
+!  (skip the check if the linear solver cannot provide the inertia that QPA
+!  needs, e.g. PaStiX, as then QPA returns GALAHAD_unsuitable_option)
+
+   IF ( inform%status /= GALAHAD_unsuitable_option ) THEN
+     IF ( inform%status /= 0 .OR. ANY( X < X_l - 0.00001_rp_ ) .OR.            &
+          ANY( X > X_u + 0.00001_rp_ ) ) THEN
+       WRITE( 6, "( /, ' bcl1qp failed to satisfy the simple bounds' )" )
+       STOP 1
+     END IF
+   END IF
+   X_u( 1 ) = 1.0_rp_
    CALL QPA_terminate( data, control, inform )  ! delete internal workspace
 
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )

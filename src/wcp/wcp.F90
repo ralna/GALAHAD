@@ -4319,7 +4319,7 @@
             IF ( it_best > infeas_max ) THEN
               IF ( printi ) WRITE( out, "( A, /, ' ============ the problem',  &
              &  ' appears to be infeasible  =============' )" ) prefix
-              inform%status = GALAHAD_error_tiny_step ; GO TO 600
+              inform%status = GALAHAD_error_primal_infeasible ; GO TO 600
             END IF
           END IF
 
@@ -6044,7 +6044,9 @@
       inform%c_implicit = 0 ; inform%y_implicit = 0
 
       DO i = 1, n
-        IF ( ABS( X_l( i ) - X_u( i ) ) < control%implicit_tol ) THEN
+        IF ( i <= dims%x_free ) THEN
+          IF ( control%record_x_status ) inform%X_status( i ) = 0
+        ELSE IF ( ABS( X_l( i ) - X_u( i ) ) < control%implicit_tol ) THEN
           IF ( control%record_x_status ) inform%X_status( i ) = 3
         ELSE IF ( X( i ) - X_l( i ) < control%implicit_tol ) THEN
           inform%x_implicit = inform%x_implicit + 1

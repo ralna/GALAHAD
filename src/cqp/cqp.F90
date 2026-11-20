@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 10:52 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -7283,38 +7283,7 @@
         IF ( stat_required .AND. ( mu < one .OR.                               &
              ( pounce .AND. mu < control%mu_pounce ) ) ) THEN
           get_stat = .TRUE.
-          C_last( dims%c_l_start : dims%c_u_end )                              &
-            = C( dims%c_l_start : dims%c_u_end )
-          X_last = X
-
-          DO i = dims%c_l_start, dims%c_u_start - 1
-            Y_last( i ) = Y_l( i )
-          END DO
-          DO i = dims%c_u_start, dims%c_l_end
-            IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
-              Y_last( i ) = Y_l( i )
-            ELSE
-              Y_last( i ) = Y_u( i )
-            END IF
-          END DO
-          DO i = dims%c_l_end + 1, dims%c_u_end
-            Y_last( i ) = Y_u( i )
-          END DO
-
-          Z_last( : dims%x_free ) = zero
-          DO i = dims%x_free + 1, dims%x_u_start - 1
-            Z_last( i ) = Z_l( i )
-          END DO
-          DO i = dims%x_u_start, dims%x_l_end
-            IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
-              Z_last( i ) = Z_l( i )
-            ELSE
-              Z_last( i ) = Z_u( i )
-            END IF
-          END DO
-          DO i = dims%x_l_end + 1, n
-            Z_last( i ) = Z_u( i )
-          END DO
+          CALL CQP_record_last( )
         END IF
 
 !  compute the projected gradient of the Lagrangian function
@@ -7608,6 +7577,11 @@
 !  estimate the variable and constraint exit status
 
       IF ( stat_required .AND. .NOT. stat_known ) THEN
+
+!  if the iteration ended before the current iterate was recorded, record it
+!  now, as it is needed by the indicators and when pouncing
+
+        IF ( .NOT. get_stat ) CALL CQP_record_last( )
         IF ( pounce ) THEN
           C_stat_old = C_stat ; B_stat_old = B_stat
         END IF
@@ -7747,6 +7721,59 @@
               A, 14X, ' min/max dual   feasibility = ', 2ES12.4 )
 
       CONTAINS
+
+!-*-*-*-*-*-   C Q P _ R E C O R D _ L A S T   S U B R O U T I N E   -*-*-*-*-*-
+
+        SUBROUTINE CQP_record_last( )
+
+!  record the current values of the constraints c, the variables x, and the
+!  Lagrange multipliers y and dual variables z (taking those for the nearer
+!  bound of each two-sided constraint and variable) in C_last, X_last, Y_last
+!  and Z_last, for use by the indicators and when pouncing
+
+!  Local variables
+
+        INTEGER ( KIND = ip_ ) :: i
+
+        C_last( dims%c_l_start : dims%c_u_end )                                &
+          = C( dims%c_l_start : dims%c_u_end )
+        X_last = X
+
+        Y_last( : dims%c_equality ) = Y( : dims%c_equality )
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          Y_last( i ) = Y_l( i )
+        END DO
+        DO i = dims%c_u_start, dims%c_l_end
+          IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
+            Y_last( i ) = Y_l( i )
+          ELSE
+            Y_last( i ) = Y_u( i )
+          END IF
+        END DO
+        DO i = dims%c_l_end + 1, dims%c_u_end
+          Y_last( i ) = Y_u( i )
+        END DO
+
+        Z_last( : dims%x_free ) = zero
+        DO i = dims%x_free + 1, dims%x_u_start - 1
+          Z_last( i ) = Z_l( i )
+        END DO
+        DO i = dims%x_u_start, dims%x_l_end
+          IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
+            Z_last( i ) = Z_l( i )
+          ELSE
+            Z_last( i ) = Z_u( i )
+          END IF
+        END DO
+        DO i = dims%x_l_end + 1, n
+          Z_last( i ) = Z_u( i )
+        END DO
+        RETURN
+
+!  End of subroutine CQP_record_last
+
+        END SUBROUTINE CQP_record_last
+
 
         FUNCTION MAXVAL_ABS( VECT )
         CHARACTER ( len = 10 ) :: MAXVAL_ABS
@@ -11968,6 +11995,9 @@
       TYPE ( BLLS_control_type ) :: blls_control
       TYPE ( BLLS_inform_type ) :: blls_inform
       TYPE ( USERDATA_type ) :: userdata
+      REAL ( KIND = rp_ ) :: a_max
+      REAL ( KIND = rp_ ), PARAMETER :: stabilisation_factor = 100.0_rp_
+      INTEGER ( KIND = ip_ ), PARAMETER :: blls_maxit = 50
 
       success = .FALSE.
 
@@ -12115,10 +12145,19 @@
       blls_control%infinity = control%infinity
       blls_control%stop_d = stop_d
 
-!  the least-squares problem is often rank deficient, so any stabilisation
-!  would prevent the residual from being reduced to the required level
+!  the least-squares problem is often rank deficient, so a small
+!  stabilisation, relative to the size of A_o, is used, as otherwise the
+!  factorization required by BLLS may fail. As BLLS then solves the problem
+!  in a few iterations when it succeeds, the number of iterations is limited
 
-      blls_control%stabilisation_weight = zero
+      a_max = one
+      IF ( m > 0 ) THEN
+        IF ( A_ptr( m + 1 ) > 1 )                                              &
+          a_max = MAX( one, MAXVAL( ABS( A_val( : A_ptr( m + 1 ) - 1 ) ) ) )
+      END IF
+      blls_control%stabilisation_weight                                        &
+        = stabilisation_factor * epsmch * a_max ** 2
+      blls_control%maxit = blls_maxit
       blls_control%space_critical = control%space_critical
       blls_control%deallocate_error_fatal = control%deallocate_error_fatal
       blls_inform%status = 1

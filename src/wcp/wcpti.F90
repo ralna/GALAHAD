@@ -17,6 +17,7 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    CHARACTER ( len = 2 ) :: st
+   LOGICAL :: solved
 
 ! set up problem data
 
@@ -44,6 +45,8 @@
 !  =====================================
 
    WRITE( 6, "( /, ' basic tests of qp storage formats', / )" )
+
+   solved = .TRUE.
 
    DO data_storage_type = 1, 3
      CALL WCP_initialize( data, control, inform )
@@ -74,6 +77,7 @@
 
      END SELECT
      CALL WCP_information( data, inform, status )
+     solved = solved .AND. inform%status == 0
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
@@ -82,8 +86,69 @@
      END IF
      CALL WCP_terminate( data, control, inform )  ! delete internal workspace
    END DO
+
+!  replace the constraints by the inequalities 1 <= 2 x_1 + x_2 <= 2 and
+!  1 <= x_2 + x_3 <= 3, and check that the free variable x_2 is reported as
+!  lying between its (infinite) bounds (if the solve succeeded)
+
+   C_l = (/ 1.0_rp_, 1.0_rp_ /)
+   C_u = (/ 2.0_rp_, 3.0_rp_ /)
+   G = 0.0_rp_
+   CALL WCP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   X = 0.0_rp_ ; Y_l = 0.0_rp_ ; Y_u = 0.0_rp_
+   Z_l = 0.0_rp_ ; Z_u = 0.0_rp_
+   CALL WCP_import( control, data, status, n, m,                               &
+                    'coordinate', A_ne, A_row, A_col, A_ptr )
+   CALL WCP_find_wcp( data, status, G, A_val, C_l, C_u,                        &
+                      X_l, X_u, X, C, Y_l, Y_u, Z_l, Z_u, X_stat, C_stat )
+   CALL WCP_information( data, inform, status )
+   WRITE( 6, "( ' F: WCP_solve exit status = ', I0 )" ) inform%status
+   IF ( inform%status == 0 .AND. X_stat( 2 ) /= 0 ) THEN
+     WRITE( 6, "( ' free variable has X_stat = ', I0, ', not 0' )" ) X_stat( 2 )
+     STOP 1
+   END IF
+   CALL WCP_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( X, C, G, Y_l, Y_u, Z_l, Z_u, X_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
+
+!  check that an infeasible problem is not reported as solved or as having
+!  too small a step: 0 <= x_1, x_2 <= 1 and x_1 + x_2 >= 3 are inconsistent.
+!  Skip this if the feasible problems above were not solved, as happens in
+!  configurations where the linear solver can't be used
+
+   IF ( solved ) THEN
+     n = 2 ; m = 1 ; A_ne = 2
+     ALLOCATE( X( n ), Z_l( n ), Z_u( n ), X_l( n ), X_u( n ), G( n ) )
+     ALLOCATE( C( m ), Y_l( m ), Y_u( m ), C_l( m ), C_u( m ) )
+     ALLOCATE( X_stat( n ), C_stat( m ) )
+     ALLOCATE( A_val( A_ne ), A_row( A_ne ), A_col( A_ne ), A_ptr( m + 1 ) )
+     G = 0.0_rp_
+     C_l = 3.0_rp_ ; C_u = infinity
+     X_l = 0.0_rp_ ; X_u = 1.0_rp_
+     A_val = (/ 1.0_rp_, 1.0_rp_ /)
+     A_row = (/ 1, 1 /)
+     A_col = (/ 1, 2 /)
+     A_ptr = (/ 1, 3 /)
+     CALL WCP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
+     X = 0.0_rp_ ; Y_l = 0.0_rp_ ; Y_u = 0.0_rp_
+     Z_l = 0.0_rp_ ; Z_u = 0.0_rp_
+     CALL WCP_import( control, data, status, n, m,                             &
+                      'coordinate', A_ne, A_row, A_col, A_ptr )
+     CALL WCP_find_wcp( data, status, G, A_val, C_l, C_u,                      &
+                        X_l, X_u, X, C, Y_l, Y_u, Z_l, Z_u, X_stat, C_stat )
+     CALL WCP_information( data, inform, status )
+     WRITE( 6, "( ' I: WCP_solve exit status = ', I0 ) " ) inform%status
+     IF ( inform%status == GALAHAD_ok .OR.                                     &
+          inform%status == GALAHAD_error_tiny_step ) THEN
+       WRITE( 6, "( ' infeasible problem not flagged as infeasible' )" )
+       STOP 1
+     END IF
+     CALL WCP_terminate( data, control, inform )  ! delete internal workspace
+     DEALLOCATE( X, C, G, Y_l, Y_u, Z_l, Z_u, X_l, X_u, C_l, C_u )
+     DEALLOCATE( X_stat, C_stat, A_val, A_row, A_col, A_ptr )
+   END IF
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
