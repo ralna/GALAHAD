@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-18 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 14:42 GMT.
 
 #include "galahad_modules.h"
 
@@ -2638,7 +2638,8 @@
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y, Y_last
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z, Z_last
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C_RES, C_last
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%v_e ) :: RHS
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+                           DIMENSION( MAX( dims%v_e, 2 * n + o + m ) ) :: RHS
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%c_e ) :: GRAD_L
       REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
                           DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
@@ -5888,7 +5889,7 @@
                                          DIST_X_l, DIST_X_u,                   &
                                          DIST_C_l, DIST_C_u,                   &
                                          GRAD_L( dims%x_s : dims%x_e ),        &
-                                         control%getdua, dufeas, W, X_s )
+                                         .FALSE., dufeas, W, X_s )
 
 !  evaluate the primal and dual infeasibility and merit function
 
@@ -6134,7 +6135,7 @@
                                        A_ne, A_val, A_col, A_ptr,              &
                                        DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
                                        GRAD_L( dims%x_s : dims%x_e ),          &
-                                       control%getdua, dufeas, W, X_s )
+                                       .FALSE., dufeas, W, X_s )
 
 !  update the values of the merit function, the gradient of the Lagrangian,
 !  and the constraint residuals
@@ -7591,7 +7592,7 @@
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_stat
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_free
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + o + m ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 2 * n + o + m ) :: SOL
       TYPE ( SMT_type ), INTENT( INOUT ) :: K_sls
       TYPE ( CLLS_control_type ), INTENT( IN ) :: control
       TYPE ( CLLS_inform_type ), INTENT( INOUT ) :: inform
@@ -7981,9 +7982,9 @@
           END IF
         END DO
 
-!  the 4,1 block I_B
+!  the 4,1 block I_B, whose rows follow those of A_A
 
-        next = npo
+        next = npo + m_active
         DO j = 1, n
           IF ( X_stat( j ) /= 0 ) THEN ! fixed variable
             l = l + 1
@@ -8088,7 +8089,7 @@
 
         next = nfpo
         DO i = 1, m
-         IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
+         IF ( C_stat( i ) /= 0 ) THEN
             next = next + 1
             Y( i ) = - SOL( next )
           ELSE
@@ -8140,7 +8141,7 @@
 
         next = npo
         DO i = 1, m
-         IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
+         IF ( C_stat( i ) /= 0 ) THEN
             next = next + 1
             Y( i ) = - SOL( next )
           ELSE
@@ -8151,7 +8152,7 @@
 !  recover z
 
         DO j = 1, n
-          IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
+          IF ( X_stat( j ) /= 0 ) THEN
             next = next + 1
             Z( j ) = - SOL( next )
           ELSE
@@ -8199,14 +8200,14 @@
 
 !  incorrect Lagrange multiplier of active constraint at lower bound
 
-        ELSE IF ( C( i ) < C_l( i ) + ei ) THEN
+        ELSE IF ( C( i ) <= C_l( i ) + ei ) THEN
           IF ( Y( i ) < - feas ) THEN
             y_feas = .FALSE. ; EXIT
           END IF
 
 !  incorrect Lagrange multiplier of active counstraint at upper bound
 
-        ELSE IF ( C( i ) > C_u( i ) - ei ) THEN
+        ELSE IF ( C( i ) >= C_u( i ) - ei ) THEN
           IF ( Y( i ) > feas ) THEN
             y_feas = .FALSE. ; EXIT
           END IF
@@ -8587,8 +8588,11 @@
              bad_alloc = bad_alloc, out = error )
       IF ( status /= GALAHAD_ok ) RETURN
 
+!  RHS is also used to hold the right-hand side and solution of the full
+!  pounce system, of order at most 2 n + o + m
+
       array_name = 'clls: RHS'
-      CALL SPACE_resize_array( dims%v_e, RHS,                                  &
+      CALL SPACE_resize_array( MAX( dims%v_e, 2 * n + o + m ), RHS,            &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &

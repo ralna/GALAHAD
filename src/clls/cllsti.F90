@@ -10,7 +10,7 @@
    TYPE ( CLLS_inform_type ) :: inform
    TYPE ( CLLS_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, o, m, Ao_ne, A_ne, Ao_dense_ne, A_dense_ne
-   INTEGER ( KIND = ip_ ) :: data_storage_type, status
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status, status_c
    REAL ( KIND = rp_ ) :: regularization_weight
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, W, X_s
@@ -51,7 +51,7 @@
 
    WRITE( 6, "( /, ' basic tests of least-squares storage formats', / )" )
 
-   DO data_storage_type = 1, 5
+   DO data_storage_type = 1, 6
 !  DO data_storage_type = 1, 1
      CALL CLLS_initialize( data, control, inform )
 !    control%print_level = 101 ; control%out = 6
@@ -59,9 +59,13 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%FDC_control%use_sls = .TRUE.
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+!  case 6 repeats case 1 with advanced initial values for the dual variables,
+!  and must succeed if case 1 did
+     IF ( data_storage_type == 6 ) control%getdua = .TRUE.
      SELECT CASE ( data_storage_type )
-     CASE ( 1 ) ! sparse co-ordinate storage
+     CASE ( 1, 6 ) ! sparse co-ordinate storage
        st = 'CO'
+       IF ( data_storage_type == 6 ) st = 'GD'
        ALLOCATE( Ao_val( ao_ne ), Ao_row( ao_ne ), Ao_col( ao_ne ),            &
                  Ao_ptr( 0 ) )
        ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_col( a_ne ),                  &
@@ -138,11 +142,17 @@
      DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr )
      DEALLOCATE( A_val, A_row, A_col, A_ptr )
      CALL CLLS_information( data, inform, status )
+     IF ( data_storage_type == 1 ) status_c = inform%status
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
      ELSE
        WRITE( 6, "( A2, ': CLLS_solve exit status = ', I0 )" ) st, inform%status
+     END IF
+     IF ( data_storage_type == 6 .AND. status_c == 0 .AND.                    &
+          inform%status /= 0 ) THEN
+       WRITE( 6, "( /, ' CLLS_solve failed with getdua = .TRUE.' )" )
+       STOP 1
      END IF
      CALL CLLS_terminate( data, control, inform )  ! delete internal workspace
    END DO

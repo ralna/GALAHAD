@@ -5803,7 +5803,7 @@
                                          DIST_X_l, DIST_X_u,                   &
                                          DIST_C_l, DIST_C_u,                   &
                                          GRAD_L( dims%x_s : dims%x_e ),        &
-                                         control%getdua, dufeas,               &
+                                         .FALSE., dufeas,                      &
                                          gradient_kind, G )
 
 !  evaluate the primal and dual infeasibility and merit function
@@ -6029,7 +6029,7 @@ END DO
                                        a_ne, A_val, A_col, A_ptr,              &
                                        DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
                                        GRAD_L( dims%x_s : dims%x_e ),          &
-                                       control%getdua, dufeas,                 &
+                                       .FALSE., dufeas,                        &
                                        gradient_kind, G )
 
 !  update the values of the merit function, the gradient of the Lagrangian,
