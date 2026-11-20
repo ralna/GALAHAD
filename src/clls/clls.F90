@@ -2638,7 +2638,8 @@
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y, Y_last
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z, Z_last
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C_RES, C_last
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%v_e ) :: RHS
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+                           DIMENSION( MAX( dims%v_e, 2 * n + o + m ) ) :: RHS
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%c_e ) :: GRAD_L
       REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
                           DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
@@ -7591,7 +7592,7 @@
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_stat
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_free
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + o + m ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 2 * n + o + m ) :: SOL
       TYPE ( SMT_type ), INTENT( INOUT ) :: K_sls
       TYPE ( CLLS_control_type ), INTENT( IN ) :: control
       TYPE ( CLLS_inform_type ), INTENT( INOUT ) :: inform
@@ -8587,8 +8588,11 @@
              bad_alloc = bad_alloc, out = error )
       IF ( status /= GALAHAD_ok ) RETURN
 
+!  RHS is also used to hold the right-hand side and solution of the full
+!  pounce system, of order at most 2 n + o + m
+
       array_name = 'clls: RHS'
-      CALL SPACE_resize_array( dims%v_e, RHS,                                  &
+      CALL SPACE_resize_array( MAX( dims%v_e, 2 * n + o + m ), RHS,            &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
