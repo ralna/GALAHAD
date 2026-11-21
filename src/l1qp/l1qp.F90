@@ -1183,7 +1183,17 @@
         CASE ( 'NONE', 'ZERO' )
           data%is_lp = .TRUE.
         CASE ( 'SPARSE_BY_ROWS' )
-          IF ( prob%H%ptr( prob%n + 1 ) <= 1 ) data%is_lp = .TRUE.
+          data%is_lp = COUNT( prob%H%val( : prob%H%ptr( prob%n + 1 ) - 1 )     &
+                              /= zero ) == 0
+        CASE ( 'COORDINATE' )
+          data%is_lp = COUNT( prob%H%val( : prob%H%ne ) /= zero ) == 0
+        CASE ( 'DENSE' )
+          data%is_lp = COUNT( prob%H%val( : ( prob%n * ( prob%n + 1 ) ) / 2 )  &
+                              /= zero ) == 0
+        CASE ( 'DIAGONAL' )
+          data%is_lp = COUNT( prob%H%val( : prob%n ) /= zero ) == 0
+        CASE ( 'SCALED_IDENTITY' )
+          data%is_lp = prob%H%val( 1 ) == zero
         END SELECT
       ELSE IF ( prob%Hessian_kind == 0 ) THEN
         data%is_lp = .TRUE.
