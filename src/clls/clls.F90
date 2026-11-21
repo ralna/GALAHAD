@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 14:42 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 15:11 GMT.
 
 #include "galahad_modules.h"
 
@@ -2726,6 +2726,8 @@
       REAL ( KIND = rp_ ) :: clock_record, clock_start, clock_now, clock_solve
       REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize
       REAL ( KIND = rp_ ) :: pjgnrm, mu, aomax, amax, gamma_f, bik, slope
+      REAL ( KIND = rp_ ) :: bmax, wmax, cbnd, xbnd, gscale, hscale
+      REAL ( KIND = rp_ ) :: stop_scale_p, stop_scale_d, stop_scale_c
       REAL ( KIND = rp_ ) :: cs, slknes, slkmin, reduce_infeas, tau, comp
       REAL ( KIND = rp_ ) :: slknes_x, slknes_c, slkmax_x, slkmax_c, res_cs
       REAL ( KIND = rp_ ) :: slkmin_x, slkmin_c, res_primal, res_primal_dual
@@ -3627,14 +3629,52 @@
       END IF
       merit_best = merit ; it_best = 0
 
-!  compute stopping tolerances
+!  compute stopping tolerances. The relative tolerances are applied to
+!  fixed scales computed from the problem data: s_p, the size of the
+!  constraint bounds, for the primal infeasibility, s_d, the size of the
+!  gradient Ao^T W b + weight x_s and Hessian Ao^T W Ao + weight I of the
+!  objective at the origin, and of A, for the dual infeasibility, and s_c,
+!  s_d times the size of all the bounds, for the complementary slackness.
+!  (The residuals at the starting point are not used, as this is
+!  deliberately far from the bounds)
 
-      stop_p = MAX( control%stop_abs_p,                                        &
-                    control%stop_rel_p * inform%primal_infeasibility )
-      stop_d = MAX( control%stop_abs_d,                                        &
-                    control%stop_rel_d * inform%dual_infeasibility )
-      stop_c = MAX( control%stop_abs_c,                                        &
-                    control%stop_rel_c * inform%complementary_slackness )
+      cbnd = zero
+      IF ( dims%c_equality > 0 )                                               &
+        cbnd = MAXVAL( ABS( C_l( : dims%c_equality ) ) )
+      IF ( dims%c_l_end >= dims%c_l_start ) cbnd = MAX( cbnd,                  &
+        MAXVAL( ABS( C_l( dims%c_l_start : dims%c_l_end ) ) ) )
+      IF ( dims%c_u_end >= dims%c_u_start ) cbnd = MAX( cbnd,                  &
+        MAXVAL( ABS( C_u( dims%c_u_start : dims%c_u_end ) ) ) )
+      xbnd = zero
+      IF ( dims%x_l_end >= dims%x_l_start ) xbnd = MAX( xbnd,                  &
+        MAXVAL( ABS( X_l( dims%x_l_start : dims%x_l_end ) ) ) )
+      IF ( dims%x_u_end >= dims%x_u_start ) xbnd = MAX( xbnd,                  &
+        MAXVAL( ABS( X_u( dims%x_u_start : dims%x_u_end ) ) ) )
+
+!  estimate the sizes of the gradient and Hessian from those of the data
+
+      IF ( o > 0 ) THEN
+        bmax = MAXVAL( ABS( B( : o ) ) )
+      ELSE
+        bmax = zero
+      END IF
+      IF ( present_weights .AND. o > 0 ) THEN
+        wmax = MAXVAL( ABS( W( : o ) ) )
+      ELSE
+        wmax = one
+      END IF
+      gscale = wmax * aomax * bmax
+      IF ( present_shifts .AND. n > 0 )                                        &
+        gscale = gscale + weight * MAXVAL( ABS( X_s( : n ) ) )
+      hscale = wmax * aomax ** 2 + weight
+
+      stop_scale_p = MAX( one, cbnd )
+      stop_scale_d = MAX( one, gscale, hscale, amax )
+      stop_scale_c = stop_scale_d * MAX( one, xbnd, cbnd )
+
+      stop_p = MAX( control%stop_abs_p, control%stop_rel_p * stop_scale_p )
+      stop_d = MAX( control%stop_abs_d, control%stop_rel_d * stop_scale_d )
+      stop_c = MAX( control%stop_abs_c, control%stop_rel_c * stop_scale_c )
 
 !  test for convergence
 
