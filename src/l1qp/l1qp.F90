@@ -1158,6 +1158,10 @@
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat_save
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_save
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_save, Z_save
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val_save
+      INTEGER ( KIND = ip_ ) :: hessian_kind_save, h_ne_save
+      CHARACTER ( LEN = 30 ) :: h_type_save
+      LOGICAL :: h_replaced, h_val_allocated
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_save, C_save
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( CQP_control_type ) :: CQP_control
@@ -1177,6 +1181,7 @@
 
 !  see if the problem is an LP
 
+      h_replaced = .FALSE.
       data%is_lp = .FALSE.
       IF ( prob%Hessian_kind < 0 ) THEN
         SELECT CASE ( SMT_get( prob%H%type ) )
@@ -1351,9 +1356,24 @@
       END IF
 
 !  for an LP to be refined, CQP solves the LP perturbed by a multiple of the
-!  identity; CQP requires this to be given as a diagonal matrix
+!  identity; CQP requires this to be given as a diagonal matrix. Record the
+!  user's (zero) Hessian, so that it may be restored on exit
 
-      IF ( data%is_lp .AND. control%refine ) THEN
+      h_replaced = data%is_lp .AND. control%refine
+      IF ( h_replaced ) THEN
+        hessian_kind_save = prob%Hessian_kind ; h_ne_save = prob%H%ne
+        h_type_save = REPEAT( ' ', 30 )
+        IF ( ALLOCATED( prob%H%type ) ) h_type_save = SMT_get( prob%H%type )
+        h_val_allocated = ALLOCATED( prob%H%val )
+        IF ( h_val_allocated ) THEN
+          ALLOCATE( H_val_save( SIZE( prob%H%val ) ),                          &
+                    STAT = inform%alloc_status )
+          IF ( inform%alloc_status /= 0 ) THEN
+            inform%bad_alloc = 'l1qp: H_val_save' ; h_replaced = .FALSE.
+            GO TO 900
+          END IF
+          H_val_save = prob%H%val
+        END IF
         prob%Hessian_kind = - 1
         CALL SMT_put( prob%H%type, 'DIAGONAL', i )
         array_name = 'l1qp: prob%H%val'
@@ -1448,7 +1468,10 @@
                & ' below' )") prefix
             END SELECT
           END IF
-          IF ( inform%status /= GALAHAD_ok ) RETURN
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            CALL L1QP_restore_hessian( )
+            RETURN
+          END IF
           GO TO 800
         END IF
       END IF
@@ -3382,6 +3405,7 @@ H_loop: DO i = 1, prob%n
 !  compute total time
 
   800 CONTINUE
+      CALL L1QP_restore_hessian( )
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
@@ -3410,6 +3434,7 @@ H_loop: DO i = 1, prob%n
 !  allocation error
 
   900 CONTINUE
+      CALL L1QP_restore_hessian( )
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
@@ -3429,6 +3454,38 @@ H_loop: DO i = 1, prob%n
  2010 FORMAT( ' ', /, A, '    ** Error return ', I0, ' from L1QP ' )
 
       RETURN
+
+!  internal procedure
+
+      CONTAINS
+
+!-*-*-   L 1 Q P _ r e s t o r e _ h e s s i a n   S U B R O U T I N E   -*-*-
+
+        SUBROUTINE L1QP_restore_hessian( )
+
+!  restore the user's (zero) Hessian, if it was replaced by the perturbation
+!  used when refining the solution of an LP
+
+        INTEGER ( KIND = ip_ ) :: smt_status
+
+        IF ( .NOT. h_replaced ) RETURN
+        prob%Hessian_kind = hessian_kind_save ; prob%H%ne = h_ne_save
+        IF ( LEN_TRIM( h_type_save ) > 0 ) THEN
+          CALL SMT_put( prob%H%type, TRIM( h_type_save ), smt_status )
+        ELSE IF ( ALLOCATED( prob%H%type ) ) THEN
+          DEALLOCATE( prob%H%type, STAT = smt_status )
+        END IF
+        IF ( ALLOCATED( prob%H%val ) )                                         &
+          DEALLOCATE( prob%H%val, STAT = smt_status )
+        IF ( h_val_allocated ) THEN
+          CALL MOVE_ALLOC( H_val_save, prob%H%val )
+        END IF
+        h_replaced = .FALSE.
+        RETURN
+
+!  End of subroutine L1QP_restore_hessian
+
+        END SUBROUTINE L1QP_restore_hessian
 
 !  End of L1QP_solve
 
