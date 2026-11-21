@@ -1151,6 +1151,7 @@
       LOGICAL :: printi, printa, printe, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial
+      LOGICAL :: perturbation_exhausted
       LOGICAL :: saved
       INTEGER ( KIND = ip_ ) :: status_save, save_status
       REAL ( KIND = rp_ ) :: obj_save, pinf_save, dinf_save, comp_save
@@ -2797,6 +2798,7 @@ H_loop: DO i = 1, prob%n
 
 !  the problem is an L1LP. Solve as a perturbed QP
 
+      perturbation_exhausted = .FALSE.
       IF ( data%is_lp ) THEN
         H_val( 1 ) = dqp_control%initial_perturbation
         initial = .TRUE.
@@ -2918,9 +2920,12 @@ H_loop: DO i = 1, prob%n
                               0.99_rp_ * perturbation )
 !           H_val( 1 ) = perturbation * dqp_control%perturbation_reduction
 
-!  don't allow the perturbation to be too small
+!  don't allow the perturbation to be too small. The solution found is then
+!  only that of a perturbed problem, and may be far from that of the LP
 
-            IF ( H_val( 1 ) <= dqp_control%final_perturbation ) EXIT
+            IF ( H_val( 1 ) <= dqp_control%final_perturbation ) THEN
+              perturbation_exhausted = .TRUE. ; EXIT
+            END IF
             dual_starting_point = 0
             initial = .FALSE.
           END IF
@@ -3272,9 +3277,16 @@ H_loop: DO i = 1, prob%n
       inform%DQP_inform%time%total = REAL( time_now - time_record, rp_ )
       inform%DQP_inform%time%clock_total = clock_now - clock_record
 
-!  record output statistics
+!  record output statistics. If the perturbations were exhausted before an
+!  extrapolated solution of the LP was found, the refinement has failed
 
       inform%status = inform%DQP_inform%status
+      IF ( perturbation_exhausted .AND. inform%status == GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_tiny_step
+        IF ( printi ) WRITE( control%out, "( /, A, ' the quadratic',           &
+       &  ' perturbation reached its lower limit without an optimal',          &
+       &  ' extrapolation' )" ) prefix
+      END IF
       inform%alloc_status = inform%DQP_inform%alloc_status
       inform%bad_alloc = inform%DQP_inform%bad_alloc
       inform%factorization_status = inform%DQP_inform%factorization_status
