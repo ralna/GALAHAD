@@ -1350,18 +1350,20 @@
         END IF
       END IF
 
+!  for an LP to be refined, CQP solves the LP perturbed by a multiple of the
+!  identity; CQP requires this to be given as a diagonal matrix
+
       IF ( data%is_lp .AND. control%refine ) THEN
         prob%Hessian_kind = - 1
-        CALL SMT_put( prob%H%type, 'SCALED_IDENTITY', i )
-!write(6,*) ' refine lp structure h_type ', SMT_get( prob%H%type )
+        CALL SMT_put( prob%H%type, 'DIAGONAL', i )
         array_name = 'l1qp: prob%H%val'
-        CALL SPACE_resize_array( 1_ip_, prob%H%val,                            &
+        CALL SPACE_resize_array( prob%n, prob%H%val,                           &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
-        prob%H%val( 1 ) = control%DLP_control%initial_perturbation
+        prob%H%val( : prob%n ) = control%DLP_control%initial_perturbation
       END IF
 
 !  if the problem has no general constraints, check to see if it is separable
