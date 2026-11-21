@@ -623,8 +623,10 @@ required absolute and relative accuracy for the primal infeasibility
 (see Section~\ref{galmethod}).
 The absolute value of each component of the primal infeasibility
 on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
-{\tt stop\_rel\_p} times a ``typical value'' for this component.
-The defaults are {\tt stop\_abs\_p =} {\tt stop\_rel\_p =} $u^{1/3}$,
+{\tt stop\_rel\_p} times $s_p$, the larger of one and the largest
+absolute value of the finite constraint bounds $c^l$ and $c^u$.
+The defaults are {\tt stop\_abs\_p =} $u^{1/3}$ and
+{\tt stop\_rel\_p =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
@@ -633,9 +635,15 @@ are scalar variables of type \realdp, that hold the
 required absolute and relative accuracy for the dual infeasibility
 (see Section~\ref{galmethod}).
 The absolute value of each component of the dual infeasibility
-on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
-{\tt stop\_rel\_p} times a ``typical value'' for this component.
-The defaults are {\tt stop\_abs\_d =} {\tt stop\_rel\_d =} $u^{1/3}$,
+on exit is required to be smaller than the larger of {\tt stop\_abs\_d} and
+{\tt stop\_rel\_d} times $s_d$, the largest of one, the largest absolute
+value of the components of $\bmA$, and estimates of the sizes of the
+gradient $\bmA_o^T \bmW \bmb + \sigma \bmx_s$ and Hessian
+$\bmA_o^T \bmW \bmA_o + \sigma \bmI$ of the objective at the origin,
+computed from the largest absolute values of the components of $\bmA_o$,
+$\bmb$, $w$ and $\bmx_s$ (here $\bmW$ is the diagonal matrix of weights $w$).
+The defaults are {\tt stop\_abs\_d =} $u^{1/3}$ and
+{\tt stop\_rel\_d =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
@@ -645,9 +653,12 @@ required absolute and relative accuracy
 for the violation of complementary slackness
 (see Section~\ref{galmethod}).
 The absolute value of each component of the complementary slackness
-on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
-{\tt stop\_rel\_p} times a ``typical value'' for this component.
-The defaults are {\tt stop\_abs\_c =} {\tt stop\_rel\_c =} $u^{1/3}$,
+on exit is required to be smaller than the larger of {\tt stop\_abs\_c} and
+{\tt stop\_rel\_c} times $s_c$, the product of $s_d$ and the larger of
+one and the largest absolute value of the finite variable and constraint
+bounds.
+The defaults are {\tt stop\_abs\_c =} $u^{1/3}$ and
+{\tt stop\_rel\_c =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
