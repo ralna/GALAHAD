@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:08 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:29 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L1QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -1007,9 +1007,8 @@
 !  ===================================================================
 !  tests of problems with a zero or singular Hessian: minimize
 !  - x_1 - x_2 / 10 - x_3 (+ x_1^2 / 2) s.t. x_1 + x_2 <= 1, x >= 0
-!  and x_3 <= 0 (x_3 <= 1). Unless CQP pounces, the solutions are only
-!  as accurate as the final interior-point iterate, so a loose tolerance
-!  is used
+!  and x_3 <= 0 (x_3 <= 1). CQP pounces on these problems, so their
+!  solutions should be exact
 !  ===================================================================
 
    WRITE( 6, "( /, ' zero and singular Hessian tests ', / )" )
@@ -1067,7 +1066,7 @@
        WRITE( 6, "( ' case ', I0, ': L1QP_solve exit status = ', I0,          &
       &             ' FAILED' )" ) i, info%status
        STOP 1
-     ELSE IF ( ABS( f - f_sol ) > EPSILON( 1.0_rp_ ) ** 0.25 ) THEN
+     ELSE IF ( ABS( f - f_sol ) > EPSILON( 1.0_rp_ ) ** 0.75 ) THEN
        WRITE( 6, "( ' case ', I0, ': objective error = ', ES8.1,              &
       &             ' FAILED' )" ) i, ABS( f - f_sol )
        STOP 1
