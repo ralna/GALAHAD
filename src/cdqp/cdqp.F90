@@ -2203,6 +2203,15 @@ MODULE GALAHAD_CDQP_precision
 !  Refine the solution using DQP
 !  =============================
 
+!  DQP requires a positive-definite Hessian, so there is nothing more to do
+!  if the Hessian is zero (the problem is an LP)
+
+      IF ( prob%Hessian_kind == 0 ) GO TO 600
+      IF ( prob%Hessian_kind < 0 .AND. .NOT. lbfgs ) THEN
+        IF ( COUNT( prob%H%val( : prob%H%ptr( prob%n + 1 ) - 1 ) /= zero )     &
+             == 0 ) GO TO 600
+      END IF
+
 !  ----------------
 !  set up workspace
 !  ----------------
