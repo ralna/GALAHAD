@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-12 AT 13:42 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 10:28 GMT.
 
 #include "galahad_modules.h"
 
@@ -1775,6 +1775,16 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
+!  workspace used by CQP's pounce
+
+      array_name = 'l1qp: data%X_free'
+      CALL SPACE_resize_array( prob%n, data%X_free,                            &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
 !  ===========================
 !  Solve the problem using CQP
 !  ===========================
@@ -1856,7 +1866,11 @@
                                  prob%target_kind, H_val = prob%H%val,         &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           ELSE
             CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
                                  prob%A%val, prob%A%col, prob%A%ptr,           &
@@ -1886,7 +1900,11 @@
                                  H_val = prob%H%val, G = prob%G,               &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           END IF
         ELSE
           IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
@@ -1916,7 +1934,11 @@
                                  0_ip_, prob%gradient_kind, prob%target_kind,  &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           ELSE
             CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
                                  prob%A%val, prob%A%col, prob%A%ptr,           &
@@ -1945,7 +1967,11 @@
                                  G = prob%G,                                   &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           END IF
         END IF
       ELSE IF ( prob%Hessian_kind == 1 ) THEN
@@ -1976,7 +2002,10 @@
                                prob%target_kind, X0 = prob%X0,                 &
                                C_last = data%A_s, X_last = data%H_s,           &
                                Y_last = data%Y_last, Z_last = data%Z_last,     &
-                               C_stat = data%C_stat, B_Stat = data%X_stat )
+                               C_stat = data%C_stat, B_Stat = data%X_stat,     &
+                               H_free = data%H_free, A_active = data%A_active, &
+                               X_free = data%X_free,                           &
+                               SBLS_pounce_data = data%SBLS_pounce_data )
         ELSE
           CALL CQP_solve_main( data%dims, prob%n, prob%m,                      &
                                prob%A%val, prob%A%col, prob%A%ptr,             &
@@ -2005,7 +2034,10 @@
                                X0 = prob%X0, G = prob%G,                       &
                                C_last = data%A_s, X_last = data%H_s,           &
                                Y_last = data%Y_last, Z_last = data%Z_last,     &
-                               C_stat = data%C_stat, B_Stat = data%X_stat )
+                               C_stat = data%C_stat, B_Stat = data%X_stat,     &
+                               H_free = data%H_free, A_active = data%A_active, &
+                               X_free = data%X_free,                           &
+                               SBLS_pounce_data = data%SBLS_pounce_data )
         END IF
       ELSE IF ( prob%Hessian_kind == 2 ) THEN
         IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
@@ -2036,7 +2068,10 @@
                                WEIGHT = prob%WEIGHT, X0 = prob%X0,             &
                                C_last = data%A_s, X_last = data%H_s,           &
                                Y_last = data%Y_last, Z_last = data%Z_last,     &
-                               C_stat = data%C_stat, B_Stat = data%X_stat )
+                               C_stat = data%C_stat, B_Stat = data%X_stat,     &
+                               H_free = data%H_free, A_active = data%A_active, &
+                               X_free = data%X_free,                           &
+                               SBLS_pounce_data = data%SBLS_pounce_data )
         ELSE
           CALL CQP_solve_main( data%dims, prob%n, prob%m,                      &
                                prob%A%val, prob%A%col, prob%A%ptr,             &
@@ -2066,7 +2101,10 @@
                                G = prob%G,                                     &
                                C_last = data%A_s, X_last = data%H_s,           &
                                Y_last = data%Y_last, Z_last = data%Z_last,     &
-                               C_stat = data%C_stat, B_Stat = data%X_stat )
+                               C_stat = data%C_stat, B_Stat = data%X_stat,     &
+                               H_free = data%H_free, A_active = data%A_active, &
+                               X_free = data%X_free,                           &
+                               SBLS_pounce_data = data%SBLS_pounce_data )
         END IF
       ELSE
         IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
@@ -2099,7 +2137,11 @@
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last,                         &
                                  Z_last = data%Z_last,                         &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           ELSE
             CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
                                  prob%A%val, prob%A%col, prob%A%ptr,           &
@@ -2130,7 +2172,11 @@
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last,                         &
                                  Z_last = data%Z_last,                         &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           END IF
         ELSE
           IF ( lbfgs ) THEN
@@ -2162,7 +2208,11 @@
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last,                         &
                                  Z_last = data%Z_last,                         &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           ELSE
             CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
                                  prob%A%val, prob%A%col, prob%A%ptr,           &
@@ -2193,7 +2243,11 @@
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last,                         &
                                  Z_last = data%Z_last,                         &
-                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+                                 C_stat = data%C_stat, B_Stat = data%X_stat,   &
+                                 H_free = data%H_free,                         &
+                                 A_active = data%A_active,                     &
+                                 X_free = data%X_free,                         &
+                                 SBLS_pounce_data = data%SBLS_pounce_data )
           END IF
         END IF
       END IF

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 10:28 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L1QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -15,7 +15,7 @@
    TYPE ( LMS_inform_type ) :: LMS_inform
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
-   REAL ( KIND = rp_ ) :: delta
+   REAL ( KIND = rp_ ) :: delta, err
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
@@ -910,6 +910,100 @@
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
    DEALLOCATE( p%H%ptr, p%A%ptr )
+
+!  ===============================================================
+!  check that CQP's pounce gives the exact solution of the problem
+!  minimize 1/2||x - e||^2 s.t. x_1 + x_2 <= 1 and x_3 <= 0, whose
+!  solution is x = (1/2,1/2,0), y = -1/2 and z = (0,0,-1)
+!  ===============================================================
+
+   WRITE( 6, "( /, ' pounce test ', / )" )
+   n = 3 ; m = 1
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),          &
+             p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ) )
+   ALLOCATE( X_stat( n ), C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 0.0_rp_ ; p%G = - 1.0_rp_
+   p%X_l = - infty ; p%X_u = (/ infty, infty, 0.0_rp_ /)
+   p%C_l = - infty ; p%C_u = 1.0_rp_
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+   CALL SMT_put( p%H%type, 'COORDINATE', smt_stat ) ; p%H%ne = n
+   ALLOCATE( p%H%row( n ), p%H%col( n ), p%H%val( n ) )
+   p%H%row = (/ 1, 2, 3 /) ; p%H%col = (/ 1, 2, 3 /) ; p%H%val = 1.0_rp_
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = 2
+   ALLOCATE( p%A%row( 2 ), p%A%col( 2 ), p%A%val( 2 ) )
+   p%A%row = (/ 1, 1 /) ; p%A%col = (/ 1, 2 /) ; p%A%val = 1.0_rp_
+   CALL L1QP_initialize( data, control, info )
+   control%infinity = infty
+
+!  use LAPACK solvers, as CQP cannot use some of the external ones
+
+   control%CQP_control%SBLS_control%symmetric_linear_solver = 'sytr '
+   control%CQP_control%SBLS_control%definite_linear_solver = 'potr '
+   control%CQP_control%SBLS_pounce_control%symmetric_linear_solver = 'sytr '
+   control%CQP_control%SBLS_pounce_control%definite_linear_solver = 'potr '
+   CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
+   IF ( info%status == GALAHAD_ok ) THEN
+     err = MAX( MAXVAL( ABS( p%X - (/ 0.5_rp_, 0.5_rp_, 0.0_rp_ /) ) ),        &
+                ABS( p%Y( 1 ) + 0.5_rp_ ),                                     &
+                MAXVAL( ABS( p%Z - (/ 0.0_rp_, 0.0_rp_, - 1.0_rp_ /) ) ) )
+     IF ( err > EPSILON( 1.0_rp_ ) ** 0.75 ) THEN
+       WRITE( 6, "( ' pounce test: solution error = ', ES8.1, ' FAILED' )" ) err
+       STOP 1
+     END IF
+     WRITE( 6, "( ' pounce test: solution correct' )" )
+   ELSE
+     WRITE( 6, "( ' pounce test: L1QP_solve exit status = ', I0, ' FAILED' )" )&
+       info%status
+     STOP 1
+   END IF
+   CALL L1QP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%H%row, p%H%col, p%H%val, p%H%type )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
+
+
+!  ==================================================================
+!  check that an LP solved with refinement (for which CQP is given a
+!  diagonal Hessian, and does not pounce) runs to completion: minimize
+!  - x_1 - x_2 - x_3 s.t. x_1 + x_2 <= 1, x >= 0 and x_3 <= 0
+!  ==================================================================
+
+   WRITE( 6, "( /, ' LP refinement test ', / )" )
+   n = 3 ; m = 1
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),          &
+             p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ) )
+   ALLOCATE( X_stat( n ), C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 0.0_rp_ ; p%G = - 1.0_rp_
+   p%X_l = 0.0_rp_ ; p%X_u = (/ infty, infty, 0.0_rp_ /)
+   p%C_l = - infty ; p%C_u = 1.0_rp_
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+   CALL SMT_put( p%H%type, 'ZERO', smt_stat )
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = 2
+   ALLOCATE( p%A%row( 2 ), p%A%col( 2 ), p%A%val( 2 ) )
+   p%A%row = (/ 1, 1 /) ; p%A%col = (/ 1, 2 /) ; p%A%val = 1.0_rp_
+   CALL L1QP_initialize( data, control, info )
+   control%infinity = infty ; control%refine = .TRUE.
+   control%CQP_control%SBLS_control%symmetric_linear_solver = 'sytr '
+   control%CQP_control%SBLS_control%definite_linear_solver = 'potr '
+   control%DQP_control%symmetric_linear_solver = 'sytr '
+   control%DQP_control%definite_linear_solver = 'potr '
+   CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
+   IF ( info%status == GALAHAD_ok ) THEN
+     WRITE( 6, "( ' LP refinement test: solved' )" )
+   ELSE
+     WRITE( 6, "( ' LP refinement test: L1QP_solve exit status = ', I0,       &
+    &             ' FAILED' )" ) info%status
+     STOP 1
+   END IF
+   CALL L1QP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   IF ( ALLOCATED( p%H%val ) ) DEALLOCATE( p%H%val )
+
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

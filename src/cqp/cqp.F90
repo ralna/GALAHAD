@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 10:28 GMT.
 
 #include "galahad_modules.h"
 
@@ -3587,12 +3587,14 @@
       END IF
       get_stat = .FALSE.
 
-!  pouncing requires the exit status and the pounce workspace
+!  pouncing requires the exit status and the pounce workspace, and is not
+!  available for a diagonal Hessian given only by its values
 
       pounce = control%pounce .AND. stat_required .AND. PRESENT( C_last )      &
         .AND. PRESENT( X_last ) .AND. PRESENT( Y_last ) .AND. PRESENT( Z_last )&
         .AND. PRESENT( H_free ) .AND. PRESENT( A_active )                      &
-        .AND. PRESENT( X_free ) .AND. PRESENT( SBLS_pounce_data )
+        .AND. PRESENT( X_free ) .AND. PRESENT( SBLS_pounce_data )              &
+        .AND. .NOT. diagonal_hessian
       optimal = .FALSE. ; stat_known = .FALSE.
       first_pounce = .TRUE. ; final_pounce = .FALSE.
       IF ( pounce ) THEN
