@@ -46,5 +46,10 @@ inform = sls.information()
 print(" rank:",inform['rank'])
 print('** sls exit status:', inform['status'])
 
+# check that the solver used is the one requested
+print(" solver:", inform['solver'].strip())
+if inform['solver'].strip() != solver:
+    raise SystemExit("** sls reported solver " + repr(inform['solver']))
+
 # deallocate internal data
 sls.terminate()
