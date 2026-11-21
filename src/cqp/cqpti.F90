@@ -10,7 +10,7 @@
    TYPE ( CQP_inform_type ) :: inform
    TYPE ( CQP_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, m, A_ne, H_ne
-   INTEGER ( KIND = ip_ ) :: data_storage_type, status, l
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status, status_c, l
    REAL ( KIND = rp_ ) :: f
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G, W, X_0
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
