@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-20 AT 14:42 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 15:11 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -860,12 +860,11 @@
        IF ( prob >= 2 .AND. itype == 3 ) CYCLE
 #ifdef REAL_32
 
-!  in single precision, the default stopping tolerance for complementary
-!  slackness (relative to its large initial value) allows the iteration to
-!  stop far from the solution of problems 3 and 4, where the type 1
-!  indicator then fails to predict the active set
+!  in single precision, the type 1 indicator's tolerance (stop_abs_p) is
+!  comparable to the distance of x_3 from its bound at the final iterate of
+!  problem 2, so the active set may not be predicted
 
-       IF ( prob >= 3 .AND. ( itype == 1 .OR. itype == 4 ) ) CYCLE
+       IF ( prob == 2 .AND. itype == 1 ) CYCLE
 #endif
        DO ired = 0, 1
          ALLOCATE( p%B( o ), p%R( o ), p%X_l( n ), p%X_u( n ), p%X( n ),       &
