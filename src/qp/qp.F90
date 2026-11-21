@@ -613,7 +613,6 @@
       CASE ( 'qpoases', 'QPOASES' )
         CALL QPOASES_initialize( data%QPOASES_data, control%QPOASES_control,   &
                                  inform%QPOASES_inform )
-write(6,*) control%QPOASES_control%options%printlevel
       END SELECT
 
       inform%status = GALAHAD_ok
@@ -1666,9 +1665,9 @@ write(6,*) control%QPOASES_control%options%printlevel
               "( A, ' ** BQPD solver used **' )" ) prefix
           CALL BQPD_solve( prob, data%BQPD_data, control%BQPD_control,         &
                            inform%BQPD_inform )
-          inform%status = inform%BPMPD_inform%status
-          inform%iter = inform%BPMPD_inform%iter
-          inform%obj = inform%BPMPD_inform%obj
+          inform%status = inform%BQPD_inform%status
+          inform%iter = inform%BQPD_inform%iter
+          inform%obj = inform%BQPD_inform%obj
           IF ( inform%status /= GALAHAD_ok ) THEN
             IF ( printi ) WRITE( control%out, "( A,                            &
            &  ' BQPD solve error status = ', I0 )" ) prefix, inform%status
@@ -1857,7 +1856,7 @@ write(6,*) control%QPOASES_control%options%printlevel
         END IF
       END IF
 
-!  compute the constrain residuals
+!  compute the constraint residuals
 
       CALL mop_AX( one, prob%A, prob%X( : prob%n ), zero, prob%C( : prob%m ),  &
                    symmetric = .FALSE., transpose = .FALSE. )

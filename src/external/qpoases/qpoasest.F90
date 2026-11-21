@@ -66,7 +66,6 @@ PROGRAM GALAHAD_QPOASES_test
 
 !  solve the problem
 
-write(6,*) ' m, n ', prob%m, prob%n
    CALL QPOASES_solve( prob, data, control, inform )
 
 !  succesful solve - recover the dual variable as Lagrange multipliers

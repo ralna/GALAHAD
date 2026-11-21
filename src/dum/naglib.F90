@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-07-25 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-19 AT 16:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
                      prob, acol, inda, loca, bl, bu, c, names, helast, hs,     &
                      x, pi, rc, ns, ninf, sinf, obj, cw, lencw, iw, leniw,     &
                      rw, lenrw, cuser, iuser, ruser, ifail )
-  USE GALAHAD_KINDS_precision
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
   IMPLICIT NONE
   INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, ne, nname, lenc, ncolh, iobj
   INTEGER ( KIND = ip_ ), INTENT( IN ) :: inda( ne ), loca( n + 1 )
@@ -26,7 +26,7 @@
   CHARACTER ( LEN = 8 ), INTENT ( INOUT ) :: cw( lencw ), cuser( * )
   INTERFACE
     SUBROUTINE qphx( ncolh, x, hx, nstate, cuser, iuser, ruser )
-    USE GALAHAD_KINDS_precision
+    USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
     IMPLICIT NONE
     INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncolh, nstate
     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iuser( * )
@@ -42,7 +42,7 @@
 !-*-*-  G A L A H A D  -  D U M M Y   E 0 4 N P F    S U B R O U T I N E  -*-*-
 
   SUBROUTINE E04NPF( cw, lencw, iw, leniw, rw, lenrw, ifail )
-  USE GALAHAD_KINDS_precision
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
   IMPLICIT NONE
   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lencw, leniw, lenrw
   INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ifail
@@ -55,7 +55,7 @@
 !-*-*-  G A L A H A D  -  D U M M Y   E 0 4 N R F    S U B R O U T I N E  -*-*-
 
   SUBROUTINE E04NRF( ispecs, cw, iw, rw, ifail )
-  USE GALAHAD_KINDS_precision
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
   IMPLICIT NONE
   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ispecs
   INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
@@ -64,10 +64,21 @@
   ifail = - 199  ! error code
   END SUBROUTINE E04NRF
 
+!-*-*-  G A L A H A D  -  D U M M Y   E 0 4 N S F    S U B R O U T I N E  -*-*-
+
+  SUBROUTINE E04NSF( string, cw, iw, rw, ifail )
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+  IMPLICIT NONE
+  CHARACTER ( * ), INTENT( IN ) :: string
+  INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
+  REAL ( KIND  = rp_ ), INTENT( INOUT ) :: rw( * )
+  CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
+  END SUBROUTINE E04NSF
+
 !-*-*-  G A L A H A D  -  D U M M Y   E 0 4 N T F    S U B R O U T I N E  -*-*-
 
   SUBROUTINE E04NTF( string, ivalue, cw, iw, rw, ifail )
-  USE GALAHAD_KINDS_precision
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
   IMPLICIT NONE
   CHARACTER ( * ), INTENT( IN ) :: string
   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ivalue
@@ -76,3 +87,24 @@
   CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
   ifail = - 199  ! error code
   END SUBROUTINE E04NTF
+
+!-*-*-  G A L A H A D  -  D U M M Y   E 0 4 N U F    S U B R O U T I N E  -*-*-
+
+  SUBROUTINE E04NUF( string, rvalue, cw, iw, rw, ifail )
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+  IMPLICIT NONE
+  CHARACTER ( * ), INTENT( IN ) :: string
+  REAL ( KIND  = rp_ ), INTENT( IN ) :: rvalue
+  INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
+  REAL ( KIND  = rp_ ), INTENT( INOUT ) :: rw( * )
+  CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
+  END SUBROUTINE E04NUF
+
+!-*-*-  G A L A H A D  -  D U M M Y   X 0 4 A A F    S U B R O U T I N E  -*-*-
+
+  SUBROUTINE X04AAF( iflag, nerr )
+  USE GALAHAD_KINDS_precision, ONLY: ip_
+  IMPLICIT NONE
+  INTEGER ( KIND = ip_ ), INTENT( IN ) :: iflag
+  INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nerr
+  END SUBROUTINE X04AAF

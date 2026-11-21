@@ -538,9 +538,41 @@
       data%B_u( : n ) = prob%X_u( : n )
       data%B_u( np1 : npm ) = prob%C_u( : m )
 
+!  find the number of nonzeros in A
+
+      SELECT CASE ( SMT_get( prob%A%type ) )
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+        a_ne = m * n
+      CASE ( 'SPARSE_BY_ROWS' )
+        a_ne = prob%A%ptr( m + 1 ) - 1
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        a_ne = prob%A%ptr( n + 1 ) - 1
+      CASE ( 'COORDINATE' )
+        a_ne = prob%A%ne
+      CASE DEFAULT
+        a_ne = 0
+      END SELECT
+
+!  find the number of nonzeros in H
+
+      SELECT CASE ( SMT_get( prob%H%type ) )
+      CASE ( 'IDENTITY', 'SCALED_IDENTITY', 'DIAGONAL' )
+        h_ne = n
+      CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+        h_ne = ( n * ( n + 1 ) ) / 2
+      CASE ( 'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS' )
+        h_ne = prob%H%ptr( n + 1 ) - 1
+      CASE ( 'COORDINATE' )
+        h_ne = prob%H%ne
+      CASE DEFAULT
+        h_ne = 0
+      END SELECT
+
+
+
 !  set space for gradients
 
-      a_ne = prob%A%ne ; h_ne = prob%H%ne ; maxa = a_ne + n
+      maxa = a_ne + n
       IF ( data%new_structure ) THEN
         array_name = 'bqpd: data%GA'
         CALL SPACE_resize_array( maxa, data%GA, inform%status,                 &
@@ -677,9 +709,15 @@
 !  fill bqpd workspace arrays
 
       data%LWS( 1 ) = h_ne
-      data%LWS( 2 : h_ne + 1 ) = prob%H%row( : h_ne )
-      data%LWS( h_ne + 2 : 2 * h_ne + 1 ) = prob%H%col( : h_ne )
-      data%WS( 1 : h_ne ) = prob%H%val( : h_ne )
+      IF ( data%original_h ) THEN
+        data%LWS( 2 : h_ne + 1 ) = prob%H%row( : h_ne )
+        data%LWS( h_ne + 2 : 2 * h_ne + 1 ) = prob%H%col( : h_ne )
+        data%WS( 1 : h_ne ) = prob%H%val( : h_ne )
+      ELSE
+        data%LWS( 2 : h_ne + 1 ) = data%H%row( : h_ne )
+        data%LWS( h_ne + 2 : 2 * h_ne + 1 ) = data%H%col( : h_ne )
+        data%WS( 1 : h_ne ) = data%H%val( : h_ne )
+      END IF
 
 !  solve the problem
 

@@ -4289,7 +4289,7 @@
         A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
         A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]
         A_out_val( 1 : n ) = A%val( 1 : n )
-        MAP( 1 : n ) = [ ( i, i = 1, n ) ]
+        IF ( map_vals ) MAP( 1 : n ) = [ ( i, i = 1, n ) ]
       CASE ( 'SCALED-IDENTITY' )
         A_out_row( 1 : n ) = [ ( i, i = 1, n ) ]
         A_out_col( 1 : n ) = [ ( i, i = 1, n ) ]

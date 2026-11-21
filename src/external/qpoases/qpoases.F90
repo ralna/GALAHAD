@@ -902,8 +902,6 @@
       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
         ne = ( n * ( n + 1 ) ) / 2 ; ne_out = n * n
       CASE ( 'SPARSE_BY_ROWS' )
-write(6,*) ' n ', n
-write(6,*) ' H_ptr ', A%ptr
         ne = A%ptr( n + 1 ) - 1 ; ne_out = ne
         DO i = 1, n
           DO j = A%ptr( i ), A%ptr( i + 1 ) - 1

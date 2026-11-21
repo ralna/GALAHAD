@@ -1331,8 +1331,9 @@
 
       IF ( .NOT. C_ASSOCIATED( data%highs ) ) THEN
         inform%status = GALAHAD_unavailable_solver
-        IF ( control%error > 0 ) WRITE( control%error,                         &
-          "( ' call to HiGHS failed, substitute dummy package called' )" )
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error,                                                &
+            "( ' call to HiGHS failed, substitute dummy package called' )" )
         RETURN
       END IF
 

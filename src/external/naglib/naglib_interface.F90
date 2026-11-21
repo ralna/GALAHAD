@@ -1123,11 +1123,14 @@
                    inform%ifail )
       SELECT CASE( inform%ifail )
       CASE ( - 199 )
-        WRITE( control%out,                                                    &
-          "( ' call to E04NQ failed, substitute dummy package called' )" )
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error,                                                &
+            "( ' call to E04NQ failed, substitute dummy package called' )" )
         inform%status = GALAHAD_unavailable_solver ; RETURN
       CASE ( - 399 )
-        WRITE( control%out, "( ' call to E04NQ failed, licence key expired' )" )
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error,                                                &
+            "( ' call to E04NQ failed, licence key expired' )" )
         inform%status = GALAHAD_no_licence ; RETURN
       CASE ( - 999 )
         GO TO 990

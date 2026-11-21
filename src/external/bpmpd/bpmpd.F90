@@ -1263,8 +1263,6 @@
                         dloop, bloop
       COMMON / setden / maxden, dengap, setlam, denlen
 
-write(6,*) ' in bpmpdx'
-
 !  transfer control parameters to common blocks
 
       sftreg = control%softreg
