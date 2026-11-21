@@ -287,6 +287,8 @@ functions
           alternative : bool
              has an "alternative" $y: A^T y = 0$ and $y^T b > 0$ been found
              when trying to solve $A x = b$ ?.
+          solver : str
+             name of external solver used to factorize and solve.
           gls_ainfo : dict
              the output arrays from GLS.
           gls_finfo : dict

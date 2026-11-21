@@ -566,6 +566,8 @@ functions
           alternative : bool
              has an "alternative" y: A y = 0 and yT b > 0 been found
              when trying to solve A x = b ?.
+          solver : str
+             name of external solver used to factorize and solve.
           time : dict
              timings (see above).
           sils_ainfo : dict

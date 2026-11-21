@@ -646,6 +646,8 @@ PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
                          PyFloat_FromDouble(inform->forward_error));
     PyDict_SetItemString(py_inform, "alternative",
                          PyBool_FromLong(inform->alternative));
+    PyDict_SetItemString(py_inform, "solver",
+                         PyUnicode_FromString(inform->solver));
     PyDict_SetItemString(py_inform, "sils_ainfo",
                          sils_make_ainfo_dict(&inform->sils_ainfo));
     PyDict_SetItemString(py_inform, "sils_finfo",

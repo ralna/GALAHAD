@@ -323,6 +323,8 @@ PyObject* uls_make_inform_dict(const struct uls_inform_type *inform){
                          PyLong_FromLong(inform->iterative_refinements));
     PyDict_SetItemString(py_inform, "alternative",
                          PyBool_FromLong(inform->alternative));
+    PyDict_SetItemString(py_inform, "solver",
+                         PyUnicode_FromString(inform->solver));
     PyDict_SetItemString(py_inform, "gls_ainfo",
                          gls_make_ainfo_dict(&inform->gls_ainfo));
     PyDict_SetItemString(py_inform, "gls_finfo",
