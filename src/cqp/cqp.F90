@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 10:28 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:07 GMT.
 
 #include "galahad_modules.h"
 
@@ -8722,7 +8722,7 @@
             GRAD_L = zero
             CALL CQP_HX( dims, n, GRAD_L, h_ne, H_val, H_col, H_ptr, X, '+' )
           ELSE
-            GRAD_L = H_val * X
+            GRAD_L = H_val( : n ) * X
           END IF
         END IF
 !write(6, "( ' grad_l ', /, ( 5ES12.4) )" ) GRAD_l

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 10:28 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:07 GMT.
 
 #include "galahad_modules.h"
 
@@ -1022,7 +1022,7 @@ MODULE GALAHAD_CDQP_precision
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, n_depen, nzc, nv, lbd
+      INTEGER ( KIND = ip_ ) :: i, j, l, n_depen, nzc, nv, lbd, n_ones
       INTEGER ( KIND = ip_ ) :: dual_starting_point
       REAL :: time_start, time_record, time_now
       REAL ( KIND = rp_ ) :: time_analyse, time_factorize
@@ -1032,7 +1032,13 @@ MODULE GALAHAD_CDQP_precision
 !     REAL ( KIND = rp_ ) :: fixed_sum, xi
       LOGICAL :: printi, printa, remap_freed, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
-      LOGICAL :: separable_bqp, lbfgs
+      LOGICAL :: separable_bqp, lbfgs, saved, feasible_save
+      INTEGER ( KIND = ip_ ) :: status_save, save_status
+      REAL ( KIND = rp_ ) :: obj_save, pinf_save, dinf_save, comp_save
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_stat_save
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_save
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_save, Z_save
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_save, C_save
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( CQP_control_type ) :: CQP_control
       TYPE ( DQP_control_type ) :: DQP_control
@@ -2203,6 +2209,15 @@ MODULE GALAHAD_CDQP_precision
 !  Refine the solution using DQP
 !  =============================
 
+!  DQP requires a positive-definite Hessian, so there is nothing more to do
+!  if the Hessian is zero (the problem is an LP)
+
+      IF ( prob%Hessian_kind == 0 ) GO TO 600
+      IF ( prob%Hessian_kind < 0 .AND. .NOT. lbfgs ) THEN
+        IF ( COUNT( prob%H%val( : prob%H%ptr( prob%n + 1 ) - 1 ) /= zero )     &
+             == 0 ) GO TO 600
+      END IF
+
 !  ----------------
 !  set up workspace
 !  ----------------
@@ -2228,15 +2243,26 @@ MODULE GALAHAD_CDQP_precision
       diagonal_h = .TRUE. ; identity_h = .TRUE.
       scaled_identity_h = SMT_get( prob%H%type ) == 'SCALED_IDENTITY'
       IF ( prob%Hessian_kind < 0 ) THEN
+        n_ones = 0
 H_loop: DO i = 1, prob%n
           DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
             j = prob%H%col( l )
             IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
               diagonal_h = .FALSE. ; EXIT H_loop
             END IF
-            IF ( i == j .AND. prob%H%val( l ) /= one ) identity_h = .FALSE.
+            IF ( i == j ) THEN
+              IF ( prob%H%val( l ) == one ) THEN
+                n_ones = n_ones + 1
+              ELSE
+                identity_h = .FALSE.
+              END IF
+            END IF
           END DO
         END DO H_loop
+
+!  H is the identity only if each of its diagonal entries is present
+
+        IF ( n_ones < prob%n ) identity_h = .FALSE.
       END IF
 
       CALL DQP_workspace( prob%m, prob%n, data%dims, prob%A, prob%H,           &
@@ -2291,6 +2317,25 @@ H_loop: DO i = 1, prob%n
         DQP_control%stop_rel_d * inform%CQP_inform%init_complementary_slackness)
 
       dual_starting_point = - 1
+
+!  record the solution found by CQP (and the crossover), so that it may be
+!  restored if DQP fails because H is not positive definite (see below)
+
+      ALLOCATE( X_save( prob%n ), Z_save( prob%n ), B_stat_save( prob%n ),     &
+                Y_save( prob%m ), C_save( prob%m ), C_stat_save( prob%m ),     &
+                STAT = save_status )
+      saved = save_status == 0
+      IF ( saved ) THEN
+        X_save = prob%X( : prob%n ) ; Z_save = prob%Z( : prob%n )
+        Y_save = prob%Y( : prob%m ) ; C_save = prob%C( : prob%m )
+        B_stat_save = data%B_stat( : prob%n )
+        C_stat_save = data%C_stat( : prob%m )
+        status_save = inform%status ; obj_save = inform%obj
+        pinf_save = inform%primal_infeasibility
+        dinf_save = inform%dual_infeasibility
+        comp_save = inform%complementary_slackness
+        feasible_save = inform%feasible
+      END IF
 
 !  solve the problem using a dual projected-gradient method
 
@@ -2664,6 +2709,30 @@ H_loop: DO i = 1, prob%n
         + inform%DQP_inform%time%clock_solve
       IF ( printi ) WRITE( control%out,                                        &
         "( /, A, ' on exit from DQP, status = ', I0 )" ) prefix, inform%status
+
+!  CDQP accepts a positive semi-definite H, and CQP solves such problems, but
+!  DQP requires H to be positive definite, and otherwise reports that its
+!  factorization has the wrong inertia. The refinement is then impossible,
+!  but the solution found by CQP is still valid, so retain it (and its
+!  status) rather than report a failure
+
+      IF ( saved ) THEN
+        IF ( inform%status == GALAHAD_error_inertia ) THEN
+          prob%X( : prob%n ) = X_save ; prob%Z( : prob%n ) = Z_save
+          prob%Y( : prob%m ) = Y_save ; prob%C( : prob%m ) = C_save
+          data%B_stat( : prob%n ) = B_stat_save
+          data%C_stat( : prob%m ) = C_stat_save
+          inform%status = status_save ; inform%obj = obj_save
+          inform%primal_infeasibility = pinf_save
+          inform%dual_infeasibility = dinf_save
+          inform%complementary_slackness = comp_save
+          inform%feasible = feasible_save
+          IF ( printi ) WRITE( control%out, "( A, ' H is not positive',        &
+         &  ' definite, so the solution found by CQP is retained' )" ) prefix
+        END IF
+        DEALLOCATE( X_save, Z_save, B_stat_save, Y_save, C_save, C_stat_save, &
+                    STAT = save_status )
+      END IF
 
 !  if some of the constraints were freed during the computation, refix them now
 

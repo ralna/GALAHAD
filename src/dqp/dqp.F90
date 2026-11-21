@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 10:44 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 11:32 GMT.
 
 #include "galahad_modules.h"
 
@@ -1489,7 +1489,7 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, n_depen, nzc, nv, lbd
+      INTEGER ( KIND = ip_ ) :: i, j, l, n_depen, nzc, nv, lbd, n_ones
       INTEGER ( KIND = ip_ ) :: dual_starting_point
       REAL :: time_start, time_record, time_now
       REAL ( KIND = rp_ ) :: time_analyse, time_factorize
@@ -2232,15 +2232,26 @@
         diagonal_h = .TRUE. ; identity_h = .TRUE.
         scaled_identity_h = SMT_get( prob%H%type ) == 'SCALED_IDENTITY'
         IF ( prob%Hessian_kind < 0 ) THEN
+          n_ones = 0
   H_loop: DO i = 1, prob%n
             DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
               j = prob%H%col( l )
               IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
                 diagonal_h = .FALSE. ; EXIT H_loop
               END IF
-              IF ( i == j .AND. prob%H%val( l ) /= one ) identity_h = .FALSE.
+              IF ( i == j ) THEN
+                IF ( prob%H%val( l ) == one ) THEN
+                  n_ones = n_ones + 1
+                ELSE
+                  identity_h = .FALSE.
+                END IF
+              END IF
             END DO
           END DO H_loop
+
+!  H is the identity only if each of its diagonal entries is present
+
+          IF ( n_ones < prob%n ) identity_h = .FALSE.
         END IF
       ELSE IF ( prob%hessian_kind == 0 ) THEN
         diagonal_h = .TRUE. ; identity_h = .TRUE.
@@ -3187,6 +3198,7 @@
       INTEGER ( KIND = ip_ ) :: ip, mpn, change_subspace, ce_end, no_change
       INTEGER ( KIND = ip_ ) :: yl_start, yl_end, yu_start, yu_end, change
       INTEGER ( KIND = ip_ ) :: zl_start, zl_end, zu_start, zu_end, ce_start
+      INTEGER ( KIND = ip_ ) :: n_ones
       INTEGER ( KIND = ip_ ) :: start_ce, start_yl, start_yu, start_zl, start_zu
       INTEGER ( KIND = ip_ ) :: arc_search_iter, l_start, u_start, print_gap
       INTEGER ( KIND = ip_ ) :: max_row_length, added, deleted, len_list
@@ -3469,15 +3481,26 @@
         ELSE
 !         identity_h = .FALSE.
           h_ne = H_ptr( n + 1 ) - 1
+          n_ones = 0
  H_loop : DO i = 1, n
             DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
               j = H_col( l )
               IF ( i /= j .AND. H_val( l ) /= zero ) THEN
                 diagonal_h = .FALSE. ; EXIT H_loop
               END IF
-              IF ( i == j .AND. H_val( l ) /= one ) identity_h = .FALSE.
+              IF ( i == j ) THEN
+                IF ( H_val( l ) == one ) THEN
+                  n_ones = n_ones + 1
+                ELSE
+                  identity_h = .FALSE.
+                END IF
+              END IF
             END DO
           END DO H_loop
+
+!  H is the identity only if each of its diagonal entries is present
+
+          IF ( n_ones < n ) identity_h = .FALSE.
         END IF
       ELSE
         h_ne = 0

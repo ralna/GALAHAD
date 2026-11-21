@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 10:28 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:07 GMT.
 
 #include "galahad_modules.h"
 
@@ -1138,7 +1138,7 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, nv, lbd
+      INTEGER ( KIND = ip_ ) :: i, j, l, nv, lbd, n_ones
       INTEGER ( KIND = ip_ ) :: a_ne, h_ne, dual_starting_point
       REAL :: time_start, time_record, time_now
       REAL ( KIND = rp_ ) :: time_analyse, time_factorize, time_solve
@@ -1151,6 +1151,7 @@
       LOGICAL :: printi, printa, printe, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial
+      LOGICAL :: perturbation_exhausted
       LOGICAL :: saved
       INTEGER ( KIND = ip_ ) :: status_save, save_status
       REAL ( KIND = rp_ ) :: obj_save, pinf_save, dinf_save, comp_save
@@ -1158,6 +1159,10 @@
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat_save
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_save
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_save, Z_save
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val_save
+      INTEGER ( KIND = ip_ ) :: hessian_kind_save, h_ne_save
+      CHARACTER ( LEN = 30 ) :: h_type_save
+      LOGICAL :: h_replaced, h_val_allocated
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_save, C_save
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( CQP_control_type ) :: CQP_control
@@ -1177,13 +1182,24 @@
 
 !  see if the problem is an LP
 
+      h_replaced = .FALSE.
       data%is_lp = .FALSE.
       IF ( prob%Hessian_kind < 0 ) THEN
         SELECT CASE ( SMT_get( prob%H%type ) )
         CASE ( 'NONE', 'ZERO' )
           data%is_lp = .TRUE.
         CASE ( 'SPARSE_BY_ROWS' )
-          IF ( prob%H%ptr( prob%n + 1 ) <= 1 ) data%is_lp = .TRUE.
+          data%is_lp = COUNT( prob%H%val( : prob%H%ptr( prob%n + 1 ) - 1 )     &
+                              /= zero ) == 0
+        CASE ( 'COORDINATE' )
+          data%is_lp = COUNT( prob%H%val( : prob%H%ne ) /= zero ) == 0
+        CASE ( 'DENSE' )
+          data%is_lp = COUNT( prob%H%val( : ( prob%n * ( prob%n + 1 ) ) / 2 )  &
+                              /= zero ) == 0
+        CASE ( 'DIAGONAL' )
+          data%is_lp = COUNT( prob%H%val( : prob%n ) /= zero ) == 0
+        CASE ( 'SCALED_IDENTITY' )
+          data%is_lp = prob%H%val( 1 ) == zero
         END SELECT
       ELSE IF ( prob%Hessian_kind == 0 ) THEN
         data%is_lp = .TRUE.
@@ -1340,18 +1356,35 @@
         END IF
       END IF
 
-      IF ( data%is_lp .AND. control%refine ) THEN
+!  for an LP to be refined, CQP solves the LP perturbed by a multiple of the
+!  identity; CQP requires this to be given as a diagonal matrix. Record the
+!  user's (zero) Hessian, so that it may be restored on exit
+
+      h_replaced = data%is_lp .AND. control%refine
+      IF ( h_replaced ) THEN
+        hessian_kind_save = prob%Hessian_kind ; h_ne_save = prob%H%ne
+        h_type_save = REPEAT( ' ', 30 )
+        IF ( ALLOCATED( prob%H%type ) ) h_type_save = SMT_get( prob%H%type )
+        h_val_allocated = ALLOCATED( prob%H%val )
+        IF ( h_val_allocated ) THEN
+          ALLOCATE( H_val_save( SIZE( prob%H%val ) ),                          &
+                    STAT = inform%alloc_status )
+          IF ( inform%alloc_status /= 0 ) THEN
+            inform%bad_alloc = 'l1qp: H_val_save' ; h_replaced = .FALSE.
+            GO TO 900
+          END IF
+          H_val_save = prob%H%val
+        END IF
         prob%Hessian_kind = - 1
-        CALL SMT_put( prob%H%type, 'SCALED_IDENTITY', i )
-!write(6,*) ' refine lp structure h_type ', SMT_get( prob%H%type )
+        CALL SMT_put( prob%H%type, 'DIAGONAL', i )
         array_name = 'l1qp: prob%H%val'
-        CALL SPACE_resize_array( 1_ip_, prob%H%val,                            &
+        CALL SPACE_resize_array( prob%n, prob%H%val,                           &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
-        prob%H%val( 1 ) = control%DLP_control%initial_perturbation
+        prob%H%val( : prob%n ) = control%DLP_control%initial_perturbation
       END IF
 
 !  if the problem has no general constraints, check to see if it is separable
@@ -1436,7 +1469,10 @@
                & ' below' )") prefix
             END SELECT
           END IF
-          IF ( inform%status /= GALAHAD_ok ) RETURN
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            CALL L1QP_restore_hessian( )
+            RETURN
+          END IF
           GO TO 800
         END IF
       END IF
@@ -2631,15 +2667,26 @@
         diagonal_h = .TRUE. ; identity_h = .TRUE.
         scaled_identity_h = SMT_get( prob%H%type ) == 'SCALED_IDENTITY'
         IF ( prob%Hessian_kind < 0 ) THEN
+          n_ones = 0
 H_loop: DO i = 1, prob%n
             DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
               j = prob%H%col( l )
               IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
                 diagonal_h = .FALSE. ; EXIT H_loop
               END IF
-              IF ( i == j .AND. prob%H%val( l ) /= one ) identity_h = .FALSE.
+              IF ( i == j ) THEN
+                IF ( prob%H%val( l ) == one ) THEN
+                  n_ones = n_ones + 1
+                ELSE
+                  identity_h = .FALSE.
+                END IF
+              END IF
             END DO
-         END DO H_loop
+          END DO H_loop
+
+!  H is the identity only if each of its diagonal entries is present
+
+          IF ( n_ones < prob%n ) identity_h = .FALSE.
         END IF
       END IF
 
@@ -2751,6 +2798,7 @@ H_loop: DO i = 1, prob%n
 
 !  the problem is an L1LP. Solve as a perturbed QP
 
+      perturbation_exhausted = .FALSE.
       IF ( data%is_lp ) THEN
         H_val( 1 ) = dqp_control%initial_perturbation
         initial = .TRUE.
@@ -2872,9 +2920,12 @@ H_loop: DO i = 1, prob%n
                               0.99_rp_ * perturbation )
 !           H_val( 1 ) = perturbation * dqp_control%perturbation_reduction
 
-!  don't allow the perturbation to be too small
+!  don't allow the perturbation to be too small. The solution found is then
+!  only that of a perturbed problem, and may be far from that of the LP
 
-            IF ( H_val( 1 ) <= dqp_control%final_perturbation ) EXIT
+            IF ( H_val( 1 ) <= dqp_control%final_perturbation ) THEN
+              perturbation_exhausted = .TRUE. ; EXIT
+            END IF
             dual_starting_point = 0
             initial = .FALSE.
           END IF
@@ -3226,9 +3277,16 @@ H_loop: DO i = 1, prob%n
       inform%DQP_inform%time%total = REAL( time_now - time_record, rp_ )
       inform%DQP_inform%time%clock_total = clock_now - clock_record
 
-!  record output statistics
+!  record output statistics. If the perturbations were exhausted before an
+!  extrapolated solution of the LP was found, the refinement has failed
 
       inform%status = inform%DQP_inform%status
+      IF ( perturbation_exhausted .AND. inform%status == GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_tiny_step
+        IF ( printi ) WRITE( control%out, "( /, A, ' the quadratic',           &
+       &  ' perturbation reached its lower limit without an optimal',          &
+       &  ' extrapolation' )" ) prefix
+      END IF
       inform%alloc_status = inform%DQP_inform%alloc_status
       inform%bad_alloc = inform%DQP_inform%bad_alloc
       inform%factorization_status = inform%DQP_inform%factorization_status
@@ -3359,6 +3417,7 @@ H_loop: DO i = 1, prob%n
 !  compute total time
 
   800 CONTINUE
+      CALL L1QP_restore_hessian( )
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
@@ -3387,6 +3446,7 @@ H_loop: DO i = 1, prob%n
 !  allocation error
 
   900 CONTINUE
+      CALL L1QP_restore_hessian( )
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
@@ -3406,6 +3466,38 @@ H_loop: DO i = 1, prob%n
  2010 FORMAT( ' ', /, A, '    ** Error return ', I0, ' from L1QP ' )
 
       RETURN
+
+!  internal procedure
+
+      CONTAINS
+
+!-*-*-   L 1 Q P _ r e s t o r e _ h e s s i a n   S U B R O U T I N E   -*-*-
+
+        SUBROUTINE L1QP_restore_hessian( )
+
+!  restore the user's (zero) Hessian, if it was replaced by the perturbation
+!  used when refining the solution of an LP
+
+        INTEGER ( KIND = ip_ ) :: smt_status
+
+        IF ( .NOT. h_replaced ) RETURN
+        prob%Hessian_kind = hessian_kind_save ; prob%H%ne = h_ne_save
+        IF ( LEN_TRIM( h_type_save ) > 0 ) THEN
+          CALL SMT_put( prob%H%type, TRIM( h_type_save ), smt_status )
+        ELSE IF ( ALLOCATED( prob%H%type ) ) THEN
+          DEALLOCATE( prob%H%type, STAT = smt_status )
+        END IF
+        IF ( ALLOCATED( prob%H%val ) )                                         &
+          DEALLOCATE( prob%H%val, STAT = smt_status )
+        IF ( h_val_allocated ) THEN
+          CALL MOVE_ALLOC( H_val_save, prob%H%val )
+        END IF
+        h_replaced = .FALSE.
+        RETURN
+
+!  End of subroutine L1QP_restore_hessian
+
+        END SUBROUTINE L1QP_restore_hessian
 
 !  End of L1QP_solve
 
