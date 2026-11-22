@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 15:11 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 16:19 GMT.
 
 #include "galahad_modules.h"
 
@@ -4102,7 +4102,7 @@
 
 !  test that the factorization succeeded
 
-        inform%factorization_status = inform%status
+        inform%factorization_status = inform%SLS_inform%status
         IF ( inform%factorization_status < 0 ) THEN
           IF ( printe ) WRITE( error, "( A, '    ** Error return ', I0,        &
          &  ' from ', A )" ) prefix, inform%factorization_status,              &
@@ -5224,7 +5224,7 @@
           time_solve = time_solve + time_now - time_record
           clock_solve = clock_solve + clock_now - clock_record
 
-          inform%status = inform%status
+          inform%status = inform%SLS_inform%status
           IF ( inform%status /= GALAHAD_ok ) GO TO 600
 
           IF ( printd ) THEN
@@ -5458,7 +5458,7 @@
               WRITE( out, 2100 ) prefix, ' SOL_y ', RHS( dims%y_s : dims%y_e )
           END IF
 
-          inform%status = inform%status
+          inform%status = inform%SLS_inform%status
           IF ( inform%status /= GALAHAD_ok ) GO TO 600
 
 

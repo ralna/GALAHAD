@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 15:11 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 16:19 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -940,6 +940,80 @@
    END DO
    IF ( errors > 0 ) THEN
      WRITE( 6, "( /, 1X, I0, ' pounce tests failed' )" ) errors
+     STOP 1
+   END IF
+
+
+!  ======================================================================
+!  a pounce that fails with an inconsistent predicted active set (the two
+!  nearly identical constraints x_1 + x_2 <= 1 and x_1 + x_2 <= 1 + 10^-6
+!  are both predicted active) must not affect the rest of the solve: minimize
+!  1/2||x - e||^2 s.t. those constraints and x_3 <= 0, whose solution is
+!  x = (1/2,1/2,0). The pounce cannot succeed, so the solution is only as
+!  accurate as the final interior-point iterate
+!  ======================================================================
+
+   WRITE( 6, "( /, ' failed pounce tests ', / )" )
+   tol = EPSILON( 1.0_rp_ ) ** 0.25
+   errors = 0
+   n = 3 ; o = 3 ; m = 2
+   DO itype = 1, 3
+     DO ired = 0, 1
+       ALLOCATE( p%B( o ), p%R( o ), p%X_l( n ), p%X_u( n ), p%X( n ),         &
+                 p%Z( n ), p%X_status( n ), p%C( m ), p%C_l( m ),              &
+                 p%C_u( m ), p%Y( m ), p%C_status( m ) )
+       ALLOCATE( p%Ao%row( o ), p%Ao%col( o ), p%Ao%val( o ) )
+       ALLOCATE( p%A%row( 4 ), p%A%col( 4 ), p%A%val( 4 ) )
+       CALL SMT_put( p%Ao%type, 'COORDINATE', smt_stat )
+       CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
+       p%new_problem_structure = .TRUE.
+       p%n = n ; p%o = o ; p%m = m
+       p%Ao%ne = o ; p%Ao%row = (/ 1, 2, 3 /) ; p%Ao%col = (/ 1, 2, 3 /)
+       p%Ao%val = 1.0_rp_
+       p%B = 1.0_rp_
+       p%A%ne = 4 ; p%A%row = (/ 1, 1, 2, 2 /) ; p%A%col = (/ 1, 2, 1, 2 /)
+       p%A%val = 1.0_rp_
+       p%C_l = - infty ; p%C_u = (/ 1.0_rp_, 1.000001_rp_ /)
+       p%X_l = - infty ; p%X_u = (/ infty, infty, 0.0_rp_ /)
+       p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+       CALL CLLS_initialize( data, control, info )
+       control%symmetric_linear_solver = symmetric_linear_solver
+       control%FDC_control%symmetric_linear_solver                             &
+         = symmetric_linear_solver
+       control%infinity = infty
+       control%indicator_type = itype
+       control%reduced_pounce_system = ired == 1
+
+!  pounce early, so that the iteration continues after the failed pounce
+
+       control%mu_pounce = 0.1_rp_
+       CALL CLLS_solve( p, data, control, info )
+       IF ( info%status == 0 ) THEN
+         err = MAXVAL( ABS( p%X - (/ 0.5_rp_, 0.5_rp_, 0.0_rp_ /) ) )
+         IF ( err <= tol ) THEN
+           WRITE( 6, "( ' indicator ', I1, ' reduced ', L1,                    &
+          &             ': solution correct' )" ) itype, ired == 1
+         ELSE
+           errors = errors + 1
+           WRITE( 6, "( ' indicator ', I1, ' reduced ', L1,                    &
+          &             ': solution error = ', ES8.1, ' FAILED' )" )           &
+             itype, ired == 1, err
+         END IF
+       ELSE
+         errors = errors + 1
+         WRITE( 6, "( ' indicator ', I1, ' reduced ', L1,                      &
+        &             ': CLLS_solve exit status = ', I0, ' FAILED' )" )        &
+           itype, ired == 1, info%status
+       END IF
+       CALL CLLS_terminate( data, control, info )
+       DEALLOCATE( p%B, p%R, p%X_l, p%X_u, p%X, p%Z, p%X_status, p%C,          &
+                   p%C_l, p%C_u, p%Y, p%C_status )
+       DEALLOCATE( p%Ao%row, p%Ao%col, p%Ao%val, p%Ao%type )
+       DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
+     END DO
+   END DO
+   IF ( errors > 0 ) THEN
+     WRITE( 6, "( /, 1X, I0, ' failed pounce tests failed' )" ) errors
      STOP 1
    END IF
 
