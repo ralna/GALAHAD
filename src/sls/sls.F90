@@ -9338,7 +9338,7 @@
 
 !  skip solvers that have sparse option
 
-     CASE ( 'ma57', 'ma87', 'ma97', 'slblt' )
+     CASE ( 'ma57', 'ma87', 'ma97' )
 
 !  those that don't
 
@@ -9608,9 +9608,12 @@
 
 !  = SLBLT =
 
+!  SLBLT does not provide a sparse forward solve, so use its dense solve
+!  with S
+
      CASE ( 'slblt' )
-       inform%status = GALAHAD_unavailable_option
-       GO TO 900
+       CALL SLS_part_solve( 'S', X( : data%n ), data, control, inform )
+       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 !      CALL CPU_time( time ) ; CALL CLOCK_time( clock )
 !      CALL SLBLT_sparse_fwd_solve( nnz_b, INDEX_b, B, data%ORDER, data%LFLAG, &
 !                                   nnz_x, INDEX_x, X,                         &
@@ -9846,7 +9849,7 @@
 
 !  skip solvers that have sparse option
 
-     CASE ( 'ma57', 'ma87', 'ma97', 'slblt' )
+     CASE ( 'ma57', 'ma87', 'ma97' )
 
 !  those that don't
 

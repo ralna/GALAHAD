@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 11:14 GMT.
 
 #include "galahad_modules.h"
 
@@ -35,6 +35,14 @@
    INTEGER ( KIND = ip_ ) :: ORDER( n )
    REAL ( KIND = rp_ ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 ), D( 2, n )
    REAL ( KIND = rp_ ) :: B_diag( n )
+   INTEGER ( KIND = ip_ ) :: k, nnz_b, nnz_x, errors
+   TYPE ( SLS_data_type ) :: fdata
+   TYPE ( SLS_control_type ) :: fcontrol, default_control
+   TYPE ( SLS_inform_type ) :: finform
+   INTEGER ( KIND = ip_ ) :: INDEX_b( n ), INDEX_x( n )
+   REAL ( KIND = rp_ ) :: XS( n ), Y( n ), err, tol
+   CHARACTER ( LEN = 5 ), DIMENSION( 3 ) :: fwd_solver =                      &
+     (/ 'potr ', 'sytr ', 'slblt' /)
    INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
    INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
    INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
@@ -900,6 +908,77 @@
    WRITE( 6, "( 18X, I6 )" ) inform%status
    CALL SLS_terminate( data, control, inform )
    DEALLOCATE( matrix%type )
+!  test the sparse forward solve S x = b, where A = S S^T is positive
+!  definite: compare x with the dense solution from SLS_part_solve, and check
+!  that x^T x = b^T A^{-1} b
+
+   WRITE( 6, "( /, ' sparse forward solve tests ', / )" )
+   tol = EPSILON( 1.0_rp_ ) ** 0.75
+   errors = 0
+   DO k = 1, 3
+     matrix%n = n ; matrix%ne = 2 * n - 1
+     CALL SMT_put( matrix%type, 'COORDINATE', s )
+     ALLOCATE( matrix%val( matrix%ne ), matrix%row( matrix%ne ),              &
+               matrix%col( matrix%ne ) )
+     DO i = 1, n
+       matrix%row( i ) = i ; matrix%col( i ) = i ; matrix%val( i ) = 4.0_rp_
+     END DO
+     DO i = 1, n - 1
+       matrix%row( n + i ) = i + 1 ; matrix%col( n + i ) = i
+       matrix%val( n + i ) = 1.0_rp_
+     END DO
+     fcontrol = default_control
+     CALL SLS_initialize( fwd_solver( k ), fdata, fcontrol, finform )
+     fcontrol%pivot_control = 2
+     CALL SLS_analyse( matrix, fdata, fcontrol, finform )
+     IF ( finform%status == GALAHAD_ok )                                       &
+       CALL SLS_factorize( matrix, fdata, fcontrol, finform )
+     IF ( finform%status == GALAHAD_ok ) THEN
+
+!  b = e_2 + e_4 is sparse
+
+       B = 0.0_rp_ ; B( 2 ) = 1.0_rp_ ; B( 4 ) = 1.0_rp_
+       nnz_b = 2 ; INDEX_b( 1 : 2 ) = (/ 2, 4 /)
+       X = 0.0_rp_
+       CALL SLS_sparse_forward_solve( nnz_b, INDEX_b, B, nnz_x, INDEX_x, X,   &
+                                      fdata, fcontrol, finform )
+     END IF
+     IF ( finform%status == GALAHAD_ok ) THEN
+       XS = B
+       CALL SLS_part_solve( 'S', XS, fdata, fcontrol, finform )
+     END IF
+     IF ( finform%status == GALAHAD_ok ) THEN
+       Y = B
+       CALL SLS_solve( matrix, Y, fdata, fcontrol, finform )
+     END IF
+     IF ( finform%status == GALAHAD_ok ) THEN
+
+!  the sparse solution is held in X( INDEX_x( : nnz_x ) )
+
+       B_diag = 0.0_rp_
+       B_diag( INDEX_x( : nnz_x ) ) = X( INDEX_x( : nnz_x ) )
+       err = MAX( MAXVAL( ABS( B_diag - XS ) ),                               &
+                  ABS( DOT_PRODUCT( B_diag, B_diag ) - DOT_PRODUCT( B, Y ) ) )
+       IF ( err <= tol ) THEN
+         WRITE( 6, "( 1X, A5, ': correct' )" ) fwd_solver( k )
+       ELSE
+         errors = errors + 1
+         WRITE( 6, "( 1X, A5, ': error = ', ES8.1, ' FAILED' )" )             &
+           fwd_solver( k ), err
+       END IF
+     ELSE
+       errors = errors + 1
+       WRITE( 6, "( 1X, A5, ': status = ', I0, ' FAILED' )" )                 &
+         fwd_solver( k ), finform%status
+     END IF
+     CALL SLS_terminate( fdata, fcontrol, finform )
+     DEALLOCATE( matrix%val, matrix%row, matrix%col, matrix%type )
+   END DO
+   IF ( errors > 0 ) THEN
+     WRITE( 6, "( /, 1X, I0, ' sparse forward solve tests failed' )" ) errors
+     STOP 1
+   END IF
+
    CALL MPI_INITIALIZED( mpi_flag, i )
    IF ( mpi_flag ) CALL MPI_FINALIZE( i )
    WRITE( 6, "( /, ' sls tests completed' )" )
