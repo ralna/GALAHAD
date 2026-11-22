@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 08:56 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 11:14 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -3418,12 +3418,20 @@
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%ORDER' ; GO TO 900 ; END IF
 
+!  if the ordering has not been set (for example, when control was not
+!  initialized by SLS_initialize), use the default that SLS_initialize would
+!  have chosen for the solver. In particular, this avoids requiring the HSL
+!  package MC68 for solvers whose default is the freely-available METIS
+
        IF ( control%ordering > 7 .OR.control%ordering < 1 ) THEN
-         IF ( data%solver( 1 : data%len_solver ) == 'pbtr' ) THEN
+         SELECT CASE( data%solver( 1 : data%len_solver ) )
+         CASE ( 'pbtr' )
            ordering = 6
-         ELSE
+         CASE ( 'ma86', 'ma87', 'ma97', 'slblt' )
+           ordering = 3
+         CASE DEFAULT
            ordering = 1
-         END IF
+         END SELECT
        ELSE
          ordering = control%ordering
        END IF
@@ -9330,7 +9338,7 @@
 
 !  skip solvers that have sparse option
 
-     CASE ( 'ma57', 'ma87', 'ma97', 'slblt' )
+     CASE ( 'ma57', 'ma87', 'ma97' )
 
 !  those that don't
 
@@ -9600,9 +9608,12 @@
 
 !  = SLBLT =
 
+!  SLBLT does not provide a sparse forward solve, so use its dense solve
+!  with S
+
      CASE ( 'slblt' )
-       inform%status = GALAHAD_unavailable_option
-       GO TO 900
+       CALL SLS_part_solve( 'S', X( : data%n ), data, control, inform )
+       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 !      CALL CPU_time( time ) ; CALL CLOCK_time( clock )
 !      CALL SLBLT_sparse_fwd_solve( nnz_b, INDEX_b, B, data%ORDER, data%LFLAG, &
 !                                   nnz_x, INDEX_x, X,                         &
@@ -9838,7 +9849,7 @@
 
 !  skip solvers that have sparse option
 
-     CASE ( 'ma57', 'ma87', 'ma97', 'slblt' )
+     CASE ( 'ma57', 'ma87', 'ma97' )
 
 !  those that don't
 
