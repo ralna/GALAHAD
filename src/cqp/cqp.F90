@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:07 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -3211,6 +3211,11 @@
       REAL ( KIND = rp_ ), PARAMETER :: eta = tenm4
       REAL ( KIND = rp_ ), PARAMETER :: sigma_max = point01
       REAL ( KIND = rp_ ), PARAMETER :: degen_tol = tenm5
+
+!  factor by which the step along a higher-order arc is reduced until the
+!  resulting point is strictly interior
+
+      REAL ( KIND = rp_ ), PARAMETER :: interior_step_reduction = 0.9_rp_
 
 !  Local variables
 
@@ -6508,6 +6513,34 @@
                                     Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,    &
                                     X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,     &
                                     C_l, C_u, alpha_max, slknes )
+
+!  in floating-point arithmetic, the point at the computed step may lie on
+!  (or beyond) a bound, or have a multiplier of the wrong sign; if so,
+!  shorten the step until the point is strictly interior
+
+          DO
+            IF ( .NOT. ( ANY( X( dims%x_free + 1 : dims%x_l_end ) <=          &
+                              X_l( dims%x_free + 1 : dims%x_l_end ) ) .OR.     &
+                         ANY( Z_l( dims%x_free + 1 : dims%x_l_end ) <= zero )  &
+                    .OR. ANY( X( dims%x_u_start : n ) >=                       &
+                              X_u( dims%x_u_start : n ) ) .OR.                 &
+                         ANY( Z_u( dims%x_u_start : n ) >= zero ) .OR.         &
+                         ANY( C( dims%c_l_start : dims%c_l_end ) <=            &
+                              C_l( dims%c_l_start : dims%c_l_end ) ) .OR.      &
+                         ANY( Y_l( dims%c_l_start : dims%c_l_end ) <= zero )   &
+                    .OR. ANY( C( dims%c_u_start : dims%c_u_end ) >=            &
+                              C_u( dims%c_u_start : dims%c_u_end ) ) .OR.      &
+                         ANY( Y_u( dims%c_u_start : dims%c_u_end ) >= zero ) ))&
+              EXIT
+            alpha_max = interior_step_reduction * alpha_max
+            IF ( alpha_max <= epsmch ) THEN
+              inform%status = GALAHAD_error_tiny_step ; EXIT
+            END IF
+            CALL CQP_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,      &
+                                      Y_coef, Y_l_coef, Y_u_coef, Z_l_coef,    &
+                                      Z_u_coef, X, X_l, X_u, Z_l, Z_u, Y, Y_l, &
+                                      Y_u, C, C_l, C_u, alpha_max, slknes )
+          END DO
           END IF
 
 !  check that resulting alpha is not too small
