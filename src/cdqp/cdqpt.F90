@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:29 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 11:14 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CDQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -965,6 +965,63 @@
      DEALLOCATE( p%H%row, p%H%col, p%H%val, p%H%type )
      DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
    END DO
+
+
+!  ===================================================================
+!  check that the problem minimize 1/2 x^T H x + g^T x s.t. x_1 + x_2 <= 1
+!  and x_3 <= 0, with H = ( 2 1 0 ; 1 2 0 ; 0 0 1 ) and g = - (5/2,5/2,1),
+!  whose solution is x = (1/2,1/2,0), is solved using the default linear
+!  solvers (the other tests use those set by WHICH_sls). H is not diagonal,
+!  so it has to be factorized
+!  ===================================================================
+
+   WRITE( 6, "( /, ' default solver test ', / )" )
+   n = 3 ; m = 1
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),          &
+             p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ) )
+   ALLOCATE( B_stat( n ), C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 0.0_rp_
+   p%G = (/ - 2.5_rp_, - 2.5_rp_, - 1.0_rp_ /)
+   p%X_l = - infty ; p%X_u = (/ infty, infty, 0.0_rp_ /)
+   p%C_l = - infty ; p%C_u = 1.0_rp_
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+   IF ( ALLOCATED( p%H%row ) ) DEALLOCATE( p%H%row )
+   IF ( ALLOCATED( p%H%col ) ) DEALLOCATE( p%H%col )
+   IF ( ALLOCATED( p%H%ptr ) ) DEALLOCATE( p%H%ptr )
+   IF ( ALLOCATED( p%H%val ) ) DEALLOCATE( p%H%val )
+   CALL SMT_put( p%H%type, 'COORDINATE', smt_stat ) ; p%H%ne = 4
+   ALLOCATE( p%H%row( 4 ), p%H%col( 4 ), p%H%val( 4 ) )
+   p%H%row = (/ 1, 2, 2, 3 /) ; p%H%col = (/ 1, 1, 2, 3 /)
+   p%H%val = (/ 2.0_rp_, 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+   IF ( ALLOCATED( p%A%row ) ) DEALLOCATE( p%A%row )
+   IF ( ALLOCATED( p%A%col ) ) DEALLOCATE( p%A%col )
+   IF ( ALLOCATED( p%A%ptr ) ) DEALLOCATE( p%A%ptr )
+   IF ( ALLOCATED( p%A%val ) ) DEALLOCATE( p%A%val )
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = 2
+   ALLOCATE( p%A%row( 2 ), p%A%col( 2 ), p%A%val( 2 ) )
+   p%A%row = (/ 1, 1 /) ; p%A%col = (/ 1, 2 /) ; p%A%val = 1.0_rp_
+   CALL CDQP_initialize( data, control, inform )
+   control%infinity = infty
+   CALL CDQP_solve( p, data, control, inform, C_stat, B_stat )
+   IF ( inform%status == GALAHAD_ok ) THEN
+     err = MAXVAL( ABS( p%X - (/ 0.5_rp_, 0.5_rp_, 0.0_rp_ /) ) )
+     IF ( err > EPSILON( 1.0_rp_ ) ** 0.75 ) THEN
+       WRITE( 6, "( ' default solver test: solution error = ', ES8.1,         &
+      &             ' FAILED' )" ) err
+       STOP 1
+     END IF
+     WRITE( 6, "( ' default solver test: solution correct' )" )
+   ELSE
+     WRITE( 6, "( ' default solver test: CDQP_solve exit status = ', I0,      &
+    &             ' FAILED' )" ) inform%status
+     STOP 1
+   END IF
+   CALL CDQP_terminate( data, control, inform )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               B_stat, C_stat )
+   DEALLOCATE( p%H%row, p%H%col, p%H%val, p%H%type )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
 
    WRITE( 6, "( /, ' tests completed' )" )
 

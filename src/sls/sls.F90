@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-09 AT 08:56 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 11:14 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -3418,12 +3418,20 @@
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%ORDER' ; GO TO 900 ; END IF
 
+!  if the ordering has not been set (for example, when control was not
+!  initialized by SLS_initialize), use the default that SLS_initialize would
+!  have chosen for the solver. In particular, this avoids requiring the HSL
+!  package MC68 for solvers whose default is the freely-available METIS
+
        IF ( control%ordering > 7 .OR.control%ordering < 1 ) THEN
-         IF ( data%solver( 1 : data%len_solver ) == 'pbtr' ) THEN
+         SELECT CASE( data%solver( 1 : data%len_solver ) )
+         CASE ( 'pbtr' )
            ordering = 6
-         ELSE
+         CASE ( 'ma86', 'ma87', 'ma97', 'slblt' )
+           ordering = 3
+         CASE DEFAULT
            ordering = 1
-         END IF
+         END SELECT
        ELSE
          ordering = control%ordering
        END IF
