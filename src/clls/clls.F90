@@ -2715,6 +2715,7 @@
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: Ao_ne, A_ne, i, ii, j, k, l, b_change, c_change
+      INTEGER ( KIND = ip_ ) :: status_before_pounce
       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_level
       INTEGER ( KIND = ip_ ) :: nbnds, nbnds_x, nbnds_c, muzero_fixed, nbact
       INTEGER ( KIND = ip_ ) :: out, error, it_best, infeas_max, iorder, sorder
@@ -6436,6 +6437,11 @@
               "( A, '  changes in predicted X/C_stat = ',                      &
             &    I0, ', ', I0, ', pouncing for solution ...' )" )              &
                prefix, b_change, c_change
+
+!  CLLS_pounce sets inform%status, so record it, and restore it if the
+!  pounce fails
+
+            status_before_pounce = inform%status
             CALL CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,         &
                               B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,      &
                               X_last, R_last, C_last, Y_last, Z_last,          &
@@ -6464,6 +6470,7 @@
             ELSE
               IF ( printi ) WRITE( out, "( A,                                  &
              &   '  pounce unsuccessful, continuing' )" ) prefix
+              inform%status = status_before_pounce
             END IF
           END IF
         END IF
