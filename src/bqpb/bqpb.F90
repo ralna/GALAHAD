@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2026-11-08 AT 10:16 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 17:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -195,7 +195,7 @@
 !  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
 !  required-barrier-value-before-pounce              1.0D-5
-!  primal-indicator-tolerance                        1.0D-5
+!  primal-indicator-tolerance                        2.6D-3
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
 !  maximum-cpu-time-limit                            -1.0
