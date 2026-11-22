@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-19 AT 07:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 14:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -974,10 +974,75 @@
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
 
-!  report any failures of the pounce tests through the exit status
+!  ======================================================================
+!  a convex QP from FISQP, on which, in single precision, a step along a
+!  higher-order arc put a variable on its bound, after which CQP stopped
+!  with a tiny step. The reference objective value was computed in double
+!  precision, which limits the accuracy that can be required
+!  ======================================================================
+
+   WRITE( 6, "( /, ' strictly interior step test', / )" )
+   n = 7 ; m = 2 ; h_ne = 4 ; a_ne = 11
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
+   ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
+   ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
+   ALLOCATE( B_stat( n ), C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 16.60989189147949_rp_
+   p%G = (/ 14.314302444458_rp_, 1.348736166954041_rp_,                        &
+            2.34873628616333_rp_, 9.613122940063477_rp_,                       &
+            10.0_rp_, 10.0_rp_, 10.0_rp_ /)
+   p%X_l = (/ 0.0_rp_, - 3.968796730041504_rp_, - 2.644325733184814_rp_,       &
+              - 0.3487361669540405_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
+   p%X_u = (/ 4.0_rp_, 0.03120326995849609_rp_, 1.355674266815186_rp_,         &
+              3.65126371383667_rp_, infty, infty, infty /)
+   p%C_l = (/ 0.5772018432617188_rp_, - 0.7891387939453125_rp_ /)
+   p%C_u = (/ infty, - 0.7891387939453125_rp_ /)
+   CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
+   p%H%ne = h_ne
+   ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
+   p%H%row = (/ 1, 2, 3, 4 /) ; p%H%col = (/ 1, 2, 3, 4 /)
+   p%H%val = 2.98827052116394_rp_
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
+   p%A%ne = a_ne
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   p%A%row = (/ 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 /)
+   p%A%col = (/ 1, 2, 3, 4, 5, 1, 2, 3, 4, 6, 7 /)
+   p%A%val = (/ 24.42279815673828_rp_, 4.915234088897705_rp_,                  &
+                6.701595783233643_rp_, 18.10791397094727_rp_, 1.0_rp_,         &
+                2.0_rp_, 9.937593460083008_rp_, 7.288651466369629_rp_,         &
+                2.697472333908081_rp_, - 1.0_rp_, 1.0_rp_ /)
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+   CALL CQP_initialize( data, control, info )
+   control%SBLS_control%symmetric_linear_solver = 'sytr'
+   control%SBLS_control%definite_linear_solver = 'potr'
+   control%SBLS_pounce_control%symmetric_linear_solver = 'sytr'
+   control%SBLS_pounce_control%definite_linear_solver = 'potr'
+   control%FDC_control%symmetric_linear_solver = 'sytr'
+   control%infinity = infty
+   CALL CQP_solve( p, data, control, info, C_stat, B_stat )
+   WRITE( 6, "( I6, ' iterations. Optimal objective value = ', F9.4,           &
+  &       ' status = ', I6 )" ) info%iter, info%obj, info%status
+   tol = MAX( EPSILON( 1.0_rp_ ), REAL( EPSILON( 1.0_dp_ ), rp_ ) )           &
+           ** 0.75_rp_ * 17.050812122374513_rp_
+   IF ( info%status /= 0 .OR.                                                  &
+        ABS( info%obj - 17.050812122374513_rp_ ) > tol ) THEN
+     WRITE( 6, "( ' strictly interior step test failed' )" )
+     pounce_failures = pounce_failures + 1
+   END IF
+   CALL CQP_terminate( data, control, info )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%A%type, p%H%type )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+
+!  report any failures of the pounce and strictly interior step tests through
+!  the exit status
 
    IF ( pounce_failures > 0 ) THEN
-     WRITE( 6, "( /, 1X, I0, ' of the pounce tests failed' )" ) pounce_failures
+     WRITE( 6, "( /, 1X, I0, ' of the pounce and strictly interior step',     &
+    &               ' tests failed' )" ) pounce_failures
      STOP 1
    END IF
 
