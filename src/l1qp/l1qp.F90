@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:33 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 08:52 GMT.
 
 #include "galahad_modules.h"
 
@@ -450,7 +450,12 @@
       control%CQP_control%stop_rel_c = - one
       control%CQP_control%stop_abs_d = - one
       control%CQP_control%stop_rel_d = - one
-!     CALL DLP_initialize( data, control%DLP_control, inform%DQP_inform )
+      CALL DQP_initialize( data, control%DQP_control, inform%DQP_inform )
+
+!  DLP's controls are those of DQP. Initialize them by copying DQP's (calling
+!  DLP_initialize would initialize the shared data a second time)
+
+      control%DLP_control = control%DQP_control
       control%DLP_control%prefix = '" - DLP:"                     '
       control%DLP_control%stop_abs_p = - one
       control%DLP_control%stop_rel_p = - one
@@ -458,7 +463,7 @@
       control%DLP_control%stop_rel_c = - one
       control%DLP_control%stop_abs_d = - one
       control%DLP_control%stop_rel_d = - one
-      CALL DQP_initialize( data, control%DQP_control, inform%DQP_inform )
+
       control%DQP_control%prefix = '" - DQP:"                     '
       control%DQP_control%stop_abs_p = - one
       control%DQP_control%stop_rel_p = - one
