@@ -973,7 +973,14 @@
 
 !  Check that the iteration bound has not been exceeded
 
-        IF ( inform%iter + 1 > data%itmax ) GO TO 490
+        IF ( inform%iter + 1 > data%itmax ) THEN
+
+!  a single pass has no subspace solution to recover; x is already the
+!  best point in the current subspace
+
+          IF ( data%one_pass .AND. inform%iter > 0 ) GO TO 900
+          GO TO 490
+        END IF
         inform%iter = inform%iter + 1
         data%header = data%printd .OR. MOD( inform%iter, 25 ) == 0
 

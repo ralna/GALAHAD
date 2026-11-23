@@ -85,4 +85,40 @@
      STOP 1
    END IF
 
+!  a single pass (sigma = mu = 0) stopped by the iteration limit returns the
+!  current point
+
+   CALL L2RT_initialize( data, control, inform )
+   control%print_level = 0 ; control%itmax = 1
+   CALL L2RT_import_control( control, data, status )
+   power = 3.0_rp_ ; weight = 0.0_rp_ ; shift = 0.0_rp_ ; status = 1
+   U = 1.0_rp_
+   DO
+       CALL L2RT_solve_problem( data, status, m, n, power, weight, shift,      &
+                                X, U, V )
+     SELECT CASE( status )  ! Branch as a result of status
+     CASE( 2 )                     !  Form u <- u + A * v
+       U( : n ) = U( : n ) + V
+       DO i = 1, n
+         U( n + i ) = U( n + i ) + i * V( i )
+       END DO
+     CASE( 3 )                     !  Form v <- v + A^T * u
+       V = V + U( : n )
+       DO i = 1, n
+         V( i ) = V( i ) + i * U( n + i )
+       END DO
+     CASE ( 4 )                    ! Restart
+        U = 1.0_rp_
+     CASE DEFAULT
+        EXIT
+     END SELECT
+   END DO
+   CALL L2RT_information( data, inform, status )
+   CALL L2RT_terminate( data, control, inform ) ! delete internal workspace
+   IF ( inform%status /= 0 .OR. inform%iter /= 1 ) THEN
+     WRITE( 6, "( ' iteration limit: status = ', I0, ', iter = ', I0 )" )     &
+       inform%status, inform%iter
+     STOP 1
+   END IF
+
    END PROGRAM GALAHAD_L2RT_test_interface
