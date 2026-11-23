@@ -156,26 +156,27 @@ functions
       n : int
           holds the number of variables.
       S_type : string
-          specifies the symmetric storage scheme used for the Hessian $H$.
+          specifies the symmetric storage scheme used for the scaling
+          matrix $S$.
           It should be one of 'coordinate', 'sparse_by_rows', 'dense',
-          'diagonal', 'scaled_identity', 'identity', 'zero'  or 'none'; 
+          'diagonal', 'scaled_identity' or 'identity'; 
           lower or upper case variants are allowed.
       S_ne : int
           holds the number of entries in the  lower triangular part of
-          $H$ in the sparse co-ordinate storage scheme. It need
+          $S$ in the sparse co-ordinate storage scheme. It need
           not be set for any of the other schemes.
       S_row : ndarray(S_ne)
-          holds the row indices of the lower triangular part of $H$
+          holds the row indices of the lower triangular part of $S$
           in the sparse co-ordinate storage scheme. It need not be set for
           any of the other schemes, and in this case can be None.
       S_col : ndarray(S_ne)
           holds the column indices of the  lower triangular part of
-          $H$ in either the sparse co-ordinate, or the sparse row-wise
+          $S$ in either the sparse co-ordinate, or the sparse row-wise
           storage scheme. It need not be set when the other storage schemes
           are used, and in this case can be None.
       S_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
-          part of $H$, as well as the total number of entries,
+          part of $S$, as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       options : dict, optional
@@ -204,21 +205,23 @@ functions
       H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
-          ``nrek.load``.
+          ``nrek.load``. It may be None for the 'identity', 'zero' and
+          'none' storage schemes, which have no values.
       c : ndarray(n)
           holds the values of the linear term $c$ in the objective function.
       power : float
           holds the regularization power, $p > 2$.
       weight : float
           holds the strictly positive regularization weight, $\sigma$.
-      S_ne : int
+      S_ne : int, optional
           holds the number of entries in the lower triangular part of 
-          the scaling matrix $S$ if it is not the identity matrix. 
-          Otherwise it should be None.
-      S_val : ndarray(S_ne)
+          the scaling matrix $S$, if ``nrek.load_s`` has been called.
+          Otherwise it may be omitted.
+      S_val : ndarray(S_ne), optional
           holds the values of the nonzeros in the lower triangle of the scaling
           matrix $S$ in the same order as specified in the sparsity pattern in 
-          ``nrek.load_s`` if needed. Otherwise it should be None.
+          ``nrek.load_s``, if that has been called. Otherwise it may be
+          omitted or None.
 
       **Returns:**
 
@@ -297,7 +300,7 @@ functions
             * **-18**
 
               Too many iterations have been required. This may happen if 
-              options['eks max'] is too small, but may also be symptomatic of 
+              options['eks_max'] is too small, but may also be symptomatic of 
               a badly scaled problem.
 
             * **-31** 
@@ -321,7 +324,7 @@ functions
           obj : float
              the value of the quadratic function 
              $f + c^T x + \frac{1}{2} x^T H x$
-          obj_regularization : float
+          obj_regularized : float
              the value of the regularized quadratic function, $r(x)$.
           x_norm : float
              the $S$-norm of $x$, $||x||_S$.
