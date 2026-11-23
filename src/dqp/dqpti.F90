@@ -20,6 +20,10 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    CHARACTER ( len = 2 ) :: st
+   INTEGER ( KIND = ip_ ) :: status_ref
+   REAL ( KIND = rp_ ) :: f_w
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W_w, X_0_w, H_w, G_w
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_star
 
 ! set up problem data
 
@@ -113,6 +117,55 @@
      END IF
      CALL DQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
+
+!  weighted shifted least-distance example, with W = ( 1, 2, 3 ) and
+!  x_0 = 1. The first constraint is active at its upper bound and the
+!  second is an equality, so x = ( 31, 44, 62 ) / 53. The same problem
+!  posed with the diagonal Hessian W^2 is solved first, and the weighted
+!  solve is only checked if that succeeds
+
+   WRITE( 6, "( /, ' weighted shifted least-distance test', / )" )
+   ALLOCATE( W_w( n ), X_0_w( n ), H_w( n ), G_w( n ), X_star( n ) )
+   W_w = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_ /) ; X_0_w = 1.0_rp_
+   H_w = W_w ** 2 ; G_w = G - H_w * X_0_w
+   f_w = f + 0.5_rp_ * SUM( H_w * X_0_w ** 2 )
+   X_star = (/ 31.0_rp_, 44.0_rp_, 62.0_rp_ /) / 53.0_rp_
+
+   CALL DQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_
+   CALL DQP_import( control, data, status, n, m,                               &
+                    'diagonal', H_ne, H_row, H_col, H_ptr,                     &
+                    'coordinate', A_ne, A_row, A_col, A_ptr )
+   CALL DQP_solve_qp( data, status, H_w, G_w, f_w, A_val, C_l, C_u,            &
+                      X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+   CALL DQP_information( data, inform, status )
+   status_ref = inform%status
+   CALL DQP_terminate( data, control, inform )
+
+   IF ( status_ref /= 0 ) THEN
+     WRITE( 6, "( ' WW: skipped, diagonal Hessian status = ', I0 )" )          &
+       status_ref
+   ELSE
+     CALL DQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
+     X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_
+     CALL DQP_import( control, data, status, n, m,                             &
+                      'shifted_least_distance', H_ne, H_row, H_col, H_ptr,     &
+                      'coordinate', A_ne, A_row, A_col, A_ptr )
+     CALL DQP_solve_sldqp( data, status, W_w, X_0_w, G, f, A_val, C_l, C_u,    &
+                           X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+     CALL DQP_information( data, inform, status )
+     CALL DQP_terminate( data, control, inform )
+     IF ( inform%status /= 0 .OR.                                              &
+          MAXVAL( ABS( X - X_star ) ) > SQRT( EPSILON( 1.0_rp_ ) ) ) THEN
+       WRITE( 6, "( ' WW: DQP_solve_sldqp failed, status = ', I0 )" )          &
+         inform%status
+       STOP 1
+     END IF
+     WRITE( 6, "( ' WW: DQP_solve_sldqp exit status = ', I0 )" ) inform%status
+   END IF
+   DEALLOCATE( W_w, X_0_w, H_w, G_w, X_star )
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
 
 !  shifted least-distance example

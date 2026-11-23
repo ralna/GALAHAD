@@ -2261,7 +2261,8 @@
         scaled_identity_h = .FALSE.
       ELSE
         diagonal_h = .TRUE. ; identity_h = .FALSE.
-        scaled_identity_h = .TRUE.
+        scaled_identity_h =                                                    &
+          COUNT( prob%WEIGHT( : prob%n ) /= prob%WEIGHT( 1 ) ) == 0
       END IF
 
       CALL DQP_workspace( prob%m, prob%n, data%dims, prob%A, prob%H,           &
