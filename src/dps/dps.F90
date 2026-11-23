@@ -713,7 +713,7 @@
 !  solve the TR problem
 
       CALL DPS_resolve( n, X, data, control, inform, C = C, f = f,             &
-                        delta = delta, sigma = sigma )
+                        delta = delta, sigma = sigma, p = p )
       RETURN
 
 !  End of subroutine DPS_solve

@@ -242,32 +242,44 @@ PROGRAM GALAHAD_DPS_EXAMPLE
      END DO
    END DO
 
-!  ======================================
-!  regularization with the power p = 2
-!  ======================================
+!  ===========================================
+!  regularization with the powers p = 2 and 4
+!  ===========================================
 
-!  H = diag( 1, 2, 3 ) is positive definite, so M = H, and with c = 1,
-!  sigma = 1 and p = 2, lambda = sigma = 1 and x = - H^-1 c / 2
+!  H = diag( 1, 2, 3 ) is positive definite, so M = H, and in the variables
+!  z = H^1/2 x, ( 1 + lambda ) z = - H^-1/2 c with
+!  lambda = sigma ||z||^( p - 2 ). With c = 1, ||H^-1/2 c||^2 = 11/6, so
+!  lambda = 1 and x = - H^-1 c / 2 both for p = 2, sigma = 1 and for p = 4,
+!  sigma = 24/11
 
-   WRITE( 6, "( /, ' =-=-=-=-= power-two test =-=-=-=-= ', / )" )
+   WRITE( 6, "( /, ' =-=-=-=-= power-two/four tests =-=-=-=-= ', / )" )
    CALL SMT_put( H2%type, 'COORDINATE', i )
    H2%n = 3 ; H2%ne = 3
    ALLOCATE( H2%row( 3 ), H2%col( 3 ), H2%val( 3 ), STAT = i )
    H2%row = (/ 1, 2, 3 /) ; H2%col = (/ 1, 2, 3 /)
    H2%val = (/ one, two, 3.0_rp_ /)
    C2 = one
-   CALL DPS_initialize( data, control, inform )
-   control%symmetric_linear_solver = 'sytr'
-   CALL DPS_solve( 3_ip_, H2, C2, zero, X2, data, control, inform,            &
-                   sigma = one, p = two )
    X2_star = - (/ one, one / two, one / 3.0_rp_ /) / two
-   IF ( inform%status /= 0 .OR.                                                &
-        MAXVAL( ABS( X2 - X2_star ) ) > SQRT( EPSILON( one ) ) ) THEN
-     WRITE( 6, "( ' p = 2: DPS_solve failed, status = ', I0 )" ) inform%status
-     STOP 1
-   END IF
-   WRITE( 6, "( ' p = 2: DPS_solve   exit status = ', I6 )" ) inform%status
-   CALL DPS_terminate( data, control, inform )
+   DO pass = 1, 2
+     IF ( pass == 1 ) THEN
+       p = two ; sigma = one
+     ELSE
+       p = 4.0_rp_ ; sigma = 24.0_rp_ / 11.0_rp_
+     END IF
+     CALL DPS_initialize( data, control, inform )
+     control%symmetric_linear_solver = 'sytr'
+     CALL DPS_solve( 3_ip_, H2, C2, zero, X2, data, control, inform,          &
+                     sigma = sigma, p = p )
+     IF ( inform%status /= 0 .OR.                                              &
+          MAXVAL( ABS( X2 - X2_star ) ) > SQRT( EPSILON( one ) ) ) THEN
+       WRITE( 6, "( ' p = ', F3.1, ': DPS_solve failed, status = ', I0 )" )   &
+         p, inform%status
+       STOP 1
+     END IF
+     WRITE( 6, "( ' p = ', F3.1, ': DPS_solve   exit status = ', I6 )" )      &
+       p, inform%status
+     CALL DPS_terminate( data, control, inform )
+   END DO
    DEALLOCATE( H2%row, H2%col, H2%val, H2%type, STAT = i )
 
 !  =============
