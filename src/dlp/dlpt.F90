@@ -876,8 +876,8 @@
 !  perturbed problem with perturbation 0.1 has the solution ( 10, 10, 1 ),
 !  and the extrapolation along its active set gives ( 50, 50, 1 ) for the
 !  perturbation 0.02, at which x_2 reaches its bound. As the lower limit
-!  on the perturbation is 0.05, DLP should stop there and report failure
-!  (the solution is ( 100, 50, 1 ))
+!  on the perturbation is 0.05, DLP should stop there, report failure and
+!  return the extrapolated point (the solution is ( 100, 50, 1 ))
 !  ======================================================================
 
    WRITE( 6, "( /, ' perturbation limit test ', / )" )
@@ -903,6 +903,11 @@
    IF ( info%status /= GALAHAD_error_tiny_step ) THEN
      WRITE( 6, "( ' perturbation limit test: DLP_solve exit status = ', I0,   &
     &             ' FAILED' )" ) info%status
+     STOP 1
+   ELSE IF ( MAXVAL( ABS( p%X - (/ 50.0_rp_, 50.0_rp_, 1.0_rp_ /) ) ) >       &
+             SQRT( EPSILON( 1.0_rp_ ) ) * 50.0_rp_ ) THEN
+     WRITE( 6, "( ' perturbation limit test: wrong extrapolated point',       &
+    &             ' x = ', 3ES12.4, ' FAILED' )" ) p%X
      STOP 1
    ELSE
      WRITE( 6, "( ' perturbation limit test: failure reported' )" )

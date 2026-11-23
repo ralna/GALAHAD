@@ -2074,7 +2074,7 @@
 
         ratio = perturbation / new_perturbation
         DO j = dims%x_free + 1, n
-          X( j ) = d_x + ratio * ( X( j ) - SOL( j ) )
+          X( j ) = SOL( j ) + ratio * ( X( j ) - SOL( j ) )
         END DO
 
 !  compute the new v = v_current + ( sigma / sigma_current - 1 ) d_v
