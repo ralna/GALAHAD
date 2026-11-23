@@ -305,6 +305,9 @@ static PyObject* py_lstr_load_options(PyObject *self, PyObject *args, PyObject *
 
 //  *-*-*-*-*-*-*-*-*-*-   LSTR_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
 
+// x is kept between calls to solve_problem, as the solver updates it
+static PyArrayObject *py_x_saved = NULL;
+
 static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_u, *py_v;
     double *u, *v;
@@ -331,11 +334,15 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args, PyObject 
     u = (double *) PyArray_DATA(py_u);
     v = (double *) PyArray_DATA(py_v);
 
-    // Create NumPy output arrays
+    // Use the saved x, creating it if needed
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
-    double *x = (double *) PyArray_DATA(py_x);
+    if(py_x_saved == NULL || PyArray_DIM(py_x_saved, 0) != n){
+        Py_XDECREF(py_x_saved);
+        py_x_saved = (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_DOUBLE, 0);
+        if(py_x_saved == NULL)
+            return NULL;
+    }
+    double *x = (double *) PyArray_DATA(py_x_saved);
 
     // Call lstr_solve_direct
     lstr_solve_problem(&data, &status, m, n, radius, x, u, v);
@@ -347,6 +354,12 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args, PyObject 
 
     // Raise any status errors
     if(!check_error_codes(status))
+        return NULL;
+
+    // Copy x, which later calls change
+    PyArrayObject *py_x =
+      (PyArrayObject *) PyArray_NewCopy(py_x_saved, NPY_CORDER);
+    if(py_x == NULL)
         return NULL;
 
     // Return status, x, u and v
@@ -379,6 +392,9 @@ static PyObject* py_lstr_terminate(PyObject *self){
 
     // Call lstr_terminate
     lstr_terminate(&data, &control, &inform);
+
+    // Free the saved x
+    Py_CLEAR(py_x_saved);
 
     // require future calls start with lstr_initialize
     init_called = false;
