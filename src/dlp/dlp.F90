@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:33 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 08:52 GMT.
 
 #include "galahad_modules.h"
 
@@ -89,7 +89,6 @@
       REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
       REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
-      REAL ( KIND = rp_ ), PARAMETER :: infeas = ten ** ( - 10 )
 
 !  the trust-region radius for the subspace step; any finite value is
 !  allowed by the theory, and it is smaller in single precision to limit the
@@ -1498,6 +1497,14 @@
       INTEGER ( KIND = ip_ ) :: i, ii, j, l, out
       REAL ( KIND = rp_ ) :: d_v, d_x, vc, xc, pxd, qt, obj, rho, ratio
       REAL ( KIND = rp_ ) :: new_perturbation, this_perturbation, skip_tol
+
+!  a component of x or c is regarded as unchanged along the extrapolation if
+!  it changes by at most skip_rel_tol relative to its size, and the
+!  extrapolation is accepted if it remains valid for all perturbations larger
+!  than accept_rel_tol times the current one
+
+      REAL ( KIND = rp_ ), PARAMETER :: skip_rel_tol = epsmch ** 0.75_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: accept_rel_tol = epsmch ** 0.5_rp_
       LOGICAL :: printi, printt, printp, printd
       LOGICAL :: c_stat_required, x_stat_required, penalty_objective, skip
 
@@ -1913,9 +1920,10 @@
 
 !  components from the simple bounds
 
-      skip = .TRUE. ; skip_tol = thousand * epsmch
+      skip = .TRUE.
       DO j = dims%x_free + 1, n
         xc = X( j ) ; d_x = SOL( j )
+        skip_tol = skip_rel_tol * ( one + ABS( xc ) )
         IF ( ABS( xc - d_x ) > skip_tol ) THEN
           skip = .FALSE.
           pxd = perturbation * ( xc - d_x )
@@ -1966,6 +1974,7 @@
           DO l = A_ptr( i ) , A_ptr( i + 1 ) - 1
             d_x = d_x + A_val( l ) * SOL( A_col( l ) )
           END DO
+          skip_tol = skip_rel_tol * ( one + ABS( xc ) )
           IF ( ABS( xc - d_x ) > skip_tol ) THEN
             pxd = perturbation * ( xc - d_x )
             IF ( i <= dims%c_l_end ) THEN
@@ -1997,7 +2006,7 @@
       c_stat_required = PRESENT( C_stat )
       x_stat_required = PRESENT( X_stat )
 
-      IF ( new_perturbation < infeas ) THEN
+      IF ( new_perturbation <= accept_rel_tol * perturbation ) THEN
         extrapolation_ok = .TRUE.
         perturbation = zero
         IF ( x_stat_required ) X_stat  = 0
