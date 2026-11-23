@@ -745,9 +745,9 @@ static PyObject* py_qpa_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    // H_val may be None if there are no Hessian values to give, as for the
-    // 'identity', 'zero' and 'none' storage schemes
-    if((PyObject *) py_H_val != Py_None){
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
         if(!check_array_double("H_val", py_H_val, H_ne))
             return NULL;
         H_val = (double *) PyArray_DATA(py_H_val);
@@ -836,9 +836,9 @@ static PyObject* py_qpa_solve_l1qp(PyObject *self, PyObject *args, PyObject *key
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    // H_val may be None if there are no Hessian values to give, as for the
-    // 'identity', 'zero' and 'none' storage schemes
-    if((PyObject *) py_H_val != Py_None){
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
         if(!check_array_double("H_val", py_H_val, H_ne))
             return NULL;
         H_val = (double *) PyArray_DATA(py_H_val);
@@ -927,9 +927,9 @@ static PyObject* py_qpa_solve_bcl1qp(PyObject *self, PyObject *args, PyObject *k
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    // H_val may be None if there are no Hessian values to give, as for the
-    // 'identity', 'zero' and 'none' storage schemes
-    if((PyObject *) py_H_val != Py_None){
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
         if(!check_array_double("H_val", py_H_val, H_ne))
             return NULL;
         H_val = (double *) PyArray_DATA(py_H_val);

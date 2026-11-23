@@ -393,20 +393,20 @@ static PyObject* py_ssls_factorize_matrix(PyObject *self, PyObject *args, PyObje
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape.
-    // H_val and C_val may be None if there are no values to give, as for
-    // the 'identity', 'zero' and 'none' storage schemes, and A_val may be
-    // None for the 'absent' scheme
-    if((PyObject *) py_H_val != Py_None){
+    // H_val and C_val may be None if there are no values to give (H_ne or
+    // C_ne = 0), as for the 'identity', 'zero' and 'none' storage schemes,
+    // and A_val may be None for the 'absent' scheme (A_ne = 0)
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
         if(!check_array_double("H_val", py_H_val, H_ne))
             return NULL;
         H_val = (double *) PyArray_DATA(py_H_val);
     }
-    if((PyObject *) py_A_val != Py_None){
+    if(A_ne > 0 || (PyObject *) py_A_val != Py_None){
         if(!check_array_double("A_val", py_A_val, A_ne))
             return NULL;
         A_val = (double *) PyArray_DATA(py_A_val);
     }
-    if((PyObject *) py_C_val != Py_None){
+    if(C_ne > 0 || (PyObject *) py_C_val != Py_None){
         if(!check_array_double("C_val", py_C_val, C_ne))
             return NULL;
         C_val = (double *) PyArray_DATA(py_C_val);
