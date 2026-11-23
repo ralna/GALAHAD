@@ -244,11 +244,11 @@ def test_dqp_sldqp():
 # x = ( 31, 44, 62 ) / 53 and y = ( -11, 81 ) / 53, with y_0 <= 0 as needed
 # at an upper bound, z = 0 and f = 311 / 106. (With w = ( 1, 1, 1 ) as in
 # test_dqp.py, w and w^2 cannot be told apart). DQP writes past the end of
-# an array for weights that are not all equal, so the outcome depends on the
-# state of memory and the xfail cannot be strict
-@pytest.mark.xfail(strict=False, reason='dqp overruns its Hessian '
-                   'workspace for non-constant weights (see '
-                   'https://github.com/ralna/GALAHAD/pull/639)')
+# an array for weights that are not all equal, which can corrupt the heap
+# and crash Python later, so the test is skipped rather than xfailed
+@pytest.mark.skip(reason='dqp overruns its Hessian workspace for '
+                  'non-constant weights (see '
+                  'https://github.com/ralna/GALAHAD/pull/639)')
 def test_dqp_sldqp_weighted():
     w_w = np.array([1.0, 2.0, 3.0])
     x0_w = np.ones(n)
