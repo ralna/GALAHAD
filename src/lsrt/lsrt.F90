@@ -843,7 +843,14 @@
 
       inform%iter = 0 ; inform%iter_pass2 = 0
       inform%x_norm = zero ; data%z_norm = zero
-      inform%multiplier = zero
+
+!  when sigma = 0 or p = 2 (one_pass), the multiplier is sigma
+
+      IF ( data%one_pass ) THEN
+        inform%multiplier = sigma
+      ELSE
+        inform%multiplier = zero
+      END IF
       inform%biters = 0
       inform%biter_min = 0 ; inform%biter_max = 0 ; inform%biter_mean = zero
 
