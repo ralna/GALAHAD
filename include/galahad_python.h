@@ -236,6 +236,12 @@ static inline bool check_error_codes(int status){
             return true; // warnings return true
         case -40:
             if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "it is not possible to alter the diagonals"
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
+            return true; // warnings return true
+        case -82:
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the user has forced termination of solver by removing the file"
             " named options['alive_file'] from unit options['alive_unit']."
             ,2) < 0) // raise in module

@@ -228,7 +228,7 @@ functions
              options['cpu_time_limit'] is too small, but may also be
              symptomatic of a badly scaled problem.
 
-           * **-40**
+           * **-82**
 
              The user has forced termination of the solver by removing
              the file named options['alive_file'] from unit
