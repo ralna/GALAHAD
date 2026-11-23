@@ -246,15 +246,7 @@ def test_trs_boundary_a(use_m, A_type, factorization):
     check_optimality(x, y, inform, g_a, radius_a, M=Mx, A=A)
 
 
-# the dense factorization, and a diagonal H, use a solver that starts the
-# multiplier below zero and so misses interior solutions
-INTERIOR_XFAIL = pytest.mark.xfail(
-    strict=True, reason='trs returns a boundary point with a negative '
-    'multiplier instead of an interior solution (see '
-    'https://github.com/ralna/GALAHAD/pull/631)')
-
-@pytest.mark.parametrize('factorization',
-                         [0, pytest.param(1, marks=INTERIOR_XFAIL)])
+@pytest.mark.parametrize('factorization', FACTORIZATION)
 def test_trs_interior(factorization):
     # problem 7)
     x, y, inform = solve(g_b, radius_i, H=H_pd,
@@ -292,7 +284,6 @@ g_db = np.array([-6.0, 0.0, 16.0]) / 5.0
 x_star_db = np.array([3.0, 0.0, -4.0]) / 5.0
 q_db = -107.0 / 50.0
 
-@INTERIOR_XFAIL
 @pytest.mark.parametrize('factorization', FACTORIZATION)
 def test_trs_diagonal_interior(factorization):
     x, y, inform = solve(g_di, 10.0, H=H_d, H_type='diagonal',

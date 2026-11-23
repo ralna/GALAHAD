@@ -247,10 +247,6 @@ def test_dps_goldfarb(H_type):
 # 5) the goldfarb variant with H = diag( 1, 2, 3 ) (so M = I),
 # g = ( 1, 1, 1 ) and radius 10: the minimizer x = - ( 1, 1/2, 1/3 ) of q
 # lies inside the region, with lambda = 0 and q = - 11/12
-@pytest.mark.xfail(strict=True, reason='dps (through trs_solve_diagonal) '
-                   'returns a boundary point with a negative multiplier '
-                   'instead of an interior solution (see '
-                   'https://github.com/ralna/GALAHAD/pull/631)')
 def test_dps_goldfarb_interior():
     H_i = np.diag([1.0, 2.0, 3.0])
     g_i = np.array([1.0, 1.0, 1.0])
