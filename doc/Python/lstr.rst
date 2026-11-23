@@ -100,7 +100,7 @@ functions
 
    .. function:: lstr.solve_problem(status, m, n, radius, u, v)
 
-      Find the global moinimizer of the quadratic objective function $q(x)$
+      Find the global minimizer of the quadratic objective function $q(x)$
       within a trust-region of radius $\Delta$.
 
       **Parameters:**
@@ -212,6 +212,11 @@ functions
             * **-25**
 
               status is negative on entry.
+
+            * **-30**
+
+              The trust-region boundary has been encountered in
+              Steihaug-Toint mode.
 
           alloc_status : int
              the status of the last attempted allocation/deallocation.
