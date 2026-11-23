@@ -164,8 +164,8 @@ functions
       S_type : string
           specifies the symmetric storage scheme used for the scaling matrix 
           $S$. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
-          'diagonal', 'scaled_identity', 'identity', 'zero'  or 'none'; 
-          lower or upper case variants are allowed.
+          'diagonal', 'scaled_identity' or 'identity'; lower or upper
+          case variants are allowed.
       S_ne : int
           holds the number of entries in the  lower triangular part of
           $S$ in the sparse co-ordinate storage scheme. It need
@@ -207,13 +207,14 @@ functions
       b : ndarray(m)
           holds the values of the observations $b$.
       S_ne : int, optional
-          holds the number of entries in the lower triangular part of 
-          the scaling matrix $S$ if it is not the identity matrix. 
-          Otherwise it should be None.
+          holds the number of entries in the lower triangular part of
+          the scaling matrix $S$, if ``llst.load_scaling`` has been called.
+          Otherwise it may be omitted.
       S_val : ndarray(S_ne), optional
           holds the values of the nonzeros in the lower triangle of $S$ in 
           the same order as specified in the sparsity pattern in 
-          ``llst.load_scaling`` if needed. Otherwise it should be None.
+          ``llst.load_scaling``, if that has been called. Otherwise it may
+          be omitted or None.
 
       **Returns:**
 
