@@ -317,10 +317,6 @@ def test_qpa_l1(case):
     assert inform['merit'] == pytest.approx(merit_star, abs=1e-8)
 
 
-@pytest.mark.xfail(strict=True, reason='qpa_solve_bcl1qp starts with '
-                   'rho_b = 0, which is never increased, so the bounds are '
-                   'not enforced (see '
-                   'https://github.com/ralna/GALAHAD/pull/609)')
 def test_qpa_bcl1qp_active_bound():
     # with x_0 <= 1/2, the l_1 minimizer above violates the bound, so it
     # must be active: x_0 = 1/2, both constraints are violated below, so

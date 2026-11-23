@@ -257,9 +257,6 @@ def test_cqp_sldqp():
 # x = ( 31, 44, 62 ) / 53 and y = ( -11, 81 ) / 53, with y_0 <= 0 as needed
 # at an upper bound, z = 0 and f = 311 / 106. (With w = ( 1, 1, 1 ) as in
 # test_cqp.py, w and w^2 cannot be told apart)
-@pytest.mark.xfail(strict=True, reason='cqp\'s pounce uses w in place of w^2 '
-                   'for shifted least-distance problems (see '
-                   'https://github.com/ralna/GALAHAD/pull/614)')
 def test_cqp_sldqp_weighted():
     w_w = np.array([1.0, 2.0, 3.0])
     x0_w = np.ones(n)

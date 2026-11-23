@@ -125,10 +125,6 @@ def test_lpb_vertex(A_type):
     assert inform['obj'] == pytest.approx(f_star_2, abs=1e-8)
 
 
-@pytest.mark.xfail(strict=True, reason='lpb resets the dual variables to '
-                   'their getdua starting values every iteration, and fails '
-                   'with status -7 (see '
-                   'https://github.com/ralna/GALAHAD/pull/612)')
 def test_lpb_getdua():
     # advanced initial values for the dual variables should give the same
     # solution

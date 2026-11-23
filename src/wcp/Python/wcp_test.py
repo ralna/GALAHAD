@@ -15,8 +15,9 @@ import pytest
 # test problems, with A = ( 2 1 0 ) unless stated otherwise:
 #                         ( 0 1 1 )
 # 1) as in test_wcp.py, c_l = ( 1, 2 ), c_u = ( 2, 2 ), -1 <= x_0 <= 1,
-# x_1 free and x_2 <= 2, g = 0. The equality constraint means there is no
-# strict interior, so the point is not strictly feasible
+# x_1 free and x_2 <= 2, g = 0. The equality constraint has no interior,
+# but feasibility only asks the point to lie strictly between the other
+# bounds
 # 2) the strictly feasible c_l = ( 1, 1 ), c_u = ( 2, 3 ), -1 <= x_0 <= 1,
 # -10 <= x_1 <= 10 and x_2 <= 2, with g = 0
 # 3) as 2) with g = ( 1, -1, 2 )
@@ -31,35 +32,26 @@ PROBLEMS = {
     'example': dict(A=A_EXAMPLE, c_l=np.array([1.0, 2.0]),
                     c_u=np.array([2.0, 2.0]),
                     x_l=np.array([-1.0, -infinity, -infinity]),
-                    x_u=np.array([1.0, infinity, 2.0]), g=np.zeros(3),
-                    feasible=False),
+                    x_u=np.array([1.0, infinity, 2.0]), g=np.zeros(3)),
     'interior': dict(A=A_EXAMPLE, c_l=np.array([1.0, 1.0]),
                      c_u=np.array([2.0, 3.0]),
                      x_l=np.array([-1.0, -10.0, -infinity]),
-                     x_u=np.array([1.0, 10.0, 2.0]), g=np.zeros(3),
-                     feasible=True),
+                     x_u=np.array([1.0, 10.0, 2.0]), g=np.zeros(3)),
     'target': dict(A=A_EXAMPLE, c_l=np.array([1.0, 1.0]),
                    c_u=np.array([2.0, 3.0]),
                    x_l=np.array([-1.0, -10.0, -infinity]),
                    x_u=np.array([1.0, 10.0, 2.0]),
-                   g=np.array([1.0, -1.0, 2.0]), feasible=True),
+                   g=np.array([1.0, -1.0, 2.0])),
     'free': dict(A=A_EXAMPLE, c_l=np.array([1.0, 1.0]),
                  c_u=np.array([2.0, 3.0]),
                  x_l=np.array([-1.0, -infinity, -infinity]),
-                 x_u=np.array([1.0, infinity, 2.0]), g=np.zeros(3),
-                 feasible=True),
+                 x_u=np.array([1.0, infinity, 2.0]), g=np.zeros(3)),
     'box': dict(A=np.zeros((0, 3)), c_l=np.zeros(0), c_u=np.zeros(0),
                 x_l=np.array([-1.0, 0.0, 2.0]), x_u=np.array([1.0, 4.0, 3.0]),
-                g=np.zeros(3), feasible=True),
+                g=np.zeros(3)),
 }
 x_star_box = np.array([0.0, 2.0, 2.5])
 
-# wcp counts the zero dual z_l of a free variable as an implicit (always
-# inactive) bound, so flags a free variable as x_stat = -2 and a strictly
-# feasible point as not feasible
-FREE_XFAIL = pytest.mark.xfail(
-    strict=True, reason='wcp treats free variables as implicit bounds '
-    '(see https://github.com/ralna/GALAHAD/pull/616)')
 # wcp drops the multipliers of equality constraints, returning y_l = y_u = 0
 EQUALITY_XFAIL = pytest.mark.xfail(
     strict=True, reason='wcp does not return equality multipliers '
@@ -160,21 +152,18 @@ def test_wcp_dual(request, solution):
                                    abs=1e-8)
 
 
-def test_wcp_feasible(request, solution):
-    # the point is strictly feasible unless there is no strict interior
+def test_wcp_feasible(solution):
+    # the point lies strictly between all bounds, except those of
+    # equality constraints
     problem, (x, c, y_l, y_u, z_l, z_u, x_stat, c_stat, inform) = solution
-    if problem == 'free':
-        request.applymarker(FREE_XFAIL)
-    assert inform['feasible'] == PROBLEMS[problem]['feasible']
+    assert inform['feasible']
 
 
-def test_wcp_status_arrays(request, solution):
+def test_wcp_status_arrays(solution):
     # x_stat and c_stat are 0 for variables and constraints that lie
     # between their bounds, and 3 for constraints whose bounds are equal
     problem, (x, c, y_l, y_u, z_l, z_u, x_stat, c_stat, inform) = solution
     p = PROBLEMS[problem]
-    if np.any(np.isinf(p['x_l']) & np.isinf(p['x_u'])):
-        request.applymarker(FREE_XFAIL)
     assert np.all(x_stat == 0)
     assert np.all(c_stat == np.where(p['c_l'] == p['c_u'], 3, 0))
 
@@ -207,9 +196,6 @@ def test_wcp_g_default(A_type):
         assert z_l_g + z_u_g == pytest.approx(z_l + z_u, abs=1e-12)
 
 
-@pytest.mark.xfail(strict=True,
-                   reason='wcp flags infeasible problems as -17, not -5 '
-                   '(see https://github.com/ralna/GALAHAD/pull/615)')
 def test_wcp_infeasible():
     # 0 <= x_0, x_1 <= 1 and x_0 + x_1 >= 3 are inconsistent
     with pytest.warns(RuntimeWarning):
