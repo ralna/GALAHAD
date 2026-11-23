@@ -40,6 +40,14 @@
      H_diag_val = [ 1.0_rp_, 0.0_rp_, 2.0_rp_ ]
    REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
      S_diag_val = [ 1.0_rp_, 2.0_rp_, 1.0_rp_ ]
+   INTEGER ( KIND = ip_ ) :: status_ref, status_s, failures, iter
+   REAL ( KIND = rp_ ) :: tol, x_norm
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X_ref, X_s
+   REAL ( KIND = rp_ ), DIMENSION( 0 ) :: null_r
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     C_t = [ 3.0_rp_, 0.0_rp_, 4.0_rp_ ]
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     C_b = [ 0.0_rp_, 5.0_rp_, 4.0_rp_ ] / 3.0_rp_
 
 !  =====================================
 !  basic test of various storage formats
@@ -137,9 +145,117 @@
      CALL NREK_terminate( data, control, inform ) !  delete internal workspace
    END DO
 
+!  ================================================================
+!  storage schemes without indices, for the problem
+!  minimize c^T x + 1/2 x^T H x + weight/3 ||x||_S^3
+!  with H as above or a multiple of I, and S absent or a multiple of I. Each
+!  solve is compared with one using explicit storage, skipped if that fails
+!  ================================================================
+
+   WRITE( 6, "( /, ' ==== tests of storage schemes without indices ===== ',  &
+  &  / )" )
+   tol = SQRT( EPSILON( 1.0_rp_ ) ) ; failures = 0
+
+!  H = 2 I, I and 0 given as a scaled identity, identity, zero and none, and
+!  as a diagonal
+
+   CALL SOLVE_SMALL( 'DIAGONAL', [ 2.0_rp_, 2.0_rp_, 2.0_rp_ ], '', null_r,    &
+                     C_t, 1.0_rp_, status_ref, X_ref )
+   CALL SOLVE_SMALL( 'SCALED_IDENTITY', [ 2.0_rp_ ], '', null_r,               &
+                     C_t, 1.0_rp_, status_s, X_s )
+   CALL CHECK( 'scaled identity H' )
+   CALL SOLVE_SMALL( 'DIAGONAL', [ 1.0_rp_, 1.0_rp_, 1.0_rp_ ], '', null_r,    &
+                     C_t, 1.0_rp_, status_ref, X_ref )
+   CALL SOLVE_SMALL( 'IDENTITY', null_r, '', null_r, C_t, 1.0_rp_,             &
+                     status_s, X_s )
+   CALL CHECK( 'identity H' )
+   CALL SOLVE_SMALL( 'DIAGONAL', [ 0.0_rp_, 0.0_rp_, 0.0_rp_ ], '', null_r,    &
+                     C_t, 1.0_rp_, status_ref, X_ref )
+   CALL SOLVE_SMALL( 'ZERO', null_r, '', null_r, C_t, 1.0_rp_, status_s, X_s )
+   CALL CHECK( 'zero H' )
+   CALL SOLVE_SMALL( 'NONE', null_r, '', null_r, C_t, 1.0_rp_, status_s, X_s )
+   CALL CHECK( 'none H' )
+
+!  S = 4 I given as a scaled identity, and as a diagonal
+
+   CALL SOLVE_SMALL( 'COORDINATE', H_val, 'DIAGONAL',                          &
+                     [ 4.0_rp_, 4.0_rp_, 4.0_rp_ ], C_b / 2.0_rp_, 0.75_rp_,   &
+                     status_ref, X_ref )
+   CALL SOLVE_SMALL( 'COORDINATE', H_val, 'SCALED_IDENTITY', [ 4.0_rp_ ],      &
+                     C_b / 2.0_rp_, 0.75_rp_, status_s, X_s )
+   CALL CHECK( 'scaled identity S' )
+
+!  S = I given as an identity without S_val, and no S
+
+   CALL SOLVE_SMALL( 'COORDINATE', H_val, '', null_r, C_b, 3.0_rp_,            &
+                     status_ref, X_ref )
+   CALL SOLVE_SMALL( 'COORDINATE', H_val, 'IDENTITY', null_r, C_b, 3.0_rp_,    &
+                     status_s, X_s )
+   CALL CHECK( 'identity S' )
+   IF ( failures > 0 ) STOP 1
+
    STOP
 
    CONTAINS
+
+     SUBROUTINE SOLVE_SMALL( h_type, H_v, s_type, S_v, C_v, par, status, X_v )
+
+!  solve the problem with H of type h_type and values H_v (using the indices
+!  above for 'COORDINATE'), and with no S (s_type = ''), or S of type s_type
+!  and values S_v (none for 'IDENTITY'), for the weight par, returning the
+!  exit status and solution, and setting x_norm and iter
+
+     CHARACTER ( LEN = * ), INTENT( IN ) :: h_type, s_type
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_v, S_v, C_v
+     REAL ( KIND = rp_ ), INTENT( IN ) :: par
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: X_v
+     TYPE ( NREK_full_data_type ) :: data2
+     TYPE ( NREK_control_type ) :: control2
+     TYPE ( NREK_inform_type ) :: inform2
+
+     X_v = 0.0_rp_ ; x_norm = - 1.0_rp_ ; iter = - 1
+     CALL NREK_initialize( data2, control2, inform2 )
+     CALL WHICH_sls( control2 )
+     IF ( h_type == 'COORDINATE' ) THEN
+       CALL NREK_import( control2, data2, status, n, h_type,                   &
+                         h_ne, H_row, H_col, null_ )
+     ELSE
+       CALL NREK_import( control2, data2, status, n, h_type,                   &
+                         SIZE( H_v ), null_, null_, null_ )
+     END IF
+     IF ( status == 0 .AND. s_type /= '' ) THEN
+       CALL NREK_S_import( data2, status, s_type, SIZE( S_v ),                 &
+                           null_, null_, null_ )
+     END IF
+     IF ( status == 0 ) THEN
+       IF ( s_type == '' .OR. s_type == 'IDENTITY' ) THEN
+         CALL NREK_solve_problem( data2, status, H_v, C_v, 3.0_rp_, par,     &
+                                  X_v )
+       ELSE
+         CALL NREK_solve_problem( data2, status, H_v, C_v, 3.0_rp_, par,     &
+                                  X_v, S_val = S_v )
+       END IF
+       CALL NREK_information( data2, inform2, status )
+       status = inform2%status
+       x_norm = inform2%x_norm ; iter = inform2%iter
+     END IF
+     CALL NREK_terminate( data2, control2, inform2 )
+     END SUBROUTINE SOLVE_SMALL
+
+     SUBROUTINE CHECK( name )
+     CHARACTER ( LEN = * ), INTENT( IN ) :: name
+     IF ( status_ref /= 0 ) THEN
+       WRITE( 6, "( 1X, A, ': skipped, reference status = ', I0 )" )           &
+         name, status_ref
+     ELSE IF ( status_s /= 0 .OR. MAXVAL( ABS( X_s - X_ref ) ) > tol ) THEN
+       WRITE( 6, "( 1X, A, ': failed, status = ', I0 )" ) name, status_s
+       failures = failures + 1
+     ELSE
+       WRITE( 6, "( 1X, A, ': ok' )" ) name
+     END IF
+     END SUBROUTINE CHECK
+
      SUBROUTINE WHICH_sls( control )
      TYPE ( NREK_control_type ), INTENT( INOUT ) :: control
 #include "galahad_sls_defaults_ls.h"
