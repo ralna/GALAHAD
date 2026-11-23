@@ -8,7 +8,7 @@
    INTEGER ( KIND = ip_ ) :: i, status
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X, V
    REAL ( KIND = rp_ ), DIMENSION( m ) :: U
-   REAL ( KIND = rp_ ) :: power, weight, shift
+   REAL ( KIND = rp_ ) :: power, weight, lambda_x, shift
 
    TYPE ( L2RT_full_data_type ) :: data
    TYPE ( L2RT_control_type ) :: control
@@ -45,5 +45,44 @@
 !  WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4 )")&
 !            inform%iter + inform%iter_pass2, f, inform%multiplier
    CALL L2RT_terminate( data, control, inform ) ! delete internal workspace
+
+!  check the multiplier: with shift = 0, the solution satisfies
+!  ( A^T A + lambda I ) x = A^T b, whose first component gives
+!  lambda = 2 / x_1 - 2
+
+   CALL L2RT_initialize( data, control, inform )
+   control%print_level = 0
+   CALL L2RT_import_control( control, data, status )
+   power = 3.0_rp_ ; weight = 1.0_rp_ ; shift = 0.0_rp_ ; status = 1
+   U = 1.0_rp_
+   DO
+     CALL L2RT_solve_problem( data, status, m, n, power, weight, shift,        &
+                              X, U, V )
+     SELECT CASE( status )  ! Branch as a result of status
+     CASE( 2 )                     !  Form u <- u + A * v
+       U( : n ) = U( : n ) + V
+       DO i = 1, n
+         U( n + i ) = U( n + i ) + i * V( i )
+       END DO
+     CASE( 3 )                     !  Form v <- v + A^T * u
+       V = V + U( : n )
+       DO i = 1, n
+         V( i ) = V( i ) + i * U( n + i )
+       END DO
+     CASE ( 4 )                    ! Restart
+        U = 1.0_rp_
+     CASE DEFAULT
+        EXIT
+     END SELECT
+   END DO
+   CALL L2RT_information( data, inform, status )
+   CALL L2RT_terminate( data, control, inform ) ! delete internal workspace
+   lambda_x = 2.0_rp_ / X( 1 ) - 2.0_rp_
+   IF ( inform%status /= 0 .OR. ABS( inform%multiplier - lambda_x ) >          &
+        EPSILON( 1.0_rp_ ) ** 0.25 * MAX( 1.0_rp_, lambda_x ) ) THEN
+     WRITE( 6, "( ' multiplier = ', ES12.4, ' but x implies ', ES12.4 )" )     &
+       inform%multiplier, lambda_x
+     STOP 1
+   END IF
 
    END PROGRAM GALAHAD_L2RT_test_interface

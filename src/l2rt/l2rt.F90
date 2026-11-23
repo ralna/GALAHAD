@@ -1259,7 +1259,7 @@
 
 !  Compute the norms ||r_pass2|| and ||A^T r_pass2|| and the Lagrange multiplier
 
-      inform%multiplier = data%Y( data%end_pass2 )
+      inform%multiplier = data%LAMBDA( data%end_pass2 )
       inform%r_norm = SQRT( ABS( DOT_PRODUCT( data%G( : data%end_pass2 ),      &
                                               data%G( : data%end_pass2 ) ) -   &
                      data%LAMBDA( data%end_pass2 ) * ( inform%x_norm ** 2 ) ) )
