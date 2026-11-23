@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 16:19 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:05 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -858,14 +858,6 @@
 !  accurate as the final interior-point iterate
 
        IF ( prob >= 2 .AND. itype == 3 ) CYCLE
-#ifdef REAL_32
-
-!  in single precision, the type 1 indicator's tolerance (stop_abs_p) is
-!  comparable to the distance of x_3 from its bound at the final iterate of
-!  problem 2, so the active set may not be predicted
-
-       IF ( prob == 2 .AND. itype == 1 ) CYCLE
-#endif
        DO ired = 0, 1
          ALLOCATE( p%B( o ), p%R( o ), p%X_l( n ), p%X_u( n ), p%X( n ),       &
                    p%Z( n ), p%X_status( n ), p%C( m ), p%C_l( m ),            &
