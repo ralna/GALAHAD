@@ -10,8 +10,6 @@
    INTEGER ( KIND = ip_ ) :: h_is, h_n, m_kind, status_ref, failures
    REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
    REAL ( KIND = rp_ ) :: tol, rad
-   REAL ( KIND = rp_ ), DIMENSION( n ) :: G, H_s, X_ref
-   REAL ( KIND = rp_ ), DIMENSION( m ) :: Y, Y_ref
    CHARACTER ( LEN = 15 ) :: h_type
    TYPE ( TRS_full_data_type ) :: data
    TYPE ( TRS_control_type ) :: control
@@ -49,6 +47,8 @@
      H_diag_val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_ /)
    REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
      M_diag_val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: G, H_s, X_ref
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: Y, Y_ref
 
 !  =====================================
 !  basic test of various storage formats
