@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 15:11 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 16:19 GMT.
 
 #include "galahad_modules.h"
 
@@ -2715,6 +2715,7 @@
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: Ao_ne, A_ne, i, ii, j, k, l, b_change, c_change
+      INTEGER ( KIND = ip_ ) :: status_before_pounce
       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_level
       INTEGER ( KIND = ip_ ) :: nbnds, nbnds_x, nbnds_c, muzero_fixed, nbact
       INTEGER ( KIND = ip_ ) :: out, error, it_best, infeas_max, iorder, sorder
@@ -4102,7 +4103,7 @@
 
 !  test that the factorization succeeded
 
-        inform%factorization_status = inform%status
+        inform%factorization_status = inform%SLS_inform%status
         IF ( inform%factorization_status < 0 ) THEN
           IF ( printe ) WRITE( error, "( A, '    ** Error return ', I0,        &
          &  ' from ', A )" ) prefix, inform%factorization_status,              &
@@ -5224,7 +5225,7 @@
           time_solve = time_solve + time_now - time_record
           clock_solve = clock_solve + clock_now - clock_record
 
-          inform%status = inform%status
+          inform%status = inform%SLS_inform%status
           IF ( inform%status /= GALAHAD_ok ) GO TO 600
 
           IF ( printd ) THEN
@@ -5458,7 +5459,7 @@
               WRITE( out, 2100 ) prefix, ' SOL_y ', RHS( dims%y_s : dims%y_e )
           END IF
 
-          inform%status = inform%status
+          inform%status = inform%SLS_inform%status
           IF ( inform%status /= GALAHAD_ok ) GO TO 600
 
 
@@ -6436,6 +6437,11 @@
               "( A, '  changes in predicted X/C_stat = ',                      &
             &    I0, ', ', I0, ', pouncing for solution ...' )" )              &
                prefix, b_change, c_change
+
+!  CLLS_pounce sets inform%status, so record it, and restore it if the
+!  pounce fails
+
+            status_before_pounce = inform%status
             CALL CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,         &
                               B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,      &
                               X_last, R_last, C_last, Y_last, Z_last,          &
@@ -6464,6 +6470,7 @@
             ELSE
               IF ( printi ) WRITE( out, "( A,                                  &
              &   '  pounce unsuccessful, continuing' )" ) prefix
+              inform%status = status_before_pounce
             END IF
           END IF
         END IF
