@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:29 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:33 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L1QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -18,6 +18,9 @@
    REAL ( KIND = rp_ ) :: delta, err, f, f_sol
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
+   INTEGER ( KIND = ip_ ) :: lp_trial, lp_errors
+   INTEGER ( KIND = i8_ ) :: lp_seed
+   REAL ( KIND = rp_ ) :: lp_f, lp_f_sol
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
 
 !go to 77
@@ -1083,9 +1086,150 @@
      DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
    END DO
 
+
+#ifndef REAL_32
+!  ======================================================================
+!  random LPs with known solutions, solved with refinement, many of which
+!  are degenerate, so that their perturbed solutions have constraints or
+!  bounds on their bounds but not in the active set (single precision is
+!  excluded, as DQP may then not solve the perturbed problems accurately
+!  enough)
+!  ======================================================================
+
+   WRITE( 6, "( /, ' random LP tests ', / )" )
+   lp_errors = 0 ; lp_seed = 12345
+   DO lp_trial = 1, 6
+     n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+     CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+     ALLOCATE( X_stat( n ), C_stat( m ) )
+     CALL L1QP_initialize( data, control, info )
+     control%refine = .TRUE.
+     control%CQP_control%SBLS_control%symmetric_linear_solver = 'sytr '
+     control%CQP_control%SBLS_control%definite_linear_solver = 'potr '
+     control%DLP_control%symmetric_linear_solver = 'sytr '
+     control%DLP_control%definite_linear_solver = 'potr '
+     control%infinity = infty
+     CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
+     lp_f = DOT_PRODUCT( p%G( : n ), p%X( : n ) )
+     IF ( info%status /= GALAHAD_ok ) THEN
+       lp_errors = lp_errors + 1
+       WRITE( 6, "( ' LP ', I0, ': L1QP_solve exit status = ', I0,         &
+      &             ' FAILED' )" ) lp_trial, info%status
+     ELSE IF ( ABS( lp_f - lp_f_sol ) > EPSILON( 1.0_rp_ ) ** 0.75 *          &
+               MAX( 1.0_rp_, ABS( lp_f_sol ) ) ) THEN
+       lp_errors = lp_errors + 1
+       WRITE( 6, "( ' LP ', I0, ': objective error = ', ES8.1, ' FAILED' )" )  &
+         lp_trial, ABS( lp_f - lp_f_sol )
+     ELSE
+       WRITE( 6, "( ' LP ', I0, ': solution correct' )" ) lp_trial
+     END IF
+     CALL L1QP_terminate( data, control, info )
+     DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,          &
+                 X_stat, C_stat )
+     DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   END DO
+   IF ( lp_errors > 0 ) THEN
+     WRITE( 6, "( /, 1X, I0, ' random LP tests failed' )" ) lp_errors
+     STOP 1
+   END IF
+#endif
+
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
+
+!  generate a random LP, minimize g^T x s.t. c_l <= A x <= c_u and
+!  x_l <= x <= x_u, with a known solution x_s, multipliers y_s and dual
+!  variables z_s, and optimal value f_s = g^T x_s; about 30% of the variables
+!  are free, 40% on a bound and 30% strictly between them, and about 15% of
+!  the constraints are equations, 50% active inequalities and 35% inactive
+
+     SUBROUTINE LP_planted( p, n, m, seed, f_s )
+     TYPE ( QPT_problem_type ), INTENT( INOUT ) :: p
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     INTEGER ( KIND = i8_ ), INTENT( INOUT ) :: seed
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f_s
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, nnzr, s
+     REAL ( KIND = rp_ ) :: r
+     INTEGER ( KIND = ip_ ), DIMENSION( MIN( n, 5 ) ) :: cols
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: x_s, z_s
+     REAL ( KIND = rp_ ), DIMENSION( m ) :: y_s, c_s
+     nnzr = MIN( n, 5_ip_ )
+     p%n = n ; p%m = m ; p%f = 0.0_rp_ ; p%new_problem_structure = .TRUE.
+     ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),        &
+               p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ) )
+     ALLOCATE( p%A%row( m * nnzr ), p%A%col( m * nnzr ), p%A%val( m * nnzr ) )
+     l = 0
+     DO i = 1, m
+       k = 0
+       DO WHILE ( k < nnzr )
+         j = MIN( n, 1 + INT( uniform( seed ) * n, ip_ ) )
+         IF ( ANY( cols( : k ) == j ) ) CYCLE
+         k = k + 1 ; cols( k ) = j
+         l = l + 1 ; p%A%row( l ) = i ; p%A%col( l ) = j
+         p%A%val( l ) = 2.0_rp_ * uniform( seed ) - 1.0_rp_
+       END DO
+     END DO
+     CALL SMT_put( p%A%type, 'COORDINATE', s ) ; p%A%ne = l
+     CALL SMT_put( p%H%type, 'ZERO', s )
+     DO j = 1, n
+       x_s( j ) = 2.0_rp_ * uniform( seed ) - 1.0_rp_
+     END DO
+     DO j = 1, n
+       r = uniform( seed ) ; z_s( j ) = 0.0_rp_
+       IF ( r < 0.3_rp_ ) THEN
+         p%X_l( j ) = - infty ; p%X_u( j ) = infty
+       ELSE IF ( r < 0.5_rp_ ) THEN
+         p%X_l( j ) = x_s( j ) ; p%X_u( j ) = x_s( j ) + 1.0_rp_
+         z_s( j ) = 0.1_rp_ + uniform( seed )
+       ELSE IF ( r < 0.7_rp_ ) THEN
+         p%X_u( j ) = x_s( j ) ; p%X_l( j ) = x_s( j ) - 1.0_rp_
+         z_s( j ) = - 0.1_rp_ - uniform( seed )
+       ELSE
+         p%X_l( j ) = x_s( j ) - 0.1_rp_ - uniform( seed )
+         p%X_u( j ) = x_s( j ) + 0.1_rp_ + uniform( seed )
+       END IF
+     END DO
+     c_s = 0.0_rp_
+     DO l = 1, p%A%ne
+       c_s( p%A%row( l ) ) = c_s( p%A%row( l ) )                              &
+         + p%A%val( l ) * x_s( p%A%col( l ) )
+     END DO
+     DO i = 1, m
+       r = uniform( seed ) ; y_s( i ) = 0.0_rp_
+       IF ( r < 0.15_rp_ ) THEN
+         p%C_l( i ) = c_s( i ) ; p%C_u( i ) = c_s( i )
+         y_s( i ) = 2.0_rp_ * uniform( seed ) - 1.0_rp_
+       ELSE IF ( r < 0.4_rp_ ) THEN
+         p%C_l( i ) = c_s( i ) ; p%C_u( i ) = infty
+         y_s( i ) = 0.1_rp_ + uniform( seed )
+       ELSE IF ( r < 0.65_rp_ ) THEN
+         p%C_u( i ) = c_s( i ) ; p%C_l( i ) = - infty
+         y_s( i ) = - 0.1_rp_ - uniform( seed )
+       ELSE
+         p%C_l( i ) = c_s( i ) - 0.1_rp_ - uniform( seed )
+         p%C_u( i ) = c_s( i ) + 0.1_rp_ + uniform( seed )
+       END IF
+     END DO
+
+!  g = A^T y_s + z_s
+
+     p%G = z_s
+     DO l = 1, p%A%ne
+       p%G( p%A%col( l ) ) = p%G( p%A%col( l ) )                              &
+         + p%A%val( l ) * y_s( p%A%row( l ) )
+     END DO
+     f_s = DOT_PRODUCT( p%G, x_s )
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+     END SUBROUTINE LP_planted
+
+!  a uniform pseudo-random number in [0,1)
+
+     REAL ( KIND = rp_ ) FUNCTION uniform( seed )
+     INTEGER ( KIND = i8_ ), INTENT( INOUT ) :: seed
+     seed = MOD( 1103515245_i8_ * seed + 12345_i8_, 2147483648_i8_ )
+     uniform = REAL( seed, KIND = rp_ ) / 2147483648.0_rp_
+     END FUNCTION uniform
      SUBROUTINE WHICH_sls( control )
      TYPE ( L1QP_control_type ) :: control
 #include "galahad_sls_defaults.h"
