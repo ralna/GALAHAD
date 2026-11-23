@@ -1511,6 +1511,7 @@
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
       unit_m = .NOT. PRESENT( M )
+      IF ( .NOT. unit_m ) unit_m = SMT_get( M%type ) == 'IDENTITY'
       constrained = PRESENT( A )
 
 !  set initial values
@@ -5296,8 +5297,9 @@
 !   variables
 !
 !  H_type is a character string that specifies the Hessian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
-!   'diagonal'. Lower or upper case variants are allowed.
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
+!   'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'. Lower or
+!   upper case variants are allowed.
 !
 !  H_ne is a scalar variable of type default integer, that holds the number of
 !   entries in the  lower triangular part of H in the sparse co-ordinate
@@ -5473,6 +5475,28 @@
               exact_size = space_critical,                                     &
               bad_alloc = data%trs_inform%bad_alloc, out = error )
        IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%H%type, 'SCALED_IDENTITY',                           &
+                     data%trs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = 1
+
+       array_name = 'trs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%H%type, 'IDENTITY', data%trs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%H%type, 'ZERO', data%trs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = 0
 
      CASE DEFAULT
        data%trs_inform%status = GALAHAD_error_unknown_storage
