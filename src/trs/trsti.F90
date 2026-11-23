@@ -7,7 +7,7 @@
    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_
    INTEGER ( KIND = ip_ ) :: status, storage_type, a_is, m_is
    LOGICAL :: use_a, use_m
-   INTEGER ( KIND = ip_ ) :: h_is, h_n, status_ref, failures
+   INTEGER ( KIND = ip_ ) :: h_is, h_n, m_kind, status_ref, failures
    REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
    REAL ( KIND = rp_ ) :: tol, rad
    REAL ( KIND = rp_ ), DIMENSION( n ) :: G, H_s, X_ref
@@ -195,24 +195,31 @@
        CASE ( 4 )
          h_type = 'NONE' ; H_s = zero ; h_n = 0
        END SELECT
-       CALL SOLVE( 'DIAGONAL', H_s, .FALSE., use_a, G, rad,                    &
+       CALL SOLVE( 'DIAGONAL', H_s, 0_ip_, use_a, G, rad,                      &
                    X_ref, Y_ref, status_ref )
-       CALL SOLVE( TRIM( h_type ), H_s( : h_n ), .FALSE., use_a, G, rad,       &
+       CALL SOLVE( TRIM( h_type ), H_s( : h_n ), 0_ip_, use_a, G, rad,         &
                    X, Y, status )
        CALL CHECK( TRIM( h_type ), use_a )
      END DO
    END DO
 
-!  the example H, with and without the constraint, and M = I
+!  the example H, with and without the constraint, and M = I, with M_val
+!  empty or absent
 
    G = (/ 0.0_rp_, 5.0_rp_ / 3.0_rp_, 4.0_rp_ / 3.0_rp_ /) ; rad = one
    DO a_is = 0, 1
      use_a = a_is == 1
-     CALL SOLVE( 'COORDINATE', H_val, .FALSE., use_a, G, rad,                  &
+     CALL SOLVE( 'COORDINATE', H_val, 0_ip_, use_a, G, rad,                    &
                  X_ref, Y_ref, status_ref )
-     CALL SOLVE( 'COORDINATE', H_val, .TRUE., use_a, G, rad,                   &
-                 X, Y, status )
-     CALL CHECK( 'M = IDENTITY', use_a )
+     DO m_kind = 1, 2
+       CALL SOLVE( 'COORDINATE', H_val, m_kind, use_a, G, rad,                 &
+                   X, Y, status )
+       IF ( m_kind == 1 ) THEN
+         CALL CHECK( 'M = IDENTITY', use_a )
+       ELSE
+         CALL CHECK( 'M = IDENTITY, no M_val', use_a )
+       END IF
+     END DO
    END DO
 
    IF ( failures > 0 ) THEN
@@ -224,14 +231,16 @@
 
    CONTAINS
 
-     SUBROUTINE SOLVE( h_type, H_v, m_identity, use_a, G, rad, X, Y, status )
+     SUBROUTINE SOLVE( h_type, H_v, m_kind, use_a, G, rad, X, Y, status )
 
-!  solve the problem with the given H storage, M = I if m_identity, and
-!  the constraint if use_a, returning the solve status
+!  solve the problem with the given H storage, with M = I given by an
+!  empty M_val if m_kind = 1 or no M_val if m_kind = 2, and the constraint
+!  if use_a, returning the solve status
 
      CHARACTER ( LEN = * ), INTENT( IN ) :: h_type
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_v
-     LOGICAL, INTENT( IN ) :: m_identity, use_a
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m_kind
+     LOGICAL, INTENT( IN ) :: use_a
      REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: G
      REAL ( KIND = rp_ ), INTENT( IN ) :: rad
      REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: X
@@ -253,21 +262,21 @@
        CALL TRS_import( control, data, status, n, h_type,                      &
                         SIZE( H_v, KIND = ip_ ), no_index, no_index, no_index )
      END IF
-     IF ( status == 0 .AND. m_identity )                                       &
+     IF ( status == 0 .AND. m_kind > 0 )                                       &
        CALL TRS_import_M( data, status, 'IDENTITY', 0_ip_,                     &
                           no_index, no_index, no_index )
      IF ( status == 0 .AND. use_a )                                            &
        CALL TRS_import_A( data, status, m, 'COORDINATE',                       &
                           a_ne, A_row, A_col, no_index )
      IF ( status == 0 ) THEN
-       IF ( m_identity .AND. use_a ) THEN
+       IF ( m_kind == 1 .AND. use_a ) THEN
          CALL TRS_solve_problem( data, status, rad, zero,                      &
                                  G, H_v, X, M_val = no_val,                    &
                                  A_val = A_val, Y = Y )
        ELSE IF ( use_a ) THEN
          CALL TRS_solve_problem( data, status, rad, zero,                      &
                                  G, H_v, X, A_val = A_val, Y = Y )
-       ELSE IF ( m_identity ) THEN
+       ELSE IF ( m_kind == 1 ) THEN
          CALL TRS_solve_problem( data, status, rad, zero,                      &
                                  G, H_v, X, M_val = no_val )
        ELSE

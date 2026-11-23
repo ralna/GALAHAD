@@ -6079,7 +6079,7 @@
          CALL TRS_solve( n, radius, f, C, data%H, X, data%trs_data,            &
                          data%trs_control, data%trs_inform )
        ELSE
-         IF ( .NOT. PRESENT( M_val ) ) THEN
+         IF ( .NOT. PRESENT( M_val ) .AND. data%M%ne > 0 ) THEN
            data%trs_inform%status = GALAHAD_error_optional
            GO TO 900
          END IF
@@ -6099,7 +6099,7 @@
                          A = data%A, Y = Y )
 
        ELSE
-         IF ( .NOT. PRESENT( M_val ) ) THEN
+         IF ( .NOT. PRESENT( M_val ) .AND. data%M%ne > 0 ) THEN
            data%trs_inform%status = GALAHAD_error_optional
            GO TO 900
          END IF

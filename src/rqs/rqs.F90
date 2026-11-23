@@ -6277,7 +6277,7 @@
          CALL RQS_solve( n, p, sigma, f, C, data%H, X, data%rqs_data,          &
                          data%rqs_control, data%rqs_inform )
        ELSE
-         IF ( .NOT. PRESENT( M_val ) ) THEN
+         IF ( .NOT. PRESENT( M_val ) .AND. data%M%ne > 0 ) THEN
            data%rqs_inform%status = GALAHAD_error_optional
            GO TO 900
          END IF
@@ -6297,7 +6297,7 @@
                          A = data%A, Y = Y )
 
        ELSE
-         IF ( .NOT. PRESENT( M_val ) ) THEN
+         IF ( .NOT. PRESENT( M_val ) .AND. data%M%ne > 0 ) THEN
            data%rqs_inform%status = GALAHAD_error_optional
            GO TO 900
          END IF
