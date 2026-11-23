@@ -52,7 +52,9 @@ r_hard = -0.04 + 1.0 / 3.0
 # - p = 2, sigma = 1: lambda = 1, t = 1/2, q = - 13/24 and
 #   r = q + 1/2 ||x||_M^2 = - 13/36;
 # - p = 3, sigma = 1: lambda = ||x||_M = t sqrt( 13 ) / 3, so
-#   lambda^2 + lambda - sqrt( 13 ) / 3 = 0
+#   lambda^2 + lambda - sqrt( 13 ) / 3 = 0;
+# - p = 4, sigma = 36/13: lambda = sigma ||x||_M^2 = 4 t^2, so lambda = 1
+#   and t = 1/2, as for p = 2
 H_pd = H + 3.0 * np.eye(n)
 g_pd = np.array([0.0, 5.0, 4.0]) / 3.0
 x_n = np.array([2.0, -1.0, -2.0]) / 3.0
@@ -69,11 +71,15 @@ def lambda_p3(sigma):
 P2_XFAIL = pytest.mark.xfail(
     strict=True, reason='dps rejects the regularization power p = 2 (see '
     'https://github.com/ralna/GALAHAD/pull/633)')
+P4_XFAIL = pytest.mark.xfail(
+    strict=True, reason='dps solves with p = 3 whatever power is given (see '
+    'https://github.com/ralna/GALAHAD/pull/633)')
 PD_TR = [(2.0, 1.0), (0.5, 0.5 / norm_n)]
 PD_TR_IDS = ['interior', 'boundary']
 PD_RQ = [pytest.param(2.0, 1.0, 0.5, marks=P2_XFAIL),
-         (3.0, 1.0, 1.0 / (1.0 + lambda_p3(1.0)))]
-PD_RQ_IDS = ['p=2', 'p=3']
+         (3.0, 1.0, 1.0 / (1.0 + lambda_p3(1.0))),
+         pytest.param(4.0, 36.0 / 13.0, 0.5, marks=P4_XFAIL)]
+PD_RQ_IDS = ['p=2', 'p=3', 'p=4']
 
 # resolve_tr_problem and resolve_rq_problem reuse the factorization for
 # new g, radius or sigma. With g / 2 the solutions are x = t x_n / 2 with
