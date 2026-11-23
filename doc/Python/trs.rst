@@ -214,26 +214,26 @@ functions
       n : int
           holds the number of variables.
       M_type : string
-          specifies the symmetric storage scheme used for the Hessian $H$.
-          It should be one of 'coordinate', 'sparse_by_rows', 'dense',
-          'diagonal', 'scaled_identity', 'identity', 'zero'  or 'none'; 
-          lower or upper case variants are allowed.
+          specifies the symmetric storage scheme used for the scaling
+          matrix $M$. It should be one of 'coordinate', 'sparse_by_rows',
+          'dense', 'diagonal' or 'identity'; lower or upper case variants
+          are allowed.
       M_ne : int
           holds the number of entries in the  lower triangular part of
-          $H$ in the sparse co-ordinate storage scheme. It need
+          $M$ in the sparse co-ordinate storage scheme. It need
           not be set for any of the other schemes.
       M_row : ndarray(M_ne)
-          holds the row indices of the lower triangular part of $H$
+          holds the row indices of the lower triangular part of $M$
           in the sparse co-ordinate storage scheme. It need not be set for
           any of the other schemes, and in this case can be None.
       M_col : ndarray(M_ne)
           holds the column indices of the  lower triangular part of
-          $H$ in either the sparse co-ordinate, or the sparse row-wise
+          $M$ in either the sparse co-ordinate, or the sparse row-wise
           storage scheme. It need not be set when the other storage schemes
           are used, and in this case can be None.
       M_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
-          part of $H$, as well as the total number of entries,
+          part of $M$, as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       options : dict, optional
@@ -249,7 +249,8 @@ functions
       m : int
           holds the number of constraints.
       A_type : string
-          specifies the unsymmetric storage scheme used for the Hessian $A$.
+          specifies the unsymmetric storage scheme used for the constraint
+          matrix $A$.
           It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
           lower or upper case variants are allowed.
       A_ne : int
@@ -294,25 +295,26 @@ functions
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``trs.load``.
-      M_ne : int
+      M_ne : int, optional
           holds the number of entries in the lower triangular part of 
-          the scaling matrix $M$ if it is not the identity matrix. 
-          Otherwise it should be None.
-      M_val : ndarray(M_ne)
+          the scaling matrix $M$, if ``trs.load_m`` has been called.
+          Otherwise it may be omitted.
+      M_val : ndarray(M_ne), optional
           holds the values of the nonzeros in the lower triangle of the scaling
           matrix $M$ in the same order as specified in the sparsity pattern in 
-          ``trs.load_m`` if needed. Otherwise it should be None.
-      m : int
-          holds the number of constraints.
-      A_ne : int
-          holds the number of entries in the lower triangular part of 
-          the constraint matrix $A$ if $m > 0$.
-          Otherwise it should be None.
-      A_val : ndarray(A_ne)
-          holds the values of the nonzeros in the lower triangle of the 
-          constraint matrix $A$ in the same order as specified in the 
-          sparsity pattern in ``trs.load_a`` if needed. 
-          Otherwise it should be None.
+          ``trs.load_m``, if that has been called. Otherwise it may be
+          omitted or None.
+      m : int, optional
+          holds the number of constraints, if ``trs.load_a`` has been called.
+          Otherwise it may be omitted.
+      A_ne : int, optional
+          holds the number of entries in the constraint matrix $A$,
+          if ``trs.load_a`` has been called. Otherwise it may be omitted.
+      A_val : ndarray(A_ne), optional
+          holds the values of the nonzeros in the constraint matrix $A$
+          in the same order as specified in the sparsity pattern in
+          ``trs.load_a``, if that has been called. Otherwise it may be
+          omitted or None.
 
       **Returns:**
 
