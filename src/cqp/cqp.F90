@@ -341,7 +341,7 @@
 !   if %indicator_type = 1, a constraint/bound will be
 !    deemed to be active <=> distance to nearest bound <= %indicator_p_tol
 
-        REAL ( KIND = rp_ ) :: indicator_tol_p = epsmch ** 0.33_rp_
+        REAL ( KIND = rp_ ) :: indicator_tol_p = epsmch ** 0.165_rp_
 
 !   if %indicator_type = 2, a constraint/bound will be deemed to be active
 !     <=> distance to nearest bound
@@ -830,7 +830,7 @@
 !  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
 !  required-barrier-value-before-pounce              1.0D-5
-!  primal-indicator-tolerance                        1.0D-5
+!  primal-indicator-tolerance                        2.6D-3
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
 !  maximum-cpu-time-limit                            -1.0
