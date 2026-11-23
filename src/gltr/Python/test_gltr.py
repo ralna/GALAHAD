@@ -27,7 +27,7 @@ gltr.load_options(options)
 print(" solve problem 1")
 status = 1
 radius = 1.0
-r = g
+r = g.copy()
 while status > 0:
   status, x, r, v = gltr.solve_problem(status, n, radius, r, v)
   if status == 2: # precondition v -> v/2
@@ -41,7 +41,7 @@ while status > 0:
     for i in range(n):
       v[i] = hv[i]
   elif status == 5: # reset r
-    r = g
+    r = g.copy()
 
 # get information
 
@@ -54,7 +54,7 @@ print(" optimal f: %.4f" % inform['obj'])
 print("\n solve problem 2 with smaller radius")
 status = 4
 radius = 0.1
-r = g
+r = g.copy()
 while status > 0:
   status, x, r, v = gltr.solve_problem(status, n, radius, r, v)
   if status == 2: # precondition v -> v/2
@@ -68,7 +68,7 @@ while status > 0:
     for i in range(n):
       v[i] = hv[i]
   elif status == 5: # reset r
-    r = g
+    r = g.copy()
 
 # get information
 
