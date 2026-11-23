@@ -1495,10 +1495,12 @@
       REAL ( KIND = rp_ ) :: beta, z_norm2, h_max, root1, root2, root3, curv
       REAL ( KIND = rp_ ) :: hp, hm, mp, mm, lambda_min, lambda_max, diag_min
       REAL ( KIND = rp_ ) :: width, width_rel, lambda_s_l, lambda_plus
+      REAL ( KIND = rp_ ) :: h_scale
       REAL ( KIND = rp_ ) :: a_0, a_1, a_2, a_3, a_max, w_norm2
       REAL ( KIND = rp_ ), DIMENSION( 3 ) :: lambda_new
       REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
       LOGICAL :: printi, printt, printd, psdef, try_zero, dummy, unit_m
+      LOGICAL :: h_identity
       LOGICAL :: problem_file_exists, phase_1, constrained, set_y
       CHARACTER ( LEN = 1 ) :: region, bad_eval
       CHARACTER ( LEN = 80 ) :: array_name
@@ -1512,6 +1514,16 @@
 
       unit_m = .NOT. PRESENT( M )
       IF ( .NOT. unit_m ) unit_m = SMT_get( M%type ) == 'IDENTITY'
+
+!  H = h_scale I if h_identity, and H%val( : h_ne ) holds H otherwise
+
+      h_identity = SMT_get( H%type ) == 'IDENTITY' .OR.                        &
+                   SMT_get( H%type ) == 'SCALED_IDENTITY'
+      IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' ) THEN
+        h_scale = H%val( 1 )
+      ELSE
+        h_scale = one
+      END IF
       constrained = PRESENT( A )
 
 !  set initial values
@@ -1624,8 +1636,12 @@
       data%m_end = data%h_ne + data%m_ne
 
       IF ( printt ) THEN
-        WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                             &
-          prefix, MAXVAL( ABS( H%val( : data%h_ne ) ) )
+        IF ( h_identity ) THEN
+          WRITE( out, "( A, ' ||H|| = ', ES10.4 )" ) prefix, ABS( h_scale )
+        ELSE
+          WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                           &
+            prefix, MAXVAL( ABS( H%val( : data%h_ne ) ) )
+        END IF
         IF ( .NOT. unit_m ) WRITE( out, "( A, ' ||M|| = ', ES10.4 )" )         &
           prefix, MAXVAL( ABS( M%val( : data%m_ne ) ) )
         IF ( constrained ) WRITE( out, "( A, ' ||A|| = ', ES10.4 )" )          &
@@ -1788,15 +1804,26 @@
           OPEN( control%problem, FILE = control%problem_file,                  &
                 FORM = 'FORMATTED', STATUS = 'NEW' )
         END IF
-        WRITE( control%problem, * ) n, COUNT( C( : n ) /= zero ),              &
-          COUNT( H%val( : data%h_ne ) /= zero )
+        IF ( .NOT. h_identity ) THEN
+          i = COUNT( H%val( : data%h_ne ) /= zero )
+        ELSE IF ( h_scale /= zero ) THEN
+          i = n
+        ELSE
+          i = 0
+        END IF
+        WRITE( control%problem, * ) n, COUNT( C( : n ) /= zero ), i
         WRITE( control%problem, * ) radius, f
         DO i = 1, n
           IF ( C( i ) /= zero ) WRITE( control%problem, * ) i, C( i )
         END DO
         DO l = 1, data%h_ne
-          IF ( H%val( l ) /= zero ) WRITE( control%problem, * )                &
-            data%H_lambda%row( l ), data%H_lambda%col( l ), H%val( l )
+          IF ( h_identity ) THEN
+            val = h_scale
+          ELSE
+            val = H%val( l )
+          END IF
+          IF ( val /= zero ) WRITE( control%problem, * )                       &
+            data%H_lambda%row( l ), data%H_lambda%col( l ), val
         END DO
         CLOSE( control%problem )
       END IF
@@ -1897,7 +1924,11 @@
         i_max = 0 ; j_max = 0 ; h_max = zero
         DO l = 1, data%h_ne
           i = data%H_lambda%row( l ) ; j = data%H_lambda%col( l )
-          val = H%val( l )
+          IF ( h_identity ) THEN
+            val = h_scale
+          ELSE
+            val = H%val( l )
+          END IF
           IF ( i == j ) THEN
             data%Z( i ) = data%Z( i ) + val
 !           H_f2 = H_f2 + val ** 2
@@ -2346,7 +2377,7 @@
           data%H_lambda%val( : data%h_ne ) = one
         ELSE IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' ) THEN
           data%H_lambda%val( : data%h_ne ) = H%val( 1 )
-        ELSE
+        ELSE IF ( data%h_ne > 0 ) THEN
           data%H_lambda%val( : data%h_ne ) = H%val( : data%h_ne )
         END IF  
       END IF  
