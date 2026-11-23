@@ -463,7 +463,7 @@
       REAL ( KIND = rp_ ), DIMENSION( 1 ) :: H_val
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: printi, remap_freed, reset_bnd, stat_required
-      LOGICAL :: extrapolation_ok, initial, pounced
+      LOGICAL :: extrapolation_ok, initial, pounced, perturbation_exhausted
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_pounce
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat_pounce
       CHARACTER ( LEN = 80 ) :: array_name
@@ -1029,6 +1029,7 @@
 
 !  loop over a sequence of decreasing perturbations until optimal
 
+      perturbation_exhausted = .FALSE.
       DO
         IF ( printi ) WRITE( control%out, "( /,  A, 2X, 25( '-' ),             &
        &  ' perturbation = ', ES7.1, 1X, 25( '-' ) )" ) prefix, H_val( 1 )
@@ -1200,14 +1201,28 @@
                             0.99_rp_ * perturbation )
 !         H_val( 1 ) = perturbation * control%perturbation_reduction
 
-!  don't allow the perturbation to be too small
+!  don't allow the perturbation to be too small. The solution found is then
+!  only that of a perturbed problem, and may be far from that of the LP
 
-          IF ( H_val( 1 ) <= control%final_perturbation ) EXIT
+          IF ( H_val( 1 ) <= control%final_perturbation ) THEN
+            perturbation_exhausted = .TRUE. ; EXIT
+          END IF
           dual_starting_point = 0
           initial = .FALSE.
         END IF
 
       END DO
+
+!  if the perturbations were exhausted before the solution of the LP was
+!  found, report failure (the point returned is the extrapolation of the
+!  solution of the last perturbed problem to the next perturbation at which
+!  its active set changes)
+
+      IF ( perturbation_exhausted .AND. inform%status == GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_tiny_step
+        IF ( printi ) WRITE( control%out, "( /, A, ' the perturbation',        &
+       &  ' reached its lower limit before the solution was found' )" ) prefix
+      END IF
 
 !  record the times taken
 
