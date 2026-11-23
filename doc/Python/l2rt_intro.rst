@@ -7,7 +7,7 @@ approximation of the global minimizer of the
 The aim is to minimize the objective function
 $$r(x) = \sqrt{\|Ax - b\|_2^2 + \mu \|x\|_2^2} + \frac{\sigma}{p} \|x\|_2^p,$$ 
 where the $\ell_2$-norm of $x$ is defined to be $\|x\|_2 = \sqrt{x^T x}$,
-and where the **shift** $\mu \geq 0$, **weight** $\sigma > 0$ and 
+and where the **shift** $\mu \geq 0$, **weight** $\sigma \geq 0$ and 
 **power** $p \geq 2$.
 The method may be suitable for large problems as no factorization is
 required. Reverse communication is used to obtain
