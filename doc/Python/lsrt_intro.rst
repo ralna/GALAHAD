@@ -7,7 +7,7 @@ approximation of the global minimizer of the
 The aim is to minimize the least-squares objective function
 $$r(x) = \frac{1}{2}\|Ax - b\|_2^2 + \frac{\sigma}{p} \|x\|_2^p,$$ 
 where the $\ell_2$-norm of $x$ is defined to be $\|x\|_2 = \sqrt{x^T x}$,
-and where the **weight** $\sigma > 0$ and **power** $p \geq 2$.
+and where the **weight** $\sigma \geq 0$ and **power** $p \geq 2$.
 The method may be suitable for large problems as no factorization is
 required. Reverse communication is used to obtain
 matrix-vector products of the form $u + A v$ and $v + A^T u.$
