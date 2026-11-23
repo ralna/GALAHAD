@@ -17,7 +17,6 @@ b[:] = 1.0
 options = lsrt.initialize()
 
 # set some non-default options
-options['unitm'] = False
 options['print_level'] = 0
 #print("options:", options)
 

@@ -161,6 +161,11 @@ bool l2rt_update_control(struct l2rt_control_type *control,
                 return false;
             continue;
         }
+
+        // Otherwise unrecognised option
+        PyErr_Format(PyExc_ValueError,
+          "unrecognised option options['%s']\n", key_name);
+        return false;
     }
 
     return true; // success
