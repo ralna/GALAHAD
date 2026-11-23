@@ -1125,6 +1125,10 @@
 
         ELSE IF ( SMT_get( S%type ) == 'DIAGONAL' ) THEN
 
+!  check that S is positive definite
+
+          IF ( COUNT( S%val( : n ) <= zero ) > 0 ) GO TO 930
+
 !  record sigma || c ||**(p-2)
 
           c_norm = SQRT( DOT_PRODUCT( data%C( : n ),                           &
@@ -3557,6 +3561,20 @@
               bad_alloc = data%llsr_inform%bad_alloc, out = error )
        IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%S%type, 'SCALED_IDENTITY',                           &
+                     data%llsr_inform%alloc_status )
+       data%S%n = n ; data%S%ne = 1
+
+       array_name = 'llsr: data%S%val'
+       CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
+
      CASE ( 'identity', 'IDENTITY' )
        CALL SMT_put( data%S%type, 'IDENTITY', data%llsr_inform%alloc_status )
        data%S%n = n ; data%S%ne = 0
@@ -3689,7 +3707,7 @@
                         data%llsr_control, data%llsr_inform )
 
      ELSE
-       IF ( .NOT. PRESENT( S_val ) ) THEN
+       IF ( .NOT. PRESENT( S_val ) .AND. data%S%ne > 0 ) THEN
          data%llsr_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
