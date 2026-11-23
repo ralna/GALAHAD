@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-14 AT 10:44 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:33 GMT.
 
 #include "galahad_modules.h"
 
@@ -59,6 +59,8 @@
       USE GALAHAD_SBLS_precision
       USE GALAHAD_GLTR_precision
       USE GALAHAD_NORMS_precision, ONLY: TWO_norm
+      USE GALAHAD_CQP_precision, ONLY: CQP_control_type, CQP_inform_type,      &
+                                       CQP_pounce_multipliers
       USE GALAHAD_DQP_precision, DLP_control_type => DQP_control_type,         &
                                  DLP_time_type => DQP_time_type,               &
                                  DLP_inform_type => DQP_inform_type
@@ -66,7 +68,8 @@
 
       PRIVATE
       PUBLIC :: DLP_initialize, DLP_read_specfile, DLP_solve,                  &
-                DLP_next_perturbation, DLP_terminate, QPT_problem_type,        &
+                DLP_next_perturbation, DLP_pounce, DLP_terminate,              &
+                QPT_problem_type,                                              &
                 SMT_type, SMT_put, SMT_get, DLP_Ax, DLP_data_type,             &
                 DLP_dims_type, DLP_control_type, DLP_time_type, DLP_inform_type
 
@@ -461,7 +464,9 @@
       REAL ( KIND = rp_ ), DIMENSION( 1 ) :: H_val
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: printi, remap_freed, reset_bnd, stat_required
-      LOGICAL :: extrapolation_ok, initial
+      LOGICAL :: extrapolation_ok, initial, pounced
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_pounce
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat_pounce
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( DLP_control_type ) :: dqp_control
 
@@ -1092,6 +1097,70 @@
 !write(6,"( A, ( 10I4 ) )" ) ' X_stat ', X_stat
 !write(6,"( A, ( 10I4 ) )" ) ' C_stat ', C_stat
         IF ( inform%status /= GALAHAD_ok ) EXIT
+
+!  try to find the solution of the LP directly from that of the perturbed
+!  problem (this is not available for an l_1 penalty problem)
+
+        IF ( dqp_control%rho == zero ) THEN
+          IF ( stat_required ) THEN
+            CALL DLP_pounce( prob%n, prob%m, data%dims, prob%A%val,            &
+                             prob%A%col, prob%A%ptr, prob%C_l, prob%C_u,       &
+                             prob%X_l, prob%X_u, prob%X, prob%Y, prob%Z,       &
+                             prob%C, prob%gradient_kind, C_stat, X_stat,       &
+                             dqp_control, inform, pounced, G = prob%G )
+
+!  otherwise, recover the active set from DQP's internal record of it
+
+          ELSE
+            ALLOCATE( C_stat_pounce( prob%m ), X_stat_pounce( prob%n ),        &
+                      STAT = inform%alloc_status )
+            IF ( inform%alloc_status /= 0 ) THEN
+              inform%status = GALAHAD_error_allocate
+              inform%bad_alloc = 'dlp: pounce status' ; EXIT
+            END IF
+            DO i = 1, prob%n
+              IF ( data%X_status( i ) == 1 .OR. data%X_status( i ) == 3 ) THEN
+                X_stat_pounce( i ) = - 1
+              ELSE IF ( data%X_status( i ) > 0 ) THEN
+                X_stat_pounce( i ) = 1
+              ELSE
+                X_stat_pounce( i ) = 0
+              END IF
+            END DO
+            DO i = 1, prob%m
+              IF ( data%C_status( i ) == - 1 .OR. data%C_status( i ) == 1 .OR. &
+                   data%C_status( i ) == 3 ) THEN
+                C_stat_pounce( i ) = - 1
+              ELSE IF ( data%C_status( i ) > 0 ) THEN
+                C_stat_pounce( i ) = 1
+              ELSE
+                C_stat_pounce( i ) = 0
+              END IF
+            END DO
+            CALL DLP_pounce( prob%n, prob%m, data%dims, prob%A%val,            &
+                             prob%A%col, prob%A%ptr, prob%C_l, prob%C_u,       &
+                             prob%X_l, prob%X_u, prob%X, prob%Y, prob%Z,       &
+                             prob%C, prob%gradient_kind, C_stat_pounce,        &
+                             X_stat_pounce, dqp_control, inform, pounced,      &
+                             G = prob%G )
+            DEALLOCATE( C_stat_pounce, X_stat_pounce,                          &
+                        STAT = inform%alloc_status )
+          END IF
+          IF ( inform%status /= GALAHAD_ok ) EXIT
+          IF ( pounced ) THEN
+            IF ( printi ) WRITE( control%out, "( /, A, ' pounce successful,',  &
+           &   ' optimal solution found' )" ) prefix
+            IF ( prob%gradient_kind == 0 ) THEN
+              inform%obj = prob%f
+            ELSE IF ( prob%gradient_kind == 1 ) THEN
+              inform%obj = prob%f + SUM( prob%X( : prob%n ) )
+            ELSE
+              inform%obj = prob%f +                                            &
+                DOT_PRODUCT( prob%G( : prob%n ), prob%X( : prob%n ) )
+            END IF
+            EXIT
+          END IF
+        END IF
 
 !  reduce the perturbation, and prepare to warm start if the value is above
 !  its lower limit
@@ -2063,6 +2132,337 @@
 !  end of subroutine DLP_next_perturbation
 
       END SUBROUTINE DLP_next_perturbation
+
+!-*-*-*-*-*-*-*-*-   D L P _ P O U N C E   S U B R O U T I N E   -*-*-*-*-*-*-*-
+
+      SUBROUTINE DLP_pounce( n, m, dims, A_val, A_col, A_ptr, C_l, C_u,        &
+                             X_l, X_u, X, Y, Z, C, gradient_kind, C_stat,      &
+                             X_stat, control, inform, optimal, G )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Given an approximate solution (x,y,z) of the perturbed LP
+!
+!    minimize g^T x + 1/2 sigma ||x||^2 s.t. c_l <= A x <= c_u, x_l <= x <= x_u
+!
+!  together with its active set, try to find the solution of the LP itself
+!  (sigma = 0) directly, rather than by extrapolation along a fixed active set
+!  (as in DLP_next_perturbation), which may fail when constraints or bounds
+!  lie on their bounds without being in the active set. As sigma decreases to
+!  zero, the solution of the perturbed problem converges to the solution of
+!  the LP of least norm, and this is predicted as follows.
+!
+!  The predicted active set A comprises the constraints and bounds in the
+!  active set, together with those that lie on their bounds to within a
+!  small tolerance, and the predicted solution is the point of least norm
+!  that satisfies the constraints and bounds in A as equations, i.e.,
+!
+!    x_B = (the active bounds) and ( I    A_AF^T ) ( x_F ) = (      0       )
+!                                   ( A_AF   0   ) ( -w  )   ( b_A - A_AB x_B ),
+!
+!  where B and F are the fixed and free variables. If x is feasible, the
+!  multipliers y_A and dual variables z_B of the correct signs that best
+!  satisfy the stationarity condition A_A^T y_A + z_B = g are found (by
+!  CQP_pounce_multipliers), and x is accepted as the solution if the
+!  stationarity residual is small
+!
+!  Arguments:
+!
+!  n, m, dims, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u, X, Y, Z, C,
+!   gradient_kind and G are as for DLP_next_perturbation, and X, Y, Z and C
+!   hold the solution of the perturbed problem. If optimal is .TRUE., they
+!   will have been replaced by the solution of the LP
+!  C_stat and X_stat are INTEGER arrays of lengths m and n that hold the
+!   active set of the perturbed problem (as described for DLP_solve). If
+!   optimal is .TRUE., they will have been replaced by that of the LP
+!  control and inform are as for DLP_solve. inform%status will be set to a
+!   nonzero value only if an allocation or deallocation error occurs
+!  optimal is set .TRUE. if the solution of the LP has been found, and
+!   .FALSE. otherwise
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, gradient_kind
+      TYPE ( DLP_dims_type ), INTENT( IN ) :: dims
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: &
+                                            A_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) ::    &
+                                         A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y, C
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      TYPE ( DLP_control_type ), INTENT( IN ) :: control
+      TYPE ( DLP_inform_type ), INTENT( INOUT ) :: inform
+      LOGICAL, INTENT( OUT ) :: optimal
+      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: G
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, n_free, m_active, ne, smt_stat
+      INTEGER ( KIND = ip_ ) :: alloc_status
+      REAL ( KIND = rp_ ) :: bound, c_i, g_max, r_max, tol
+      LOGICAL :: success
+      CHARACTER ( LEN = 80 ) :: array_name
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_p
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat_p, FREE
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_p, C_p, Y_p, Z_p
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GRAD, SOL
+      TYPE ( SMT_type ) :: K_pounce
+      TYPE ( SLS_data_type ) :: sls_data
+      TYPE ( SLS_control_type ) :: sls_control
+      TYPE ( SLS_inform_type ) :: sls_inform
+      TYPE ( CQP_control_type ) :: cqp_control
+      TYPE ( CQP_inform_type ) :: cqp_inform
+
+!  the relative tolerances used to identify constraints and bounds that lie
+!  on their bounds, and to accept the stationarity residual (as for CQP's
+!  pounce)
+
+      REAL ( KIND = rp_ ), PARAMETER :: tol_act = epsmch ** 0.75_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: tol_stat = epsmch ** 0.75_rp_
+
+      optimal = .FALSE.
+      ALLOCATE( C_stat_p( m ), X_stat_p( n ), FREE( n ), X_p( n ), C_p( m ),   &
+                Y_p( m ), Z_p( n ), GRAD( n ), STAT = alloc_status )
+      IF ( alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        inform%alloc_status = alloc_status
+        inform%bad_alloc = 'dlp: pounce workspace' ; RETURN
+      END IF
+
+!  predict the active constraints: equality constraints, those in the active
+!  set, and those that lie on one of their bounds
+
+      DO i = 1, m
+        c_i = C( i ) ; tol = tol_act * ( one + ABS( c_i ) )
+        C_stat_p( i ) = 0
+        IF ( i <= dims%c_equality ) THEN
+          C_stat_p( i ) = - 1
+        ELSE
+          IF ( i <= dims%c_l_end ) THEN
+            IF ( C_stat( i ) < 0 .OR. c_i - C_l( i ) <= tol )                  &
+              C_stat_p( i ) = - 1
+          END IF
+          IF ( C_stat_p( i ) == 0 .AND. i >= dims%c_u_start ) THEN
+            IF ( C_stat( i ) > 0 .OR. C_u( i ) - c_i <= tol )                  &
+              C_stat_p( i ) = 1
+          END IF
+        END IF
+      END DO
+
+!  and likewise the active bounds; record the free variables
+
+      n_free = 0
+      DO j = 1, n
+        tol = tol_act * ( one + ABS( X( j ) ) )
+        X_stat_p( j ) = 0
+        IF ( j > dims%x_free .AND. j <= dims%x_l_end ) THEN
+          IF ( j < dims%x_l_start ) THEN
+            bound = zero
+          ELSE
+            bound = X_l( j )
+          END IF
+          IF ( X_stat( j ) < 0 .OR. X( j ) - bound <= tol ) THEN
+            X_stat_p( j ) = - 1 ; X_p( j ) = bound
+          END IF
+        END IF
+        IF ( X_stat_p( j ) == 0 .AND. j >= dims%x_u_start ) THEN
+          IF ( j > dims%x_u_end ) THEN
+            bound = zero
+          ELSE
+            bound = X_u( j )
+          END IF
+          IF ( X_stat( j ) > 0 .OR. bound - X( j ) <= tol ) THEN
+            X_stat_p( j ) = 1 ; X_p( j ) = bound
+          END IF
+        END IF
+        IF ( X_stat_p( j ) == 0 ) THEN
+          n_free = n_free + 1 ; FREE( j ) = n_free
+        ELSE
+          FREE( j ) = 0
+        END IF
+      END DO
+
+!  count the number of entries in the matrix ( I  A_AF^T ; A_AF  0 )
+
+      m_active = COUNT( C_stat_p /= 0 )
+      ne = n_free
+      DO i = 1, m
+        IF ( C_stat_p( i ) == 0 ) CYCLE
+        DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+          IF ( FREE( A_col( l ) ) > 0 ) ne = ne + 1
+        END DO
+      END DO
+
+!  if there are no free variables, the active bounds determine x
+
+      IF ( n_free > 0 ) THEN
+        K_pounce%n = n_free + m_active ; K_pounce%ne = ne
+        CALL SMT_put( K_pounce%type, 'COORDINATE', smt_stat )
+        ALLOCATE( K_pounce%row( ne ), K_pounce%col( ne ), K_pounce%val( ne ),  &
+                  SOL( K_pounce%n ), STAT = alloc_status )
+        IF ( alloc_status /= 0 ) THEN
+          inform%status = GALAHAD_error_allocate
+          inform%alloc_status = alloc_status
+          inform%bad_alloc = 'dlp: pounce matrix' ; GO TO 900
+        END IF
+
+!  the identity block, and the right-hand side
+
+        DO j = 1, n_free
+          K_pounce%row( j ) = j ; K_pounce%col( j ) = j
+          K_pounce%val( j ) = one
+        END DO
+        SOL( : n_free ) = zero
+        ne = n_free ; k = n_free
+        DO i = 1, m
+          IF ( C_stat_p( i ) == 0 ) CYCLE
+          k = k + 1
+          IF ( C_stat_p( i ) < 0 ) THEN
+            SOL( k ) = C_l( i )
+          ELSE
+            SOL( k ) = C_u( i )
+          END IF
+          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+            j = A_col( l )
+            IF ( FREE( j ) > 0 ) THEN
+              ne = ne + 1
+              K_pounce%row( ne ) = k ; K_pounce%col( ne ) = FREE( j )
+              K_pounce%val( ne ) = A_val( l )
+            ELSE
+              SOL( k ) = SOL( k ) - A_val( l ) * X_p( j )
+            END IF
+          END DO
+        END DO
+
+!  solve the system
+
+        CALL SLS_initialize( control%symmetric_linear_solver, sls_data,        &
+                             sls_control, sls_inform )
+        sls_control%error = - 1 ; sls_control%out = - 1
+        sls_control%print_level = 0
+        CALL SLS_analyse( K_pounce, sls_data, sls_control, sls_inform )
+        IF ( sls_inform%status == GALAHAD_ok )                                 &
+          CALL SLS_factorize( K_pounce, sls_data, sls_control, sls_inform )
+        IF ( sls_inform%status == GALAHAD_ok )                                 &
+          CALL SLS_solve( K_pounce, SOL, sls_data, sls_control, sls_inform )
+        success = sls_inform%status == GALAHAD_ok
+        CALL SLS_terminate( sls_data, sls_control, sls_inform )
+        IF ( .NOT. success ) GO TO 900
+        DO j = 1, n
+          IF ( FREE( j ) > 0 ) X_p( j ) = SOL( FREE( j ) )
+        END DO
+      END IF
+
+!  check that x is feasible
+
+      DO j = 1, n
+        tol = tol_act * ( one + ABS( X_p( j ) ) )
+        IF ( j > dims%x_free .AND. j <= dims%x_l_end ) THEN
+          IF ( j < dims%x_l_start ) THEN
+            bound = zero
+          ELSE
+            bound = X_l( j )
+          END IF
+          IF ( X_p( j ) < bound - tol ) GO TO 900
+        END IF
+        IF ( j >= dims%x_u_start ) THEN
+          IF ( j > dims%x_u_end ) THEN
+            bound = zero
+          ELSE
+            bound = X_u( j )
+          END IF
+          IF ( X_p( j ) > bound + tol ) GO TO 900
+        END IF
+      END DO
+      DO i = 1, m
+        c_i = zero
+        DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+          c_i = c_i + A_val( l ) * X_p( A_col( l ) )
+        END DO
+        C_p( i ) = c_i ; tol = tol_act * ( one + ABS( c_i ) )
+        IF ( i <= dims%c_equality ) THEN
+          IF ( ABS( c_i - C_l( i ) ) > tol ) GO TO 900
+        ELSE
+          IF ( i <= dims%c_l_end ) THEN
+            IF ( c_i < C_l( i ) - tol ) GO TO 900
+          END IF
+          IF ( i >= dims%c_u_start ) THEN
+            IF ( c_i > C_u( i ) + tol ) GO TO 900
+          END IF
+        END IF
+      END DO
+
+!  find the multipliers and dual variables of the correct signs that best
+!  satisfy A_A^T y_A + z_B = g
+
+      IF ( gradient_kind == 0 ) THEN
+        GRAD = zero
+      ELSE IF ( gradient_kind == 1 ) THEN
+        GRAD = one
+      ELSE
+        GRAD = G( : n )
+      END IF
+      g_max = MAXVAL( ABS( GRAD ) )
+      cqp_control%error = control%error ; cqp_control%out = control%out
+      cqp_control%print_level = 0
+      cqp_control%space_critical = control%space_critical
+      cqp_control%deallocate_error_fatal = control%deallocate_error_fatal
+      Y_p = zero ; Z_p = zero
+      CALL CQP_pounce_multipliers( n, m, A_val, A_col, A_ptr, C_l, C_u,        &
+                                   X_l, X_u, C_stat_p, X_stat_p, GRAD, Y, Z,   &
+                                   Y_p, Z_p, tol_stat * ( one + g_max ),       &
+                                   cqp_control, cqp_inform, success )
+      IF ( cqp_inform%status /= GALAHAD_ok ) THEN
+        inform%status = cqp_inform%status
+        inform%alloc_status = cqp_inform%alloc_status
+        inform%bad_alloc = cqp_inform%bad_alloc ; GO TO 900
+      END IF
+      IF ( .NOT. success ) GO TO 900
+
+!  check that the stationarity residual g - A^T y - z is small
+
+      GRAD = GRAD - Z_p
+      DO i = 1, m
+        IF ( Y_p( i ) == zero ) CYCLE
+        DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+          GRAD( A_col( l ) ) = GRAD( A_col( l ) ) - A_val( l ) * Y_p( i )
+        END DO
+      END DO
+      r_max = MAXVAL( ABS( GRAD ) )
+      IF ( r_max > tol_stat * ( one + g_max ) ) GO TO 900
+
+!  the pounce has succeeded
+
+      X = X_p ; C = C_p ; Y = Y_p ; Z = Z_p
+      C_stat = C_stat_p ; X_stat = X_stat_p
+      optimal = .TRUE.
+
+!  deallocate workspace
+
+  900 CONTINUE
+      DEALLOCATE( C_stat_p, X_stat_p, FREE, X_p, C_p, Y_p, Z_p, GRAD,          &
+                  STAT = alloc_status )
+      IF ( ALLOCATED( SOL ) ) DEALLOCATE( SOL, STAT = alloc_status )
+      IF ( ALLOCATED( K_pounce%row ) )                                         &
+        DEALLOCATE( K_pounce%row, STAT = alloc_status )
+      IF ( ALLOCATED( K_pounce%col ) )                                         &
+        DEALLOCATE( K_pounce%col, STAT = alloc_status )
+      IF ( ALLOCATED( K_pounce%val ) )                                         &
+        DEALLOCATE( K_pounce%val, STAT = alloc_status )
+      IF ( ALLOCATED( K_pounce%type ) )                                        &
+        DEALLOCATE( K_pounce%type, STAT = alloc_status )
+      RETURN
+
+!  end of subroutine DLP_pounce
+
+      END SUBROUTINE DLP_pounce
 
 !  end of module DLP
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 14:07 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:33 GMT.
 
 #include "galahad_modules.h"
 
@@ -55,7 +55,7 @@
       USE GALAHAD_CQP_precision
       USE GALAHAD_DQP_precision
       USE GALAHAD_DLP_precision, ONLY: DLP_control_type, DLP_read_specfile,    &
-                                       DLP_next_perturbation
+                                       DLP_next_perturbation, DLP_pounce
       USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
                                        RPD_write_qp_problem_data
       USE GALAHAD_ROOTS_precision, ONLY: ROOTS_terminate
@@ -1151,7 +1151,7 @@
       LOGICAL :: printi, printa, printe, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial
-      LOGICAL :: perturbation_exhausted
+      LOGICAL :: perturbation_exhausted, pounced
       LOGICAL :: saved
       INTEGER ( KIND = ip_ ) :: status_save, save_status
       REAL ( KIND = rp_ ) :: obj_save, pinf_save, dinf_save, comp_save
@@ -2879,6 +2879,32 @@ H_loop: DO i = 1, prob%n
 !write(6,"( A, ( 10I4 ) )" ) ' X_stat ', X_stat
 !write(6,"( A, ( 10I4 ) )" ) ' C_stat ', C_stat
           IF ( inform%status /= GALAHAD_ok ) EXIT
+
+!  try to find the solution of the LP directly from that of the perturbed
+!  problem (this is not available for an l_1 penalty problem)
+
+          IF ( control%rho == zero ) THEN
+            CALL DLP_pounce( prob%n, prob%m, data%dims_dqp, prob%A%val,        &
+                             prob%A%col, prob%A%ptr, prob%C_l, prob%C_u,       &
+                             prob%X_l, prob%X_u, prob%X, prob%Y, prob%Z,       &
+                             prob%C, prob%gradient_kind, C_stat, X_stat,       &
+                             dqp_control, inform%DQP_inform, pounced,          &
+                             G = prob%G )
+            IF ( inform%DQP_inform%status /= GALAHAD_ok ) EXIT
+            IF ( pounced ) THEN
+              IF ( printi ) WRITE( control%out, "( /, A, ' pounce successful,',&
+             &   ' optimal solution found' )" ) prefix
+              IF ( prob%gradient_kind == 0 ) THEN
+                inform%DQP_inform%obj = prob%f
+              ELSE IF ( prob%gradient_kind == 1 ) THEN
+                inform%DQP_inform%obj = prob%f + SUM( prob%X( : prob%n ) )
+              ELSE
+                inform%DQP_inform%obj = prob%f +                               &
+                  DOT_PRODUCT( prob%G( : prob%n ), prob%X( : prob%n ) )
+              END IF
+              EXIT
+            END IF
+          END IF
 
 !  reduce the perturbation, and prepare to warm start if the value is above
 !  its lower limit
