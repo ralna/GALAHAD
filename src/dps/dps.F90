@@ -663,7 +663,7 @@
           inform%status = GALAHAD_error_restrictions ; RETURN
         END IF
         IF ( PRESENT( p ) ) THEN
-          IF ( p <= two ) THEN
+          IF ( p < two ) THEN
             IF ( control%error > 0 ) WRITE( control%error,                     &
              "( A, ' The regularization power ', ES12.4 ,                      &
             &  ' is smaller than two' )" ) prefix, p
@@ -796,7 +796,7 @@
           inform%status = GALAHAD_error_restrictions ; RETURN
         END IF
         IF ( PRESENT( p ) ) THEN
-          IF ( p <= two ) THEN
+          IF ( p < two ) THEN
             IF ( control%error > 0 ) WRITE( control%error,                     &
              "( A, ' The regularization power ', ES12.4 ,                      &
             &  ' is smaller than two' )" ) prefix, p

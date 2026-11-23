@@ -14,6 +14,8 @@ PROGRAM GALAHAD_DPS_EXAMPLE
    TYPE ( DPS_data_type ) :: data
    TYPE ( DPS_control_type ) :: control
    TYPE ( DPS_inform_type ) :: inform
+   TYPE ( SMT_type ) :: H2
+   REAL ( KIND = rp_ ), DIMENSION( 3 ) :: C2, X2, X2_star
 
    H%ne = 132                                  ! set up problem
    f = 0.0_rp_
@@ -239,6 +241,34 @@ PROGRAM GALAHAD_DPS_EXAMPLE
        END DO
      END DO
    END DO
+
+!  ======================================
+!  regularization with the power p = 2
+!  ======================================
+
+!  H = diag( 1, 2, 3 ) is positive definite, so M = H, and with c = 1,
+!  sigma = 1 and p = 2, lambda = sigma = 1 and x = - H^-1 c / 2
+
+   WRITE( 6, "( /, ' =-=-=-=-= power-two test =-=-=-=-= ', / )" )
+   CALL SMT_put( H2%type, 'COORDINATE', i )
+   H2%n = 3 ; H2%ne = 3
+   ALLOCATE( H2%row( 3 ), H2%col( 3 ), H2%val( 3 ), STAT = i )
+   H2%row = (/ 1, 2, 3 /) ; H2%col = (/ 1, 2, 3 /)
+   H2%val = (/ one, two, 3.0_rp_ /)
+   C2 = one
+   CALL DPS_initialize( data, control, inform )
+   control%symmetric_linear_solver = 'sytr'
+   CALL DPS_solve( 3_ip_, H2, C2, zero, X2, data, control, inform,            &
+                   sigma = one, p = two )
+   X2_star = - (/ one, one / two, one / 3.0_rp_ /) / two
+   IF ( inform%status /= 0 .OR.                                                &
+        MAXVAL( ABS( X2 - X2_star ) ) > SQRT( EPSILON( one ) ) ) THEN
+     WRITE( 6, "( ' p = 2: DPS_solve failed, status = ', I0 )" ) inform%status
+     STOP 1
+   END IF
+   WRITE( 6, "( ' p = 2: DPS_solve   exit status = ', I6 )" ) inform%status
+   CALL DPS_terminate( data, control, inform )
+   DEALLOCATE( H2%row, H2%col, H2%val, H2%type, STAT = i )
 
 !  =============
 !  Error entries
