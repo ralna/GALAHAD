@@ -152,6 +152,39 @@
         CALL GLRT_terminate( data, control, inform ) ! delete internal workspace
    END DO
 
+!  =============================
+!  no regularization, sigma = 0
+!  =============================
+
+!  with sigma = 0, GLRT minimizes q by the conjugate gradient method, and
+!  as H = diag( 1, 2, 3 ) is positive definite, x = - H^-1 c, with c = 1
+
+   WRITE( 6, "( /, ' ==== zero weight ====== ', / )" )
+   CALL GLRT_initialize( data, control, inform )
+   control%unitm = .TRUE.
+   R( : 3 ) = one ; inform%status = 1
+   DO
+     CALL GLRT_solve( 3_ip_, 3.0_rp_, zero, X( : 3 ), R( : 3 ),                &
+                      VECTOR( : 3 ), data, control, inform )
+     SELECT CASE( inform%status )
+     CASE ( 3 ) ! form the Hessian-vector product
+       VECTOR( : 3 ) = (/ one, two, 3.0_rp_ /) * VECTOR( : 3 )
+     CASE ( 4 ) ! restart
+       R( : 3 ) = one
+     CASE DEFAULT
+       EXIT
+     END SELECT
+   END DO
+   IF ( inform%status /= 0 .OR.                                                &
+        MAXVAL( ABS( X( : 3 ) + (/ one, one / two, one / 3.0_rp_ /) ) )        &
+          > 10.0_rp_ * SQRT( EPSILON( one ) ) ) THEN
+     WRITE( 6, "( ' sigma = 0: GLRT_solve failed, status = ', I0 )" )         &
+       inform%status
+     STOP 1
+   END IF
+   WRITE( 6, "( ' sigma = 0: GLRT_solve exit status = ', I0 )" ) inform%status
+   CALL GLRT_terminate( data, control, inform )
+
 !  =============
 !  Error entries
 !  =============
