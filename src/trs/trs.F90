@@ -924,7 +924,7 @@
             ELSE ! solution on the trust-region boundary
               X = - C / beta
               lambda = beta - h_val
-              inform%obj = f - half * radius * ( c_norm - lambda * radius )
+              inform%obj = f - half * radius * ( c_norm + lambda * radius )
               inform%multiplier = lambda
               inform%x_norm = radius
             END IF
@@ -937,9 +937,9 @@
               inform%pole = zero
               inform%x_norm = zero
             ELSE ! artibtrary solution on the trust-region boundary
-              inform%obj = f + half * h_val * radius
+              inform%obj = f + half * h_val * radius ** 2
               X( 1 ) = radius
-              inform%multiplier = one
+              inform%multiplier = - h_val
               inform%pole = - h_val
               inform%x_norm = radius
             END IF
@@ -3642,7 +3642,7 @@
           lambda_min_loc = MINLOC( H( : n ) )
           X( lambda_min_loc( 1 ) ) = radius
           inform%x_norm = radius
-          inform%obj = f + lambda_min * radius ** 2
+          inform%obj = f + half * lambda_min * radius ** 2
           lambda = - lambda_min
         END IF
         IF ( printi ) THEN

@@ -9,7 +9,7 @@
    LOGICAL :: use_a, use_m
    INTEGER ( KIND = ip_ ) :: h_is, h_n, m_kind, status_ref, failures
    REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
-   REAL ( KIND = rp_ ) :: tol, sigma
+   REAL ( KIND = rp_ ) :: tol, sigma, obj_s, objr_s, mult_s
    CHARACTER ( LEN = 15 ) :: h_type
    TYPE ( RQS_full_data_type ) :: data
    TYPE ( RQS_control_type ) :: control
@@ -225,6 +225,32 @@
      END DO
    END DO
 
+!  the closed-form solution for g = 0, H = - I, p = 3 and sigma = 1 without
+!  M or A: ||x|| = 1, q = - 1/2, r = - 1/6 and lambda = 1. H is given as a
+!  scaled identity and as a diagonal
+
+   DO h_is = 1, 2
+     IF ( h_is == 1 ) THEN
+       h_type = 'SCALED_IDENTITY' ; h_n = 1
+     ELSE
+       h_type = 'DIAGONAL' ; h_n = n
+     END IF
+     H_s = - one
+     CALL SOLVE( TRIM( h_type ), H_s( : h_n ), 0_ip_, .FALSE.,                 &
+                 (/ zero, zero, zero /), one, X, Y, status )
+     IF ( status /= 0 .OR. ABS( NORM2( X ) - one ) > tol .OR.                  &
+          ABS( obj_s + one / two ) > tol .OR.                                  &
+          ABS( objr_s + one / 6.0_rp_ ) > tol .OR.                             &
+          ABS( mult_s - one ) > tol ) THEN
+       failures = failures + 1
+       WRITE( 6, "( 1X, A, ', g = 0: failed, status = ', I0, ', ||x|| = ',     &
+      &  ES12.4, ', r = ', ES12.4 )" ) TRIM( h_type ), status,                 &
+         NORM2( X ), objr_s
+     ELSE
+       WRITE( 6, "( 1X, A, ', g = 0: ok' )" ) TRIM( h_type )
+     END IF
+   END DO
+
    IF ( failures > 0 ) THEN
      WRITE( 6, "( /, 1X, I0, ' identity storage test(s) failed' )" ) failures
      STOP 1
@@ -288,6 +314,12 @@
          CALL RQS_solve_problem( data, status, power, sigma, zero,             &
                                  G, H_v, X )
        END IF
+     END IF
+     obj_s = HUGE( one ) ; objr_s = HUGE( one ) ; mult_s = HUGE( one )
+     IF ( status == 0 ) THEN
+       CALL RQS_information( data, inform, status )
+       obj_s = inform%obj ; objr_s = inform%obj_regularized
+       mult_s = inform%multiplier
      END IF
      CALL RQS_terminate( data, control, inform )
      END SUBROUTINE SOLVE

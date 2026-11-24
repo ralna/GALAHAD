@@ -9,7 +9,7 @@
    LOGICAL :: use_a, use_m
    INTEGER ( KIND = ip_ ) :: h_is, h_n, m_kind, status_ref, failures
    REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
-   REAL ( KIND = rp_ ) :: tol, rad
+   REAL ( KIND = rp_ ) :: tol, rad, obj_s, mult_s, obj_e, mult_e
    CHARACTER ( LEN = 15 ) :: h_type
    TYPE ( TRS_full_data_type ) :: data
    TYPE ( TRS_control_type ) :: control
@@ -279,6 +279,43 @@
      END DO
    END DO
 
+!  the objective value and multiplier from the closed-form solutions for
+!  H = s I without M or A, with g = ( 3, 0, 4 ) and radius 1, x = - g / 5 lies
+!  on the boundary, q = - 5 + s / 2 and lambda = 5 - s. For g = 0, H = - 2 I
+!  and radius 2, x lies on the boundary, q = - 4 and lambda = 2. Each H is
+!  also given as a diagonal
+
+   G = (/ 3.0_rp_, 0.0_rp_, 4.0_rp_ /)
+   DO h_is = 1, 5
+     SELECT CASE ( h_is )
+     CASE ( 1 )
+       h_type = 'SCALED_IDENTITY' ; H_s = two ; h_n = 1
+     CASE ( 2 )
+       h_type = 'IDENTITY' ; H_s = one ; h_n = 0
+     CASE ( 3 )
+       h_type = 'ZERO' ; H_s = zero ; h_n = 0
+     CASE ( 4 )
+       h_type = 'NONE' ; H_s = zero ; h_n = 0
+     CASE ( 5 )
+       h_type = 'DIAGONAL' ; H_s = two ; h_n = n
+     END SELECT
+     obj_e = - 5.0_rp_ + H_s( 1 ) / two ; mult_e = 5.0_rp_ - H_s( 1 )
+     CALL SOLVE( TRIM( h_type ), H_s( : h_n ), 0_ip_, .FALSE., G, one,         &
+                 X, Y, status )
+     CALL CHECK_OBJ( TRIM( h_type ) // ', boundary' )
+   END DO
+   DO h_is = 1, 2
+     IF ( h_is == 1 ) THEN
+       h_type = 'SCALED_IDENTITY' ; h_n = 1
+     ELSE
+       h_type = 'DIAGONAL' ; h_n = n
+     END IF
+     H_s = - two ; obj_e = - 4.0_rp_ ; mult_e = two
+     CALL SOLVE( TRIM( h_type ), H_s( : h_n ), 0_ip_, .FALSE.,                 &
+                 (/ zero, zero, zero /), two, X, Y, status )
+     CALL CHECK_OBJ( TRIM( h_type ) // ', g = 0' )
+   END DO
+
    IF ( failures > 0 ) THEN
      WRITE( 6, "( /, 1X, I0, ' identity storage test(s) failed' )" ) failures
      STOP 1
@@ -341,6 +378,11 @@
                                  G, H_v, X )
        END IF
      END IF
+     obj_s = HUGE( one ) ; mult_s = HUGE( one )
+     IF ( status == 0 ) THEN
+       CALL TRS_information( data, inform, status )
+       obj_s = inform%obj ; mult_s = inform%multiplier
+     END IF
      CALL TRS_terminate( data, control, inform )
      END SUBROUTINE SOLVE
 
@@ -365,6 +407,22 @@
        WRITE( 6, "( 1X, A, A, ': ok' )" ) name, TRIM( with )
      END IF
      END SUBROUTINE CHECK
+
+     SUBROUTINE CHECK_OBJ( name )
+
+!  compare the objective value and multiplier with the expected ones
+
+     CHARACTER ( LEN = * ), INTENT( IN ) :: name
+
+     IF ( status /= 0 .OR. ABS( obj_s - obj_e ) > tol .OR.                     &
+          ABS( mult_s - mult_e ) > tol ) THEN
+       failures = failures + 1
+       WRITE( 6, "( 1X, A, ': failed, status = ', I0, ', obj = ', ES12.4,      &
+      &  ', multiplier = ', ES12.4 )" ) name, status, obj_s, mult_s
+     ELSE
+       WRITE( 6, "( 1X, A, ': ok' )" ) name
+     END IF
+     END SUBROUTINE CHECK_OBJ
 
      SUBROUTINE WHICH_sls( control )
      TYPE ( TRS_control_type ) :: control

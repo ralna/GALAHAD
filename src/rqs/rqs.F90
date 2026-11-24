@@ -926,7 +926,17 @@
             inform%obj_regularized = f
             inform%multiplier = zero
             inform%pole = zero
-            IF ( p > two .OR. sigma + h_val >= 0 ) THEN ! zero solution
+            IF ( p > two .AND. h_val < zero ) THEN ! arbitrary solution with
+              target = ( - h_val / sigma ) ** ( one / ( p - two ) ) ! ||x||
+              X( 1 ) = target
+              inform%x_norm = target
+              inform%obj = f + half * h_val * target ** 2
+              inform%obj_regularized                                           &
+                = inform%obj + ( sigma / p ) * target ** p
+              inform%multiplier = - h_val
+              inform%pole = - h_val
+              inform%status = 0
+            ELSE IF ( p > two .OR. sigma + h_val >= 0 ) THEN ! zero solution
               inform%status = 0
             ELSE ! unbounded from below
               inform%status = GALAHAD_error_unbounded
