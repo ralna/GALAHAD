@@ -1299,7 +1299,7 @@
 
 !  Compute the norms ||r_pass2|| and ||A^T r_pass2|| and the Lagrange multiplier
 
-      inform%multiplier = data%Y( data%end_pass2 )
+      inform%multiplier = data%LAMBDA( data%end_pass2 )
       inform%r_norm =                                                          &
         SQRT( MAX( DOT_PRODUCT( data%G( : data%end_pass2 ),                    &
                                 data%G( : data%end_pass2 ) )                   &
@@ -1404,6 +1404,11 @@
   800 CONTINUE
       IF ( control%steihaug_toint ) GO TO 100
       IF ( data%prev_steihaug_toint ) GO TO 100
+
+!  If the previous solution was interior, there is no solution on the
+!  boundary to recover, so solve the problem afresh
+
+      IF ( data%interior ) GO TO 100
       inform%iter = 0
 
 !  Find the solution to the Lanczos TR subproblem with this radius
@@ -1421,7 +1426,8 @@
 
 !  Compute the norms ||r_pass2|| and ||A^T r_pass2|| and the Lagrange multiplier
 
-      inform%multiplier = data%Y( data%end_pass2 )
+      inform%multiplier = data%LAMBDA( data%end_pass2 )
+      inform%x_norm = radius
       inform%r_norm =                                                          &
         SQRT( MAX( DOT_PRODUCT( data%G( : data%end_pass2 ),                    &
                                 data%G( : data%end_pass2 ) )                   &
