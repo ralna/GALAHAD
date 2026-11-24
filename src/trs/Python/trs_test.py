@@ -333,10 +333,6 @@ def test_trs_indefinite_m():
 # g = ( 4, 1, -2 ), whose projection onto the null space of A is
 # ( 3, 0, -3 ), x = ( -1, 0, 1 ) with ||x|| = radius = sqrt( 2 ),
 # y = -1, lambda = 3 - s and q = - 6 + s
-IDENTITY_XFAIL = pytest.mark.xfail(
-    strict=True, reason='trs_import rejects the scaled_identity, identity, '
-    'zero and none storage schemes for H (see '
-    'https://github.com/ralna/GALAHAD/pull/630)')
 g_s = np.array([3.0, 0.0, 4.0])
 x_star_s = np.array([-0.6, 0.0, -0.8])
 g_sa = np.array([4.0, 1.0, -2.0])
@@ -347,7 +343,6 @@ H_IDENTITY = [('scaled_identity', 2.0, 1, np.array([2.0])),
 H_IDENTITY_IDS = ['scaled_identity', 'identity', 'identity-None', 'zero',
                   'zero-None', 'none', 'none-None']
 
-@IDENTITY_XFAIL
 @pytest.mark.parametrize('use_a', [False, True], ids=['', 'A'])
 @pytest.mark.parametrize('H_type, s, H_ne, H_val', H_IDENTITY,
                          ids=H_IDENTITY_IDS)
@@ -370,26 +365,13 @@ def test_trs_h_identity(H_type, s, H_ne, H_val, use_a):
     assert inform['status'] == 0
 
 
-# 11) M = I given by the identity storage scheme, as in problems 4) and 6)
-# without M. The dense factorization handles this, but the sparse one
-# leaves M out of H + lambda M, and M_val = None is rejected (status -79)
-M_IDENTITY_XFAIL = pytest.mark.xfail(
-    strict=True, reason='trs fails with status -15 for an identity M when '
-    'using a sparse factorization (see '
-    'https://github.com/ralna/GALAHAD/pull/630)')
-
-M_VAL_XFAIL = pytest.mark.xfail(
-    strict=True, reason='trs requires M_val even for an identity M (see '
-    'https://github.com/ralna/GALAHAD/pull/630)')
+# 11) M = I given by the identity storage scheme, with M_val empty or
+# omitted, as in problems 4) and 6) without M
 
 @pytest.mark.parametrize('factorization', FACTORIZATION)
 @pytest.mark.parametrize('M_val', [np.zeros(0), None], ids=['', 'None'])
 @pytest.mark.parametrize('use_a', [False, True], ids=['', 'A'])
-def test_trs_m_identity(request, use_a, M_val, factorization):
-    if M_val is None:
-        request.applymarker(M_VAL_XFAIL)
-    elif factorization == 0:
-        request.applymarker(M_IDENTITY_XFAIL)
+def test_trs_m_identity(use_a, M_val, factorization):
     if use_a:
         x, y, inform = solve(g_a, radius_a, A=A, M_data=('identity', 0, M_val),
                              dense_factorization=factorization)

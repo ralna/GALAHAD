@@ -51,7 +51,6 @@ x_star_4 = np.array([0.3, 0.4])
 
 A_STORAGE = ['coordinate', 'sparse_by_rows', 'dense']
 
-SCALING_XFAIL = 'https://github.com/ralna/GALAHAD/pull/642'
 # with the default (Schur-complement) SBLS factorization, llst misses
 # interior solutions (and, for larger radii, does not terminate)
 INTERIOR_XFAIL = pytest.mark.xfail(
@@ -195,10 +194,7 @@ def test_llst_scaling(terminate, S_type):
 
 @pytest.mark.parametrize('S_data', [
     ('diagonal', 2, np.array([4.0, 4.0])),
-    pytest.param(('scaled_identity', 1, np.array([4.0])),
-                 marks=pytest.mark.xfail(
-                     strict=True, reason='llst rejects a scaled-identity S '
-                     f'(see {SCALING_XFAIL})'))],
+    ('scaled_identity', 1, np.array([4.0]))],
     ids=['diagonal', 'scaled_identity'])
 def test_llst_scaled_identity(terminate, S_data):
     # problem 2) with S = 4 I
@@ -210,10 +206,7 @@ def test_llst_scaled_identity(terminate, S_data):
 
 
 @pytest.mark.parametrize('S_val', [
-    np.zeros(0),
-    pytest.param(None, marks=pytest.mark.xfail(
-        strict=True, reason='llst requires S_val for an identity S (see '
-        f'{SCALING_XFAIL})'))],
+    np.zeros(0), None],
     ids=['empty', 'None'])
 def test_llst_identity(terminate, S_val):
     # problem 2) with S = I given by the identity storage scheme
@@ -224,10 +217,6 @@ def test_llst_identity(terminate, S_val):
     check_solution(x, inform, p['radius'], A, b)
 
 
-# llst does not check that a diagonal S is positive definite, and then does
-# not terminate, so this cannot be a strict xfail
-@pytest.mark.skip(reason='llst does not terminate for a diagonal S that is '
-                  f'not positive definite (see {SCALING_XFAIL})')
 def test_llst_indefinite_scaling(terminate):
     # S must be positive definite (status -15)
     with pytest.warns(RuntimeWarning):
