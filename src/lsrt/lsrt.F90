@@ -843,7 +843,14 @@
 
       inform%iter = 0 ; inform%iter_pass2 = 0
       inform%x_norm = zero ; data%z_norm = zero
-      inform%multiplier = zero
+
+!  when sigma = 0 or p = 2 (one_pass), the multiplier is sigma
+
+      IF ( data%one_pass ) THEN
+        inform%multiplier = sigma
+      ELSE
+        inform%multiplier = zero
+      END IF
       inform%biters = 0
       inform%biter_min = 0 ; inform%biter_max = 0 ; inform%biter_mean = zero
 
@@ -966,7 +973,14 @@
 
 !  Check that the iteration bound has not been exceeded
 
-        IF ( inform%iter + 1 > data%itmax ) GO TO 490
+        IF ( inform%iter + 1 > data%itmax ) THEN
+
+!  a single pass has no subspace solution to recover; x is already the
+!  best point in the current subspace
+
+          IF ( data%one_pass .AND. inform%iter > 0 ) GO TO 900
+          GO TO 490
+        END IF
         inform%iter = inform%iter + 1
         data%header = data%printd .OR. MOD( inform%iter, 25 ) == 0
 
@@ -1251,7 +1265,7 @@
 
 !  Compute the norms ||r_pass2|| and ||A^T r_pass2|| and the Lagrange multiplier
 
-      inform%multiplier = data%Y( data%end_pass2 )
+      inform%multiplier = data%LAMBDA( data%end_pass2 )
       inform%r_norm = SQRT( ABS( DOT_PRODUCT( data%G( : data%end_pass2 ),      &
                                               data%G( : data%end_pass2 ) ) -   &
                       data%LAMBDA( data%end_pass2 ) * ( inform%x_norm ** 2 ) ) )

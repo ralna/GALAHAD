@@ -741,8 +741,8 @@ void dps_resolve_rq_problem( void **data,
                              ipc_ n,
                              rpc_ c[],
                              rpc_ f,
-                             rpc_ power,
                              rpc_ weight,
+                             rpc_ power,
                              rpc_ x[] );
 
 /*!<

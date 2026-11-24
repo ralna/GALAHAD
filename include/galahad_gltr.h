@@ -434,7 +434,7 @@ void gltr_solve_problem( void **data,
             ill-conditioned
    \li -18. the iteration limit has been exceeded
    \li -30. the trust-region has been encountered in Steihaug-Toint mode
-   \li -31. the function value is smaller than control.f_min
+   \li -44. the function value is smaller than control.f_min
 
  @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables

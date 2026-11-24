@@ -1517,9 +1517,13 @@
         inform%obj = inform%obj_regularized - half * sigma * data%xmx
         IF ( PRESENT( eps ) ) inform%obj = inform%obj - half * sigma * eps
 
-!  Update the residual
+!  Update the residual (W is only used if sigma > 0)
 
-        R = R + data%alpha * ( VECTOR + sigma * data%W( : n ) )
+        IF ( sigma > zero ) THEN
+          R = R + data%alpha * ( VECTOR + sigma * data%W( : n ) )
+        ELSE
+          R = R + data%alpha * VECTOR
+        END IF
         data%tau = - SIGN( one, data%alpha ) * data%tau
 
       END IF

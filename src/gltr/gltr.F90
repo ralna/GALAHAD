@@ -655,7 +655,7 @@
 !                  ill-conditioned
 !              -18 the iteration limit has been exceeded
 !              -30 the trust-region has been encountered in Steihaug-Toint mode
-!              -31 the function value is smaller than control%f_min
+!              -44 the function value is smaller than control%f_min
 !             the remaining components are described in the preamble
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2927,7 +2927,7 @@
 !     -15 the matrix M appears to be indefinite
 !     -18 the iteration limit has been exceeded
 !     -30 the trust-region has been encountered in Steihaug-Toint mode
-!     -31 the function value is smaller than control%f_min
+!     -44 the function value is smaller than control%f_min
 !
 !  n is a scalar variable of type default intege that holds the number
 !   of unknowns
