@@ -13,6 +13,12 @@ on:
 # such as references to control or inform components that have been renamed
 # or removed, and interfaces that are inconsistent with the Fortran packages.
 
+# Cancel the runs for a pull request that are superseded by a newer push to
+# it (runs for pushes to master are never cancelled: each has its own group)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   matlab-stub:
     name: Matlab stub compile
