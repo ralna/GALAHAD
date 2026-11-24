@@ -195,6 +195,9 @@
      X2 = zero
      CALL LLST_initialize( data, control, inform )
      CALL WHICH_sls( control )
+     control%sbls_control%symmetric_linear_solver = "sytr  "
+     control%sbls_control%definite_linear_solver = "potr  "
+     control%definite_linear_solver = "potr  "
      CALL LLST_import( control, data, status, m2, n2, 'COORDINATE',            &
                       ne2, A2_row, A2_col, no_index )
      SELECT CASE ( s_kind )
