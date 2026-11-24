@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 11:14 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 13:53 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -974,6 +974,68 @@
      WRITE( 6, "( ' default solver test: DQP_solve exit status = ', I0,      &
     &             ' FAILED' )" ) info%status
      STOP 1
+   END IF
+   CALL DQP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%H%row, p%H%col, p%H%val, p%H%type )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
+
+!  ===================================================================
+!  check that the active set is recorded when the starting point is
+!  optimal, so that no arc search is performed. The problem minimize
+!  1/2 ||x||^2 s.t. x_1 + x_2 >= 2 and x >= 0 has the solution x = (1,1)
+!  with multipliers y = 1 and z = 0, which are given as the starting dual
+!  variables. The constraint is active, and the optimal matrix of active
+!  constraints is formed (as it is by DLP)
+!  ===================================================================
+
+   WRITE( 6, "( /, ' optimal start test ', / )" )
+   n = 2 ; m = 1
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),          &
+             p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ) )
+   ALLOCATE( X_stat( n ), C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 0.0_rp_ ; p%G = 0.0_rp_
+   p%X_l = 0.0_rp_ ; p%X_u = infty
+   p%C_l = 2.0_rp_ ; p%C_u = infty
+   p%X = 1.0_rp_ ; p%Y = 1.0_rp_ ; p%Z = 0.0_rp_
+   CALL SMT_put( p%H%type, 'COORDINATE', smt_stat ) ; p%H%ne = 2
+   ALLOCATE( p%H%row( 2 ), p%H%col( 2 ), p%H%val( 2 ) )
+   p%H%row = (/ 1, 2 /) ; p%H%col = (/ 1, 2 /) ; p%H%val = 1.0_rp_
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = 2
+   ALLOCATE( p%A%row( 2 ), p%A%col( 2 ), p%A%val( 2 ) )
+   p%A%row = (/ 1, 1 /) ; p%A%col = (/ 1, 2 /) ; p%A%val = 1.0_rp_
+   CALL DQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
+   control%infinity = infty
+   control%factor_optimal_matrix = .TRUE.
+   CALL DQP_solve( p, data, control, info, C_stat, X_stat )
+
+!  the linear solver chosen for the tests may not be available
+
+   IF ( info%status == GALAHAD_error_unknown_solver .OR.                      &
+        info%status == GALAHAD_unavailable_option ) THEN
+     WRITE( 6, "( ' optimal start test: skipped, linear solver',              &
+    &             ' unavailable (status ', I0, ')' )" ) info%status
+   ELSE IF ( info%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' optimal start test: DQP_solve exit status = ', I0,       &
+    &             ' FAILED' )" ) info%status
+     STOP 1
+   ELSE IF ( info%iter /= 0 ) THEN
+     WRITE( 6, "( ' optimal start test: ', I0, ' iterations taken,',         &
+    &             ' none expected FAILED' )" ) info%iter
+     STOP 1
+   ELSE IF ( C_stat( 1 ) /= - 1 .OR. ANY( X_stat /= 0 ) ) THEN
+     WRITE( 6, "( ' optimal start test: C_stat = ', I0, ', X_stat = ',       &
+    &             2( 1X, I0 ), ' FAILED' )" ) C_stat, X_stat
+     STOP 1
+   ELSE IF ( MAXVAL( ABS( p%X - 1.0_rp_ ) ) > EPSILON( 1.0_rp_ ) ** 0.75 ) THEN
+     WRITE( 6, "( ' optimal start test: solution error = ', ES8.1,           &
+    &             ' FAILED' )" ) MAXVAL( ABS( p%X - 1.0_rp_ ) )
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' optimal start test: active set correct' )" )
    END IF
    CALL DQP_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &

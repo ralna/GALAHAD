@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-21 AT 11:32 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 08:59 GMT.
 
 #include "galahad_modules.h"
 
@@ -3216,6 +3216,7 @@
       LOGICAL :: stat_required, dolid, diagonal_h, composite_g
       LOGICAL :: identity_h, scaled_identity_h, fresh_start, first_iteration
       LOGICAL :: subspace_direct, subspace_direct_save, penalty_objective
+      LOGICAL :: active_set_recorded
       CHARACTER ( LEN = 1 ) :: skip
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -4425,6 +4426,9 @@
 !  ---------------------- Start of Major Iteration ---------------------
 !  ---------------------------------------------------------------------
 
+!  the active set is recorded after each arc search
+
+      active_set_recorded = .FALSE.
       DO
 
 !write(6,*) ' Y_l(5) ', Y_l(5)
@@ -4617,6 +4621,54 @@
 
         IF ( dual_g_norm <= stop_d .OR.                                        &
              ( no_change > 2 .AND. dual_g_norm <= stop_reasonable ) ) THEN
+
+!  if the starting point is optimal, no arc search has been performed, and
+!  the active set has not been recorded. Record it from the starting dual
+!  variables: as after an arc search, a constraint or bound is active if its
+!  dual variable lies strictly between its bounds
+
+          IF ( .NOT. active_set_recorded ) THEN
+            C_status = 0 ; X_status = 0
+            m_active = 0 ; n_active = 0
+            DO i = 1, dims%c_l_end
+              IF ( Y_l( i ) - V_bnd( i, 1 ) > feas_tol .AND.                   &
+                   V_bnd( i, 2 ) - Y_l( i ) > feas_tol ) THEN
+                C_status( i ) = 1
+                m_active = m_active + 1
+                C_active( m_active ) = - i
+              END IF
+            END DO
+
+            DO i = dims%c_u_start, dims%c_u_end
+              ii = i - dims%c_u_start + yu_start
+              IF ( Y_u( i ) - V_bnd( ii, 1 ) > feas_tol .AND.                  &
+                   V_bnd( ii, 2 ) - Y_u( i ) > feas_tol ) THEN
+                C_status( i ) = C_status( i ) + 2
+                m_active = m_active + 1
+                C_active( m_active ) = i
+              END IF
+            END DO
+
+            DO i = dims%x_free + 1, dims%x_l_end
+              ii = i - dims%x_free - 1 + zl_start
+              IF ( Z_l( i ) - V_bnd( ii, 1 ) > feas_tol .AND.                  &
+                   V_bnd( ii, 2 ) - Z_l( i ) > feas_tol ) THEN
+                X_status( i ) = 1
+                n_active = n_active + 1
+                X_active( n_active ) = - i
+              END IF
+            END DO
+
+            DO i = dims%x_u_start, n
+              ii = i - dims%x_u_start + zu_start
+              IF ( Z_u( i ) - V_bnd( ii, 1 ) > feas_tol .AND.                  &
+                   V_bnd( ii, 2 ) - Z_u( i ) > feas_tol ) THEN
+                X_status( i ) = X_status( i ) + 2
+                n_active = n_active + 1
+                X_active( n_active ) = i
+              END IF
+            END DO
+          END IF
 
 !  if required, form and factorize the matrix K_0 = (   H     J^T_F_k )
 !                                                   ( J_F_k      0    )
@@ -5115,6 +5167,7 @@
             X_active( n_active ) = i
           END IF
         END DO
+        active_set_recorded = .TRUE.
 
 !write(6,*) ' C_status ', C_status( : m )
 !write(6,*) ' X_status ', X_status( : n )
