@@ -49,6 +49,63 @@
      M_diag_val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
    REAL ( KIND = rp_ ), DIMENSION( n ) :: G, H_s, X_ref
    REAL ( KIND = rp_ ), DIMENSION( m ) :: Y, Y_ref
+   INTEGER ( KIND = ip_ ) :: interior_status, interior_failures
+   REAL ( KIND = rp_ ) :: interior_tol
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X_interior
+
+!  ===========================================================
+!  interior solutions, from the diagonal and dense-factorization
+!  solves, which both use TRS_solve_diagonal
+!  ===========================================================
+
+   WRITE( 6, "( /, ' ==== tests of interior solutions ===== ', / )" )
+   interior_failures = 0 ; interior_tol = EPSILON( one ) ** 0.33_rp_
+
+!  H = diag( 1, 2, 3 ) and g = ( 1, 1, 1 ): the minimizer of q,
+!  x = - ( 1, 1/2, 1/3 ), lies inside the region of radius 10
+
+   CALL TRS_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   CALL TRS_import( control, data, status, n, 'DIAGONAL',                      &
+                    n, null, null, null )
+   CALL TRS_solve_problem( data, interior_status, 10.0_rp_, 0.0_rp_,           &
+                           (/ one, one, one /), (/ one, two, 3.0_rp_ /), X )
+   CALL TRS_terminate( data, control, inform )
+   X_interior = (/ - one, - one / two, - one / 3.0_rp_ /)
+   IF ( interior_status /= 0 .OR.                                              &
+        MAXVAL( ABS( X - X_interior ) ) > interior_tol ) THEN
+     interior_failures = interior_failures + 1
+     WRITE( 6, "( ' diagonal H: failed, status = ', I0 )" ) interior_status
+   ELSE
+     WRITE( 6, "( ' diagonal H: ok' )" )
+   END IF
+
+!  the example H plus 3 I, which is positive definite, g = ( 0, 5, 4 ) / 3
+!  and a dense factorization: the minimizer of q, x = ( 2, -1, -2 ) / 3,
+!  lies inside the region of radius 2
+
+   CALL TRS_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   control%dense_factorization = 1
+   CALL TRS_import( control, data, status, n, 'COORDINATE',                    &
+                    H_ne, H_row, H_col, null )
+   CALL TRS_solve_problem( data, interior_status, two, 0.0_rp_,                &
+                           (/ 0.0_rp_, 5.0_rp_ / 3.0_rp_, 4.0_rp_ / 3.0_rp_ /),&
+                           H_val + (/ 3.0_rp_, 3.0_rp_, 3.0_rp_, 0.0_rp_ /), X )
+   CALL TRS_terminate( data, control, inform )
+   X_interior = (/ two, - one, - two /) / 3.0_rp_
+   IF ( interior_status /= 0 .OR.                                              &
+        MAXVAL( ABS( X - X_interior ) ) > interior_tol ) THEN
+     interior_failures = interior_failures + 1
+     WRITE( 6, "( ' dense factorization: failed, status = ', I0 )" )           &
+       interior_status
+   ELSE
+     WRITE( 6, "( ' dense factorization: ok' )" )
+   END IF
+   IF ( interior_failures > 0 ) THEN
+     WRITE( 6, "( /, 1X, I0, ' interior test(s) failed' )" ) interior_failures
+     STOP 1
+   END IF
 
 !  =====================================
 !  basic test of various storage formats

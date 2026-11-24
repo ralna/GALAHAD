@@ -2907,8 +2907,8 @@ void dps_solve_rq_problem_q(void **data, int32_t *status, int32_t n, int32_t ne,
 void dps_solve_rq_problem_q_64(void **data, int64_t *status, int64_t n, int64_t ne, __float128 *H_val, __float128 *c, __float128 f, __float128 power, __float128 weight, __float128 *x);
 void dps_resolve_tr_problem_q(void **data, int32_t *status, int32_t n, __float128 *c, __float128 f, __float128 radius, __float128 *x);
 void dps_resolve_tr_problem_q_64(void **data, int64_t *status, int64_t n, __float128 *c, __float128 f, __float128 radius, __float128 *x);
-void dps_resolve_rq_problem_q(void **data, int32_t *status, int32_t n, __float128 *c, __float128 f, __float128 power, __float128 weight, __float128 *x);
-void dps_resolve_rq_problem_q_64(void **data, int64_t *status, int64_t n, __float128 *c, __float128 f, __float128 power, __float128 weight, __float128 *x);
+void dps_resolve_rq_problem_q(void **data, int32_t *status, int32_t n, __float128 *c, __float128 f, __float128 weight, __float128 power, __float128 *x);
+void dps_resolve_rq_problem_q_64(void **data, int64_t *status, int64_t n, __float128 *c, __float128 f, __float128 weight, __float128 power, __float128 *x);
 void dps_information_q(void **data, struct dps_inform_type_q *inform, int32_t *status);
 void dps_information_q_64(void **data, struct dps_inform_type_q_64 *inform, int64_t *status);
 void dps_terminate_q(void **data, struct dps_control_type_q *control, struct dps_inform_type_q *inform);

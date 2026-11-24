@@ -487,70 +487,70 @@ end
 export dps_resolve_rq_problem
 
 function dps_resolve_rq_problem(::Type{Float32}, ::Type{Int32}, data, status, n,
-                                c, f, power, weight, x)
+                                c, f, weight, power, x)
   @ccall libgalahad_single.dps_resolve_rq_problem_s(data::Ptr{Ptr{Cvoid}},
                                                     status::Ptr{Int32},
                                                     n::Int32, c::Ptr{Float32},
-                                                    f::Float32, power::Float32,
-                                                    weight::Float32,
+                                                    f::Float32, weight::Float32,
+                                                    power::Float32,
                                                     x::Ptr{Float32})::Cvoid
 end
 
 function dps_resolve_rq_problem(::Type{Float32}, ::Type{Int64}, data, status, n,
-                                c, f, power, weight, x)
+                                c, f, weight, power, x)
   @ccall libgalahad_single_64.dps_resolve_rq_problem_s_64(data::Ptr{Ptr{Cvoid}},
                                                           status::Ptr{Int64},
                                                           n::Int64,
                                                           c::Ptr{Float32},
                                                           f::Float32,
-                                                          power::Float32,
                                                           weight::Float32,
+                                                          power::Float32,
                                                           x::Ptr{Float32})::Cvoid
 end
 
 function dps_resolve_rq_problem(::Type{Float64}, ::Type{Int32}, data, status, n,
-                                c, f, power, weight, x)
+                                c, f, weight, power, x)
   @ccall libgalahad_double.dps_resolve_rq_problem(data::Ptr{Ptr{Cvoid}},
                                                   status::Ptr{Int32}, n::Int32,
                                                   c::Ptr{Float64}, f::Float64,
-                                                  power::Float64,
                                                   weight::Float64,
+                                                  power::Float64,
                                                   x::Ptr{Float64})::Cvoid
 end
 
 function dps_resolve_rq_problem(::Type{Float64}, ::Type{Int64}, data, status, n,
-                                c, f, power, weight, x)
+                                c, f, weight, power, x)
   @ccall libgalahad_double_64.dps_resolve_rq_problem_64(data::Ptr{Ptr{Cvoid}},
                                                         status::Ptr{Int64},
                                                         n::Int64,
                                                         c::Ptr{Float64},
                                                         f::Float64,
-                                                        power::Float64,
                                                         weight::Float64,
+                                                        power::Float64,
                                                         x::Ptr{Float64})::Cvoid
 end
 
 function dps_resolve_rq_problem(::Type{Float128}, ::Type{Int32}, data, status,
-                                n, c, f, power, weight, x)
+                                n, c, f, weight, power, x)
   @ccall libgalahad_quadruple.dps_resolve_rq_problem_q(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Int32},
                                                        n::Int32,
                                                        c::Ptr{Float128},
                                                        f::Cfloat128,
-                                                       power::Cfloat128,
                                                        weight::Cfloat128,
+                                                       power::Cfloat128,
                                                        x::Ptr{Float128})::Cvoid
 end
 
 function dps_resolve_rq_problem(::Type{Float128}, ::Type{Int64}, data, status,
-                                n, c, f, power, weight, x)
+                                n, c, f, weight, power, x)
   @ccall libgalahad_quadruple_64.dps_resolve_rq_problem_q_64(data::Ptr{Ptr{Cvoid}},
                                                              status::Ptr{Int64},
                                                              n::Int64,
                                                              c::Ptr{Float128},
                                                              f::Cfloat128,
-                                                             power::Cfloat128,
                                                              weight::Cfloat128,
+                                                             power::Cfloat128,
                                                              x::Ptr{Float128})::Cvoid
 end
 

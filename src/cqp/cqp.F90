@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-22 AT 17:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:33 GMT.
 
 #include "galahad_modules.h"
 
@@ -117,7 +117,8 @@
                 CQP_import, CQP_solve_qp, CQP_solve_sldqp, CQP_reset_control,  &
                 CQP_information, CQP_merit_value, CQP_potential_value,         &
                 CQP_Lagrangian_gradient, CQP_compute_stepsize,                 &
-                CQP_compute_v_alpha, CQP_compute_lmaxstep, CQP_compute_pmaxstep
+                CQP_compute_v_alpha, CQP_compute_lmaxstep,                     &
+                CQP_compute_pmaxstep, CQP_pounce_multipliers
 
 !----------------------
 !   I n t e r f a c e s

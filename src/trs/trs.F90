@@ -3666,7 +3666,7 @@
         lambda_u = MIN( control%upper,                                         &
                         c_norm_over_radius - lambda_min )
       ELSE
-        lambda_l = MAX( control%lower, - lambda_min,                           &
+        lambda_l = MAX( control%lower, zero, - lambda_min,                     &
                         c_norm_over_radius - lambda_max )
         lambda_u = MIN( control%upper,                                         &
                         MAX( zero, c_norm_over_radius - lambda_min ) )
