@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-24 AT 08:13 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 11:32 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L1QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -19,8 +19,7 @@
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    INTEGER ( KIND = ip_ ) :: lp_trial, lp_errors
-   INTEGER ( KIND = i8_ ) :: lp_seed, lp_seed_start, lp_seed_copy
-   LOGICAL :: lp_failed
+   INTEGER ( KIND = i8_ ) :: lp_seed
    REAL ( KIND = rp_ ) :: lp_f, lp_f_sol
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
 
@@ -1098,7 +1097,6 @@
    lp_errors = 0 ; lp_seed = 12345
    DO lp_trial = 1, 6
      n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
-     lp_seed_start = lp_seed ; lp_failed = .FALSE.
      CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
      ALLOCATE( X_stat( n ), C_stat( m ) )
      CALL L1QP_initialize( data, control, info )
@@ -1114,13 +1112,11 @@
        lp_errors = lp_errors + 1
        WRITE( 6, "( ' LP ', I0, ': L1QP_solve exit status = ', I0,         &
       &             ' FAILED' )" ) lp_trial, info%status
-       lp_failed = .TRUE.
      ELSE IF ( ABS( lp_f - lp_f_sol ) > EPSILON( 1.0_rp_ ) ** 0.75 *          &
                MAX( 1.0_rp_, ABS( lp_f_sol ) ) ) THEN
        lp_errors = lp_errors + 1
        WRITE( 6, "( ' LP ', I0, ': objective error = ', ES8.1, ' FAILED' )" )  &
          lp_trial, ABS( lp_f - lp_f_sol )
-       lp_failed = .TRUE.
      ELSE
        WRITE( 6, "( ' LP ', I0, ': solution correct' )" ) lp_trial
      END IF
@@ -1128,34 +1124,6 @@
      DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,          &
                  X_stat, C_stat )
      DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
-
-!  TEMPORARY DIAGNOSTICS: if the LP was not solved, solve it again with
-!  printing, so that the refinement can be followed in the CI log
-
-     IF ( lp_failed ) THEN
-       WRITE( 6, "( /, ' LP ', I0, ': repeating with printing', / )" ) lp_trial
-       lp_seed_copy = lp_seed_start
-       CALL LP_planted( p, n, m, lp_seed_copy, lp_f_sol )
-       ALLOCATE( X_stat( n ), C_stat( m ) )
-       CALL L1QP_initialize( data, control, info )
-       control%refine = .TRUE.
-       control%CQP_control%SBLS_control%symmetric_linear_solver = 'sytr '
-       control%CQP_control%SBLS_control%definite_linear_solver = 'potr '
-       control%DLP_control%symmetric_linear_solver = 'sytr '
-       control%DLP_control%definite_linear_solver = 'potr '
-       control%infinity = infty
-       control%print_level = 1 ; control%DLP_control%print_level = 1
-       CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
-       lp_f = DOT_PRODUCT( p%G( : n ), p%X( : n ) )
-       WRITE( 6, "( /, ' LP ', I0, ' repeated: status = ', I0,               &
-      &  ', objective error = ', ES8.1, /, ' f = ', ES42.34, /,              &
-      &  ' f_sol = ', ES42.34 )" ) lp_trial, info%status,                     &
-         ABS( lp_f - lp_f_sol ), lp_f, lp_f_sol
-       CALL L1QP_terminate( data, control, info )
-       DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,        &
-                   X_stat, C_stat )
-       DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
-     END IF
    END DO
    IF ( lp_errors > 0 ) THEN
      WRITE( 6, "( /, 1X, I0, ' random LP tests failed' )" ) lp_errors
