@@ -663,7 +663,7 @@
           inform%status = GALAHAD_error_restrictions ; RETURN
         END IF
         IF ( PRESENT( p ) ) THEN
-          IF ( p <= two ) THEN
+          IF ( p < two ) THEN
             IF ( control%error > 0 ) WRITE( control%error,                     &
              "( A, ' The regularization power ', ES12.4 ,                      &
             &  ' is smaller than two' )" ) prefix, p
@@ -713,7 +713,7 @@
 !  solve the TR problem
 
       CALL DPS_resolve( n, X, data, control, inform, C = C, f = f,             &
-                        delta = delta, sigma = sigma )
+                        delta = delta, sigma = sigma, p = p )
       RETURN
 
 !  End of subroutine DPS_solve
@@ -796,7 +796,7 @@
           inform%status = GALAHAD_error_restrictions ; RETURN
         END IF
         IF ( PRESENT( p ) ) THEN
-          IF ( p <= two ) THEN
+          IF ( p < two ) THEN
             IF ( control%error > 0 ) WRITE( control%error,                     &
              "( A, ' The regularization power ', ES12.4 ,                      &
             &  ' is smaller than two' )" ) prefix, p

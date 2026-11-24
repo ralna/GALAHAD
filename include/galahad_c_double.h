@@ -2907,8 +2907,8 @@ void dps_solve_rq_problem(void **data, int32_t *status, int32_t n, int32_t ne, d
 void dps_solve_rq_problem_64(void **data, int64_t *status, int64_t n, int64_t ne, double *H_val, double *c, double f, double power, double weight, double *x);
 void dps_resolve_tr_problem(void **data, int32_t *status, int32_t n, double *c, double f, double radius, double *x);
 void dps_resolve_tr_problem_64(void **data, int64_t *status, int64_t n, double *c, double f, double radius, double *x);
-void dps_resolve_rq_problem(void **data, int32_t *status, int32_t n, double *c, double f, double power, double weight, double *x);
-void dps_resolve_rq_problem_64(void **data, int64_t *status, int64_t n, double *c, double f, double power, double weight, double *x);
+void dps_resolve_rq_problem(void **data, int32_t *status, int32_t n, double *c, double f, double weight, double power, double *x);
+void dps_resolve_rq_problem_64(void **data, int64_t *status, int64_t n, double *c, double f, double weight, double power, double *x);
 void dps_information(void **data, struct dps_inform_type *inform, int32_t *status);
 void dps_information_64(void **data, struct dps_inform_type_64 *inform, int64_t *status);
 void dps_terminate(void **data, struct dps_control_type *control, struct dps_inform_type *inform);
