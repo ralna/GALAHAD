@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 07:33 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 11:32 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L1QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -1087,13 +1087,10 @@
    END DO
 
 
-#ifndef REAL_32
 !  ======================================================================
 !  random LPs with known solutions, solved with refinement, many of which
 !  are degenerate, so that their perturbed solutions have constraints or
-!  bounds on their bounds but not in the active set (single precision is
-!  excluded, as DQP may then not solve the perturbed problems accurately
-!  enough)
+!  bounds on their bounds but not in the active set
 !  ======================================================================
 
    WRITE( 6, "( /, ' random LP tests ', / )" )
@@ -1132,7 +1129,6 @@
      WRITE( 6, "( /, 1X, I0, ' random LP tests failed' )" ) lp_errors
      STOP 1
    END IF
-#endif
 
    WRITE( 6, "( /, ' tests completed' )" )
 
