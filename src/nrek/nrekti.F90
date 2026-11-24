@@ -222,11 +222,11 @@
                          h_ne, H_row, H_col, null_ )
      ELSE
        CALL NREK_import( control2, data2, status, n, h_type,                   &
-                         SIZE( H_v ), null_, null_, null_ )
+                         SIZE( H_v, KIND = ip_ ), null_, null_, null_ )
      END IF
      IF ( status == 0 .AND. s_type /= '' ) THEN
-       CALL NREK_S_import( data2, status, s_type, SIZE( S_v ),                 &
-                           null_, null_, null_ )
+       CALL NREK_S_import( data2, status, s_type,                              &
+                           SIZE( S_v, KIND = ip_ ), null_, null_, null_ )
      END IF
      IF ( status == 0 ) THEN
        IF ( s_type == '' .OR. s_type == 'IDENTITY' ) THEN
