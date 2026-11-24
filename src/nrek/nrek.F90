@@ -1297,10 +1297,27 @@
 !  print statistics about H and S if desired
 
          IF ( printd ) THEN
-           WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                          &
-             prefix, MAXVAL( ABS( H%val( : data%h_ne ) ) )
-           IF ( .NOT. data%unit_s ) WRITE( out, "( A, ' ||S|| = ', ES10.4 )" ) &
-             prefix, MAXVAL( ABS( S%val( : data%s_ne ) ) )
+           SELECT CASE ( SMT_get( H%type ) )
+           CASE ( 'ZERO', 'NONE' )
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" ) prefix, zero
+           CASE ( 'IDENTITY' )
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" ) prefix, one
+           CASE ( 'SCALED_IDENTITY' )
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                        &
+               prefix, ABS( H%val( 1 ) )
+           CASE DEFAULT
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                        &
+               prefix, MAXVAL( ABS( H%val( : data%h_ne ) ) )
+           END SELECT
+           IF ( .NOT. data%unit_s ) THEN
+             IF ( SMT_get( S%type ) == 'SCALED_IDENTITY' ) THEN
+               WRITE( out, "( A, ' ||S|| = ', ES10.4 )" )                      &
+                 prefix, ABS( S%val( 1 ) )
+             ELSE
+               WRITE( out, "( A, ' ||S|| = ', ES10.4 )" )                      &
+                 prefix, MAXVAL( ABS( S%val( : data%s_ne ) ) )
+             END IF
+           END IF
          END IF
 
 !  allocate space to hold the matrix in co-ordinate form
@@ -1369,7 +1386,7 @@
 
          IF ( .NOT. data%unit_s ) THEN
            SELECT CASE ( SMT_get( S%type ) )
-           CASE ( 'DIAGONAL' )
+           CASE ( 'DIAGONAL', 'SCALED_IDENTITY' )
              DO i = 1, n
                data%H_shift%row( data%h_ne + i ) = i
                data%H_shift%col( data%h_ne + i ) = i
@@ -1430,7 +1447,7 @@
            data%H_shift%val( : data%h_ne ) = one
          ELSE IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' ) THEN
            data%H_shift%val( : data%h_ne ) = H%val( 1 )
-         ELSE
+         ELSE IF ( data%h_ne > 0 ) THEN
            data%H_shift%val( : data%h_ne ) = H%val( : data%h_ne )
          END IF
 
