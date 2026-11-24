@@ -68,17 +68,11 @@ def lambda_p3(sigma):
     # lambda for p = 3, the root of lambda ( 1 + lambda ) = sigma ||x_n||_M
     return (-1.0 + np.sqrt(1.0 + 4.0 * sigma * norm_n)) / 2.0
 
-P2_XFAIL = pytest.mark.xfail(
-    strict=True, reason='dps rejects the regularization power p = 2 (see '
-    'https://github.com/ralna/GALAHAD/pull/633)')
-P4_XFAIL = pytest.mark.xfail(
-    strict=True, reason='dps solves with p = 3 whatever power is given (see '
-    'https://github.com/ralna/GALAHAD/pull/633)')
 PD_TR = [(2.0, 1.0), (0.5, 0.5 / norm_n)]
 PD_TR_IDS = ['interior', 'boundary']
-PD_RQ = [pytest.param(2.0, 1.0, 0.5, marks=P2_XFAIL),
+PD_RQ = [(2.0, 1.0, 0.5),
          (3.0, 1.0, 1.0 / (1.0 + lambda_p3(1.0))),
-         pytest.param(4.0, 36.0 / 13.0, 0.5, marks=P4_XFAIL)]
+         (4.0, 36.0 / 13.0, 0.5)]
 PD_RQ_IDS = ['p=2', 'p=3', 'p=4']
 
 # resolve_tr_problem and resolve_rq_problem reuse the factorization for

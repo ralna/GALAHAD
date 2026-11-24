@@ -31,11 +31,6 @@ b = np.array([0.9, 0.8, 0.9, 2.0])
 x_star = np.array([0.6, 0.8])
 x_star_0 = np.array([0.9, 0.96])
 
-# lsrt reports the last component of the subspace solution, or zero after
-# a single pass (p = 2), rather than the multiplier
-MULTIPLIER_XFAIL = pytest.mark.xfail(
-    strict=True, reason='lsrt reports the wrong multiplier (see '
-    'https://github.com/ralna/GALAHAD/pull/640)')
 
 def options(**opts):
     # stop only once the gradient is tiny
@@ -98,7 +93,6 @@ def test_lsrt_example(terminate, power):
     check_solution(x, inform, power, 1.0, A_e, b_e, example_multiplier(x))
 
 
-@MULTIPLIER_XFAIL
 @pytest.mark.parametrize('power', [2.0, 3.0], ids=['p=2', 'p=3'])
 def test_lsrt_example_multiplier(terminate, power):
     # problem 1): the reported multiplier is the one x satisfies
@@ -120,7 +114,6 @@ def test_lsrt(terminate, power):
     check_solution(x, inform, power, 1.0, A, b, 1.0)
 
 
-@MULTIPLIER_XFAIL
 @pytest.mark.parametrize('power', [2.0, 3.0, 4.0],
                          ids=['p=2', 'p=3', 'p=4'])
 def test_lsrt_multiplier(terminate, power):
@@ -163,11 +156,7 @@ def test_lsrt_iteration_limit(terminate):
     assert inform['obj'] > obj
 
 
-# a single pass (p = 2) stopped by the iteration limit crashes Python, so
-# it cannot be a strict xfail
-@pytest.mark.skip(reason='lsrt crashes when a single pass reaches the '
-                  'iteration limit (see '
-                  'https://github.com/ralna/GALAHAD/pull/640)')
+# a single pass (p = 2) stopped by the iteration limit
 def test_lsrt_iteration_limit_single_pass(terminate):
     status, x, inform = solve(2.0, 1.0, A_e, b_e, itmax=1)
     assert status == 0

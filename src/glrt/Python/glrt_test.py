@@ -167,9 +167,7 @@ def test_glrt_bad_parameters(terminate, power, weight):
 
 # 4) with sigma = 0, glrt minimizes q by the conjugate gradient method; with
 # H = diag( 1, 2, 3 ) and g = ( 1, 1, 1 ), x = - ( 1, 1/2, 1/3 ) and
-# q = - 11/12. This crashes Python, so it cannot be a strict xfail
-@pytest.mark.skip(reason='glrt crashes with sigma = 0 (see '
-                  'https://github.com/ralna/GALAHAD/pull/638)')
+# q = - 11/12
 def test_glrt_zero_weight(terminate):
     H_d = np.diag([1.0, 2.0, 3.0])
     g_d = np.ones(3)

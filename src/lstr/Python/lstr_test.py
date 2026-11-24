@@ -36,16 +36,6 @@ PROBLEMS = {
                      r_norm=2.0 * np.sqrt(5.0) / 25.0),
 }
 
-# lstr reports the last component of the subspace solution rather than the
-# multiplier
-MULTIPLIER_XFAIL = pytest.mark.xfail(
-    strict=True, reason='lstr reports the wrong multiplier on the boundary '
-    '(see https://github.com/ralna/GALAHAD/pull/640)')
-# a restart (status 5) leaves the reported ||x|| unchanged, and after an
-# interior solution returns x = 0
-RESTART_XFAIL = pytest.mark.xfail(
-    strict=True, reason='lstr restarts do not update x_norm, and fail after '
-    'an interior solution (see https://github.com/ralna/GALAHAD/pull/640)')
 
 def options(**opts):
     # stop only once the gradient is tiny
@@ -114,7 +104,6 @@ def test_lstr_example(terminate, radius):
     check_solution(x, inform, radius, A_e, b_e, lam)
 
 
-@RESTART_XFAIL
 def test_lstr_example_restart(terminate):
     # problem 1), with radius 0.1 found by a restart (status 5) after
     # solving with radius 1
@@ -127,7 +116,6 @@ def test_lstr_example_restart(terminate):
     check_solution(x, inform, 0.1, A_e, b_e, example_multiplier(x))
 
 
-@MULTIPLIER_XFAIL
 @pytest.mark.parametrize('radius', [1.0, 0.1])
 def test_lstr_example_multiplier(terminate, radius):
     # problem 1): the reported multiplier is the one x satisfies
@@ -148,7 +136,7 @@ def test_lstr(terminate, problem):
 
 
 @pytest.mark.parametrize('problem', [
-    pytest.param('boundary', marks=MULTIPLIER_XFAIL), 'interior'])
+    'boundary', 'interior'])
 def test_lstr_multiplier(terminate, problem):
     # problem 2): the reported multiplier
     p = PROBLEMS[problem]
@@ -156,7 +144,6 @@ def test_lstr_multiplier(terminate, problem):
     assert inform['multiplier'] == pytest.approx(p['lam'], abs=1e-8)
 
 
-@RESTART_XFAIL
 def test_lstr_restart(terminate):
     # problem 2) with radius 1, found by a restart (status 5) after solving
     # with radius 10

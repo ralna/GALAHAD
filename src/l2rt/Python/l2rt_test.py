@@ -41,11 +41,6 @@ SHIFTS = {'mu=0': (0.0, 10.0 / np.sqrt(34.0), np.sqrt(34.0) / 10.0),
 SHIFT_XFAIL = pytest.mark.xfail(
     strict=True, reason='l2rt ignores the shift mu when p > 2 (see '
     'https://github.com/ralna/GALAHAD/issues/641)')
-# l2rt reports the last component of the subspace solution rather than the
-# multiplier
-MULTIPLIER_XFAIL = pytest.mark.xfail(
-    strict=True, reason='l2rt reports the wrong multiplier (see '
-    'https://github.com/ralna/GALAHAD/pull/640)')
 
 def options(**opts):
     # stop only once the gradient is tiny
@@ -111,7 +106,6 @@ def test_l2rt_example(terminate, shift, power):
     check_solution(x, inform, power, 1.0, shift, A_e, b_e)
 
 
-@MULTIPLIER_XFAIL
 def test_l2rt_example_multiplier(terminate):
     # problem 1) with mu = 0: the reported multiplier is the one x satisfies
     status, x, inform = solve(3.0, 1.0, 0.0, A_e, b_e)
@@ -135,7 +129,6 @@ def test_l2rt(request, terminate, case, power):
     check_solution(x, inform, power, weight, shift, A, b)
 
 
-@MULTIPLIER_XFAIL
 @pytest.mark.parametrize('power', [2.0, 3.0], ids=['p=2', 'p=3'])
 def test_l2rt_multiplier(terminate, power):
     # problem 2) with mu = 0: the reported multiplier
@@ -179,11 +172,7 @@ def test_l2rt_iteration_limit(terminate):
     assert inform['obj'] > obj
 
 
-# a single pass (sigma = mu = 0) stopped by the iteration limit crashes
-# Python, so it cannot be a strict xfail
-@pytest.mark.skip(reason='l2rt crashes when a single pass reaches the '
-                  'iteration limit (see '
-                  'https://github.com/ralna/GALAHAD/pull/640)')
+# a single pass (sigma = mu = 0) stopped by the iteration limit
 def test_l2rt_iteration_limit_single_pass(terminate):
     status, x, inform = solve(3.0, 0.0, 0.0, A_e, b_e, itmax=1)
     assert status == 0
