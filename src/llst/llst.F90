@@ -1119,6 +1119,10 @@
 
       ELSE IF ( SMT_get( S%type ) == 'DIAGONAL' ) THEN
 
+!  check that S is positive definite
+
+        IF ( COUNT( S%val( : n ) <= zero ) > 0 ) GO TO 930
+
 !  record || c ||_S^-1/ radius
 
         c_norm = SQRT( DOT_PRODUCT( data%C( : n ),                             &
@@ -2703,6 +2707,20 @@
               bad_alloc = data%llst_inform%bad_alloc, out = error )
        IF ( data%llst_inform%status /= 0 ) GO TO 900
 
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%S%type, 'SCALED_IDENTITY',                           &
+                     data%llst_inform%alloc_status )
+       data%S%n = n ; data%S%ne = 1
+
+       array_name = 'llst: data%S%val'
+       CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
      CASE ( 'identity', 'IDENTITY' )
        CALL SMT_put( data%S%type, 'IDENTITY', data%llst_inform%alloc_status )
        data%S%n = n ; data%S%ne = 0
@@ -2831,7 +2849,7 @@
                         data%llst_control, data%llst_inform )
 
      ELSE
-       IF ( .NOT. PRESENT( S_val ) ) THEN
+       IF ( .NOT. PRESENT( S_val ) .AND. data%S%ne > 0 ) THEN
          data%llst_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF

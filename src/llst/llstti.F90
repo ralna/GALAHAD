@@ -28,6 +28,16 @@
    TYPE ( LLST_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: A_ne, S_ne, i, l, data_storage_type, use_s, status
    CHARACTER ( len = 1 ) :: st
+   INTEGER ( KIND = ip_ ), PARAMETER :: m2 = 4, n2 = 2, ne2 = 4
+   INTEGER ( KIND = ip_ ), DIMENSION( ne2 ) :: A2_row = (/ 1, 2, 3, 4 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( ne2 ) :: A2_col = (/ 1, 2, 1, 2 /)
+   REAL ( KIND = rp_ ), DIMENSION( ne2 ) ::                                    &
+     A2_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( m2 ) ::                                     &
+     B2 = (/ 0.9_rp_, 0.8_rp_, 0.9_rp_, 2.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n2 ) :: X_ref, X_s
+   INTEGER ( KIND = ip_ ) :: status_ref, status_s, failures
+   REAL ( KIND = rp_ ) :: tol
 
 ! A = ( I : Diag(1:n) : e )
    l = 1
@@ -129,9 +139,104 @@
      CALL LLST_terminate( data, control, inform ) ! delete workspace
    END DO
 
+
+!  ================================================================
+!  identity-based and non-positive scalings S for a small problem:
+!  minimize || A x - b || subject to || x ||_S <= 1
+!  with A = ( I ; diag( 1, 2 ) ) and b = ( 0.9, 0.8, 0.9, 2 ). Each solve
+!  is compared with one using explicit storage, skipped if that fails
+!  ================================================================
+
+   WRITE( 6, "( /, ' ==== tests of identity-based scalings ===== ', / )" )
+   tol = SQRT( EPSILON( one ) ) ; failures = 0
+
+!  S = 2 I given as a scaled identity, and as a diagonal
+
+   CALL SOLVE_SMALL( 1_ip_, (/ 2.0_rp_, 2.0_rp_ /), status_ref, X_ref )
+   CALL SOLVE_SMALL( 2_ip_, (/ 2.0_rp_ /), status_s, X_s )
+   CALL CHECK( 'scaled identity S' )
+
+!  S = I given as an identity without S_val, and no S
+
+   CALL SOLVE_SMALL( 0_ip_, (/ one /), status_ref, X_ref )
+   CALL SOLVE_SMALL( 3_ip_, (/ one /), status_s, X_s )
+   CALL CHECK( 'identity S' )
+
+!  a diagonal S with a negative entry is not positive definite (status -15)
+
+   CALL SOLVE_SMALL( 1_ip_, (/ one, - one /), status_s, X_s )
+   IF ( status_s /= - 15 ) THEN
+     WRITE( 6, "( ' indefinite diagonal S: status = ', I0 )" ) status_s
+     failures = failures + 1
+   ELSE
+     WRITE( 6, "( ' indefinite diagonal S: ok' )" )
+   END IF
+   IF ( failures > 0 ) STOP 1
+
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
+
+     SUBROUTINE SOLVE_SMALL( s_kind, S_d, status, X2 )
+
+!  solve the small problem with no S (s_kind = 0), a diagonal S = diag( S_d )
+!  (1), a scaled identity S = S_d( 1 ) I (2) or an identity S given without
+!  S_val (3), returning the exit status and solution
+
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: s_kind
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: S_d
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( n2 ), INTENT( OUT ) :: X2
+     TYPE ( LLST_full_data_type ) :: data
+     TYPE ( LLST_control_type ) :: control
+     TYPE ( LLST_inform_type ) :: inform
+     INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: no_index
+
+     X2 = zero
+     CALL LLST_initialize( data, control, inform )
+     CALL WHICH_sls( control )
+     control%sbls_control%symmetric_linear_solver = "sytr  "
+     control%sbls_control%definite_linear_solver = "potr  "
+     control%definite_linear_solver = "potr  "
+     CALL LLST_import( control, data, status, m2, n2, 'COORDINATE',            &
+                      ne2, A2_row, A2_col, no_index )
+     SELECT CASE ( s_kind )
+     CASE ( 0 )
+       CALL LLST_solve_problem( data, status, 1.0_rp_, A2_val,                 &
+                                B2, X2 )
+     CASE ( 1 )
+       CALL LLST_import_scaling( data, status, 'DIAGONAL', n2,                 &
+                                no_index, no_index, no_index )
+       CALL LLST_solve_problem( data, status, 1.0_rp_, A2_val,                 &
+                                B2, X2, S_val = S_d )
+     CASE ( 2 )
+       CALL LLST_import_scaling( data, status, 'SCALED_IDENTITY', 1_ip_,       &
+                                no_index, no_index, no_index )
+       CALL LLST_solve_problem( data, status, 1.0_rp_, A2_val,                 &
+                                B2, X2, S_val = S_d )
+     CASE ( 3 )
+       CALL LLST_import_scaling( data, status, 'IDENTITY', 0_ip_,              &
+                                no_index, no_index, no_index )
+       CALL LLST_solve_problem( data, status, 1.0_rp_, A2_val,                 &
+                                B2, X2 )
+     END SELECT
+     CALL LLST_information( data, inform, status )
+     status = inform%status
+     CALL LLST_terminate( data, control, inform )
+     END SUBROUTINE SOLVE_SMALL
+
+     SUBROUTINE CHECK( name )
+     CHARACTER ( LEN = * ), INTENT( IN ) :: name
+     IF ( status_ref /= 0 ) THEN
+       WRITE( 6, "( 1X, A, ': skipped, reference status = ', I0 )" )           &
+         name, status_ref
+     ELSE IF ( status_s /= 0 .OR. MAXVAL( ABS( X_s - X_ref ) ) > tol ) THEN
+       WRITE( 6, "( 1X, A, ': failed, status = ', I0 )" ) name, status_s
+       failures = failures + 1
+     ELSE
+       WRITE( 6, "( 1X, A, ': ok' )" ) name
+     END IF
+     END SUBROUTINE CHECK
      SUBROUTINE WHICH_sls( control )
      TYPE ( LLST_control_type ) :: control
 #include "galahad_sls_defaults.h"
