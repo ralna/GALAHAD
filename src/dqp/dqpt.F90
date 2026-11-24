@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 08:59 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 13:53 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -1011,7 +1011,14 @@
    control%infinity = infty
    control%factor_optimal_matrix = .TRUE.
    CALL DQP_solve( p, data, control, info, C_stat, X_stat )
-   IF ( info%status /= GALAHAD_ok ) THEN
+
+!  the linear solver chosen for the tests may not be available
+
+   IF ( info%status == GALAHAD_error_unknown_solver .OR.                      &
+        info%status == GALAHAD_unavailable_option ) THEN
+     WRITE( 6, "( ' optimal start test: skipped, linear solver',              &
+    &             ' unavailable (status ', I0, ')' )" ) info%status
+   ELSE IF ( info%status /= GALAHAD_ok ) THEN
      WRITE( 6, "( ' optimal start test: DQP_solve exit status = ', I0,       &
     &             ' FAILED' )" ) info%status
      STOP 1
@@ -1023,14 +1030,13 @@
      WRITE( 6, "( ' optimal start test: C_stat = ', I0, ', X_stat = ',       &
     &             2( 1X, I0 ), ' FAILED' )" ) C_stat, X_stat
      STOP 1
-   END IF
-   err = MAXVAL( ABS( p%X - 1.0_rp_ ) )
-   IF ( err > EPSILON( 1.0_rp_ ) ** 0.75 ) THEN
+   ELSE IF ( MAXVAL( ABS( p%X - 1.0_rp_ ) ) > EPSILON( 1.0_rp_ ) ** 0.75 ) THEN
      WRITE( 6, "( ' optimal start test: solution error = ', ES8.1,           &
-    &             ' FAILED' )" ) err
+    &             ' FAILED' )" ) MAXVAL( ABS( p%X - 1.0_rp_ ) )
      STOP 1
+   ELSE
+     WRITE( 6, "( ' optimal start test: active set correct' )" )
    END IF
-   WRITE( 6, "( ' optimal start test: active set correct' )" )
    CALL DQP_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
                X_stat, C_stat )
