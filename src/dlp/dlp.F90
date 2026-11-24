@@ -2384,7 +2384,11 @@
           CALL SLS_solve( K_pounce, SOL, sls_data, sls_control, sls_inform )
         success = sls_inform%status == GALAHAD_ok
         CALL SLS_terminate( sls_data, sls_control, sls_inform )
-        IF ( .NOT. success ) GO TO 900
+        IF ( .NOT. success ) THEN
+          IF ( control%print_level > 0 ) WRITE( control%out, * )               &
+            'pounce rejected: SLS status ', sls_inform%status
+          GO TO 900
+        END IF
         DO j = 1, n
           IF ( FREE( j ) > 0 ) X_p( j ) = SOL( FREE( j ) )
         END DO
@@ -2400,7 +2404,12 @@
           ELSE
             bound = X_l( j )
           END IF
-          IF ( X_p( j ) < bound - tol ) GO TO 900
+          IF ( X_p( j ) < bound - tol ) THEN
+            IF ( control%print_level > 0 ) WRITE( control%out, * )             &
+              'pounce rejected: x below bound, j = ', j,                       &
+              ', excess/tol = ', ( bound - X_p( j ) ) / tol
+            GO TO 900
+          END IF
         END IF
         IF ( j >= dims%x_u_start ) THEN
           IF ( j > dims%x_u_end ) THEN
@@ -2408,7 +2417,12 @@
           ELSE
             bound = X_u( j )
           END IF
-          IF ( X_p( j ) > bound + tol ) GO TO 900
+          IF ( X_p( j ) > bound + tol ) THEN
+            IF ( control%print_level > 0 ) WRITE( control%out, * )             &
+              'pounce rejected: x above bound, j = ', j,                       &
+              ', excess/tol = ', ( X_p( j ) - bound ) / tol
+            GO TO 900
+          END IF
         END IF
       END DO
       DO i = 1, m
@@ -2418,13 +2432,28 @@
         END DO
         C_p( i ) = c_i ; tol = tol_act * ( one + ABS( c_i ) )
         IF ( i <= dims%c_equality ) THEN
-          IF ( ABS( c_i - C_l( i ) ) > tol ) GO TO 900
+          IF ( ABS( c_i - C_l( i ) ) > tol ) THEN
+            IF ( control%print_level > 0 ) WRITE( control%out, * )             &
+              'pounce rejected: equality, i = ', i,                            &
+              ', excess/tol = ', ABS( c_i - C_l( i ) ) / tol
+            GO TO 900
+          END IF
         ELSE
           IF ( i <= dims%c_l_end ) THEN
-            IF ( c_i < C_l( i ) - tol ) GO TO 900
+            IF ( c_i < C_l( i ) - tol ) THEN
+              IF ( control%print_level > 0 ) WRITE( control%out, * )           &
+                'pounce rejected: c below bound, i = ', i,                     &
+                ', excess/tol = ', ( C_l( i ) - c_i ) / tol
+              GO TO 900
+            END IF
           END IF
           IF ( i >= dims%c_u_start ) THEN
-            IF ( c_i > C_u( i ) + tol ) GO TO 900
+            IF ( c_i > C_u( i ) + tol ) THEN
+              IF ( control%print_level > 0 ) WRITE( control%out, * )           &
+                'pounce rejected: c above bound, i = ', i,                     &
+                ', excess/tol = ', ( c_i - C_u( i ) ) / tol
+              GO TO 900
+            END IF
           END IF
         END IF
       END DO
@@ -2454,7 +2483,11 @@
         inform%alloc_status = cqp_inform%alloc_status
         inform%bad_alloc = cqp_inform%bad_alloc ; GO TO 900
       END IF
-      IF ( .NOT. success ) GO TO 900
+      IF ( .NOT. success ) THEN
+        IF ( control%print_level > 0 ) WRITE( control%out, * )                 &
+          'pounce rejected: multipliers not found (BLLS)'
+        GO TO 900
+      END IF
 
 !  check that the stationarity residual g - A^T y - z is small
 
@@ -2466,7 +2499,12 @@
         END DO
       END DO
       r_max = MAXVAL( ABS( GRAD ) )
-      IF ( r_max > tol_stat * ( one + g_max ) ) GO TO 900
+      IF ( r_max > tol_stat * ( one + g_max ) ) THEN
+        IF ( control%print_level > 0 ) WRITE( control%out, * )                 &
+          'pounce rejected: stationarity residual/tol = ',                     &
+          r_max / ( tol_stat * ( one + g_max ) )
+        GO TO 900
+      END IF
 
 !  the pounce has succeeded
 
