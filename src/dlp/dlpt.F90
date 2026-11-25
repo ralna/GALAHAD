@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 14:39 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 07:18 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -950,6 +950,55 @@
      STOP 1
    ELSE
      WRITE( 6, "( ' perturbation limit test: failure reported' )" )
+   END IF
+   CALL DLP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+
+!  ======================================================================
+!  check that DLP does not accept an inaccurate extrapolated solution. The
+!  75th random LP in the sequence above (n = 260) needs perturbations below
+!  their default lower limit, at which the perturbed problems cannot be
+!  solved accurately. With the lower limit 10^-10 and DQP's primal
+!  accuracy EPSILON^0.33 (rather than DLP's default EPSILON^0.5, with which
+!  DQP reports failure first), the extrapolation from the perturbation
+!  10^-10 was accepted in double precision, although the extrapolated
+!  solution is wrong. DLP must either find the solution or report failure
+!  ======================================================================
+
+   WRITE( 6, "( /, ' extrapolation acceptance test ', / )" )
+   lp_seed = 12345
+   DO lp_trial = 1, 74
+     n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+     CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+     DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z )
+     DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   END DO
+   lp_trial = 75
+   n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+   CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+   ALLOCATE( X_stat( n ), C_stat( m ) )
+   CALL DLP_initialize( data, control, info )
+   control%infinity = infty
+   control%symmetric_linear_solver = 'sytr '
+   control%definite_linear_solver = 'potr '
+   control%final_perturbation = 10.0_rp_ ** ( - 10 )
+   control%stop_abs_p = EPSILON( 1.0_rp_ ) ** 0.33
+   control%stop_rel_p = EPSILON( 1.0_rp_ ) ** 0.33
+   CALL DLP_solve( p, data, control, info, C_stat, X_stat )
+   lp_f = DOT_PRODUCT( p%G( : n ), p%X( : n ) )
+   IF ( info%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' LP ', I0, ': failure reported, status = ', I0 )" )         &
+       lp_trial, info%status
+   ELSE IF ( ABS( lp_f - lp_f_sol ) > EPSILON( 1.0_rp_ ) ** 0.75 *            &
+             MAX( 1.0_rp_, ABS( lp_f_sol ) ) ) THEN
+     WRITE( 6, "( ' LP ', I0, ': wrong solution accepted, objective',         &
+    &             ' error = ', ES8.1, ' FAILED' )" )                           &
+       lp_trial, ABS( lp_f - lp_f_sol )
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' LP ', I0, ': solution correct' )" ) lp_trial
    END IF
    CALL DLP_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
