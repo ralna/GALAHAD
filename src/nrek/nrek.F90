@@ -826,8 +826,7 @@
 
 !  see if S is the identity matrix
 
-!      data%unit_s = SMT_get( S%type ) == 'IDENTITY'
-       data%unit_s = .FALSE.
+       data%unit_s = SMT_get( S%type ) == 'IDENTITY'
      ELSE
        data%unit_s = .TRUE.
      END IF
@@ -1298,10 +1297,27 @@
 !  print statistics about H and S if desired
 
          IF ( printd ) THEN
-           WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                          &
-             prefix, MAXVAL( ABS( H%val( : data%h_ne ) ) )
-           IF ( .NOT. data%unit_s ) WRITE( out, "( A, ' ||S|| = ', ES10.4 )" ) &
-             prefix, MAXVAL( ABS( S%val( : data%s_ne ) ) )
+           SELECT CASE ( SMT_get( H%type ) )
+           CASE ( 'ZERO', 'NONE' )
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" ) prefix, zero
+           CASE ( 'IDENTITY' )
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" ) prefix, one
+           CASE ( 'SCALED_IDENTITY' )
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                        &
+               prefix, ABS( H%val( 1 ) )
+           CASE DEFAULT
+             WRITE( out, "( A, ' ||H|| = ', ES10.4 )" )                        &
+               prefix, MAXVAL( ABS( H%val( : data%h_ne ) ) )
+           END SELECT
+           IF ( .NOT. data%unit_s ) THEN
+             IF ( SMT_get( S%type ) == 'SCALED_IDENTITY' ) THEN
+               WRITE( out, "( A, ' ||S|| = ', ES10.4 )" )                      &
+                 prefix, ABS( S%val( 1 ) )
+             ELSE
+               WRITE( out, "( A, ' ||S|| = ', ES10.4 )" )                      &
+                 prefix, MAXVAL( ABS( S%val( : data%s_ne ) ) )
+             END IF
+           END IF
          END IF
 
 !  allocate space to hold the matrix in co-ordinate form
@@ -1370,7 +1386,7 @@
 
          IF ( .NOT. data%unit_s ) THEN
            SELECT CASE ( SMT_get( S%type ) )
-           CASE ( 'DIAGONAL' )
+           CASE ( 'DIAGONAL', 'SCALED_IDENTITY' )
              DO i = 1, n
                data%H_shift%row( data%h_ne + i ) = i
                data%H_shift%col( data%h_ne + i ) = i
@@ -1431,7 +1447,7 @@
            data%H_shift%val( : data%h_ne ) = one
          ELSE IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' ) THEN
            data%H_shift%val( : data%h_ne ) = H%val( 1 )
-         ELSE
+         ELSE IF ( data%h_ne > 0 ) THEN
            data%H_shift%val( : data%h_ne ) = H%val( : data%h_ne )
          END IF
 
@@ -2729,6 +2745,9 @@
      SELECT CASE ( SMT_get( H%type ) )
      CASE ( 'ZERO', 'NONE' )
        h_max = one
+     CASE ( 'IDENTITY' )
+       H_low( : H%n ) = one
+       h_max = one
      CASE ( 'SCALED_IDENTITY' )
        H_low( : H%n ) = H%val( 1 )
        h_max = MAX( one, ABS( H%val( 1 ) ) )
@@ -3110,8 +3129,9 @@
 !   variables
 !
 !  H_type is a character string that specifies the Hessian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
-!   'diagonal'. Lower or upper case variants are allowed.
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
+!   'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'. Lower or
+!   upper case variants are allowed.
 !
 !  H_ne is a scalar variable of type default integer, that holds the number of
 !   entries in the  lower triangular part of H in the sparse co-ordinate
@@ -3288,6 +3308,28 @@
               bad_alloc = data%nrek_inform%bad_alloc, out = error )
        IF ( data%nrek_inform%status /= 0 ) GO TO 900
 
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%H%type, 'SCALED_IDENTITY',                           &
+                     data%nrek_inform%alloc_status )
+       data%H%n = n ; data%H%ne = 1
+
+       array_name = 'nrek: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%nrek_inform%status, data%nrek_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%nrek_inform%bad_alloc, out = error )
+       IF ( data%nrek_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%H%type, 'IDENTITY', data%nrek_inform%alloc_status )
+       data%H%n = n ; data%H%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%H%type, 'ZERO', data%nrek_inform%alloc_status )
+       data%H%n = n ; data%H%ne = 0
+
      CASE DEFAULT
        data%nrek_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
@@ -3334,11 +3376,13 @@
 !
 !  S_type is a character string that specifies the scaling matrix storage scheme
 !   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
-!   'diagonal' or 'identity'. Lower or upper case variants are allowed.
+!   'diagonal', 'scaled_identity' or 'identity'. Lower or upper case variants
+!   are allowed.
 !
 !  S_ne is a scalar variable of type default integer, that holds the number of
 !   entries in the lower triangular part of S in the sparse co-ordinate
-!   storage scheme. It need not be set for any of the other schemes.
+!   storage scheme, and should be 1 for the scaled identity scheme. It need
+!   not be set for any of the other schemes.
 !
 !  S_row is a rank-one array of type default integer, that holds
 !   the row indices of the  lower triangular part of S in the sparse
@@ -3508,6 +3552,20 @@
               bad_alloc = data%nrek_inform%bad_alloc, out = error )
        IF ( data%nrek_inform%status /= 0 ) GO TO 900
 
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%S%type, 'SCALED_IDENTITY',                           &
+                     data%nrek_inform%alloc_status )
+       data%S%n = n ; data%S%ne = 1
+
+       array_name = 'nrek: data%S%val'
+       CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
+              data%nrek_inform%status, data%nrek_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%nrek_inform%bad_alloc, out = error )
+       IF ( data%nrek_inform%status /= 0 ) GO TO 900
+
      CASE ( 'identity', 'IDENTITY' )
        CALL SMT_put( data%S%type, 'IDENTITY', data%nrek_inform%alloc_status )
        data%S%n = n ; data%S%ne = 0
@@ -3646,7 +3704,7 @@
        CALL NREK_solve( n, data%H, C, power, weight, X, data%nrek_data,        &
                         data%nrek_control, data%nrek_inform )
      ELSE
-       IF ( .NOT. PRESENT( S_val ) ) THEN
+       IF ( data%S%ne > 0 .AND. .NOT. PRESENT( S_val ) ) THEN
          data%nrek_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
