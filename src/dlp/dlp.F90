@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-24 AT 09:55 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 10:26 GMT.
 
 #include "galahad_modules.h"
 
@@ -121,16 +121,28 @@
 !  Arguments:
 !
 !  data     private internal data
-!  control  a structure containing control information. See preamble for DQP
+!  control  a structure containing control information. See preamble for
+!           DQP, except that the default primal accuracies stop_abs_p and
+!           stop_rel_p are EPSILON^0.5 rather than EPSILON^0.33
 !  inform   a structure containing output information. See preamble for DQP
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
 
       TYPE ( DLP_data_type ), INTENT( INOUT ) :: data
       TYPE ( DLP_control_type ), INTENT( OUT ) :: control
       TYPE ( DLP_inform_type ), INTENT( OUT ) :: inform
 
       CALL DQP_initialize( data, control, inform )
+
+!  the solutions of the perturbed problems must be more accurate than DQP's
+!  default EPSILON^0.33 if their active sets are to identify that of the
+!  linear program reliably in single precision, so tighten the primal
+!  accuracies (the only ones used by DQP's stopping rule)
+
+      control%stop_abs_p = epsmch ** 0.5_rp_
+      control%stop_rel_p = epsmch ** 0.5_rp_
       RETURN
 
 !  End of DLP_initialize

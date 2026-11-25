@@ -14,8 +14,8 @@
 ! sif-file-device                                   52
 ! penalty-weight                                    0.0D+0
 ! infinity-value                                    1.0D+19
-! absolute-primal-accuracy                          1.0D-5
-! relative-primal-accuracy                          1.0D-5
+! absolute-primal-accuracy                          1.5D-8
+! relative-primal-accuracy                          1.5D-8
 ! absolute-dual-accuracy                            1.0D-5
 ! relative-dual-accuracy                            1.0D-5
 ! absolute-complementary-slackness-accuracy         1.0D-5

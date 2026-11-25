@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-24 AT 08:13 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 10:26 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -828,12 +828,13 @@
 !  ======================================================================
 !  random LPs with known solutions, many of which are degenerate, so that
 !  their perturbed solutions have constraints or bounds on their bounds
-!  but not in the active set
+!  but not in the active set. In single precision, LP 7 is only solved if
+!  the perturbed problems are solved more accurately than DQP's default
 !  ======================================================================
 
    WRITE( 6, "( /, ' random LP tests ', / )" )
    lp_errors = 0 ; lp_seed = 12345
-   DO lp_trial = 1, 6
+   DO lp_trial = 1, 12
      n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
      CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
      ALLOCATE( X_stat( n ), C_stat( m ) )
