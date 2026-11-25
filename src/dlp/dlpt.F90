@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 11:32 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-24 AT 08:13 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -864,6 +864,55 @@
      WRITE( 6, "( /, 1X, I0, ' random LP tests failed' )" ) lp_errors
      STOP 1
    END IF
+
+
+!  ======================================================================
+!  check that DLP reports failure if the perturbation reaches its lower
+!  limit before the solution is found. For minimize - x_1 - x_2 - x_3
+!  subject to x_1 + x_2 + x_3 <= 1000 and 0 <= x <= ( 100, 50, 1 ), the
+!  perturbed problem with perturbation 0.1 has the solution ( 10, 10, 1 ),
+!  and the extrapolation along its active set gives ( 50, 50, 1 ) for the
+!  perturbation 0.02, at which x_2 reaches its bound. As the lower limit
+!  on the perturbation is 0.05, DLP should stop there, report failure and
+!  return the extrapolated point (the solution is ( 100, 50, 1 ))
+!  ======================================================================
+
+   WRITE( 6, "( /, ' perturbation limit test ', / )" )
+   n = 3 ; m = 1
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),          &
+             p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ), X_stat( n ),           &
+             C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 0.0_rp_ ; p%G = - 1.0_rp_
+   p%X_l = 0.0_rp_ ; p%X_u = (/ 100.0_rp_, 50.0_rp_, 1.0_rp_ /)
+   p%C_l = - infty ; p%C_u = 1000.0_rp_
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = n
+   ALLOCATE( p%A%row( n ), p%A%col( n ), p%A%val( n ) )
+   p%A%row = 1 ; p%A%col = (/ 1, 2, 3 /) ; p%A%val = 1.0_rp_
+   CALL SMT_put( p%H%type, 'ZERO', smt_stat )
+   CALL DLP_initialize( data, control, info )
+   control%infinity = infty
+   control%symmetric_linear_solver = 'sytr '
+   control%definite_linear_solver = 'potr '
+   control%final_perturbation = 0.05_rp_
+   CALL DLP_solve( p, data, control, info, C_stat, X_stat )
+   IF ( info%status /= GALAHAD_error_tiny_step ) THEN
+     WRITE( 6, "( ' perturbation limit test: DLP_solve exit status = ', I0,   &
+    &             ' FAILED' )" ) info%status
+     STOP 1
+   ELSE IF ( MAXVAL( ABS( p%X - (/ 50.0_rp_, 50.0_rp_, 1.0_rp_ /) ) ) >       &
+             SQRT( EPSILON( 1.0_rp_ ) ) * 50.0_rp_ ) THEN
+     WRITE( 6, "( ' perturbation limit test: wrong extrapolated point',       &
+    &             ' x = ', 3ES12.4, ' FAILED' )" ) p%X
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' perturbation limit test: failure reported' )" )
+   END IF
+   CALL DLP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
 
    WRITE( 6, "( /, ' tests completed' )" )
 
