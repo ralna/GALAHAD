@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 10:26 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 14:39 GMT.
 
 #include "galahad_modules.h"
 
@@ -2253,12 +2253,15 @@
 !  stabilised by a proximal term of weight 100 EPSILON times the square of
 !  the largest entry of A (see CQP_pounce_multipliers); BLLS stalls if asked
 !  for a projected gradient below that level, so the stationarity tolerance
-!  is at least ten times as large. This only affects single precision, in
-!  which EPSILON^0.75 is just 54 EPSILON
+!  is at least ten times as large (this floor only matters in single
+!  precision). Rounding in the multipliers leaves stationarity residuals
+!  of order 10^5 EPSILON for problems with a few hundred variables, so
+!  the stationarity tolerance is EPSILON^0.6 rather than the EPSILON^0.75
+!  used for the active constraints and bounds
 
       REAL ( KIND = rp_ ), PARAMETER :: tol_act = epsmch ** 0.75_rp_
       REAL ( KIND = rp_ ), PARAMETER ::                                        &
-        tol_stat = MAX( epsmch ** 0.75_rp_, thousand * epsmch )
+        tol_stat = MAX( epsmch ** 0.6_rp_, thousand * epsmch )
 
       optimal = .FALSE.
       ALLOCATE( C_stat_p( m ), X_stat_p( n ), FREE( n ), X_p( n ), C_p( m ),   &

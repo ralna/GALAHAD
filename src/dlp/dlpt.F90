@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 10:26 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 14:39 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -866,6 +866,47 @@
      STOP 1
    END IF
 
+!  ======================================================================
+!  a larger random LP (the 62nd in the sequence above, with n = 210), for
+!  which the multipliers computed by the pounce have a stationarity
+!  residual of about 10^5 EPSILON in double precision, and the pounce only
+!  succeeds if this is accepted
+!  ======================================================================
+
+   WRITE( 6, "( /, ' larger random LP test ', / )" )
+   lp_seed = 12345
+   DO lp_trial = 1, 61
+     n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+     CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+     DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z )
+     DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   END DO
+   lp_trial = 62
+   n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+   CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+   ALLOCATE( X_stat( n ), C_stat( m ) )
+   CALL DLP_initialize( data, control, info )
+   control%infinity = infty
+   control%symmetric_linear_solver = 'sytr '
+   control%definite_linear_solver = 'potr '
+   CALL DLP_solve( p, data, control, info, C_stat, X_stat )
+   lp_f = DOT_PRODUCT( p%G( : n ), p%X( : n ) )
+   IF ( info%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' LP ', I0, ': DLP_solve exit status = ', I0,               &
+    &             ' FAILED' )" ) lp_trial, info%status
+     STOP 1
+   ELSE IF ( ABS( lp_f - lp_f_sol ) > EPSILON( 1.0_rp_ ) ** 0.75 *            &
+             MAX( 1.0_rp_, ABS( lp_f_sol ) ) ) THEN
+     WRITE( 6, "( ' LP ', I0, ': objective error = ', ES8.1, ' FAILED' )" )    &
+       lp_trial, ABS( lp_f - lp_f_sol )
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' LP ', I0, ': solution correct' )" ) lp_trial
+   END IF
+   CALL DLP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
 
 !  ======================================================================
 !  check that DLP reports failure if the perturbation reaches its lower
