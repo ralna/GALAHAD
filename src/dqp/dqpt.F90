@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 13:53 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 08:17 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -12,6 +12,9 @@
    TYPE ( DQP_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
+   INTEGER ( KIND = ip_ ) :: j, l, pl
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 : 1 ) :: iter_pl, status_pl
+   REAL ( KIND = rp_ ), DIMENSION( 20, 0 : 1 ) :: X_pl
    REAL ( KIND = rp_ ) :: err
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
@@ -1042,6 +1045,78 @@
                X_stat, C_stat )
    DEALLOCATE( p%H%row, p%H%col, p%H%val, p%H%type )
    DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type )
+
+!  ===================================================================
+!  check that the result does not depend on the print level. The
+!  stopping tolerance is relative to the initial dual gradient (with
+!  stop_abs_p = 0), and was previously only computed correctly when the
+!  first iteration was printed
+!  ===================================================================
+
+   WRITE( 6, "( /, ' print level test ', / )" )
+   n = 20 ; m = 10
+   DO pl = 0, 1
+     ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),        &
+               p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ) )
+     ALLOCATE( X_stat( n ), C_stat( m ) )
+     p%new_problem_structure = .TRUE.
+     p%n = n ; p%m = m ; p%f = 0.0_rp_
+     DO i = 1, n
+       p%G( i ) = - 10.0_rp_ * SIN( REAL( 3 * i, rp_ ) )
+     END DO
+     p%X_l = - 1.0_rp_ ; p%X_u = 1.0_rp_
+     p%C_l = - 1.0_rp_ ; p%C_u = 1.0_rp_
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+     CALL SMT_put( p%H%type, 'IDENTITY', smt_stat )
+     CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = 3 * m
+     ALLOCATE( p%A%row( 3 * m ), p%A%col( 3 * m ), p%A%val( 3 * m ) )
+     l = 0
+     DO i = 1, m
+       DO j = 0, 2
+         l = l + 1 ; p%A%row( l ) = i
+         p%A%col( l ) = MOD( 7 * i + 5 * j, n ) + 1
+         p%A%val( l ) = COS( REAL( l, rp_ ) )
+       END DO
+     END DO
+     CALL DQP_initialize( data, control, info )
+     CALL WHICH_sls( control )
+     control%infinity = infty
+     control%stop_abs_p = 0.0_rp_ ; control%stop_rel_p = 0.1_rp_
+     control%print_level = pl
+     control%out = scratch_out ; control%error = scratch_out
+     OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
+     CALL DQP_solve( p, data, control, info, C_stat, X_stat )
+     CLOSE( UNIT = scratch_out )
+     status_pl( pl ) = info%status
+     IF ( info%status /= GALAHAD_ok .AND.                                     &
+          info%status /= GALAHAD_error_unknown_solver .AND.                   &
+          info%status /= GALAHAD_unavailable_option ) THEN
+       WRITE( 6, "( ' print level test: DQP_solve exit status = ', I0,       &
+      &             ' FAILED' )" ) info%status
+       STOP 1
+     END IF
+     iter_pl( pl ) = info%iter ; X_pl( : , pl ) = p%X
+     CALL DQP_terminate( data, control, info )
+     DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,          &
+                 X_stat, C_stat )
+     DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   END DO
+
+!  the linear solver chosen for the tests may not be available
+
+   IF ( ANY( status_pl /= GALAHAD_ok ) ) THEN
+     WRITE( 6, "( ' print level test: skipped, linear solver',                &
+    &             ' unavailable (status ', I0, ')' )" ) status_pl( 0 )
+   ELSE IF ( iter_pl( 0 ) /= iter_pl( 1 ) .OR.                                &
+        MAXVAL( ABS( X_pl( : , 0 ) - X_pl( : , 1 ) ) ) >                      &
+          SQRT( EPSILON( 1.0_rp_ ) ) ) THEN
+     WRITE( 6, "( ' print level test: ', I0, ' and ', I0, ' iterations',      &
+    &             ' with print levels 0 and 1 FAILED' )" ) iter_pl
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' print level test: results independent of print',        &
+    &             ' level' )" )
+   END IF
 
    WRITE( 6, "( /, ' tests completed' )" )
 

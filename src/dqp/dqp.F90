@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 08:59 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 08:17 GMT.
 
 #include "galahad_modules.h"
 
@@ -4599,7 +4599,6 @@
         clock_now = clock_now - clock_start + clock_total
         IF ( printi ) THEN
           IF ( first_iteration ) THEN
-            first_iteration = .FALSE.
             WRITE( out, 2000 ) prefix, prefix
             WRITE( out, 2020 ) prefix, inform%iter,                            &
               dual_f, dual_g_norm, clock_now
@@ -4611,6 +4610,11 @@
              m_subspace, change_subspace, alpha_subspace, clock_now
           END IF
         END IF
+
+!  the stopping tolerances are only computed on the first iteration (this
+!  must not depend on whether the iteration is printed)
+
+        first_iteration = .FALSE.
 
 !  test for optimality
 
