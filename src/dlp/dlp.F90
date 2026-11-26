@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 14:39 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 07:18 GMT.
 
 #include "galahad_modules.h"
 
@@ -89,7 +89,11 @@
       REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
       REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
       REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
-      REAL ( KIND = rp_ ), PARAMETER :: infeas = ten ** ( - 10 )
+
+!  the extrapolated solution is accepted if it remains valid for all
+!  perturbations larger than accept_rel_tol times the current one
+
+      REAL ( KIND = rp_ ), PARAMETER :: accept_rel_tol = epsmch ** 0.5_rp_
 
 !  the trust-region radius for the subspace step; any finite value is
 !  allowed by the theory, and it is smaller in single precision to limit the
@@ -2024,7 +2028,7 @@
       c_stat_required = PRESENT( C_stat )
       x_stat_required = PRESENT( X_stat )
 
-      IF ( new_perturbation < infeas ) THEN
+      IF ( new_perturbation <= accept_rel_tol * perturbation ) THEN
         extrapolation_ok = .TRUE.
         perturbation = zero
         IF ( x_stat_required ) X_stat  = 0
