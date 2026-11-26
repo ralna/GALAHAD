@@ -768,8 +768,6 @@ void psls_form_subset_preconditioner( void **data,
 
 void psls_update_preconditioner( void **data,
                                  ipc_ *status,
-                                 ipc_ ne,
-                                 const rpc_ val[],
                                  ipc_ n_del,
                                  const ipc_ del[] );
 
@@ -794,17 +792,10 @@ void psls_update_preconditioner( void **data,
   \li -26. The requested solver is not available.
   \li -29. This option is not available with this solver.
 
- @param[in] ne is a scalar variable of type ipc_, that holds the number of
-    entries in the lower triangular part of the symmetric matrix \f$A\f$.
-
- @param[in] val is a one-dimensional array of size ne and type rpc_,
-    that holds the values of the entries of the lower triangular part of the
-    symmetric matrix \f$A\f$ in any of the supported storage schemes.
-
  @param[in] n_del is a scalar variable of type ipc_, that holds the number of
     rows (and columns) of (sub) matrix that are to be deleted.
 
- @param[in] del is a one-dimensional array of size n_fix and type ipc_,
+ @param[in] del is a one-dimensional array of size n_del and type ipc_,
     that holds the indices of the rows that are to be deleted.
 */
 

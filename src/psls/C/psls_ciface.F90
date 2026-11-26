@@ -644,9 +644,13 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!   form and factorize the subset preconditioner
+!   form and factorize the subset preconditioner (C indices start at 0)
 
-  CALL f_psls_form_preconditioner( fdata, status, val, SUB = sub )
+  IF ( fdata%f_indexing ) THEN
+    CALL f_psls_form_preconditioner( fdata, status, val, SUB = sub )
+  ELSE
+    CALL f_psls_form_preconditioner( fdata, status, val, SUB = sub + 1 )
+  END IF
   RETURN
 
   END SUBROUTINE psls_form_subset_preconditioner
@@ -675,9 +679,13 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!   update the preconditioner
+!   update the preconditioner (C indices start at 0)
 
-  CALL f_psls_update_preconditioner( fdata, status, fix )
+  IF ( fdata%f_indexing ) THEN
+    CALL f_psls_update_preconditioner( fdata, status, fix )
+  ELSE
+    CALL f_psls_update_preconditioner( fdata, status, fix + 1 )
+  END IF
   RETURN
 
   END SUBROUTINE psls_update_preconditioner
