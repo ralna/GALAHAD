@@ -97,3 +97,23 @@ def test_fdc_more_rows_than_columns(terminate):
     assert inform['status'] == 0
     assert n_depen == 3
     check_independent(A_t, n_depen, depen)
+
+
+# with the unsymmetric solver getr, which cannot solve systems with the
+# rectangular A used to check consistency, the failure should be reported
+# (status -11, a warning), rather than the consistent constraints of problem
+# 1) being declared inconsistent
+@pytest.mark.xfail(strict=True, reason='fdc reports consistent constraints '
+                   'as inconsistent when the ULS solve fails (see '
+                   'https://github.com/ralna/GALAHAD/pull/662)')
+def test_fdc_uls_solve_failure(terminate):
+    m, n = A.shape
+    rows, cols = np.nonzero(A)
+    ptr = np.r_[0, np.cumsum(np.bincount(rows, minlength=m))]
+    o = options()
+    o['use_sls'] = False
+    o['unsymmetric_linear_solver'] = 'getr'
+    with pytest.warns(RuntimeWarning):
+        n_depen, depen, inform = fdc.find_dependent_rows(
+            m, n, ptr, cols, A[rows, cols].copy(), b, o)
+    assert inform['status'] == -11
