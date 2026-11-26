@@ -1510,6 +1510,18 @@
                         data%ULS_data, data%control%ULS_control,               &
                         inform%ULS_inform, .FALSE. )
 
+!  Test that the solve succeeded (it may not, e.g. as getr cannot solve
+!  systems with a rectangular A)
+
+        IF ( inform%ULS_inform%status < 0 ) THEN
+          IF ( data%control%error > 0 .AND. data%control%print_level >= 1 )    &
+             WRITE( data%control%error,                                        &
+              "( A, '   **  Error return ', I6, ' from ULS_solve' )")          &
+                prefix, inform%ULS_inform%status
+          inform%status = GALAHAD_error_solve
+          RETURN
+        END IF
+
         res_max = zero
         DO i = 1, m
           res = - C( i ) / data%SCALE( i )
