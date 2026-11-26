@@ -301,15 +301,9 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
                                     &ly1, &ly2, &py_y1, &py_order))
         return NULL;
 
-    // s and y are actually 2d arrays, so make the connection
-    npy_intp sdims[] = {ls1, ls2};
-    npy_intp ydims[] = {ly1, ly2};
-    PyArrayObject *py_s = (PyArrayObject *) PyArray_SimpleNew(2, sdims,
-                                                              NPY_DOUBLE);
-    PyArrayObject *py_y = (PyArrayObject *) PyArray_SimpleNew(2, ydims,
-                                                              NPY_DOUBLE);
-    py_s = py_s1;
-    py_y = py_y1;
+    // s and y are 2d arrays
+    PyArrayObject *py_s = py_s1;
+    PyArrayObject *py_y = py_y1;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_2darray_double("s", py_s, ls1, ls2))
@@ -317,8 +311,8 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
     if(!check_2darray_double("y", py_y, ly1, ly2))
         return NULL;
 
-    // Convert NumPy integer order array to ipc_
-    if((PyObject *) py_order != NULL){
+    // Convert NumPy integer order array to ipc_ (order may be omitted or None)
+    if(py_order != NULL && (PyObject *) py_order != Py_None){
         if(!check_array_int("order", py_order, m))
             return NULL;
         tmp_order = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_order, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
