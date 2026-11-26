@@ -7370,9 +7370,9 @@
               nfactors%H22%val( nfactors%H22%ne ) = H%val( l )
             ELSE
               nfactors%H11%ne = nfactors%H11%ne + 1
-              nfactors%H21%row( nfactors%H21%ne ) = i
-              nfactors%H21%col( nfactors%H21%ne ) = j
-              nfactors%H21%val( nfactors%H21%ne ) = H%val( l )
+              nfactors%H11%row( nfactors%H11%ne ) = i
+              nfactors%H11%col( nfactors%H11%ne ) = j
+              nfactors%H11%val( nfactors%H11%ne ) = H%val( l )
             END IF
           END DO
         CASE ( 'SCALED_IDENTITY' )
@@ -7386,9 +7386,9 @@
               nfactors%H22%val( nfactors%H22%ne ) = H%val( 1 )
             ELSE
               nfactors%H11%ne = nfactors%H11%ne + 1
-              nfactors%H21%row( nfactors%H21%ne ) = i
-              nfactors%H21%col( nfactors%H21%ne ) = j
-              nfactors%H21%val( nfactors%H21%ne ) = H%val( 1 )
+              nfactors%H11%row( nfactors%H11%ne ) = i
+              nfactors%H11%col( nfactors%H11%ne ) = j
+              nfactors%H11%val( nfactors%H11%ne ) = H%val( 1 )
             END IF
           END DO
         CASE ( 'IDENTITY' )
@@ -7402,9 +7402,9 @@
               nfactors%H22%val( nfactors%H22%ne ) = one
             ELSE
               nfactors%H11%ne = nfactors%H11%ne + 1
-              nfactors%H21%row( nfactors%H21%ne ) = i
-              nfactors%H21%col( nfactors%H21%ne ) = j
-              nfactors%H21%val( nfactors%H21%ne ) = one
+              nfactors%H11%row( nfactors%H11%ne ) = i
+              nfactors%H11%col( nfactors%H11%ne ) = j
+              nfactors%H11%val( nfactors%H11%ne ) = one
             END IF
           END DO
         CASE ( 'DENSE' )
@@ -7414,6 +7414,33 @@
             DO jj = 1, ii
               j = nfactors%A_COLS_order( jj )
               l = l + 1
+              IF ( i > nfactors%rank_a .AND. j > nfactors%rank_a ) THEN
+                nfactors%H22%ne = nfactors%H22%ne + 1
+                nfactors%H22%row( nfactors%H22%ne ) = i - nfactors%rank_a
+                nfactors%H22%col( nfactors%H22%ne ) = j - nfactors%rank_a
+                nfactors%H22%val( nfactors%H22%ne ) = H%val( l )
+                IF ( i /= j ) THEN
+                  nfactors%H22%ne = nfactors%H22%ne + 1
+                  nfactors%H22%row( nfactors%H22%ne ) = j - nfactors%rank_a
+                  nfactors%H22%col( nfactors%H22%ne ) = i - nfactors%rank_a
+                  nfactors%H22%val( nfactors%H22%ne ) = H%val( l )
+                END IF
+              ELSE IF ( i <= nfactors%rank_a .AND. j <= nfactors%rank_a ) THEN
+                nfactors%H11%ne = nfactors%H11%ne + 1
+                nfactors%H11%row( nfactors%H11%ne ) = i
+                nfactors%H11%col( nfactors%H11%ne ) = j
+                nfactors%H11%val( nfactors%H11%ne ) = H%val( l )
+              ELSE
+                nfactors%H21%ne = nfactors%H21%ne + 1
+                IF ( i > nfactors%rank_a ) THEN
+                  nfactors%H21%row( nfactors%H21%ne ) = i - nfactors%rank_a
+                  nfactors%H21%col( nfactors%H21%ne ) = j
+                ELSE
+                  nfactors%H21%row( nfactors%H21%ne ) = j - nfactors%rank_a
+                  nfactors%H21%col( nfactors%H21%ne ) = i
+                END IF
+                nfactors%H21%val( nfactors%H21%ne ) = H%val( l )
+              END IF
             END DO
           END DO
         CASE ( 'SPARSE_BY_ROWS' )
@@ -7421,6 +7448,33 @@
             i = nfactors%A_COLS_order( ii )
             DO l = H%ptr( ii ), H%ptr( ii + 1 ) - 1
               j = nfactors%A_COLS_order( H%col( l ) )
+              IF ( i > nfactors%rank_a .AND. j > nfactors%rank_a ) THEN
+                nfactors%H22%ne = nfactors%H22%ne + 1
+                nfactors%H22%row( nfactors%H22%ne ) = i - nfactors%rank_a
+                nfactors%H22%col( nfactors%H22%ne ) = j - nfactors%rank_a
+                nfactors%H22%val( nfactors%H22%ne ) = H%val( l )
+                IF ( i /= j ) THEN
+                  nfactors%H22%ne = nfactors%H22%ne + 1
+                  nfactors%H22%row( nfactors%H22%ne ) = j - nfactors%rank_a
+                  nfactors%H22%col( nfactors%H22%ne ) = i - nfactors%rank_a
+                  nfactors%H22%val( nfactors%H22%ne ) = H%val( l )
+                END IF
+              ELSE IF ( i <= nfactors%rank_a .AND. j <= nfactors%rank_a ) THEN
+                nfactors%H11%ne = nfactors%H11%ne + 1
+                nfactors%H11%row( nfactors%H11%ne ) = i
+                nfactors%H11%col( nfactors%H11%ne ) = j
+                nfactors%H11%val( nfactors%H11%ne ) = H%val( l )
+              ELSE
+                nfactors%H21%ne = nfactors%H21%ne + 1
+                IF ( i > nfactors%rank_a ) THEN
+                  nfactors%H21%row( nfactors%H21%ne ) = i - nfactors%rank_a
+                  nfactors%H21%col( nfactors%H21%ne ) = j
+                ELSE
+                  nfactors%H21%row( nfactors%H21%ne ) = j - nfactors%rank_a
+                  nfactors%H21%col( nfactors%H21%ne ) = i
+                END IF
+                nfactors%H21%val( nfactors%H21%ne ) = H%val( l )
+              END IF
             END DO
           END DO
         CASE ( 'COORDINATE' )
@@ -7477,9 +7531,6 @@
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) RETURN
-
-          nfactors%A2%col( : nfactors%A2%ne ) =                                &
-            nfactors%A2%col( : nfactors%A2%ne ) - nfactors%rank_a
 
           CALL SORT_reorder_by_rows(                                           &
             nfactors%n_r, nfactors%rank_a, nfactors%H21%ne, nfactors%H21%row,  &
