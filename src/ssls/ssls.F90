@@ -1335,6 +1335,40 @@
               bad_alloc = data%ssls_inform%bad_alloc, out = error )
        IF ( data%ssls_inform%status /= 0 ) GO TO 900
 
+!  A is absent (m = 0): store it as a matrix without entries
+
+     CASE ( 'absent', 'ABSENT' )
+       CALL SMT_put( data%A%type, 'COORDINATE',                                &
+                     data%ssls_inform%alloc_status )
+       data%A%ne = 0
+
+       array_name = 'ssls: data%A%row'
+       CALL SPACE_resize_array( data%A%ne, data%A%row,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
      CASE DEFAULT
        data%ssls_inform%status = GALAHAD_error_unknown_storage
        GO TO 900

@@ -16,6 +16,9 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_val
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, c_ne
    INTEGER ( KIND = ip_ ) :: data_storage_type, status
+   INTEGER ( KIND = ip_ ) :: a_scheme
+   INTEGER ( KIND = ip_ ), DIMENSION( 2 ) :: status_a
+   REAL ( KIND = rp_ ), DIMENSION( 3, 2 ) :: X_a
    CHARACTER ( LEN = 15 ), DIMENSION( 7 ) :: scheme =                          &
      (/ 'coordinate     ', 'sparse-by-rows ', 'dense          ',               &
         'diagonal       ', 'scaled-identity', 'identity       ',               &
@@ -167,6 +170,58 @@
      DEALLOCATE( H_val, H_row, H_col, A_val, A_row, A_col, C_val, C_row, C_col )
    END DO
    DEALLOCATE( SOL, H_ptr, A_ptr, C_ptr )
+
+!  =========================================================================
+!  A may be absent when m = 0, which should give the same solution as an A
+!  without entries: H x = ( 1, 4, 4 ) for H = ( 1 0 0 ; 0 2 1 ; 0 1 3 )
+!  =========================================================================
+
+   WRITE( 6, "( /, ' absent A test' )" )
+   n = 3 ; m = 0 ; h_ne = 4
+   ALLOCATE( H_val( h_ne ), H_row( h_ne ), H_col( h_ne ), H_ptr( 0 ) )
+   H_val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ /)
+   H_row = (/ 1, 2, 3, 3 /) ; H_col = (/ 1, 2, 2, 3 /)
+   ALLOCATE( A_val( 0 ), A_row( 0 ), A_col( 0 ), A_ptr( 0 ) )
+   ALLOCATE( C_val( 0 ), C_row( 0 ), C_col( 0 ), C_ptr( 0 ), SOL( n ) )
+   DO a_scheme = 1, 2
+     CALL SSLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
+     IF ( a_scheme == 1 ) THEN
+       CALL SSLS_import( control, data, status, n, m,                          &
+                         'coordinate', h_ne, H_row, H_col, H_ptr,              &
+                         'coordinate', 0_ip_, A_row, A_col, A_ptr,             &
+                         'zero', 0_ip_, C_row, C_col, C_ptr )
+     ELSE
+       CALL SSLS_import( control, data, status, n, m,                          &
+                         'coordinate', h_ne, H_row, H_col, H_ptr,              &
+                         'absent', 0_ip_, A_row, A_col, A_ptr,                 &
+                         'zero', 0_ip_, C_row, C_col, C_ptr )
+     END IF
+     IF ( status == 0 )                                                        &
+       CALL SSLS_factorize_matrix( data, status, H_val, A_val, C_val )
+     SOL = (/ 1.0_rp_, 4.0_rp_, 4.0_rp_ /)
+     IF ( status == 0 ) CALL SSLS_solve_system( data, status, SOL )
+     CALL SSLS_information( data, inform, status )
+     status_a( a_scheme ) = inform%status
+     X_a( : , a_scheme ) = SOL
+     CALL SSLS_terminate( data, control, inform )
+   END DO
+   DEALLOCATE( H_val, H_row, H_col, H_ptr, A_val, A_row, A_col, A_ptr )
+   DEALLOCATE( C_val, C_row, C_col, C_ptr, SOL )
+
+!  skip the check if the linear solvers available cannot solve the system
+
+   IF ( status_a( 1 ) /= 0 ) THEN
+     WRITE( 6, "( ' skipped, status = ', I0 )" ) status_a( 1 )
+   ELSE IF ( status_a( 2 ) /= 0 ) THEN
+     WRITE( 6, "( ' absent A: status ', I0 )" ) status_a( 2 )
+     STOP 1
+   ELSE IF ( MAXVAL( ABS( X_a( : , 2 ) - X_a( : , 1 ) ) ) > 0.0_rp_ ) THEN
+     WRITE( 6, "( ' absent A: solution differs' )" )
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' absent A ok' )" )
+   END IF
    STOP
 
   CONTAINS
