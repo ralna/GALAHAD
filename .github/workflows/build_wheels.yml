@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 # Cancel the runs for a pull request that are superseded by a newer push to
 # it (runs for pushes to master are never cancelled: each has its own group)
