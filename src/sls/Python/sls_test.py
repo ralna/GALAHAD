@@ -259,29 +259,25 @@ def test_sls_partial_solve_s_indefinite(terminate, problem):
     assert sls.information()['status'] == -20
 
 
-# sls treats an unrecognised part as 'S' (sytr) or 'D' (potr), so only
-# the other parts show that lower case is ignored
-PART_PR = 'https://github.com/ralna/GALAHAD/pull/653'
+# parts may be given in lower case, and unknown parts are rejected
 
-@pytest.mark.xfail(strict=True, reason='sls ignores lower-case parts '
-                   f'(see {PART_PR})')
-@pytest.mark.parametrize('solver, part', [('sytr', 'L'), ('sytr', 'D'),
-                                          ('potr', 'L'), ('potr', 'S')])
+@pytest.mark.parametrize('solver', SOLVERS)
+@pytest.mark.parametrize('part', ['L', 'D', 'S'])
 def test_sls_partial_solve_lower_case(terminate, part, solver):
     factorize(A, solver)
     x = sls.partial_solve_system(part.lower(), n, b.copy())
     assert sls.information()['status'] == 0
     assert x == pytest.approx(PARTS[solver][part], abs=1e-8)
 
-@pytest.mark.xfail(strict=True, reason='sls does not reject an unknown part '
-                   f'(see {PART_PR})')
 @pytest.mark.parametrize('solver', SOLVERS)
 def test_sls_partial_solve_unknown(terminate, solver):
-    # an unknown part is rejected (status -3)
+    # an unknown part is rejected (status -3), leaving b unchanged
     factorize(A, solver)
+    bc = b.copy()
     with pytest.raises(ValueError):
-        sls.partial_solve_system('X', n, b.copy())
+        sls.partial_solve_system('X', n, bc)
     assert sls.information()['status'] == -3
+    assert bc == pytest.approx(b, abs=0.0)
 
 
 def test_sls_refactorize(terminate):
