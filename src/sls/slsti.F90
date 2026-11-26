@@ -3,15 +3,18 @@
    PROGRAM GALAHAD_SLS_interface_test
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SLS_precision
+   USE GALAHAD_SYMBOLS, ONLY: GALAHAD_error_restrictions
    IMPLICIT NONE
    TYPE ( SLS_full_data_type ) :: data
    TYPE ( SLS_control_type ) control
    TYPE ( SLS_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i, l, ordering, scaling, solver, storage_type
-   INTEGER ( KIND = ip_ ) :: s, status
+   INTEGER ( KIND = ip_ ) :: s, status, status_lower, failures
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
    REAL ( KIND = rp_ ), PARAMETER :: good_x = EPSILON( 1.0_rp_ ) ** 0.333
-   REAL ( KIND = rp_ ), DIMENSION( n ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, X_lower
+   CHARACTER ( LEN = 4 ), PARAMETER :: upper_parts = 'LDUS'
+   CHARACTER ( LEN = 4 ), PARAMETER :: lower_parts = 'ldus'
    INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
    INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
    INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
@@ -113,6 +116,62 @@
      END IF
      CALL SLS_terminate( data, control, inform )
    END DO
+
+!  ==========================================================
+!  partial solves with lower-case parts and an invalid part
+!  ==========================================================
+
+!  use the LAPACK solver sytr, which is always available
+
+   failures = 0
+   CALL SLS_initialize( 'sytr', data, control, inform )
+   CALL SLS_analyse_matrix( control, data, status, n,                          &
+                            'coordinate', ne, row, col, null )
+   IF ( status == 0 ) CALL SLS_factorize_matrix( data, status, val )
+   IF ( status == 0 ) THEN
+
+!  a lower-case part gives the same status and solution as an upper-case one
+
+     DO i = 1, 4
+       X = rhs
+       CALL SLS_partial_solve( upper_parts( i : i ), data, status, X )
+       X_lower = rhs
+       CALL SLS_partial_solve( lower_parts( i : i ), data, status_lower,       &
+                               X_lower )
+       IF ( status_lower /= status ) THEN
+         WRITE( 6, "( ' part = ', A, ': status ', I0, ' /= ', I0 )" )          &
+           lower_parts( i : i ), status_lower, status
+         failures = failures + 1
+       ELSE IF ( status == 0 ) THEN
+         IF ( MAXVAL( ABS( X_lower - X ) ) > 0.0_rp_ ) THEN
+           WRITE( 6, "( ' part = ', A, ': solution differs' )" )               &
+             lower_parts( i : i )
+           failures = failures + 1
+         END IF
+       END IF
+     END DO
+
+!  any other part is rejected, and leaves the right-hand side unchanged
+
+     X = rhs
+     CALL SLS_partial_solve( 'X', data, status, X )
+     IF ( status /= GALAHAD_error_restrictions ) THEN
+       WRITE( 6, "( ' part = X: status ', I0, ' /= ', I0 )" )                  &
+         status, GALAHAD_error_restrictions
+       failures = failures + 1
+     ELSE IF ( MAXVAL( ABS( X - rhs ) ) > 0.0_rp_ ) THEN
+       WRITE( 6, "( ' part = X: right-hand side changed' )" )
+       failures = failures + 1
+     END IF
+     IF ( failures > 0 ) THEN
+       WRITE( 6, "( 1X, I0, ' partial-solve check(s) failed' )" ) failures
+       STOP 1
+     END IF
+     WRITE( 6, "( ' partial-solve checks ok' )" )
+   ELSE
+     WRITE( 6, "( ' partial-solve checks skipped, status = ', I0 )" ) status
+   END IF
+   CALL SLS_terminate( data, control, inform )
 
    STOP
    END PROGRAM GALAHAD_SLS_interface_test

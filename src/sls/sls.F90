@@ -47,7 +47,7 @@
      USE GALAHAD_KINDS_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_STRING, ONLY: STRING_lower_word
+     USE GALAHAD_STRING, ONLY: STRING_lower_word, STRING_upper_word
      USE GALAHAD_AMD_precision
      USE GALAHAD_SORT_precision
      USE GALAHAD_SPACE_precision
@@ -8583,7 +8583,8 @@
 
 !  Solve a system involving individual factors. The matrix A is presumed
 !  to have been factorized as A = L D U (with U = L^T).  The character
-!  "part" is one of 'L', 'D', 'U' or 'S', where 'S' refers to L * SQRT(D)
+!  "part" is one of 'L', 'D', 'U' or 'S', where 'S' refers to L * SQRT(D);
+!  any other value gives inform%status = GALAHAD_error_restrictions
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -8604,6 +8605,14 @@
 !  start timimg
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  check that part is valid
+
+     IF ( part /= 'L' .AND. part /= 'D' .AND. part /= 'U' .AND.               &
+          part /= 'S' ) THEN
+       inform%status = GALAHAD_error_restrictions
+       GO TO 900
+     END IF
 
 !  trivial cases
 
@@ -11626,6 +11635,7 @@
 !  Given the factorization A = L D U (with U = L^T), solve one of the
 !  linear system M x = b, where M is L, D, U or S = L * SQRT(D), and
 !  SOL holds the right-hand side b on input, and the solution x on output.
+!  part may be given in lower or upper case.
 !  See SLS_part_solve for a description of the required arguments
 
 !--------------------------------
@@ -11637,9 +11647,15 @@
      TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: SOL
 
+!  local variables
+
+     CHARACTER ( LEN = 1 ) :: upper_part
+
 !  solve the block linear system
 
-     CALL SLS_part_solve( part, SOL, data%sls_data, data%sls_control,          &
+     upper_part = part
+     CALL STRING_upper_word( upper_part )
+     CALL SLS_part_solve( upper_part, SOL, data%sls_data, data%sls_control,    &
                           data%sls_inform )
 
      status = data%sls_inform%status
