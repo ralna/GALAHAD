@@ -81,7 +81,6 @@ def secular_solution(H, c, radius):
 H_STORAGE = ['coordinate', 'sparse_by_rows', 'dense']
 S_STORAGE = ['coordinate', 'sparse_by_rows', 'dense', 'diagonal']
 
-PR = 'https://github.com/ralna/GALAHAD/pull/645'
 ISSUE = 'https://github.com/ralna/GALAHAD/issues/644'
 
 def sym_storage(H, H_type):
@@ -221,8 +220,6 @@ def test_trek_interior(terminate, use_s):
     check_solution(x, inform, c_b, radius, H=H_pd, S=Sx)
 
 
-@pytest.mark.xfail(strict=True, reason='trek does not report ||x||_S for an '
-                   f'interior solution (see {PR})')
 def test_trek_interior_x_norm(terminate):
     # problem 6): the reported ||x||
     x, inform = solve(c_b, 2.0, H=H_pd)
@@ -321,9 +318,6 @@ H_IDENTITY = [('scaled_identity', 2.0, 1, np.array([2.0])),
               ('identity', 1.0, 0, None), ('zero', 0.0, 0, None),
               ('none', 0.0, 0, None)]
 
-@pytest.mark.xfail(strict=True, reason='trek_import rejects the '
-                   'scaled_identity, identity, zero and none storage schemes '
-                   f'for H (see {PR})')
 @pytest.mark.parametrize('H_type, s, H_ne, H_val', H_IDENTITY,
                          ids=[h[0] for h in H_IDENTITY])
 def test_trek_h_identity(terminate, H_type, s, H_ne, H_val):
@@ -339,10 +333,7 @@ def test_trek_h_identity(terminate, H_type, s, H_ne, H_val):
 # again positive definite, so c = - ( H + 3 I ) x = ( 0, 5, 4 ) / 6
 @pytest.mark.parametrize('S_data', [
     ('diagonal', 3, np.array([4.0, 4.0, 4.0])),
-    pytest.param(('scaled_identity', 1, np.array([4.0])),
-                 marks=pytest.mark.xfail(
-                     strict=True, reason='trek rejects a scaled-identity S '
-                     f'(see {PR})'))],
+    ('scaled_identity', 1, np.array([4.0]))],
     ids=['diagonal', 'scaled_identity'])
 def test_trek_scaled_identity(terminate, S_data):
     x, inform = solve(c_b / 2.0, 1.0, S_data=S_data)
@@ -352,11 +343,7 @@ def test_trek_scaled_identity(terminate, S_data):
     check_solution(x, inform, c_b / 2.0, 1.0, S=4.0 * np.eye(n))
 
 
-# trek reads the unallocated values of an identity S, which crashes Python,
-# so this cannot be a strict xfail. Also, trek requires S_val for an identity
-# S, so check that S_val may be None
-@pytest.mark.skip(reason='trek crashes for an identity S, and requires S_val '
-                  f'(see {PR})')
+# check that S_val may be None for an identity S
 @pytest.mark.parametrize('S_val', [np.zeros(0), None], ids=['empty', 'None'])
 def test_trek_s_identity(terminate, S_val):
     # problem 4) with S = I given by the identity storage scheme

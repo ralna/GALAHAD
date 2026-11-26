@@ -332,12 +332,7 @@ def test_trs_indefinite_m():
 # the boundary, lambda = 5 - s and q = - 5 + s / 2. With A x = 0 and
 # g = ( 4, 1, -2 ), whose projection onto the null space of A is
 # ( 3, 0, -3 ), x = ( -1, 0, 1 ) with ||x|| = radius = sqrt( 2 ),
-# y = -1, lambda = 3 - s and q = - 6 + s. Without A, trs solves these in
-# closed form, and reports obj = q + lambda
-OBJ_XFAIL = pytest.mark.xfail(
-    strict=True, reason='trs reports the wrong objective value for the '
-    'closed-form solution with H = s I (see '
-    'https://github.com/ralna/GALAHAD/pull/647)')
+# y = -1, lambda = 3 - s and q = - 6 + s
 g_s = np.array([3.0, 0.0, 4.0])
 x_star_s = np.array([-0.6, 0.0, -0.8])
 g_sa = np.array([4.0, 1.0, -2.0])
@@ -352,10 +347,8 @@ H_IDENTITY_IDS = ['scaled_identity', 'identity', 'identity-None', 'zero',
 @pytest.mark.parametrize('use_a', [False, True], ids=['', 'A'])
 @pytest.mark.parametrize('H_type, s, H_ne, H_val', H_IDENTITY,
                          ids=H_IDENTITY_IDS)
-def test_trs_h_identity(request, H_type, s, H_ne, H_val, use_a):
+def test_trs_h_identity(H_type, s, H_ne, H_val, use_a):
     Hs = s * np.eye(n)
-    if not use_a:
-        request.applymarker(OBJ_XFAIL)
     if use_a:
         x, y, inform = solve(g_sa, radius_a, A=A,
                              H_data=(H_type, H_ne, H_val))
