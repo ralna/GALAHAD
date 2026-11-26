@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-24 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 11:18 GMT.
 
 #include "galahad_modules.h"
 
@@ -2878,7 +2878,11 @@ H_loop: DO i = 1, prob%n
 !write(6,"( A, ( 5ES12.4 ) )" ) ' X ', prob%X
 !write(6,"( A, ( 10I4 ) )" ) ' X_stat ', X_stat
 !write(6,"( A, ( 10I4 ) )" ) ' C_stat ', C_stat
-          IF ( inform%status /= GALAHAD_ok ) EXIT
+
+!  stop if DQP failed, as its solution may then be far from that of the
+!  perturbed problem (the refinement is then abandoned)
+
+          IF ( inform%DQP_inform%status /= GALAHAD_ok ) EXIT
 
 !  try to find the solution of the LP directly from that of the perturbed
 !  problem (this is not available for an l_1 penalty problem)
