@@ -342,11 +342,11 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
     if(!fdc_update_control(&control, py_options))
         return NULL;
 
-    // Create NumPy output array
-    npy_intp ndim[] = {n}; // size of dimen
+    // Create NumPy output array (there may be as many as m dependent rows)
+    npy_intp mdim[] = {m}; // size of depen
     PyArrayObject *py_depen =
-      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
-    int *depen = (int *) PyArray_DATA(py_depen);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_IPC, 0);
+    ipc_ *depen = (ipc_ *) PyArray_DATA(py_depen);
 
     // Call fdc_find_dependent_rows
     fdc_find_dependent_rows(&control, &data, &inform, &status, m, n,
