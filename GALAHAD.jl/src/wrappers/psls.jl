@@ -399,6 +399,8 @@ function psls_form_subset_preconditioner(::Type{Float128}, ::Type{Int64}, data,
                                          status, ne, val, n_sub, sub)
   @ccall libgalahad_quadruple_64.psls_form_subset_preconditioner_q_64(data::Ptr{Ptr{Cvoid}},
                                                                       status::Ptr{Int64},
+                                                                      ne::Int64,
+                                                                      val::Ptr{Float128},
                                                                       n_sub::Int64,
                                                                       sub::Ptr{Int64})::Cvoid
 end

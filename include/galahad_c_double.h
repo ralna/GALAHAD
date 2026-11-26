@@ -3052,8 +3052,8 @@ void psls_form_preconditioner(void **data, int32_t *status, int32_t ne, double *
 void psls_form_preconditioner_64(void **data, int64_t *status, int64_t ne, double *val);
 void psls_form_subset_preconditioner(void **data, int32_t *status, int32_t ne, double *val, int32_t n_sub, int32_t *sub);
 void psls_form_subset_preconditioner_64(void **data, int64_t *status, int64_t ne, double *val, int64_t n_sub, int64_t *sub);
-void psls_update_preconditioner(void **data, int32_t *status, int32_t ne, double *val, int32_t n_del, int32_t *del);
-void psls_update_preconditioner_64(void **data, int64_t *status, int64_t ne, double *val, int64_t n_del, int64_t *del);
+void psls_update_preconditioner(void **data, int32_t *status, int32_t n_del, int32_t *del);
+void psls_update_preconditioner_64(void **data, int64_t *status, int64_t n_del, int64_t *del);
 void psls_apply_preconditioner(void **data, int32_t *status, int32_t n, double *sol);
 void psls_apply_preconditioner_64(void **data, int64_t *status, int64_t n, double *sol);
 void psls_information(void **data, struct psls_inform_type *inform, int32_t *status);

@@ -3052,8 +3052,8 @@ void psls_form_preconditioner_q(void **data, int32_t *status, int32_t ne, __floa
 void psls_form_preconditioner_q_64(void **data, int64_t *status, int64_t ne, __float128 *val);
 void psls_form_subset_preconditioner_q(void **data, int32_t *status, int32_t ne, __float128 *val, int32_t n_sub, int32_t *sub);
 void psls_form_subset_preconditioner_q_64(void **data, int64_t *status, int64_t ne, __float128 *val, int64_t n_sub, int64_t *sub);
-void psls_update_preconditioner_q(void **data, int32_t *status, int32_t ne, __float128 *val, int32_t n_del, int32_t *del);
-void psls_update_preconditioner_q_64(void **data, int64_t *status, int64_t ne, __float128 *val, int64_t n_del, int64_t *del);
+void psls_update_preconditioner_q(void **data, int32_t *status, int32_t n_del, int32_t *del);
+void psls_update_preconditioner_q_64(void **data, int64_t *status, int64_t n_del, int64_t *del);
 void psls_apply_preconditioner_q(void **data, int32_t *status, int32_t n, __float128 *sol);
 void psls_apply_preconditioner_q_64(void **data, int64_t *status, int64_t n, __float128 *sol);
 void psls_information_q(void **data, struct psls_inform_type_q *inform, int32_t *status);
