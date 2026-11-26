@@ -70,12 +70,12 @@ jobs:
             echo PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig" >> $GITHUB_ENV
           fi
 
-      - name: Prepare test scripts
+      - name: Prepare tests
         shell: python
         run: |
           import shutil, glob, os
           os.makedirs("tests", exist_ok=True)
-          for f in glob.glob("src/**/test_*.py", recursive=True):
+          for f in glob.glob("src/**/Python/*_test.py", recursive=True):
               shutil.copy(f, "tests")
 
       - name: Build wheels
@@ -105,8 +105,8 @@ jobs:
 
           # test built wheels
           CIBW_TEST_REQUIRES: numpy pytest
-          CIBW_TEST_SOURCES: conftest.py tests
-          CIBW_TEST_COMMAND: pytest -v --capture=no --tb=short -rN -p no:faulthandler -o python_files=no
+          CIBW_TEST_SOURCES: tests
+          CIBW_TEST_COMMAND: pytest -v --tb=short -rfEs -o "python_files=*_test.py" tests
 
       - uses: actions/upload-artifact@v4
         with:
