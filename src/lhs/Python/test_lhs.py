@@ -5,14 +5,19 @@ print("\n** python test: lhs")
 
 # allocate internal data and set default options
 options, inform = lhs.initialize()
-print(" initiliaze status:",inform['status'])
+print(" initialize status:",inform['status'])
 
 # set some non-default options
 options['print_level'] = 0
 #print("options:", options)
 
-# call main solver(s)
-# ....
+# compute 5 Latin hypercube samples in 2 dimensions, starting from seed 1
+n_dimen = 2
+n_points = 5
+seed = 1
+X, seed = lhs.ihs(n_dimen, n_points, seed, options)
+print(" samples:")
+print(X)
 
 # get information
 inform = lhs.information()
