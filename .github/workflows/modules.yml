@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 # Cancel the runs for a pull request that are superseded by a newer push to
 # it (runs for pushes to master are never cancelled: each has its own group)
 concurrency:
