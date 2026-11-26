@@ -149,7 +149,6 @@ def test_uls_singular_rank(terminate, A_type):
     assert inform['rank'] == 2
 
 
-RECT_PR = 'https://github.com/ralna/GALAHAD/pull/654'
 RECTANGULAR = [(A_r, 'coordinate'), (A_r, 'sparse_by_rows'), (A_r, 'dense'),
                (A_r.T, 'coordinate'), (A_r.T, 'sparse_by_rows'),
                (A_r.T, 'dense')]
@@ -164,10 +163,6 @@ def test_uls_rectangular_rank(terminate, A_r, A_type):
     assert inform['status'] == 0
     assert inform['rank'] == 2
 
-# getr writes to unallocated workspace when solving with a rectangular A,
-# which crashes Python, so this cannot be a strict xfail
-@pytest.mark.skip(reason='uls crashes when getr solves with a rectangular '
-                  f'matrix (see {RECT_PR})')
 @pytest.mark.parametrize('trans', [False, True], ids=['A', 'A^T'])
 @pytest.mark.parametrize('A_r', [A_r, A_r.T], ids=['3x2', '2x3'])
 def test_uls_rectangular_solve(terminate, A_r, trans):
@@ -177,8 +172,6 @@ def test_uls_rectangular_solve(terminate, A_r, trans):
         uls.solve_system(*A_r.shape, np.ones(3), trans)
     assert uls.information()['status'] == -29
 
-@pytest.mark.xfail(strict=True, reason='uls_factorize_matrix overwrites the '
-                   f'status from the factorization (see {RECT_PR})')
 def test_uls_no_rows(terminate):
     # A must have at least one row (status -3)
     with pytest.raises(ValueError):

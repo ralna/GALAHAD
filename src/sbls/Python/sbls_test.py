@@ -229,19 +229,18 @@ def test_sbls_wrong_inertia(terminate):
 
 
 # 4) the null-space factorization (C = 0), only for preconditioner 2
-NULL_SPACE_PR = 'https://github.com/ralna/GALAHAD/pull/656'
+NULL_SPACE_H = [('coordinate', H), ('sparse_by_rows', H), ('dense', H),
+                ('diagonal', np.diag([1.0, 2.0, 3.0])),
+                ('scaled_identity', 2.0 * np.eye(n)), ('identity', np.eye(n))]
 
-# the null-space factorization writes out of bounds when H_21 is nonzero,
-# and ignores the H_11 and H_21 of dense, sparse-by-rows and diagonal H,
-# which may corrupt memory, so this cannot be a strict xfail
-@pytest.mark.skip(reason='the sbls null-space factorization gives wrong '
-                  f'solutions (see {NULL_SPACE_PR})')
-@pytest.mark.parametrize('H_type', ['coordinate', 'sparse_by_rows', 'dense'])
-def test_sbls_null_space(terminate, H_type):
-    sol, rhs_c, inform = solve(rhs_e, factorization=3, H_type=H_type)
+@pytest.mark.parametrize('H_type, H_n', NULL_SPACE_H,
+                         ids=[h[0] for h in NULL_SPACE_H])
+def test_sbls_null_space(terminate, H_type, H_n):
+    rhs = K(H_n, np.zeros((m, m))) @ z_star
+    sol, rhs_c, inform = solve(rhs, H=H_n, factorization=3, H_type=H_type)
     assert inform['status'] == 0
     assert inform['factorization'] == 3
-    assert sol == pytest.approx(sol_e, abs=1e-8)
+    assert sol == pytest.approx(z_star, abs=1e-8)
 
 @pytest.mark.parametrize('preconditioner', [1, 3, 5])
 def test_sbls_null_space_preconditioner(terminate, preconditioner):
