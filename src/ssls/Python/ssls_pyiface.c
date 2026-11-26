@@ -441,7 +441,7 @@ static PyObject* py_ssls_solve_system(PyObject *self, PyObject *args, PyObject *
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-    if(!check_array_double("b", py_sol, n + m))
+    if(!check_array_double("rhs", py_sol, n + m))
         return NULL;
 
     // Get array data pointers
@@ -458,7 +458,7 @@ static PyObject* py_ssls_solve_system(PyObject *self, PyObject *args, PyObject *
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x
+    // Return x (rhs overwritten)
     return Py_BuildValue("O", py_sol);
 }
 
