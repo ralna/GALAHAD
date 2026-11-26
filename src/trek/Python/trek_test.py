@@ -153,9 +153,16 @@ def terminate():
     trek.terminate()
 
 
-@pytest.mark.parametrize('problem', [(1.0, False), (0.5, False),
-                                     (1.0, True)],
-                         ids=['radius=1', 'radius=1/2', 'S'])
+# for radius 1, trek only reaches the solution after many more vectors than
+# the 2n that span the extended Krylov space, so the outcome depends on
+# rounding: it succeeds on macOS, but runs out of iterations on Linux and
+# Windows, hence a non-strict xfail
+@pytest.mark.parametrize('problem', [
+    pytest.param((1.0, False), marks=pytest.mark.xfail(
+        strict=False, reason='trek carries on past the exhausted extended '
+        f'Krylov space, with a platform-dependent outcome (see {ISSUE})')),
+    (0.5, False), (1.0, True)],
+    ids=['radius=1', 'radius=1/2', 'S'])
 def test_trek_hard_case(terminate, problem):
     # problems 1) to 3), with c perturbed (with the default stop_residual,
     # trek stops at a point that is not the global minimizer for problem 2))

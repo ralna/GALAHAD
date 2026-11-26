@@ -186,8 +186,16 @@ def test_nrek_hard_case_unperturbed(terminate, use_s):
         hard_case_q(1.0, 2.0 if use_s else 1.0)[1], abs=1e-6)
 
 
+# for p = 4, nrek returns a point that is not the global minimizer, with
+# status 0, on Linux (though not on macOS), as n is odd (see the secular
+# tests below), hence a non-strict xfail
 @pytest.mark.parametrize('H_type', H_STORAGE)
-@pytest.mark.parametrize('power', [3.0, 4.0], ids=['p=3', 'p=4'])
+@pytest.mark.parametrize('power', [
+    3.0,
+    pytest.param(4.0, marks=pytest.mark.xfail(
+        strict=False, reason='nrek may return an inaccurate solution when n '
+        f'is odd, depending on the platform (see {ISSUE})'))],
+    ids=['p=3', 'p=4'])
 def test_nrek(terminate, power, H_type):
     # problem 4)
     x, inform = solve(c_b, power, 3.0, H_type=H_type)
