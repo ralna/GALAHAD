@@ -55,9 +55,9 @@ functions
           sls_options : dict
              default control options for SLS (see ``sls.initialize``).
 
-   .. function:: ssls.analyse(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, C_type, C_ne, C_row, C_col, C_ptr, options=None)
+   .. function:: ssls.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, C_type, C_ne, C_row, C_col, C_ptr, options=None)
 
-      Assmeble the structure of the block matrix
+      Assemble the structure of the block matrix
       $$K = \begin{pmatrix}H & A^T \\ A  & - C\end{pmatrix}.$$
       and analyse the resulting matrix prior to factorization.
 
@@ -138,19 +138,13 @@ functions
       options : dict, optional
           dictionary of control options (see ``ssls.initialize``).
 
-   .. function:: ssls.factorize_matrix(n, m, H_ne, H_val, A_ne, A_val, C_ne, C_val)
+   .. function:: ssls.factorize_matrix(H_ne, H_val, A_ne, A_val, C_ne, C_val)
 
       Factorize the block matrix
       $$K = \begin{pmatrix}H & A^T \\ A  & - C\end{pmatrix}.$$
 
       **Parameters:**
 
-      n : int
-          holds the dimension of $H$ 
-          (equivalently, the number of columns of $A$).
-      m : int
-          holds the dimension of $C$
-          (equivalently, the number of rows of $A$).
       H_ne : int
           holds the number of entries in the lower triangular part of 
           the matrix $H$.
@@ -172,6 +166,9 @@ functions
           $C$ in the same order as specified in the sparsity pattern in 
           ``ssls.load``.
 
+      Value arrays may be None when the corresponding number of entries
+      is 0 (for example, for the 'identity', 'zero' and 'none' schemes).
+
    .. function:: ssls.solve_system(n, m, rhs)
 
       Solve the block linear system
@@ -188,14 +185,15 @@ functions
           holds the dimension of $C$
           (equivalently, the number of rows of $A$).
 
-      sol : ndarray(n+m)
-          holds the values of the right-hand side vector $(a,b)$.
+      rhs : ndarray(n+m)
+          holds the values of the right-hand side vector $(a,b)$. It is
+          overwritten by the solution $(x,y)$.
 
       **Returns:**
 
       sol : ndarray(n+m)
           holds the values of the solution vector $(x,y)$ after a successful 
-          call.
+          call (this is the array ``rhs``).
 
    .. function:: [optional] ssls.information()
 
