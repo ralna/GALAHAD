@@ -327,3 +327,25 @@ def test_sbls_refactorize(terminate):
     sol = sbls.solve_system(n, m, rhs.copy())
     assert sbls.information()['status'] == 0
     assert sol == pytest.approx(z_star, abs=1e-8)
+
+
+# 6) no constraints (m = 0): H x = a, with x = ( 1, 2, 3 ) for
+# a = ( 1, 7, 11 ). A may be given without entries, or as 'absent'
+a_0 = H @ z_star[:n]
+
+@pytest.mark.parametrize('A_type', [
+    'coordinate',
+    pytest.param('absent', marks=pytest.mark.xfail(
+        strict=True, reason='sbls_import rejects the absent storage scheme '
+        'for A (see https://github.com/ralna/GALAHAD/pull/657)'))])
+def test_sbls_no_constraints(terminate, A_type):
+    H_ne, H_row, H_col, H_ptr, H_val = matrix_storage(H, 'coordinate', True)
+    e = np.zeros(0, dtype=int)
+    A_row, A_col = (e, e) if A_type == 'coordinate' else (None, None)
+    sbls.load(n, 0, 'coordinate', H_ne, H_row, H_col, H_ptr,
+              A_type, 0, A_row, A_col, None, 'zero', 0, None, None, None,
+              options())
+    sbls.factorize_matrix(n, 0, H_ne, H_val, 0, None, 0, None)
+    sol = sbls.solve_system(n, 0, a_0.copy())
+    assert sbls.information()['status'] == 0
+    assert sol == pytest.approx(z_star[:n], abs=1e-8)
