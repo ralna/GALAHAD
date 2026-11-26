@@ -15,6 +15,7 @@
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
 
+#include <string.h>
 #include "galahad_python.h"
 #include "galahad_rpd.h"
 
@@ -151,6 +152,276 @@ static PyObject* py_rpd_initialize(PyObject *self){
     return Py_BuildValue("N", py_options);
 }
 
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   RPD_GET_STATS   -*-*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_rpd_get_stats(PyObject *self, PyObject *args, PyObject *keywds){
+    PyObject *py_options = NULL;
+    const char *qplib_file;
+    char p_type[4] = "";
+    ipc_ n, m, h_ne, a_ne, h_c_ne;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist[] = {"qplib_file","options",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "s|O", kwlist,
+                                    &qplib_file, &py_options))
+        return NULL;
+
+    // Update RPD control options
+    if(!rpd_update_control(&control, py_options))
+        return NULL;
+
+    // Call rpd_get_stats (which does not alter the file name)
+    rpd_get_stats((char *) qplib_file, (ipc_) strlen(qplib_file), &control,
+                  &data, &status, p_type, &n, &m, &h_ne, &a_ne, &h_c_ne);
+
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Return the problem type and dimensions
+    p_type[3] = '\0';
+    return Py_BuildValue("siiiii", p_type, (int) n, (int) m, (int) h_ne,
+                         (int) a_ne, (int) h_c_ne);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-   RPD_GET_F   -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_rpd_get_f(PyObject *self){
+    double f;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Call rpd_get_f
+    rpd_get_f(&data, &status, &f);
+
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Return f
+    return Py_BuildValue("d", f);
+}
+
+// Get a real vector of length len (n or m) with get_vector, and return it
+
+static PyObject* rpd_vector(PyObject *args, PyObject *keywds, char *name,
+                            void (*get_vector)(void **, ipc_ *, ipc_,
+                                               double *)){
+    int len;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist_n[] = {"n",NULL};
+    static char *kwlist_m[] = {"m",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "i",
+                                    name[0] == 'n' ? kwlist_n : kwlist_m,
+                                    &len))
+        return NULL;
+
+    // Create the NumPy array and fill it
+    npy_intp dim[] = {len};
+    PyArrayObject *py_v =
+      (PyArrayObject *) PyArray_SimpleNew(1, dim, NPY_DOUBLE);
+    get_vector(&data, &status, len, (double *) PyArray_DATA(py_v));
+
+    // Raise any status errors
+    if(!check_error_codes(status)){
+        Py_DECREF(py_v);
+        return NULL;
+    }
+    return Py_BuildValue("N", py_v);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-   RPD_GET_G, X, Y, Z   -*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_rpd_get_g(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_vector(args, keywds, "n", rpd_get_g);
+}
+
+static PyObject* py_rpd_get_x(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_vector(args, keywds, "n", rpd_get_x);
+}
+
+static PyObject* py_rpd_get_y(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_vector(args, keywds, "m", rpd_get_y);
+}
+
+static PyObject* py_rpd_get_z(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_vector(args, keywds, "n", rpd_get_z);
+}
+
+// Get lower and upper bounds of length len (n or m) with get_bounds, and
+// return them
+
+static PyObject* rpd_bounds(PyObject *args, PyObject *keywds, char *name,
+                            void (*get_bounds)(void **, ipc_ *, ipc_,
+                                               double *, double *)){
+    int len;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist_n[] = {"n",NULL};
+    static char *kwlist_m[] = {"m",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "i",
+                                    name[0] == 'n' ? kwlist_n : kwlist_m,
+                                    &len))
+        return NULL;
+
+    // Create the NumPy arrays and fill them
+    npy_intp dim[] = {len};
+    PyArrayObject *py_l =
+      (PyArrayObject *) PyArray_SimpleNew(1, dim, NPY_DOUBLE);
+    PyArrayObject *py_u =
+      (PyArrayObject *) PyArray_SimpleNew(1, dim, NPY_DOUBLE);
+    get_bounds(&data, &status, len, (double *) PyArray_DATA(py_l),
+               (double *) PyArray_DATA(py_u));
+
+    // Raise any status errors
+    if(!check_error_codes(status)){
+        Py_DECREF(py_l);
+        Py_DECREF(py_u);
+        return NULL;
+    }
+    return Py_BuildValue("NN", py_l, py_u);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   RPD_GET_XLU, CLU   -*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_rpd_get_xlu(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_bounds(args, keywds, "n", rpd_get_xlu);
+}
+
+static PyObject* py_rpd_get_clu(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_bounds(args, keywds, "m", rpd_get_clu);
+}
+
+// Get a matrix with ne entries in co-ordinate form with get_matrix, and
+// return its row and column indices and values
+
+static PyObject* rpd_matrix(PyObject *args, PyObject *keywds,
+                            void (*get_matrix)(void **, ipc_ *, ipc_,
+                                               ipc_ *, ipc_ *, double *)){
+    int ne;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist[] = {"ne",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "i", kwlist, &ne))
+        return NULL;
+
+    // Create the NumPy arrays and fill them
+    npy_intp dim[] = {ne};
+    PyArrayObject *py_row =
+      (PyArrayObject *) PyArray_ZEROS(1, dim, NPY_IPC, 0);
+    PyArrayObject *py_col =
+      (PyArrayObject *) PyArray_ZEROS(1, dim, NPY_IPC, 0);
+    PyArrayObject *py_val =
+      (PyArrayObject *) PyArray_SimpleNew(1, dim, NPY_DOUBLE);
+    get_matrix(&data, &status, ne, (ipc_ *) PyArray_DATA(py_row),
+               (ipc_ *) PyArray_DATA(py_col), (double *) PyArray_DATA(py_val));
+
+    // Raise any status errors
+    if(!check_error_codes(status)){
+        Py_DECREF(py_row);
+        Py_DECREF(py_col);
+        Py_DECREF(py_val);
+        return NULL;
+    }
+    return Py_BuildValue("NNN", py_row, py_col, py_val);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-   RPD_GET_H, A   -*-*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_rpd_get_h(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_matrix(args, keywds, rpd_get_h);
+}
+
+static PyObject* py_rpd_get_a(PyObject *self, PyObject *args, PyObject *keywds){
+    return rpd_matrix(args, keywds, rpd_get_a);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-   RPD_GET_H_C   -*-*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_rpd_get_h_c(PyObject *self, PyObject *args, PyObject *keywds){
+    int ne;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist[] = {"ne",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "i", kwlist, &ne))
+        return NULL;
+
+    // Create the NumPy arrays and fill them
+    npy_intp dim[] = {ne};
+    PyArrayObject *py_ptr =
+      (PyArrayObject *) PyArray_ZEROS(1, dim, NPY_IPC, 0);
+    PyArrayObject *py_row =
+      (PyArrayObject *) PyArray_ZEROS(1, dim, NPY_IPC, 0);
+    PyArrayObject *py_col =
+      (PyArrayObject *) PyArray_ZEROS(1, dim, NPY_IPC, 0);
+    PyArrayObject *py_val =
+      (PyArrayObject *) PyArray_SimpleNew(1, dim, NPY_DOUBLE);
+    rpd_get_h_c(&data, &status, ne, (ipc_ *) PyArray_DATA(py_ptr),
+                (ipc_ *) PyArray_DATA(py_row), (ipc_ *) PyArray_DATA(py_col),
+                (double *) PyArray_DATA(py_val));
+
+    // Raise any status errors
+    if(!check_error_codes(status)){
+        Py_DECREF(py_ptr);
+        Py_DECREF(py_row);
+        Py_DECREF(py_col);
+        Py_DECREF(py_val);
+        return NULL;
+    }
+    return Py_BuildValue("NNNN", py_ptr, py_row, py_col, py_val);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   RPD_GET_X_TYPE   -*-*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_rpd_get_x_type(PyObject *self, PyObject *args, PyObject *keywds){
+    int n;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist[] = {"n",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "i", kwlist, &n))
+        return NULL;
+
+    // Create the NumPy array and fill it
+    npy_intp dim[] = {n};
+    PyArrayObject *py_x_type =
+      (PyArrayObject *) PyArray_ZEROS(1, dim, NPY_IPC, 0);
+    rpd_get_x_type(&data, &status, n, (ipc_ *) PyArray_DATA(py_x_type));
+
+    // Raise any status errors
+    if(!check_error_codes(status)){
+        Py_DECREF(py_x_type);
+        return NULL;
+    }
+    return Py_BuildValue("N", py_x_type);
+}
+
 //  *-*-*-*-*-*-*-*-*-*-   RPD_INFORMATION   -*-*-*-*-*-*-*-*
 
 static PyObject* py_rpd_information(PyObject *self){
@@ -191,6 +462,18 @@ static PyObject* py_rpd_terminate(PyObject *self){
 /* rpd python module method table */
 static PyMethodDef rpd_module_methods[] = {
     {"initialize", (PyCFunction) py_rpd_initialize, METH_NOARGS,NULL},
+    {"get_stats", (PyCFunction) py_rpd_get_stats, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_g", (PyCFunction) py_rpd_get_g, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_f", (PyCFunction) py_rpd_get_f, METH_NOARGS, NULL},
+    {"get_xlu", (PyCFunction) py_rpd_get_xlu, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_clu", (PyCFunction) py_rpd_get_clu, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_h", (PyCFunction) py_rpd_get_h, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_a", (PyCFunction) py_rpd_get_a, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_h_c", (PyCFunction) py_rpd_get_h_c, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_x_type", (PyCFunction) py_rpd_get_x_type, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_x", (PyCFunction) py_rpd_get_x, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_y", (PyCFunction) py_rpd_get_y, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_z", (PyCFunction) py_rpd_get_z, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_rpd_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_rpd_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
