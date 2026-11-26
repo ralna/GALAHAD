@@ -140,12 +140,12 @@ functions
              * **-1**
 
                implicit with $G_{11} = 0$, $G_{21} = 0$,
-               $G_{22} = I$
+               $G_{22} = I$, for the special case $C = 0$
 
              * **-2**
 
                implicit with $G_{11} = 0$, $G_{21} = 0$,
-               $G_{22} = H_{22}$.
+               $G_{22} = H_{22}$, for the special case $C = 0$.
 
           semi_bandwidth : int
              the semi-bandwidth for band(H).
@@ -167,7 +167,7 @@ functions
 
              * **3**
 
-               null-space
+               null-space (only for preconditioner 2, and $C = 0$)
 
              * **4**
 
@@ -327,7 +327,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``sbls.initialize``).
 
-   .. function:: sbls.factorize_matrix(n, m, H_ne, H_val, A_ne, A_val, C_ne, C_val,D)
+   .. function:: sbls.factorize_matrix(n, m, H_ne, H_val, A_ne, A_val, C_ne, C_val, D=None)
 
       Form and factorize the block matrix
       $$K_{G} = \begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}$$
@@ -361,10 +361,10 @@ functions
           holds the values of the nonzeros in the lower triangle of the matrix
           $C$ in the same order as specified in the sparsity pattern in 
           ``sbls.load``.
-      D : ndarray(n)
-          holds the values of the diagonals of the matrix $D$ that is required 
-          if options[`preconditioner`]=5 has been specified. Otherwise it
-          shuld be set to None.
+      D : ndarray(n), optional
+          holds the values of the diagonals of the matrix $D$ that is used
+          if options['preconditioner'] = 5 has been specified. If it is
+          omitted or None, $G = I$ is used instead (preconditioner 1).
 
    .. function:: sbls.solve_system(n, m, rhs)
 
@@ -382,14 +382,15 @@ functions
           holds the dimension of $C$
           (equivalently, the number of rows of $A$).
 
-      sol : ndarray(n+m)
-          holds the values of the right-hand side vector $(a,b)$.
+      rhs : ndarray(n+m)
+          holds the values of the right-hand side vector $(a,b)$. It is
+          overwritten by the solution $(x,y)$.
 
       **Returns:**
 
       sol : ndarray(n+m)
           holds the values of the solution vector $(x,y)$ after a successful 
-          call.
+          call (this is the array ``rhs``).
 
    .. function:: [optional] sbls.information()
 
