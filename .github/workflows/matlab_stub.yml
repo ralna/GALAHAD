@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 # Matlab is not available on the GitHub runners, so the Matlab interfaces
 # (src/matlab) cannot be built or run here. Instead, compile (but do not link)
