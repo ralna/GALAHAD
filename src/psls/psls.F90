@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:24 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 14:35 GMT.
 
 #include "galahad_modules.h"
 
@@ -393,6 +393,7 @@
         INTEGER ( KIND = ip_ ) :: n_pert, scu_status, p_ne, l_ne, mc61_lirn
         REAL ( KIND = rp_ ) :: perturbation
         LOGICAL :: sub_matrix, perturbed
+        LOGICAL :: factors_available = .FALSE.
         INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc61_ICNTL                  &
           = (/ 6, 6, 0, 0, 0, 0, 0, 0, 0, 0 /)
         REAL ( KIND = rp_ ), DIMENSION( 5 ) :: mc61_CNTL                       &
@@ -474,6 +475,9 @@
 
      control%SLS_control%prefix = '" - PSLS:"                    '
 
+!  no preconditioner is yet available
+
+     data%factors_available = .FALSE.
      RETURN
 
 !  End of PSLS_initialize
@@ -876,10 +880,15 @@
       data%n_fixed = 0
       inform%factorization_integer = 0 ; inform%factorization_real = 0
 
+!  the preconditioner is only available once it has been formed successfully
+
+      data%factors_available = .FALSE.
+
 !  return if no preconditioning (P=I) is required
 
       IF ( inform%preconditioner == preconditioner_none ) THEN
         inform%status = 0
+        data%factors_available = .TRUE.
         RETURN
       END IF
 
@@ -2910,6 +2919,7 @@
       inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total                                                  &
         = inform%time%clock_total + clock_now - clock_start
+      data%factors_available = .TRUE.
       RETURN
 
 !  Allocation error
@@ -3964,6 +3974,12 @@
 
 !  how many variables will be fixed?
 
+!  the preconditioner must have been formed successfully
+
+      IF ( .NOT. data%factors_available ) THEN
+        inform%status = GALAHAD_error_call_order ; RETURN
+      END IF
+
       n_fix = SIZE( FIX )
 
 !  does this exceed the space alllowed for the Schur complement?
@@ -4157,6 +4173,12 @@
 
       IF ( control%print_level > 10 .AND. control%out > 0 )                    &
         WRITE( control%out, "( /, A, ' solve ' )" ) prefix
+
+!  the preconditioner must have been formed successfully
+
+      IF ( .NOT. data%factors_available ) THEN
+        inform%status = GALAHAD_error_call_order ; RETURN
+      END IF
 
 !  - - - - - - - - - - - - - - - - - - - - - - - -
 !  Initial solve using the original factorization
@@ -4688,6 +4710,8 @@
 !  Local variables
 
       CHARACTER ( LEN = 80 ) :: array_name
+
+      data%factors_available = .FALSE.
 
 !  Deallocate all arrays allocated within SLS
 

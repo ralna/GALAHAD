@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 10:46 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 06:58 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -91,6 +91,41 @@
    CALL SBLS_terminate( data, control, info )
    DEALLOCATE( H%ptr, A%ptr )
    DEALLOCATE( C%val, C%row, C%col )
+
+!  check that a solve after a failed factorization is reported as an error.
+!  The null-space factorization is only available with preconditioner 2
+
+   WRITE( 6, "( /, ' solve after failure test' )" )
+   n = 3 ; m = 2 ; h_ne = 3 ; a_ne = 4
+   ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
+   ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
+   ALLOCATE( C%val( 0 ), C%row( 0 ), C%col( 0 ), SOL( n + m ) )
+   IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+   CALL SMT_put( H%type, 'COORDINATE', smt_stat )
+   IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+   CALL SMT_put( A%type, 'COORDINATE', smt_stat )
+   H%ne = h_ne ; A%ne = a_ne ; C%ne = 0
+   H%row = (/ 1, 2, 3 /) ; H%col = (/ 1, 2, 3 /)
+   H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_ /)
+   A%row = (/ 1, 1, 2, 2 /) ; A%col = (/ 1, 2, 2, 3 /)
+   A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
+   control%factorization = 3 ; control%preconditioner = 1
+   CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
+   status = info%status
+   SOL = 1.0_rp_
+   CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
+   WRITE( 6, "( ' factorize status = ', I0, ', solve status = ', I0 )" )     &
+     status, info%status
+   IF ( status == GALAHAD_ok .OR.                                              &
+        info%status /= GALAHAD_error_call_order ) THEN
+     WRITE( 6, "( ' solve after failure test FAILED' )" )
+     STOP 1
+   END IF
+   CALL SBLS_terminate( data, control, info )
+   DEALLOCATE( H%val, H%row, H%col, A%val, A%row, A%col )
+   DEALLOCATE( C%val, C%row, C%col, SOL )
 
 !  =====================================
 !  basic test of various storage formats
