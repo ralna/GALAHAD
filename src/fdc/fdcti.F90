@@ -3,6 +3,7 @@
    PROGRAM GALAHAD_FDC_test    !! to be expanded
    USE GALAHAD_KINDS_precision
    USE GALAHAD_FDC_precision
+   USE GALAHAD_SYMBOLS, ONLY: GALAHAD_error_solve
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 4, m = 3, a_ne = 10
    INTEGER ( KIND = ip_ ) :: n_depen, status
@@ -35,5 +36,23 @@
      WRITE( 6, "( ' FDC_find_dependent exit status = ', I6 ) " ) inform%status
    END IF
    CALL FDC_terminate( data, control, inform ) ! Delete workspace
+
+!  with the unsymmetric solver getr, which cannot solve systems with the
+!  rectangular A used to check consistency, the failure must be reported
+!  (status -11), rather than the consistent constraints being declared
+!  inconsistent
+
+   CALL FDC_initialize( data, control, inform )
+   control%use_sls = .FALSE.
+   control%unsymmetric_linear_solver = 'getr'
+   CALL FDC_find_dependent_rows( control, data, inform, status, m, n,          &
+                                 A_col, A_ptr, A_val, B, n_depen, DEPEN )
+   IF ( inform%status /= GALAHAD_error_solve ) THEN
+     WRITE( 6, "( ' FDC_find_dependent with getr: status ', I0, ' /= ',       &
+    &  I0 )" ) inform%status, GALAHAD_error_solve
+     STOP 1
+   END IF
+   WRITE( 6, "( ' FDC_find_dependent with getr: status ', I0 )" ) inform%status
+   CALL FDC_terminate( data, control, inform )
    END PROGRAM GALAHAD_FDC_test
 
