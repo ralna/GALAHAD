@@ -202,7 +202,10 @@ functions
              if ``subspace_direct`` is True, the subspace step will be
              calculated using a direct (factorization) method, while if
              it is False, an iterative (conjugate-gradient) method will
-             be used.
+             be used. When the factorized system is singular, the direct
+             method needs a linear solver that provides the Fredholm
+             alternative (currently MA57, MA77 or MA97); with other
+             solvers, the iterative method is used for such steps.
           subspace_alternate : bool
              if ``subspace_alternate`` is True, the subspace step will
              alternate between a direct (factorization) method and an

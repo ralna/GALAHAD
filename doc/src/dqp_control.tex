@@ -226,6 +226,10 @@ matrix factorization,
 and \false\ if conjugate-gradient steps are preferred. Factorization
 often produces a better step, but sometimes the conjugate-gradient method
 may be less expensive and less demanding on storage.
+When the factorized system is singular, the direct method needs a
+symmetric linear solver that provides the Fredholm alternative (currently
+{\tt MA57}, {\tt MA77} or {\tt MA97}); with other solvers, the
+conjugate-gradient method is used for such steps.
 The default is {\tt subspace\_direct = .FALSE.}, but if more advanced
 symmetric linear solvers such as {\tt MA57} or {\tt MA97} available,
 we recommend setting {\tt subspace\_direct = .TRUE.} and changing
