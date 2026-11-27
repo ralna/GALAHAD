@@ -408,61 +408,49 @@ end
 export psls_update_preconditioner
 
 function psls_update_preconditioner(::Type{Float32}, ::Type{Int32}, data,
-                                    status, ne, val, n_del, del)
+                                    status, n_del, del)
   @ccall libgalahad_single.psls_update_preconditioner_s(data::Ptr{Ptr{Cvoid}},
                                                         status::Ptr{Int32},
-                                                        ne::Int32,
-                                                        val::Ptr{Float32},
                                                         n_del::Int32,
                                                         del::Ptr{Int32})::Cvoid
 end
 
 function psls_update_preconditioner(::Type{Float32}, ::Type{Int64}, data,
-                                    status, ne, val, n_del, del)
+                                    status, n_del, del)
   @ccall libgalahad_single_64.psls_update_preconditioner_s_64(data::Ptr{Ptr{Cvoid}},
                                                               status::Ptr{Int64},
-                                                              ne::Int64,
-                                                              val::Ptr{Float32},
                                                               n_del::Int64,
                                                               del::Ptr{Int64})::Cvoid
 end
 
 function psls_update_preconditioner(::Type{Float64}, ::Type{Int32}, data,
-                                    status, ne, val, n_del, del)
+                                    status, n_del, del)
   @ccall libgalahad_double.psls_update_preconditioner(data::Ptr{Ptr{Cvoid}},
                                                       status::Ptr{Int32},
-                                                      ne::Int32,
-                                                      val::Ptr{Float64},
                                                       n_del::Int32,
                                                       del::Ptr{Int32})::Cvoid
 end
 
 function psls_update_preconditioner(::Type{Float64}, ::Type{Int64}, data,
-                                    status, ne, val, n_del, del)
+                                    status, n_del, del)
   @ccall libgalahad_double_64.psls_update_preconditioner_64(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Int64},
-                                                            ne::Int64,
-                                                            val::Ptr{Float64},
                                                             n_del::Int64,
                                                             del::Ptr{Int64})::Cvoid
 end
 
 function psls_update_preconditioner(::Type{Float128}, ::Type{Int32}, data,
-                                    status, ne, val, n_del, del)
+                                    status, n_del, del)
   @ccall libgalahad_quadruple.psls_update_preconditioner_q(data::Ptr{Ptr{Cvoid}},
                                                            status::Ptr{Int32},
-                                                           ne::Int32,
-                                                           val::Ptr{Float128},
                                                            n_del::Int32,
                                                            del::Ptr{Int32})::Cvoid
 end
 
 function psls_update_preconditioner(::Type{Float128}, ::Type{Int64}, data,
-                                    status, ne, val, n_del, del)
+                                    status, n_del, del)
   @ccall libgalahad_quadruple_64.psls_update_preconditioner_q_64(data::Ptr{Ptr{Cvoid}},
                                                                  status::Ptr{Int64},
-                                                                 ne::Int64,
-                                                                 val::Ptr{Float128},
                                                                  n_del::Int64,
                                                                  del::Ptr{Int64})::Cvoid
 end
