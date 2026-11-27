@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-11-08 AT 16:24 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 10:45 GMT.
 
 #include "galahad_modules.h"
 
@@ -9597,7 +9597,14 @@
             IF ( control%out > 0 .AND. control%print_level > 0 )               &
               WRITE( control%out, "( A, ' solve exit status = ', I0 )" )       &
                 prefix, inform%sls_solve_status
-            inform%status = GALAHAD_error_solve
+
+!  report if the solver cannot provide the Fredholm alternative
+
+            IF ( inform%sls_solve_status == GALAHAD_unavailable_option ) THEN
+              inform%status = GALAHAD_unavailable_option
+            ELSE
+              inform%status = GALAHAD_error_solve
+            END IF
             RETURN
           END IF
 
@@ -9642,7 +9649,14 @@
           IF ( control%out > 0 .AND. control%print_level > 0 )                 &
             WRITE( control%out, "( A, ' solve exit status = ', I0 )" )         &
               prefix, inform%sls_solve_status
-          inform%status = GALAHAD_error_solve
+
+!  report if the solver cannot provide the Fredholm alternative
+
+          IF ( inform%sls_solve_status == GALAHAD_unavailable_option ) THEN
+            inform%status = GALAHAD_unavailable_option
+          ELSE
+            inform%status = GALAHAD_error_solve
+          END IF
           RETURN
         END IF
       END IF
