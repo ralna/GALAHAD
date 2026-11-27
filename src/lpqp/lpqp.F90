@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 11:07 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 09:13 GMT.
 
 #include "galahad_modules.h"
 
@@ -1047,7 +1047,7 @@
 
        ELSE IF ( cl > - control%infinity ) THEN
          IF ( cu < control%infinity ) THEN
-           IF ( cl <= cl ) THEN
+           IF ( cl <= cu ) THEN
              m = m + 2
              la = la + 1
              a_ne = a_ne + 5
@@ -1848,7 +1848,7 @@
 
          ELSE IF ( cl > - control%infinity ) THEN
            IF ( cu < control%infinity ) THEN
-             IF ( cl <= cl ) THEN
+             IF ( cl <= cu ) THEN
                n_c = n_c + 1 ; la = la + 1
                prob%A%row( la ) = i
                prob%A%col( la ) = n_c
@@ -2092,7 +2092,7 @@
 
          ELSE IF ( cl > - control%infinity ) THEN
            IF ( cu < control%infinity ) THEN
-             IF ( cl <= cl ) THEN
+             IF ( cl <= cu ) THEN
                prob%A%val( la ) = - one
                prob%A%col( la ) = n_c
                prob%C_l( i ) = zero
