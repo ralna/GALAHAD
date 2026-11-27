@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 14:15 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 10:52 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_interface_test
    USE GALAHAD_KINDS_precision, C_ptr_rename => C_ptr
@@ -214,6 +214,8 @@
      STOP 1
    ELSE
      WRITE( 6, "( ' absent A ok' )" )
+   END IF
+
 !  ==================================================================
 !  the null-space factorization (C = 0) should give the same solution
 !  as the augmented-system one, for each storage scheme for H, with
