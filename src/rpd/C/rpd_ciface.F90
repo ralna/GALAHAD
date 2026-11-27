@@ -274,9 +274,12 @@
 
   CLOSE( fcontrol%qplib )
 
-!  translate fortran character string to a c one
+!  translate fortran character string to a c one (character by character, as
+!  p_type is an array of single characters)
 
-  p_type( 1 : 3 ) = fp_type( 1 : 3 )
+  DO i = 1, 3
+    p_type( i ) = fp_type( i : i )
+  END DO
   p_type( 4 ) = C_NULL_CHAR
   RETURN
 
@@ -579,7 +582,7 @@
 
 !  get x
 
-  CALL f_rpd_get_g( fdata, status, x )
+  CALL f_rpd_get_x( fdata, status, x )
   RETURN
 
   END SUBROUTINE rpd_get_x

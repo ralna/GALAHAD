@@ -71,6 +71,11 @@ int main(void) {
     rpd_get_stats( qplib_file, qplib_file_len, &control, &data, &status,
                    p_type, &n, &m, &h_ne, &a_ne, &h_c_ne );
     printf( " QPLIB file is of type %s\n", p_type );
+    ipc_ failures = 0;
+    if( strcmp( p_type, "QGQ" ) != 0 ){
+      printf( " type %s is not QGQ\n", p_type );
+      failures++;
+    }
     printf( " n = %" d_ipc_ ", m = %" d_ipc_ ", h_ne = %" d_ipc_ 
             ", a_ne = %" d_ipc_ ", h_c_ne = %" d_ipc_ "\n",
             n, m, h_ne, a_ne, h_c_ne );
@@ -235,6 +240,11 @@ int main(void) {
     // Recover x
     rpc_ x[n];
     rpd_get_x( &data, &status, n, x );
+    // the initial values of x are all zero in ALLINIT
+    for( ipc_ i = 0; i < n; i++) if( x[i] != 0.0 ){
+      printf( " x[%" d_ipc_ "] is not zero\n", i );
+      failures++;
+    }
 #ifdef REAL_128
 //    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", x[0]);
 //    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", x[1]);
@@ -290,4 +300,9 @@ int main(void) {
 
     // Delete internal workspace
     rpd_terminate( &data, &control, &inform );
+    if( failures > 0 ){
+      printf( " %" d_ipc_ " check(s) failed\n", failures );
+      return 1;
+    }
+    return 0;
 }
