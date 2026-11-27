@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 09:08 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 07:56 GMT.
 
 #include "galahad_modules.h"
 
@@ -94,6 +94,22 @@
 !  perturbations larger than accept_rel_tol times the current one
 
       REAL ( KIND = rp_ ), PARAMETER :: accept_rel_tol = epsmch ** 0.5_rp_
+
+!  a component of x or Ax is regarded as unchanged along the extrapolation
+!  if it changes by at most a tolerance skip_tol. The computed change in a
+!  component that is actually unchanged is of the order of the residual
+!  r_a of the active constraints and bounds at the current point, while
+!  the genuine changes are usually much larger. Except in single precision,
+!  skip_tol is therefore the larger of skip_rel_tol relative to the size of
+!  the component and skip_kappa times r_a, but at most skip_cap relative to
+!  the size of the component. In single precision, the two cannot be
+!  separated reliably, and skip_tol is 1000 EPSILON
+
+#ifndef REAL_32
+      REAL ( KIND = rp_ ), PARAMETER :: skip_rel_tol = epsmch ** 0.75_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: skip_cap = epsmch ** 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: skip_kappa = 100.0_rp_
+#endif
 
 !  the trust-region radius for the subspace step; any finite value is
 !  allowed by the theory, and it is smaller in single precision to limit the
@@ -1528,7 +1544,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, ii, j, l, out
       REAL ( KIND = rp_ ) :: d_v, d_x, vc, xc, pxd, qt, obj, rho, ratio
-      REAL ( KIND = rp_ ) :: new_perturbation, this_perturbation, skip_tol
+      REAL ( KIND = rp_ ) :: new_perturbation, this_perturbation, r_a
       LOGICAL :: printi, printt, printp, printd
       LOGICAL :: c_stat_required, x_stat_required, penalty_objective, skip
 
@@ -1942,13 +1958,43 @@
 !  or, in the penalty case,
 !  P = { x:  x_l <= x <= x }
 
+!  compute the residual r_a of the active constraints and bounds at the
+!  current point; the variables before x_l_start and after x_u_end have
+!  bounds of zero
+
+      r_a = zero
+      DO ii = 1, m_active
+        i = C_active( ii )
+        IF ( i < 0 ) THEN
+          r_a = MAX( r_a, ABS( C( - i ) - C_l( - i ) ) )
+        ELSE
+          r_a = MAX( r_a, ABS( C( i ) - C_u( i ) ) )
+        END IF
+      END DO
+      DO ii = 1, n_active
+        j = X_active( ii )
+        IF ( j < 0 ) THEN
+          IF ( - j < dims%x_l_start ) THEN
+            r_a = MAX( r_a, ABS( X( - j ) ) )
+          ELSE
+            r_a = MAX( r_a, ABS( X( - j ) - X_l( - j ) ) )
+          END IF
+        ELSE
+          IF ( j > dims%x_u_end ) THEN
+            r_a = MAX( r_a, ABS( X( j ) ) )
+          ELSE
+            r_a = MAX( r_a, ABS( X( j ) - X_u( j ) ) )
+          END IF
+        END IF
+      END DO
+
 !  the general constraints need only be checked if some component of x
 !  changes along the extrapolation. The free variables have no bounds, but
 !  a change in one of them may lead to a constraint becoming violated
 
-      skip = .TRUE. ; skip_tol = thousand * epsmch
+      skip = .TRUE.
       DO j = 1, dims%x_free
-        IF ( ABS( X( j ) - SOL( j ) ) > skip_tol ) THEN
+        IF ( ABS( X( j ) - SOL( j ) ) > skip_tol( X( j ) ) ) THEN
           skip = .FALSE. ; EXIT
         END IF
       END DO
@@ -1957,7 +2003,7 @@
 
       DO j = dims%x_free + 1, n
         xc = X( j ) ; d_x = SOL( j )
-        IF ( ABS( xc - d_x ) > skip_tol ) THEN
+        IF ( ABS( xc - d_x ) > skip_tol( xc ) ) THEN
           skip = .FALSE.
           pxd = perturbation * ( xc - d_x )
           IF ( j <= dims%x_l_start - 1 ) THEN
@@ -2007,7 +2053,7 @@
           DO l = A_ptr( i ) , A_ptr( i + 1 ) - 1
             d_x = d_x + A_val( l ) * SOL( A_col( l ) )
           END DO
-          IF ( ABS( xc - d_x ) > skip_tol ) THEN
+          IF ( ABS( xc - d_x ) > skip_tol( xc ) ) THEN
             pxd = perturbation * ( xc - d_x )
             IF ( i <= dims%c_l_end ) THEN
               IF ( C_l( i ) - d_x /= zero ) THEN
@@ -2169,6 +2215,25 @@
 
   900 CONTINUE
       RETURN
+
+!  internal function
+
+      CONTAINS
+
+!  the tolerance below which a change in a component of size v is regarded
+!  as the effect of rounding errors
+
+        FUNCTION skip_tol( v )
+        REAL ( KIND = rp_ ) :: skip_tol
+        REAL ( KIND = rp_ ), INTENT( IN ) :: v
+#ifdef REAL_32
+        skip_tol = thousand * epsmch
+#else
+        skip_tol = MIN( MAX( skip_rel_tol * ( one + ABS( v ) ),                &
+                             skip_kappa * r_a ),                               &
+                        skip_cap * ( one + ABS( v ) ) )
+#endif
+        END FUNCTION skip_tol
 
 !  end of subroutine DLP_next_perturbation
 

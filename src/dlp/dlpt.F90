@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 09:08 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 08:07 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -902,6 +902,51 @@
      STOP 1
    ELSE
      WRITE( 6, "( ' LP ', I0, ': solution correct' )" ) lp_trial
+   END IF
+   CALL DLP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+
+!  ======================================================================
+!  the 12th random LP in the sequence above (n = 50), solved as an l_1
+!  penalty problem with rho = 10 (larger than the multipliers, so that
+!  its solution is that of the LP). There is no pounce for a penalty
+!  problem, and the extrapolation only succeeds if the rounding errors in
+!  the components that do not change along it are ignored; in double and
+!  quadruple precision they are larger than 1000 EPSILON
+!  ======================================================================
+
+   WRITE( 6, "( /, ' penalty LP test ', / )" )
+   lp_seed = 12345
+   DO lp_trial = 1, 11
+     n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+     CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+     DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z )
+     DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   END DO
+   lp_trial = 12
+   n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+   CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+   ALLOCATE( X_stat( n ), C_stat( m ) )
+   CALL DLP_initialize( data, control, info )
+   control%infinity = infty
+   control%symmetric_linear_solver = 'sytr '
+   control%definite_linear_solver = 'potr '
+   control%rho = 10.0_rp_
+   CALL DLP_solve( p, data, control, info, C_stat, X_stat )
+   lp_f = DOT_PRODUCT( p%G( : n ), p%X( : n ) )
+   IF ( info%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' penalty LP test: DLP_solve exit status = ', I0,           &
+    &             ' FAILED' )" ) info%status
+     STOP 1
+   ELSE IF ( ABS( lp_f - lp_f_sol ) > SQRT( EPSILON( 1.0_rp_ ) ) *            &
+             MAX( 1.0_rp_, ABS( lp_f_sol ) ) ) THEN
+     WRITE( 6, "( ' penalty LP test: objective error = ', ES8.1,              &
+    &             ' FAILED' )" ) ABS( lp_f - lp_f_sol )
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' penalty LP test: solution correct' )" )
    END IF
    CALL DLP_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
