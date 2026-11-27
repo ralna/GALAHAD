@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 11:18 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -2934,6 +2934,10 @@ H_loop: DO i = 1, prob%n
                                       data%Z_last, data%A_sbls, data%C_sbls,   &
                                       data%SCU_mat, G = prob%G,                &
                                       C_stat = C_stat, X_stat = X_stat )
+
+!  stop if the extrapolation failed (the refinement is then abandoned)
+
+          IF ( inform%DQP_inform%status /= GALAHAD_ok ) EXIT
 
 !  exit if the extrapolation leads to the optimal solution
 
