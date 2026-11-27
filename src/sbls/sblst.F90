@@ -1,9 +1,10 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 10:46 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_EXAMPLE
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SBLS_precision
    USE GALAHAD_LMS_precision
+   USE GALAHAD_SYMBOLS
    IMPLICIT NONE
    TYPE ( SMT_type ) :: H, A, C
    TYPE ( SBLS_data_type ) :: data
@@ -1024,6 +1025,50 @@
 !  DEALLOCATE( SOL1 )
 
 50 CONTINUE
+
+!  check the status from SBLS_fredholm_alternative for the singular system
+!  with H = diag( 1, 0 ), A = ( 1  0 ) and C = 0, in which x_2 does not
+!  appear, and an inconsistent right-hand side. Only some solvers provide
+!  the Fredholm alternative, and the others must report that it is
+!  unavailable, rather than that the solve failed
+
+   WRITE( 6, "( /, ' Fredholm alternative test ' )" )
+   n = 2 ; m = 1 ; h_ne = 1 ; a_ne = 1
+   ALLOCATE( SOL( n + m ) )
+   ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
+   ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
+   IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+   CALL SMT_put( H%type, 'COORDINATE', smt_stat )
+   IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+   CALL SMT_put( A%type, 'COORDINATE', smt_stat )
+   H%ne = h_ne ; A%ne = a_ne
+   H%val = (/ 1.0_rp_ /) ; H%row = (/ 1 /) ; H%col = (/ 1 /)
+   A%val = (/ 1.0_rp_ /) ; A%row = (/ 1 /) ; A%col = (/ 1 /)
+   SOL = 1.0_rp_
+   CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
+   control%preconditioner = 2 ; control%factorization = 2
+   CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
+   IF ( info%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' factorization status = ', I0, ', test skipped' )" )       &
+       info%status
+   ELSE
+     CALL SBLS_fredholm_alternative( n, m, A, data%efactors, control, info,    &
+                                     SOL )
+     IF ( info%status == GALAHAD_ok .OR.                                       &
+          info%status == GALAHAD_unavailable_option ) THEN
+       WRITE( 6, "( ' status = ', I0 )" ) info%status
+     ELSE
+       WRITE( 6, "( ' SBLS_fredholm_alternative status = ', I0, ' FAILED' )" ) &
+         info%status
+       STOP 1
+     END IF
+   END IF
+   CALL SBLS_terminate( data, control, info )
+   DEALLOCATE( H%val, H%row, H%col, H%type )
+   DEALLOCATE( A%val, A%row, A%col, A%type )
+   DEALLOCATE( SOL )
+
    DEALLOCATE( C%val, C%row, C%col, C%type )
    WRITE( 6, "( /, ' tests completed' )" )
 
