@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 07:56 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -1218,6 +1218,10 @@
                                     data%C_sbls, data%SCU_mat,                 &
                                     G = prob%G, C_stat = C_stat,               &
                                     X_stat = X_stat )
+
+!  stop if the extrapolation failed
+
+        IF ( inform%status /= GALAHAD_ok ) EXIT
 
 !  exit if the extrapolation leads to the optimal solution
 
