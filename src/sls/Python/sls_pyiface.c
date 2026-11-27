@@ -904,7 +904,7 @@ static PyObject* py_sls_solve_system(PyObject *self, PyObject *args, PyObject *k
 
 static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_b;
-    const char part;
+    const char *part;
     double *sol;
     int n;
 
@@ -925,7 +925,7 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args, PyO
     sol = (double *) PyArray_DATA(py_b);
 
     // Call sls_solve_direct
-    sls_partial_solve_system(&part, &data, &status, n, sol);
+    sls_partial_solve_system(part, &data, &status, n, sol);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
 
     // Propagate any errors with the callback function

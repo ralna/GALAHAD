@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 07:18 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 09:08 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -902,6 +902,51 @@
      STOP 1
    ELSE
      WRITE( 6, "( ' LP ', I0, ': solution correct' )" ) lp_trial
+   END IF
+   CALL DLP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+
+!  ======================================================================
+!  check that the extrapolation accounts for the free variables. For
+!  minimize - x_1 + x_2 subject to x_1 <= 100 and x_2 >= 0, with x_1 free,
+!  the perturbed problem with perturbation 0.1 has the solution ( 10, 0 ).
+!  Along the extrapolation only the free variable x_1 changes, and it
+!  reaches the constraint for the perturbation 0.01, so the extrapolated
+!  point is not optimal (the solution is ( 100, 0 ))
+!  ======================================================================
+
+   WRITE( 6, "( /, ' free variable extrapolation test ', / )" )
+   n = 2 ; m = 1
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),          &
+             p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ), X_stat( n ),           &
+             C_stat( m ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 0.0_rp_ ; p%G = (/ - 1.0_rp_, 1.0_rp_ /)
+   p%X_l = (/ - infty, 0.0_rp_ /) ; p%X_u = infty
+   p%C_l = - infty ; p%C_u = 100.0_rp_
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = 1
+   ALLOCATE( p%A%row( 1 ), p%A%col( 1 ), p%A%val( 1 ) )
+   p%A%row = 1 ; p%A%col = 1 ; p%A%val = 1.0_rp_
+   CALL SMT_put( p%H%type, 'ZERO', smt_stat )
+   CALL DLP_initialize( data, control, info )
+   control%infinity = infty
+   control%symmetric_linear_solver = 'sytr '
+   control%definite_linear_solver = 'potr '
+   CALL DLP_solve( p, data, control, info, C_stat, X_stat )
+   IF ( info%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' free variable extrapolation test: DLP_solve exit',        &
+    &             ' status = ', I0, ' FAILED' )" ) info%status
+     STOP 1
+   ELSE IF ( MAXVAL( ABS( p%X - (/ 100.0_rp_, 0.0_rp_ /) ) ) >                &
+             SQRT( EPSILON( 1.0_rp_ ) ) * 100.0_rp_ ) THEN
+     WRITE( 6, "( ' free variable extrapolation test: wrong solution',        &
+    &             ' x = ', 2ES12.4, ' FAILED' )" ) p%X
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' free variable extrapolation test: solution correct' )" )
    END IF
    CALL DLP_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &

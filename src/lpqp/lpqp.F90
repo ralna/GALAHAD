@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-12 AT 13:42 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 11:07 GMT.
 
 #include "galahad_modules.h"
 
@@ -2552,18 +2552,18 @@
 !  Restore the constraint bounds
 
      DO l = 1, data%m_b
-       i = data%BOTH( 1, data%m_b )
-       k = data%BOTH( 2, data%m_b )
+       i = data%BOTH( 1, l )
+       k = data%BOTH( 2, l )
        prob%C_l( i ) =  prob%C_l( k )
        prob%C_u( i ) =  prob%C_u( k + 1 )
      END DO
 
-!  Mkae sure that the constraint status is accurate if required
+!  Make sure that the constraint status is accurate if required
 
      IF ( PRESENT( C_stat ) ) THEN
        DO l = 1, data%m_b
-         i = data%BOTH( 1, data%m_b )
-         k = data%BOTH( 2, data%m_b )
+         i = data%BOTH( 1, l )
+         k = data%BOTH( 2, l )
          IF ( C_stat( k ) == - 1 ) THEN
            C_stat( i ) = - 1
          ELSE IF ( C_stat( k + 1 ) == 1 ) THEN

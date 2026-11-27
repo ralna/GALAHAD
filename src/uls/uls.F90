@@ -851,7 +851,7 @@
      CASE ( 'COORDINATE' )
        data%matrix_ne = matrix%ne
      CASE ( 'SPARSE_BY_ROWS' )
-       data%matrix_ne = matrix%PTR( matrix%n + 1 ) - 1
+       data%matrix_ne = matrix%PTR( matrix%m + 1 ) - 1
      CASE ( 'DENSE' )
        data%matrix_ne = matrix%m * matrix%n
      END SELECT
@@ -876,7 +876,7 @@
        CASE ( 'SPARSE_BY_ROWS' )
          data%matrix%m = matrix%m
          data%matrix%n = matrix%n
-         data%matrix%ne = matrix%PTR( matrix%n + 1 ) - 1
+         data%matrix%ne = matrix%PTR( matrix%m + 1 ) - 1
          CALL STRING_put( data%matrix%type, 'COORDINATE', inform%alloc_status )
          CALL SPACE_resize_array( data%matrix%ne, data%matrix%ROW,             &
                                   inform%status, inform%alloc_status )
@@ -888,7 +888,7 @@
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%matrix%col' ; GO TO 900 ; END IF
 
-         DO i = 1, matrix%n
+         DO i = 1, matrix%m
            DO l = matrix%PTR( i ), matrix%PTR( i + 1 ) - 1
              data%matrix%ROW( l ) = i
              data%matrix%COL( l ) = matrix%COL( l )
@@ -1435,6 +1435,13 @@
          inform%alloc_status = data%ma48_sinfo%stat
        END IF
      CASE ( 'getr' )
+
+!  getr can factorize a rectangular matrix (see ULS_enquire), but only
+!  solve square systems
+
+       IF ( data%m /= data%n ) THEN
+         inform%status = GALAHAD_unavailable_option ; RETURN
+       END IF
        data%RHS( : data%n, 1 ) = RHS( : data%n )
        IF ( PRESENT( trans ) ) THEN
          trans_true = trans == 1
@@ -2067,16 +2074,17 @@
      IF ( data%matrix%ne > 0 )                                                 &
        data%matrix%val( : data%matrix%ne ) = matrix_val( : data%matrix%ne )
 
-!  factorize the matrix
-
-     CALL ULS_factorize( data%matrix, data%uls_data, data%uls_control,         &
-                         data%uls_inform )
-
-!  set up space for the solution vector
+!  set up space for the solution vector, before the factorization so that
+!  its status is not overwritten
 
      CALL SPACE_resize_array( MAX( m, n ), data%RHS,                           &
             data%uls_inform%status, data%uls_inform%alloc_status )
      IF ( data%uls_inform%status /= 0 ) GO TO 900
+
+!  factorize the matrix
+
+     CALL ULS_factorize( data%matrix, data%uls_data, data%uls_control,         &
+                         data%uls_inform )
 
      status = data%uls_inform%status
      RETURN

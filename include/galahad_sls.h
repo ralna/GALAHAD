@@ -1281,6 +1281,7 @@ void sls_partial_solve_system( const char part[],
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. part is not one of "L", "D", "U" or "S" (in either case).
   \li -34. The package PARDISO failed; check the solver-specific
        information components inform.pardiso iparm and inform.pardiso_dparm
        along with PARDISO’s documentation for more details.

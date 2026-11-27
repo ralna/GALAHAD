@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 07:18 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 09:08 GMT.
 
 #include "galahad_modules.h"
 
@@ -1942,9 +1942,19 @@
 !  or, in the penalty case,
 !  P = { x:  x_l <= x <= x }
 
-!  components from the simple bounds
+!  the general constraints need only be checked if some component of x
+!  changes along the extrapolation. The free variables have no bounds, but
+!  a change in one of them may lead to a constraint becoming violated
 
       skip = .TRUE. ; skip_tol = thousand * epsmch
+      DO j = 1, dims%x_free
+        IF ( ABS( X( j ) - SOL( j ) ) > skip_tol ) THEN
+          skip = .FALSE. ; EXIT
+        END IF
+      END DO
+
+!  components from the simple bounds
+
       DO j = dims%x_free + 1, n
         xc = X( j ) ; d_x = SOL( j )
         IF ( ABS( xc - d_x ) > skip_tol ) THEN

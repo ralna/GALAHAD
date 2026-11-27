@@ -87,5 +87,54 @@ int main(void) {
         // Delete internal workspace
         psls_terminate( &data, &control, &inform );
     }
-}
 
+    // subset preconditioner: the diagonal of the rows (and columns) 0, 2
+    // and 4 of A (indices from 1), which are 2, 1 and 1, and then with
+    // row 0 removed; components outside the subset are not altered, while
+    // those removed are set to zero
+
+    ipc_ failures = 0;
+    ipc_ n_sub = 3;
+    ipc_ sub[] = {1, 3, 5};
+    ipc_ fix[] = {1};
+    rpc_ x_sub[] = {4.0, 45.0, 31.0, 15.0, 17.0};
+    rpc_ x_fix[] = {0.0, 45.0, 31.0, 15.0, 17.0};
+    psls_initialize( &data, &control, &status );
+    control.preconditioner = 1; // diagonal preconditioner
+    control.f_indexing = true;
+    psls_import( &control, &data, &status, n,
+                 "coordinate", ne, row, col, NULL );
+    psls_form_subset_preconditioner( &data, &status, ne, val, n_sub, sub );
+    rpc_ x[] = {8.0, 45.0, 31.0, 15.0, 17.0};
+    if(status == 0) psls_apply_preconditioner( &data, &status_apply, n, x );
+    if(status != 0 || status_apply != 0){
+        printf(" subset: status = %" d_ipc_ ", apply = %" d_ipc_ "\n",
+               status, status_apply);
+        failures++;
+    }else{
+        for( ipc_ i = 0; i < n; i++) if(fabs(x[i] - x_sub[i]) > 1.0e-12){
+            printf(" subset: x[%" d_ipc_ "] = %f, not %f\n", i, x[i], x_sub[i]);
+            failures++;
+        }
+    }
+    psls_update_preconditioner( &data, &status, 1, fix );
+    rpc_ y[] = {8.0, 45.0, 31.0, 15.0, 17.0};
+    if(status == 0) psls_apply_preconditioner( &data, &status_apply, n, y );
+    if(status != 0 || status_apply != 0){
+        printf(" update: status = %" d_ipc_ ", apply = %" d_ipc_ "\n",
+               status, status_apply);
+        failures++;
+    }else{
+        for( ipc_ i = 0; i < n; i++) if(fabs(y[i] - x_fix[i]) > 1.0e-12){
+            printf(" update: x[%" d_ipc_ "] = %f, not %f\n", i, y[i], x_fix[i]);
+            failures++;
+        }
+    }
+    psls_terminate( &data, &control, &inform );
+    if(failures > 0){
+        printf(" %" d_ipc_ " subset check(s) failed\n", failures);
+        return 1;
+    }
+    printf(" subset checks ok\n");
+    return 0;
+}

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-23 AT 11:32 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-26 AT 20:29 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L1QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -22,6 +22,10 @@
    INTEGER ( KIND = i8_ ) :: lp_seed
    REAL ( KIND = rp_ ) :: lp_f, lp_f_sol
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
+   INTEGER ( KIND = ip_ ) :: l, a_ne_save
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
+   REAL ( KIND = rp_ ) :: viol
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, C_l, C_u, X_l, X_u
 
 !go to 77
 !go to 111
@@ -1088,6 +1092,66 @@
 
 
 !  ======================================================================
+!  check that the refinement is abandoned if DQP fails. The first of the
+!  random LPs below (with its inactive constraints bounded on one side
+!  only) is solved as an l_1 penalty problem, and DQP is only allowed a
+!  single iteration for each perturbed problem, so the solution found
+!  before the refinement must be returned
+!  ======================================================================
+
+   WRITE( 6, "( /, ' failed refinement test ', / )" )
+   lp_seed = 12345 ; n = 20 ; m = n / 2
+   CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+   DO i = 1, m
+     IF ( p%C_l( i ) < p%C_u( i ) .AND. p%C_u( i ) < infty )                  &
+       p%C_u( i ) = infty
+   END DO
+   a_ne_save = p%A%ne
+   ALLOCATE( A_row( a_ne_save ), A_col( a_ne_save ), A_val( a_ne_save ),      &
+             C_l( m ), C_u( m ), X_l( n ), X_u( n ), X_stat( n ), C_stat( m ) )
+   A_row = p%A%row( : a_ne_save ) ; A_col = p%A%col( : a_ne_save )
+   A_val = p%A%val( : a_ne_save )
+   C_l = p%C_l( : m ) ; C_u = p%C_u( : m )
+   X_l = p%X_l( : n ) ; X_u = p%X_u( : n )
+   CALL L1QP_initialize( data, control, info )
+   control%infinity = infty
+   control%rho = 10.0_rp_
+   control%refine = .TRUE.
+   control%DLP_control%maxit = 1
+   control%CQP_control%SBLS_control%symmetric_linear_solver = 'sytr '
+   control%CQP_control%SBLS_control%definite_linear_solver = 'potr '
+   control%DLP_control%symmetric_linear_solver = 'sytr '
+   control%DLP_control%definite_linear_solver = 'potr '
+   CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
+
+!  compute the violation of the constraints and bounds, using a copy of
+!  the data (L1QP may change the storage of A)
+
+   p%C( : m ) = 0.0_rp_
+   DO l = 1, a_ne_save
+     p%C( A_row( l ) ) = p%C( A_row( l ) ) + A_val( l ) * p%X( A_col( l ) )
+   END DO
+   viol = MAX( 0.0_rp_, MAXVAL( C_l - p%C( : m ) ),                           &
+               MAXVAL( p%C( : m ) - C_u ), MAXVAL( X_l - p%X( : n ) ),        &
+               MAXVAL( p%X( : n ) - X_u ) )
+   IF ( info%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' failed refinement test: L1QP_solve exit status = ', I0,   &
+    &             ' FAILED' )" ) info%status
+     STOP 1
+   ELSE IF ( viol > control%stop_abs_p ) THEN
+     WRITE( 6, "( ' failed refinement test: infeasible solution,',            &
+    &             ' violation = ', ES8.1, ' FAILED' )" ) viol
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' failed refinement test: feasible solution' )" )
+   END IF
+   CALL L1QP_terminate( data, control, info )
+   DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
+               X_stat, C_stat, A_row, A_col, A_val, C_l, C_u, X_l, X_u )
+   DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   IF ( ALLOCATED( p%A%ptr ) ) DEALLOCATE( p%A%ptr )
+
+!  ======================================================================
 !  random LPs with known solutions, solved with refinement, many of which
 !  are degenerate, so that their perturbed solutions have constraints or
 !  bounds on their bounds but not in the active set
@@ -1129,6 +1193,65 @@
      WRITE( 6, "( /, 1X, I0, ' random LP tests failed' )" ) lp_errors
      STOP 1
    END IF
+
+!  ======================================================================
+!  check that the bounds of constraints bounded on both sides are restored
+!  after solving an l_1 penalty problem, and that the refinement uses them.
+!  For minimize 2 x_1 + x_2 + 2 x_3 subject to 1 <= x_1 + x_2 <= 2,
+!  1 <= x_2 + x_3 <= 3 and 0 <= x <= 10, the solution is ( 0, 1, 0 ) for
+!  any penalty parameter rho > 2
+!  ======================================================================
+
+   WRITE( 6, "( /, ' penalty range constraint tests ', / )" )
+   n = 3 ; m = 2
+   DO i = 0, 1
+     ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C( m ), p%C_l( m ),        &
+               p%C_u( m ), p%X( n ), p%Y( m ), p%Z( n ), X_stat( n ),         &
+               C_stat( m ) )
+     p%new_problem_structure = .TRUE.
+     p%n = n ; p%m = m ; p%f = 0.0_rp_
+     p%G = (/ 2.0_rp_, 1.0_rp_, 2.0_rp_ /)
+     p%X_l = 0.0_rp_ ; p%X_u = 10.0_rp_
+     p%C_l = (/ 1.0_rp_, 1.0_rp_ /) ; p%C_u = (/ 2.0_rp_, 3.0_rp_ /)
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+     CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = 4
+     ALLOCATE( p%A%row( 4 ), p%A%col( 4 ), p%A%val( 4 ) )
+     p%A%row = (/ 1, 1, 2, 2 /) ; p%A%col = (/ 1, 2, 2, 3 /)
+     p%A%val = 1.0_rp_
+     CALL SMT_put( p%H%type, 'ZERO', smt_stat )
+     CALL L1QP_initialize( data, control, info )
+     control%infinity = infty
+     control%rho = 10.0_rp_
+     control%refine = i == 1
+     control%CQP_control%SBLS_control%symmetric_linear_solver = 'sytr '
+     control%CQP_control%SBLS_control%definite_linear_solver = 'potr '
+     control%DLP_control%symmetric_linear_solver = 'sytr '
+     control%DLP_control%definite_linear_solver = 'potr '
+     CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
+     IF ( info%status /= GALAHAD_ok ) THEN
+       WRITE( 6, "( ' refine = ', L1, ': L1QP_solve exit status = ', I0,      &
+      &             ' FAILED' )" ) control%refine, info%status
+       STOP 1
+     ELSE IF ( ANY( p%C_l( : m ) /= (/ 1.0_rp_, 1.0_rp_ /) ) .OR.             &
+               ANY( p%C_u( : m ) /= (/ 2.0_rp_, 3.0_rp_ /) ) ) THEN
+       WRITE( 6, "( ' refine = ', L1, ': constraint bounds not restored,',    &
+      &             ' c_l = ', 2ES9.1, ' c_u = ', 2ES9.1, ' FAILED' )" )       &
+         control%refine, p%C_l( : m ), p%C_u( : m )
+       STOP 1
+     ELSE IF ( MAXVAL( ABS( p%X( : n ) - (/ 0.0_rp_, 1.0_rp_, 0.0_rp_ /) ) )  &
+               > SQRT( EPSILON( 1.0_rp_ ) ) ) THEN
+       WRITE( 6, "( ' refine = ', L1, ': wrong solution x = ', 3ES12.4,       &
+      &             ' FAILED' )" ) control%refine, p%X( : n )
+       STOP 1
+     ELSE
+       WRITE( 6, "( ' refine = ', L1, ': solution correct' )" ) control%refine
+     END IF
+     CALL L1QP_terminate( data, control, info )
+     DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,          &
+                 X_stat, C_stat )
+     DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+     IF ( ALLOCATED( p%A%ptr ) ) DEALLOCATE( p%A%ptr )
+   END DO
 
    WRITE( 6, "( /, ' tests completed' )" )
 
