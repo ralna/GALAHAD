@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-05-25 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 15:14 GMT.
 
 #include "galahad_modules.h"
 
@@ -931,17 +931,22 @@
 
         SELECT CASE ( SMT_get( A%type ) )
         CASE ( 'DENSE' )
+
+!  store the lower triangle by columns, as for the other storage schemes.
+!  For the j-th column, W holds the j-th row of A (times D), and the entries
+!  in rows i = j, ..., m are its products with the i-th rows of A
+
           nnz_adat = 0
           l = 0
-          DO i = 1, m
-            IF ( control%s_also_by_column ) S%ptr( i ) = nnz_adat + 1
+          DO j = 1, m
+            IF ( control%s_also_by_column ) S%ptr( j ) = nnz_adat + 1
             IF ( got_d ) THEN
               data%W = A%val( l + 1 : l + n ) * D
             ELSE
               data%W = A%val( l + 1 : l + n )
             END IF
-            k = 0
-            DO j = 1, i
+            k = l
+            DO i = j, m
               nnz_adat = nnz_adat + 1
               S%row( nnz_adat ) = i
               S%col( nnz_adat ) = j
@@ -1084,16 +1089,19 @@
 
         SELECT CASE ( SMT_get( A%type ) )
         CASE ( 'DENSE' )
+
+!  the lower triangle is stored by columns (see above)
+
           nnz_adat = 0
           l = 0
-          DO i = 1, m
+          DO j = 1, m
             IF ( got_d ) THEN
               data%W = A%val( l + 1 : l + n ) * D
             ELSE
               data%W = A%val( l + 1 : l + n )
             END IF
-            k = 0
-            DO j = 1, i
+            k = l
+            DO i = j, m
               nnz_adat = nnz_adat + 1
               S%val( nnz_adat ) = DOT_PRODUCT( data%W, A%val( k + 1 : k + n ) )
               k = k + n
@@ -1779,10 +1787,10 @@
 !   the identity matrix, and in this case can be of length 0
 !   
 !  S_ptr is a rank-one array of dimension m+1 and type default integer,
-!   that, if present, holds the starting position of each row of S, as well 
-!   as the total number of entries plus one, in the sparse row-wise storage 
-!   scheme (and in this case S_col and S_val are also compatible with this 
-!   scheme).
+!   that, if present, holds the starting position of each column of the
+!   lower triangle of S, as well as the total number of entries plus one,
+!   as the entries of S are stored by columns (that is, S_row, S_col and
+!   S_val hold the entries of the lower triangle column by column).
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( BSC_full_data_type ), INTENT( INOUT ) :: data
