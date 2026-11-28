@@ -10,6 +10,7 @@ options = bgo.initialize()
 # set some non-default options
 options['print_level'] = 0
 options['ugo_options']['print_level'] = 0
+options['attempts_max'] = 50
 #print("options:", options)
 
 # set parameters

@@ -161,6 +161,11 @@ bool l2rt_update_control(struct l2rt_control_type *control,
                 return false;
             continue;
         }
+
+        // Otherwise unrecognised option
+        PyErr_Format(PyExc_ValueError,
+          "unrecognised option options['%s']\n", key_name);
+        return false;
     }
 
     return true; // success
@@ -307,6 +312,9 @@ static PyObject* py_l2rt_load_options(PyObject *self, PyObject *args, PyObject *
 
 //  *-*-*-*-*-*-*-*-*-*-   L2RT_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
 
+// x is kept between calls to solve_problem, as the solver updates it
+static PyArrayObject *py_x_saved = NULL;
+
 static PyObject* py_l2rt_solve_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_u, *py_v;
     double *u, *v;
@@ -333,11 +341,15 @@ static PyObject* py_l2rt_solve_problem(PyObject *self, PyObject *args, PyObject 
     u = (double *) PyArray_DATA(py_u);
     v = (double *) PyArray_DATA(py_v);
 
-   // Create NumPy output arrays
+    // Use the saved x, creating it if needed
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
-    double *x = (double *) PyArray_DATA(py_x);
+    if(py_x_saved == NULL || PyArray_DIM(py_x_saved, 0) != n){
+        Py_XDECREF(py_x_saved);
+        py_x_saved = (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_DOUBLE, 0);
+        if(py_x_saved == NULL)
+            return NULL;
+    }
+    double *x = (double *) PyArray_DATA(py_x_saved);
 
     // Call l2rt_solve_direct
     l2rt_solve_problem(&data, &status, m, n, power, weight, shift, x, u, v);
@@ -349,6 +361,12 @@ static PyObject* py_l2rt_solve_problem(PyObject *self, PyObject *args, PyObject 
 
     // Raise any status errors
     if(!check_error_codes(status))
+        return NULL;
+
+    // Copy x, which later calls change
+    PyArrayObject *py_x =
+      (PyArrayObject *) PyArray_NewCopy(py_x_saved, NPY_CORDER);
+    if(py_x == NULL)
         return NULL;
 
     // Return status, x, u and v
@@ -381,6 +399,12 @@ static PyObject* py_l2rt_terminate(PyObject *self){
 
     // Call l2rt_terminate
     l2rt_terminate(&data, &control, &inform);
+
+    // Free the saved x
+    Py_CLEAR(py_x_saved);
+
+    // require future calls start with l2rt_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

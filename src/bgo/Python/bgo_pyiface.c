@@ -635,6 +635,9 @@ static PyObject* py_bgo_terminate(PyObject *self){
     // Call bgo_terminate
     bgo_terminate(&data, &control, &inform);
 
+    // require future calls start with bgo_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

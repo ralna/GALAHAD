@@ -114,7 +114,7 @@ functions
 
    .. function:: glrt.solve_problem(status, n, power, weight, r, v)
 
-      Find the global moinimizer of the regularized quadratic objective 
+      Find the global minimizer of the regularized quadratic objective 
       function $r(x)$.
 
       **Parameters:**
@@ -140,7 +140,9 @@ functions
       power : float
           holds the regularization power $p \geq 2$.
       weight : float
-          holds the strinctly positive regularization weight $\sigma$.
+          holds the non-negative regularization weight $\sigma$. If
+          $\sigma = 0$, $q(x)$ is minimized by the conjugate gradient
+          method.
       r : ndarray(n)
           holds the values of the linear term $g$ in the objective function
           when initial or return status = 1, 4 or 6 (see below).
@@ -218,7 +220,7 @@ functions
 
             * **-3**
 
-              The restriction n > 0, $\sigma > 0$ or $p \geq 2$ has been 
+              The restriction n > 0, $\sigma \geq 0$ or $p \geq 2$ has been 
               violated.
 
             * **-7**

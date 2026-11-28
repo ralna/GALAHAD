@@ -3,6 +3,9 @@ import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 print("\n** python test: scu")
 
+# allocate internal data and set default options
+options = scu.initialize()
+
 # call main solver(s)
 # ....
 

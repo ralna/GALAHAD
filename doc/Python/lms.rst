@@ -145,6 +145,6 @@ functions
                clock_apply : float
                   clock time spent applying the secant approximation.
 
-   .. function:: lms.finalize()
+   .. function:: lms.terminate()
 
      Deallocate all internal private storage.

@@ -99,7 +99,7 @@ functions
 
    .. function:: l2rt.solve_problem(status, m, n, power, weight, shift, u, v)
 
-      Find the global moinimizer of the regularized objective 
+      Find the global minimizer of the regularized objective 
       function $r(x)$.
 
       **Parameters:**
@@ -122,9 +122,9 @@ functions
       power : float
           holds the regularization power, $p \geq 2$.
       weight : float
-          holds the strictly positive regularization weight, $\sigma$.
+          holds the non-negative regularization weight, $\sigma$.
       shift : float
-          holds the positive shift, $\mu$.
+          holds the non-negative shift, $\mu$.
       u : ndarray(m)
           holds the result vector when initial or return status = 1, 2, 
           4 or 5 (see below).
@@ -202,8 +202,8 @@ functions
 
             * **-3**
 
-              The restriction n > 0, m > 0, $p \geq 2$ or $\sigma > 0$ 
-              has been violated.
+              The restriction n > 0, m > 0, $p \geq 2$, $\sigma \geq 0$
+              or $\mu \geq 0$ has been violated.
 
             * **-18**
 

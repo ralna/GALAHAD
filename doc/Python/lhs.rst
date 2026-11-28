@@ -46,6 +46,41 @@ functions
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
 
+   .. function:: lhs.ihs(n_dimen, n_points, seed, options=None)
+
+      Compute an array of Latin hypercube samples by the improved
+      distributed hypercube sampling algorithm of Beachkofski and Grandhi.
+      Each coordinate is discretized to the values 1, ..., n_points, and
+      no two points have a coordinate value in common.
+
+      **Parameters:**
+
+      n_dimen : int
+          holds the spatial dimension.
+      n_points : int
+          holds the number of points to be generated.
+      seed : int
+          holds the seed for the random number generator (see
+          ``lhs.get_seed``).
+      options : dict, optional
+          dictionary of control options (see ``lhs.initialize``).
+
+      **Returns:**
+
+      X : ndarray(n_points, n_dimen)
+          holds the points, one in each row.
+      seed : int
+          holds the updated seed, which may be used for a further call.
+
+   .. function:: lhs.get_seed()
+
+      Get a seed for the random number generator.
+
+      **Returns:**
+
+      seed : int
+          holds the pseudorandom seed value.
+
    .. function:: [optional] lhs.information()
 
       Provide optional output information.
@@ -86,6 +121,6 @@ functions
              the name of the array for which an allocation/deallocation
              error occurred.
 
-   .. function:: lhs.finalize()
+   .. function:: lhs.terminate()
 
      Deallocate all internal private storage.

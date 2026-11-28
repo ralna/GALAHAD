@@ -81,7 +81,7 @@ PyObject* scu_make_inform_dict(const struct scu_inform_type *inform){
                          PyLong_FromLong(inform->alloc_status));
     npy_intp idim[] = {3};
     PyArrayObject *py_inertia =
-      (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
+      (PyArrayObject*) PyArray_ZEROS(1, idim, NPY_INT, 0);
     int *inertia = (int *) PyArray_DATA(py_inertia);
     for(int i=0; i<3; i++) inertia[i] = inform->inertia[i];
     PyDict_SetItemString(py_inform, "inertia", (PyObject *) py_inertia);
@@ -89,12 +89,28 @@ PyObject* scu_make_inform_dict(const struct scu_inform_type *inform){
     return py_inform;
 }
 
+//  *-*-*-*-*-*-*-*-*-*-   SCU_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_scu_initialize(PyObject *self){
+
+    // Call scu_initialize
+    scu_initialize(&data, &control, &status);
+
+    // Record that SCU has been initialised
+    init_called = true;
+
+    // Return options Python dictionary
+    PyObject *py_options = scu_make_options_dict(&control);
+    return Py_BuildValue("N", py_options);
+}
+
 //  *-*-*-*-*-*-*-*-*-*-   SCU_INFORMATION   -*-*-*-*-*-*-*-*
 
 static PyObject* py_scu_information(PyObject *self){
 
-    // Record that FIT has been initialised
-    init_called = true;
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
 
     // Call scu_information
     scu_information(&data, &inform, &status);
@@ -115,6 +131,9 @@ static PyObject* py_scu_terminate(PyObject *self){
     // Call scu_terminate
     scu_terminate(&data, &control, &inform);
 
+    // require future calls start with scu_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
@@ -124,6 +143,7 @@ static PyObject* py_scu_terminate(PyObject *self){
 
 /* scu python module method table */
 static PyMethodDef scu_module_methods[] = {
+    {"initialize", (PyCFunction) py_scu_initialize, METH_NOARGS, NULL},
     {"information", (PyCFunction) py_scu_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_scu_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

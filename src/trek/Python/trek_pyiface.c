@@ -34,7 +34,6 @@ static struct trek_control_type control;  // control struct
 static struct trek_inform_type inform;    // inform struct
 static bool init_called = false;         // record if initialise was called
 static bool load_called = false;         // record if load was called
-static bool load_s_called = false;       // record if load_s was called
 static int status = 0;                   // exit status
 
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
@@ -508,9 +507,6 @@ static PyObject* py_trek_load_s(PyObject *self, PyObject *args,
     if(!check_error_codes(status))
         return NULL;
 
-    // Record that trek S structure been initialised
-    load_s_called = true;
-
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
@@ -539,12 +535,10 @@ static PyObject* py_trek_reset_options(PyObject *self, PyObject *args,
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "O", kwlist, &py_options))
         return NULL;
 
-    // Reset control options
-    trek_reset_control(&control, &data, &status);
-
-    // Update trek control options
+    // Update trek control options, and then pass them to trek
     if(!trek_update_control(&control, py_options))
         return NULL;
+    trek_reset_control(&control, &data, &status);
 
     // Return None boilerplate
     Py_INCREF(Py_None);
@@ -557,8 +551,8 @@ static PyObject* py_trek_reset_options(PyObject *self, PyObject *args,
 static PyObject* py_trek_solve_problem(PyObject *self, PyObject *args,
                                        PyObject *keywds){
     PyArrayObject *py_g, *py_H_val, *py_S_val = NULL;
-    double *g, *H_val, *S_val = NULL;
-    int n, H_ne, S_ne;
+    double *g, *H_val = NULL, *S_val = NULL;
+    int n, H_ne, S_ne = 0;
     double radius;
 
     // Check that package has been initialised
@@ -577,17 +571,23 @@ static PyObject* py_trek_solve_problem(PyObject *self, PyObject *args,
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
-    if(load_s_called) {
-      if(!check_array_double("S_val", py_S_val, S_ne))
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
+      if(!check_array_double("H_val", py_H_val, H_ne))
           return NULL;
+      H_val = (double *) PyArray_DATA(py_H_val);
+    }
+    if(py_S_val != NULL) {
+      if((PyObject *) py_S_val != Py_None){
+        if(!check_array_double("S_val", py_S_val, S_ne))
+            return NULL;
+        S_val = (double *) PyArray_DATA(py_S_val);
+      }
     }
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
-    H_val = (double *) PyArray_DATA(py_H_val);
-    if(py_S_val != NULL) S_val = (double *) PyArray_DATA(py_S_val);
 
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
@@ -642,7 +642,6 @@ static PyObject* py_trek_terminate(PyObject *self){
     // require future calls start with trek_initialize
     init_called = false;
     load_called = false;
-    load_s_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

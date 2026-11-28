@@ -317,6 +317,9 @@ static PyObject* py_glrt_load_options(PyObject *self, PyObject *args,
 
 //  *-*-*-*-*-*-*-*-*-*-   GLRT_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
 
+// x is kept between calls to solve_problem, as the solver updates it
+static PyArrayObject *py_x_saved = NULL;
+
 static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_r, *py_v;
     double *r, *v;
@@ -343,11 +346,15 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args, PyObject 
     r = (double *) PyArray_DATA(py_r);
     v = (double *) PyArray_DATA(py_v);
 
-    // Create NumPy output arrays
+    // Use the saved x, creating it if needed
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
-    double *x = (double *) PyArray_DATA(py_x);
+    if(py_x_saved == NULL || PyArray_DIM(py_x_saved, 0) != n){
+        Py_XDECREF(py_x_saved);
+        py_x_saved = (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_DOUBLE, 0);
+        if(py_x_saved == NULL)
+            return NULL;
+    }
+    double *x = (double *) PyArray_DATA(py_x_saved);
 
     // Call glrt_solve_direct
     glrt_solve_problem(&data, &status, n, power, weight, x, r, v);
@@ -360,6 +367,12 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args, PyObject 
 
     // Raise any status errors
     if(!check_error_codes(status))
+        return NULL;
+
+    // Copy x, which later calls change
+    PyArrayObject *py_x =
+      (PyArrayObject *) PyArray_NewCopy(py_x_saved, NPY_CORDER);
+    if(py_x == NULL)
         return NULL;
 
     // Return status, x, r and v
@@ -392,6 +405,12 @@ static PyObject* py_glrt_terminate(PyObject *self){
 
     // Call glrt_terminate
     glrt_terminate(&data, &control, &inform);
+
+    // Free the saved x
+    Py_CLEAR(py_x_saved);
+
+    // require future calls start with glrt_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

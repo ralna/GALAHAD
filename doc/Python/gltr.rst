@@ -108,7 +108,7 @@ functions
 
    .. function:: gltr.solve_problem(status, n, radius, r, v)
 
-      Find the global moinimizer of the quadratic objective function $q(x)$
+      Find the global minimizer of the quadratic objective function $q(x)$
       within a trust-region of radius $\Delta$.
 
       **Parameters:**
@@ -229,7 +229,7 @@ functions
 
               The trust-region has been encountered in Steihaug-Toint mode.
 
-            * **-31** 
+            * **-44**
 
               The function value is smaller than options['f_min'].
 

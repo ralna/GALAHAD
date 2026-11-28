@@ -33,7 +33,7 @@ sls.factorize_matrix(A_ne, A_val)
 
 # solve system
 print(" solve system")
-x = sls.solve_system(n, b)
+x = sls.solve_system(n, b.copy())
 print(" x:", x)
 
 # partially solve system

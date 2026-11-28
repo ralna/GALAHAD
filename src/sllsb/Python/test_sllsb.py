@@ -35,6 +35,8 @@ options = sllsb.initialize()
 
 # set some non-default options
 options['print_level'] = 0
+options['symmetric_linear_solver'] = 'sytr'
+options['fdc_options']['symmetric_linear_solver'] = 'sytr'
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -78,6 +80,8 @@ options = sllsb.initialize()
 
 # set some non-default options
 options['print_level'] = 0
+options['symmetric_linear_solver'] = 'sytr'
+options['fdc_options']['symmetric_linear_solver'] = 'sytr'
 #print("options:", options)
 
 cohort = np.empty(n, int)

@@ -134,7 +134,7 @@ functions
       n : int
           holds the number of columns of $A$.
       A_type : string
-          specifies the symmetric storage scheme used for the matrix $A$.
+          specifies the unsymmetric storage scheme used for the matrix $A$.
           It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
           lower or upper case variants are allowed.
       A_ne : int
@@ -150,14 +150,14 @@ functions
           $A$ in either the sparse co-ordinate, or the sparse row-wise
           storage scheme. It need not be set when the other storage schemes
           are used, and in this case can be None.
-      A_ptr : ndarray(n+1)
+      A_ptr : ndarray(m+1)
           holds the starting position of each row of the matrix $A$, 
           as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       A_val : ndarray(a_ne)
           holds the values of the nonzeros in the matrix
-          $A$ in the same order as specified for A_row, A_col and A_ptr above,
+          $A$ in the same order as specified for A_row, A_col and A_ptr above.
       options : dict, optional
           dictionary of control options (see ``uls.initialize``).
 
@@ -171,16 +171,20 @@ functions
           holds the number of rows of $A$.
       n : int
           holds the number of columns of $A$.
-      b : ndarray(n) if ``trans`` in False or ndarray(m) if ``trans`` in True.
-          holds the values of the right-hand side vector $b$
+      b : ndarray(max(m,n))
+          holds the values of the right-hand side vector $b$ in its first
+          m entries if ``trans`` is False, or its first n entries if
+          ``trans`` is True. It is overwritten by the solution $x$.
       trans : bool
           should be True if the solution to $A^T x = b$ is required or
           False if the solution to $A x = b$ is desired.
 
       **Returns:**
 
-      x : ndarray(m) if ``trans`` in False or ndarray(n) if ``trans`` in True.
-          holds the values of the solution $x$ after a successful call.
+      x : ndarray(max(m,n))
+          holds the values of the solution $x$ in its first n entries if
+          ``trans`` is False, or its first m entries if ``trans`` is True,
+          after a successful call (this is the array ``b``).
 
    .. function:: [optional] uls.information()
 

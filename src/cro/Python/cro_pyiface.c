@@ -445,6 +445,7 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
                            A_ne, A_val, A_col, A_ptr,
                            g, c_l, c_u, x_l, x_u,
                            x, c, y, z, x_stat, c_stat);
+    status = inform.status;
 
     // Write data back to original arrays
     PyArray_ResolveWritebackIfCopy(tmp_x_stat);
@@ -495,6 +496,9 @@ static PyObject* py_cro_terminate(PyObject *self){
 
     // Call cro_terminate
     cro_terminate(&data, &control, &inform);
+
+    // require future calls start with cro_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

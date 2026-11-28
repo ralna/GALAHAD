@@ -862,7 +862,7 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     PyArrayObject *py_g, *py_H_val, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
-    double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
+    double *g, *H_val = NULL, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
     int n, m, H_ne, A_ne;
     double f;
 
@@ -882,8 +882,13 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
+        if(!check_array_double("H_val", py_H_val, H_ne))
+            return NULL;
+        H_val = (double *) PyArray_DATA(py_H_val);
+    }
     if(!check_array_double("A_val", py_A_val, A_ne))
         return NULL;
     if(!check_array_double("c_l", py_c_l, m))
@@ -903,7 +908,6 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
-    H_val = (double *) PyArray_DATA(py_H_val);
     A_val = (double *) PyArray_DATA(py_A_val);
     c_l = (double *) PyArray_DATA(py_c_l);
     c_u = (double *) PyArray_DATA(py_c_u);
@@ -920,10 +924,10 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
     PyArrayObject *py_c_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, mdim, NPY_INT, 0);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call qpb_solve_direct
@@ -969,6 +973,9 @@ static PyObject* py_qpb_terminate(PyObject *self){
 
     // Call qpb_terminate
     qpb_terminate(&data, &control, &inform);
+
+    // require future calls start with qpb_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

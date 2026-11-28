@@ -681,7 +681,7 @@ PyObject* bqpb_make_inform_dict(const struct bqpb_inform_type *inform){
     // include checkpoint arrays
     npy_intp cdim[] = {16};
     PyArrayObject *py_iter =
-      (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
+      (PyArrayObject*) PyArray_ZEROS(1, cdim, NPY_INT, 0);
     int *iter = (int *) PyArray_DATA(py_iter);
     for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
@@ -822,7 +822,7 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
     PyArrayObject *py_g, *py_H_val;
     PyArrayObject *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_z;
-    double *g, *H_val, *x_l, *x_u, *x, *z;
+    double *g, *H_val = NULL, *x_l, *x_u, *x, *z;
     int n, H_ne;
     double f;
 
@@ -840,8 +840,13 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
+        if(!check_array_double("H_val", py_H_val, H_ne))
+            return NULL;
+        H_val = (double *) PyArray_DATA(py_H_val);
+    }
     if(!check_array_double("x_l", py_x_l, n))
         return NULL;
     if(!check_array_double("x_u", py_x_u, n))
@@ -853,7 +858,6 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
-    H_val = (double *) PyArray_DATA(py_H_val);
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
     x = (double *) PyArray_DATA(py_x);
@@ -862,7 +866,7 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call bqpb_solve_direct
@@ -932,7 +936,7 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args, PyObject *k
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     PyArrayObject *py_x_stat =
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_INT, 0);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call bqpb_solve_direct
@@ -981,6 +985,9 @@ static PyObject* py_bqpb_terminate(PyObject *self){
 
     // Call bqpb_terminate
     bqpb_terminate(&data, &control, &inform);
+
+    // require future calls start with bqpb_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

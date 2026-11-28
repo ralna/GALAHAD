@@ -525,6 +525,10 @@ static PyObject* py_trs_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Record that trs structures been initialised
     load_called = true;
 
+    // trs_import discards any previous M and A
+    load_m_called = false;
+    load_a_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
@@ -720,8 +724,8 @@ static PyObject* py_trs_load_a(PyObject *self, PyObject *args,
 static PyObject* py_trs_solve_problem(PyObject *self, PyObject *args,
                                       PyObject *keywds){
     PyArrayObject *py_g, *py_H_val, *py_M_val = NULL, *py_A_val = NULL;
-    double *g, *H_val, *M_val = NULL, *A_val = NULL;
-    int n, m, H_ne, M_ne, A_ne;
+    double *g, *H_val = NULL, *M_val = NULL, *A_val = NULL;
+    int n, m = 0, H_ne, M_ne = 0, A_ne = 0;
     double radius, f;
 
     // Check that package has been initialised
@@ -741,24 +745,31 @@ static PyObject* py_trs_solve_problem(PyObject *self, PyObject *args,
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
-    if(load_m_called) {
-      if(!check_array_double("M_val", py_M_val, M_ne))
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
+      if(!check_array_double("H_val", py_H_val, H_ne))
           return NULL;
+      H_val = (double *) PyArray_DATA(py_H_val);
     }
-    if(load_a_called) {
-      if(!check_array_double("A_val", py_A_val, A_ne))
-          return NULL;
-    } else {
-      m = 0;
+    if(py_M_val != NULL) {
+      if((PyObject *) py_M_val != Py_None){
+        if(!check_array_double("M_val", py_M_val, M_ne))
+            return NULL;
+        M_val = (double *) PyArray_DATA(py_M_val);
+      }
     }
+    if(py_A_val != NULL) {
+      if((PyObject *) py_A_val != Py_None){
+        if(!check_array_double("A_val", py_A_val, A_ne))
+            return NULL;
+        A_val = (double *) PyArray_DATA(py_A_val);
+      }
+    }
+    if(!load_a_called) m = 0;
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
-    H_val = (double *) PyArray_DATA(py_H_val);
-    if(py_M_val != NULL) M_val = (double *) PyArray_DATA(py_M_val);
-    if(py_A_val != NULL) A_val = (double *) PyArray_DATA(py_A_val);
 
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x

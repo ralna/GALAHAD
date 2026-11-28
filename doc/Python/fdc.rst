@@ -90,24 +90,24 @@ functions
       A_ptr : ndarray(m+1)
           holds the starting position of each row of $A$, as well as the 
           total number of entries.
-      A_col : ndarray(A_ptr(m)-1)
-          holds the column indices of the nonzeros of $A$ in the sparse 
-          co-ordinate  storage scheme.
-      A_val : ndarray(A_ptr(m)-1)
-          holds the values of the nonzeros of $A$ in the sparse co-ordinate
+      A_col : ndarray(A_ptr[m])
+          holds the column indices of the nonzeros of $A$ in the sparse
+          row-wise storage scheme.
+      A_val : ndarray(A_ptr[m])
+          holds the values of the nonzeros of $A$ in the sparse row-wise
           storage scheme.
       b : ndarray(m)
-          holds the values of the llinear term $b$ in the constraints.
+          holds the values of the linear term $b$ in the constraints.
       options : dict, optional
           dictionary of control options (see ``fdc.initialize``).
 
       **Returns:**
 
-      m_depen : int
+      n_depen : int
           holds the number of dependent constraints, if any.
       depen : ndarray(m)
-          the first m_depen components hold the indices of the dependent
-          comstraints.
+          the first n_depen components hold the indices (starting from 0)
+          of the dependent constraints.
       inform : dict
          dictionary containing output information:
           status : int

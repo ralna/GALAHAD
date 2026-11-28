@@ -38,7 +38,6 @@ static struct llsr_control_type control; // control struct
 static struct llsr_inform_type inform;   // inform struct
 static bool init_called = false;         // record if initialise was called
 static bool load_called = false;         // record if load was called
-static bool load_scaling_called = false; // record if load_scaling was called
 static int status = 0;                   // exit status
 
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
@@ -224,6 +223,8 @@ PyObject* llsr_make_options_dict(const struct llsr_control_type *control){
                          PyUnicode_FromString(control->definite_linear_solver));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
+    PyDict_SetItemString(py_options, "sbls_options",
+                         sbls_make_options_dict(&control->sbls_control));
     PyDict_SetItemString(py_options, "sls_options",
                          sls_make_options_dict(&control->sls_control));
     PyDict_SetItemString(py_options, "ir_options",
@@ -508,9 +509,6 @@ static PyObject* py_llsr_load_scaling(PyObject *self, PyObject *args,
     if(!check_error_codes(status))
         return NULL;
 
-    // Record that llsr M structure been initialised
-    load_scaling_called = true;
-
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
@@ -529,7 +527,7 @@ static PyObject* py_llsr_solve_problem(PyObject *self, PyObject *args,
                                        PyObject *keywds){
     PyArrayObject *py_A_val, *py_b, *py_S_val = NULL;
     double *A_val, *b, *S_val = NULL;
-    int m, n, A_ne, S_ne;
+    int m, n, A_ne, S_ne = 0;
     double power, weight;
 
     // Check that package has been initialised
@@ -550,15 +548,17 @@ static PyObject* py_llsr_solve_problem(PyObject *self, PyObject *args,
         return NULL;
     if(!check_array_double("A_val", py_A_val, A_ne))
         return NULL;
-    if(load_scaling_called) {
-      if(!check_array_double("S_val", py_S_val, S_ne))
-          return NULL;
+    if(py_S_val != NULL) {
+      if((PyObject *) py_S_val != Py_None){
+        if(!check_array_double("S_val", py_S_val, S_ne))
+            return NULL;
+        S_val = (double *) PyArray_DATA(py_S_val);
+      }
     }
 
     // Get array data pointer
     b = (double *) PyArray_DATA(py_b);
     A_val = (double *) PyArray_DATA(py_A_val);
-    if(py_S_val != NULL) S_val = (double *) PyArray_DATA(py_S_val);
 
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
@@ -612,7 +612,6 @@ static PyObject* py_llsr_terminate(PyObject *self){
     // require future calls start with llsr_initialize
     init_called = false;
     load_called = false;
-    load_scaling_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

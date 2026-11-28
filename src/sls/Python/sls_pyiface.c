@@ -827,7 +827,7 @@ static PyObject* py_sls_analyse_matrix(PyObject *self, PyObject *args, PyObject 
 
 static PyObject* py_sls_factorize_matrix(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_val;
-    double *A_val;
+    double *A_val = NULL;
     int A_ne;
 
     // Check that package has been initialised
@@ -842,12 +842,12 @@ static PyObject* py_sls_factorize_matrix(PyObject *self, PyObject *args, PyObjec
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
-    if(!(check_array_double("A_val", py_A_val, A_ne)))
-        return NULL;
-
-    // Get array data pointers
-    A_val = (double *) PyArray_DATA(py_A_val);
+    // (A_val may be None when A_ne = 0)
+    if(A_ne > 0 || (PyObject *) py_A_val != Py_None){
+        if(!check_array_double("A_val", py_A_val, A_ne))
+            return NULL;
+        A_val = (double *) PyArray_DATA(py_A_val);
+    }
 
     // Call sls_factorize_matrix
     sls_factorize_matrix(&data, &status, A_ne, A_val);
@@ -896,7 +896,7 @@ static PyObject* py_sls_solve_system(PyObject *self, PyObject *args, PyObject *k
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x
+    // Return x (b overwritten)
     return Py_BuildValue("O", py_sol);
 }
 
@@ -918,7 +918,7 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args, PyO
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-    if(!check_array_double("g", py_b, n))
+    if(!check_array_double("b", py_b, n))
         return NULL;
 
     // Get array data pointer
@@ -936,13 +936,8 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args, PyO
     if(!check_error_codes(status))
         return NULL;
 
-    // Wrap C arrays as NumPy arrays
-    npy_intp ndim[] = {n}; // size of x
-    PyObject *py_x = PyArray_SimpleNewFromData(1, ndim,
-                        NPY_DOUBLE, (void *) sol); // create NumPy x array
-
-    // Return x
-    return Py_BuildValue("N", py_x);
+    // Return x (b overwritten)
+    return Py_BuildValue("O", py_b);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLS_INFORMATION   -*-*-*-*-*-*-*-*

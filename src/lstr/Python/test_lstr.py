@@ -16,7 +16,6 @@ b[:] = 1.0
 options = lstr.initialize()
 
 # set some non-default options
-options['unitm'] = False
 options['print_level'] = 0
 #print("options:", options)
 
@@ -28,7 +27,7 @@ lstr.load_options(options)
 print(" solve problem 1")
 status = 1
 radius = 1.0
-u = b
+u = b.copy()
 while status > 0:
   status, x, u, v = lstr.solve_problem(status, m, n, radius, u, v)
   if status == 2: # u -> u + A v
@@ -39,7 +38,7 @@ while status > 0:
     for i in range(n):
       v[i] = v[i] + u[i] + (i+1) * u[n+i]
   elif status == 4: # reset r to b
-    u = b
+    u = b.copy()
 
 # get information
 
@@ -52,7 +51,7 @@ print(" optimal ||r||: %.4f" % inform['r_norm'])
 print("\n solve problem 2 with smaller radius")
 status = 5
 radius = 0.1
-u = b
+u = b.copy()
 while status > 0:
   status, x, u, v = lstr.solve_problem(status, m, n, radius, u, v)
   if status == 2: # u -> u + A v
@@ -63,7 +62,7 @@ while status > 0:
     for i in range(n):
       v[i] = v[i] + u[i] + (i+1) * u[n+i]
   elif status == 4: # reset r to b
-    u = b
+    u = b.copy()
 
 # get information
 

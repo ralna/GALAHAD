@@ -32,6 +32,10 @@ static const int NPY_IPC = (sizeof(ipc_) == 8) ? NPY_INT64 : NPY_INT32;
 
 /*
  * Check and handle general status error codes
+ *
+ * Warnings return true so the caller returns its results. If Python treats
+ * warnings as errors (e.g. python -W error), PyErr_WarnEx raises instead,
+ * so return false and let the caller return NULL.
  */
 static inline bool check_error_codes(int status){
     switch(status){
@@ -60,155 +64,206 @@ static inline bool check_error_codes(int status){
             );
             return false; // errors return false
         case -4:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
-            ,2); // raise in module
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the problem bounds are infeasible, that is, one or more lower"
+            " bounds exceed the corresponding upper bounds."
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -5:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
-            ,2); // raise in module
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the problem appears to be (locally) infeasible."
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -6:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
-            ,2); // raise in module
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the problem appears to be (locally) dual infeasible."
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -7:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the objective function appears to be unbounded from below."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -8:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
-            ,2); // raise in module
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the feasible region has no analytic center."
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -9:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the analysis phase of the factorization failed; the return status"
             " from the factorization package is given in inform['factor_status']."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -10:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the factorization failed; the return status from the factorization"
             " package is given in inform['factor_status']."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -11:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the solution of a set of linear equations using factors from the "
             "factorization package failed; the return status from the "
             "factorization package is given in inform['factor_status']."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
 
         case -12:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the analysis phase of the unsymmetric factorization failed;"
             " the return status from the factorization package is given"
             " in inform['factor_status']."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -13:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the unsymmetric factorization failed; the return status from the "
             "factorization package is given in inform['factor_status']."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -14:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the solution of a set of linear equations using factors from the "
             "unsymmetric factorization package failed; the return status from "
             "the factorization package is given in inform['factor_status']."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -15:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the provided preconditioner is flawed"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -16:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "The problem is so ill-conditioned that further progress is impossible."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -17:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the computed step is too small to make further progress"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -18:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "too many iterations have been performed. This may happen if"
             " options['maxit'] is too small, but may also be symptomatic of"
             " a badly scaled problem."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -19:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the CPU time limit has been reached. This may happen if"
             " options['cpu_time_limit'] is too small, but may also be symptomatic of"
             " a badly scaled problem."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -20:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
-            "the preconditioner has the wrong inertia"
-            ,2); // raise in module
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the matrix or preconditioner has the wrong inertia."
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -21:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "a file-handling error occurred"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -22:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "an input/output error occurred"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -23:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "there is a matrix entry in the upper triangle"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -24:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "an error occurred when sorting"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -25:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "error with input status"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -26:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "The requested solver is unavailable"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -27:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the requested option has not yet been implemented"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -28:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the QP solver failed: check the QP solver status"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -29:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the requested option is unavailable"
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
         case -40:
-            PyErr_WarnEx(PyExc_RuntimeWarning,
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "it is not possible to alter the diagonals"
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
+            return true; // warnings return true
+        case -45:
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the requested preconditioner is not known"
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
+            return true; // warnings return true
+        case -80:
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the HSL package MI28 returned an error (it may be unavailable)"
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
+            return true; // warnings return true
+        case -82:
+            if(PyErr_WarnEx(PyExc_RuntimeWarning,
             "the user has forced termination of solver by removing the file"
             " named options['alive_file'] from unit options['alive_unit']."
-            ,2); // raise in module
+            ,2) < 0) // raise in module
+                return false; // warnings are errors (e.g. python -W error)
             return true; // warnings return true
+        case -90: // NB this is a ValueError as a matrix type is not recognised
+            PyErr_SetString(PyExc_ValueError,
+            "an unknown matrix storage scheme has been specified."
+            );
+            return false; // errors return false
         default:
             return true; // no error
     }
@@ -257,8 +312,7 @@ static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
          PyArray_TYPE(arr)==NPY_DOUBLE &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 1D double array of length %i not given %i", 
-                     name, n, PyArray_DIM(arr,0));
+                     "%s must be a 1D float64 array of length %i", name, n);
         return false;
     }
     return true;
@@ -271,7 +325,8 @@ static inline bool check_2darray_double(char *name, PyArrayObject *arr,
          PyArray_TYPE(arr)==NPY_DOUBLE && PyArray_NDIM(arr)==2 &&
          PyArray_DIM(arr,0)==m && PyArray_DIM(arr,1)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 2D double array of size(%i,%i)", name, m, n);
+                     "%s must be a 2D float64 array of size (%i,%i)",
+                     name, m, n);
         return false;
     }
     return true;
@@ -285,8 +340,7 @@ static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
          (PyArray_TYPE(arr)==NPY_LONG || PyArray_TYPE(arr)==NPY_INTP) &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 1D int array of length %i not given %i", 
-                      name, n, PyArray_DIM(arr,0));
+                     "%s must be a 1D int64 array of length %i", name, n);
         return false;
     }
     return true;

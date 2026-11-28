@@ -397,7 +397,7 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_H_val;
-    double *g, *H_val;
+    double *g, *H_val = NULL;
     int n, H_ne;
     double radius, f;
 
@@ -414,12 +414,16 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObjec
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
+      if(!check_array_double("H_val", py_H_val, H_ne))
+          return NULL;
+      H_val = (double *) PyArray_DATA(py_H_val);
+    }
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
-    H_val = (double *) PyArray_DATA(py_H_val);
 
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
@@ -447,7 +451,7 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObjec
 
 static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_H_val;
-    double *g, *H_val;
+    double *g, *H_val = NULL;
     int n, H_ne;
     double power, weight, f;
 
@@ -465,12 +469,16 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
-    if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
+    // H_val may be None if there are no Hessian values to give (H_ne = 0),
+    // as for the 'identity', 'zero' and 'none' storage schemes
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
+      if(!check_array_double("H_val", py_H_val, H_ne))
+          return NULL;
+      H_val = (double *) PyArray_DATA(py_H_val);
+    }
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
-    H_val = (double *) PyArray_DATA(py_H_val);
 
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
@@ -482,6 +490,102 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
     dps_solve_rq_problem(&data, &status, n, H_ne, H_val, g, f,
                          weight, power, x);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
+
+    // Propagate any errors with the callback function
+    if(PyErr_Occurred())
+        return NULL;
+
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Return x
+    return Py_BuildValue("N", py_x);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   DPS_RESOLVE_TR_PROBLEM   -*-*-*-*-*-*-*-*
+
+static PyObject* py_dps_resolve_tr_problem(PyObject *self, PyObject *args,
+                                           PyObject *keywds){
+    PyArrayObject *py_g;
+    double *g;
+    int n;
+    double radius, f;
+
+    // Check that package has been initialised
+    if(!check_load(load_called))
+        return NULL;
+
+    // Parse positional arguments
+    static char *kwlist[] = {"n","radius","f","g",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iddO", kwlist, &n,
+                                    &radius, &f, &py_g))
+        return NULL;
+
+    // Check that array inputs are of correct type, size, and shape
+    if(!check_array_double("g", py_g, n))
+        return NULL;
+
+    // Get array data pointer
+    g = (double *) PyArray_DATA(py_g);
+
+    // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of x
+    PyArrayObject *py_x =
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_DOUBLE, 0);
+    double *x = (double *) PyArray_DATA(py_x);
+
+    // Call dps_resolve_tr_problem
+    dps_resolve_tr_problem(&data, &status, n, g, f, radius, x);
+
+    // Propagate any errors with the callback function
+    if(PyErr_Occurred())
+        return NULL;
+
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Return x
+    return Py_BuildValue("N", py_x);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   DPS_RESOLVE_RQ_PROBLEM   -*-*-*-*-*-*-*-*
+
+static PyObject* py_dps_resolve_rq_problem(PyObject *self, PyObject *args,
+                                           PyObject *keywds){
+    PyArrayObject *py_g;
+    double *g;
+    int n;
+    double power, weight, f;
+
+    // Check that package has been initialised
+    if(!check_load(load_called))
+        return NULL;
+
+    // Parse positional arguments
+    static char *kwlist[] = {"n","weight","power","f","g",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddO", kwlist, &n,
+                                    &weight, &power, &f, &py_g))
+        return NULL;
+
+    // Check that array inputs are of correct type, size, and shape
+    if(!check_array_double("g", py_g, n))
+        return NULL;
+
+    // Get array data pointer
+    g = (double *) PyArray_DATA(py_g);
+
+    // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of x
+    PyArrayObject *py_x =
+      (PyArrayObject *) PyArray_ZEROS(1, ndim, NPY_DOUBLE, 0);
+    double *x = (double *) PyArray_DATA(py_x);
+
+    // Call dps_resolve_rq_problem. The Fortran interface takes weight
+    // before power (the prototype in galahad_dps.h names them the other
+    // way round)
+    dps_resolve_rq_problem(&data, &status, n, g, f, weight, power, x);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -540,6 +644,10 @@ static PyMethodDef dps_module_methods[] = {
     {"solve_tr_problem", (PyCFunction) py_dps_solve_tr_problem,
      METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_rq_problem", (PyCFunction) py_dps_solve_rq_problem,
+     METH_VARARGS | METH_KEYWORDS, NULL},
+    {"resolve_tr_problem", (PyCFunction) py_dps_resolve_tr_problem,
+     METH_VARARGS | METH_KEYWORDS, NULL},
+    {"resolve_rq_problem", (PyCFunction) py_dps_resolve_rq_problem,
      METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_dps_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_dps_terminate, METH_NOARGS, NULL},

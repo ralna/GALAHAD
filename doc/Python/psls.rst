@@ -231,7 +231,7 @@ functions
           $A$ in the same order as specified in the sparsity pattern in 
           ``psls.load``.
 
-   .. function:: psls.form_subset_preconditioner(a_ne, A_val,n_sub,sub)
+   .. function:: psls.form_subset_preconditioner(A_ne, A_val, n_sub, sub)
 
       Form and factorize the preconditioner of a symmetric subset of the
       rows and columns of $A$.
@@ -244,11 +244,13 @@ functions
       A_val : ndarray(A_ne)
           holds the values of the nonzeros in the lower triangle of the matrix
           $A$ in the same order as specified in the sparsity pattern in 
+          ``psls.load``.
       n_sub : int
           holds the number of rows (and columns) of the required submatrix 
           of $A$.
       sub : ndarray(n_sub)
-          holds the indices of the rows of the required submatrix of $A$.
+          holds the indices (starting from 0, in increasing order) of the
+          rows of the required submatrix of $A$.
 
    .. function:: psls.update_preconditioner(a_ne, A_val,n_del,del)
 
@@ -275,22 +277,19 @@ functions
 
       n : int
           holds the dimension of the system, $n$.
-          holds the number of variables.
       b : ndarray(n)
-          holds the values of the right-hand side vector $b$.
-          Any component corresponding to rows/columns not in the initial 
-          subset recorded by ``psls.form_subset_preconditioner``, or
-          in those subsequently deleted by ``psls_update_preconditioner``,
-          will not be altered.
+          holds the values of the right-hand side vector $b$. It is
+          overwritten by the solution $x$.
 
       **Returns:**
 
       x : ndarray(n)
-          holds the values of the solution $x$ after a successful call.
-          Any component corresponding to rows/columns not in the initial 
-          subset recorded by ``psls.form_subset_preconditioner``, or
-          in those subsequently deleted by ``psls_update_preconditioner``,
-          will be zero.
+          holds the values of the solution $x$ after a successful call
+          (this is the array ``b``). Any component corresponding to
+          rows/columns not in the subset recorded by
+          ``psls.form_subset_preconditioner`` is not altered, while any
+          in those subsequently deleted by ``psls.update_preconditioner``
+          is set to zero.
 
    .. function:: [optional] psls.information()
 

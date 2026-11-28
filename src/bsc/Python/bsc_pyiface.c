@@ -201,12 +201,12 @@ static PyObject* py_bsc_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m",
+    static char *kwlist[] = {"m","n",
                              "A_type","A_ne","A_row","A_col","A_ptr",
                              "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
-                                    kwlist, &n, &m,
+                                    kwlist, &m, &n,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,
                                     &py_options))
@@ -249,7 +249,7 @@ static PyObject* py_bsc_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call bsc_import
-    bsc_import(&control, &data, &status, n, m,
+    bsc_import(&control, &data, &status, m, n,
                A_type, A_ne, A_row, A_col, A_ptr, &S_ne);
 
     // Cleanup refcounts
@@ -276,7 +276,7 @@ static PyObject* py_bsc_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_val, *py_D;
-    double *A_val, *D;
+    double *A_val, *D = NULL;
     int m, n, A_ne, S_ne;
 
     // Check that package has been initialised
@@ -293,24 +293,27 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("A_val", py_A_val, A_ne))
         return NULL;
-    if(!check_array_double("D", py_D, n))
-        return NULL;
+    // D may be None, when it is the identity
+    if((PyObject *) py_D != Py_None){
+        if(!check_array_double("D", py_D, n))
+            return NULL;
+        D = (double *) PyArray_DATA(py_D);
+    }
 
     // Get array data pointer
     A_val = (double *) PyArray_DATA(py_A_val);
-    D = (double *) PyArray_DATA(py_D);
 
     // Create NumPy output arrays
     npy_intp sdim[] = {S_ne}; // size of S_row, S_col an S_val
     npy_intp pdim[] = {m+1}; // size of S_ptr
     PyArrayObject *py_s_row =
-      (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, sdim, NPY_INT, 0);
     int *S_row = (int *) PyArray_DATA(py_s_row);
     PyArrayObject *py_s_col =
-      (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, sdim, NPY_INT, 0);
     int *S_col = (int *) PyArray_DATA(py_s_col);
     PyArrayObject *py_s_ptr =
-      (PyArrayObject *) PyArray_SimpleNew(1, pdim, NPY_INT);
+      (PyArrayObject *) PyArray_ZEROS(1, pdim, NPY_INT, 0);
     int *S_ptr = (int *) PyArray_DATA(py_s_ptr);
     PyArrayObject *py_s_val =
       (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_DOUBLE);
@@ -360,6 +363,9 @@ static PyObject* py_bsc_terminate(PyObject *self){
 
     // Call bsc_terminate
     bsc_terminate(&data, &control, &inform);
+
+    // require future calls start with bsc_initialize
+    init_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);

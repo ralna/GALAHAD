@@ -395,7 +395,7 @@ static PyObject* py_uls_factorize_matrix(PyObject *self, PyObject *args, PyObjec
     if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&
-        check_array_int("A_ptr", py_A_ptr, n+1) &&
+        check_array_int("A_ptr", py_A_ptr, m+1) &&
         check_array_double("A_val", py_A_val, A_ne)
         ))
         return NULL;
@@ -473,7 +473,8 @@ static PyObject* py_uls_solve_system(PyObject *self, PyObject *args, PyObject *k
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-    if(!check_array_double("b", py_sol, n))
+    // (b holds b on entry and x on exit, so needs max(m,n) entries)
+    if(!check_array_double("b", py_sol, m > n ? m : n))
         return NULL;
 
     // Get array data pointers
@@ -491,7 +492,7 @@ static PyObject* py_uls_solve_system(PyObject *self, PyObject *args, PyObject *k
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x
+    // Return x (b overwritten)
     return Py_BuildValue("O", py_sol);
 }
 

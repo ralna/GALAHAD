@@ -318,11 +318,13 @@ functions
 
       A_ne : int
           holds the number of entries in the lower triangular part of 
-          the matrix $A$.
+          the matrix $A$, that is n(n+1)/2 for the dense scheme, n for
+          the diagonal scheme, 1 for the scaled_identity scheme, and 0 for
+          the identity, zero and none schemes.
       A_val : ndarray(A_ne)
           holds the values of the nonzeros in the lower triangle of the matrix
           $A$ in the same order as specified in the sparsity pattern in 
-          ``sls.analayse_matrix``.
+          ``sls.analyse_matrix``. It may be None when A_ne is 0.
 
    .. function:: sls.solve_system(n, b)
 
@@ -332,14 +334,15 @@ functions
 
       n : int
           holds the dimension of the system, $n$.
-          holds the number of variables.
       b : ndarray(n)
-          holds the values of the right-hand side vector $b$
+          holds the values of the right-hand side vector $b$. It is
+          overwritten by the solution $x$.
 
       **Returns:**
 
       x : ndarray(n)
-          holds the values of the solution $x$ after a successful call.
+          holds the values of the solution $x$ after a successful call
+          (this is the array ``b``).
 
    .. function:: sls.partial_solve_system(part, n, b)
 
@@ -372,14 +375,15 @@ functions
           lower or upper case variants are allowed.
       n : int
           holds the dimension of the system, $n$.
-          holds the number of variables.
       b : ndarray(n)
-          holds the values of the right-hand side vector $b$
+          holds the values of the right-hand side vector $b$. It is
+          overwritten by the solution $x$.
 
       **Returns:**
 
       x : ndarray(n)
-          holds the values of the solution $x$ after a successful call.
+          holds the values of the solution $x$ after a successful call
+          (this is the array ``b``).
 
    .. function:: [optional] sls.information()
 

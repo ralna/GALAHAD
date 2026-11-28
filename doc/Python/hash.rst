@@ -93,6 +93,6 @@ functions
              the name of the array for which an allocation/deallocation
              error occurred.
 
-   .. function:: hash.finalize()
+   .. function:: hash.terminate()
 
      Deallocate all internal private storage.

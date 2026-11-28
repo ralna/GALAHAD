@@ -155,6 +155,58 @@ static PyObject* py_lhs_initialize(PyObject *self){
     return Py_BuildValue("NN", py_options, py_inform);
 }
 
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-   LHS_IHS   -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_lhs_ihs(PyObject *self, PyObject *args, PyObject *keywds){
+    PyObject *py_options = NULL;
+    int n_dimen, n_points, seed;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist[] = {"n_dimen","n_points","seed","options",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iii|O", kwlist,
+                                    &n_dimen, &n_points, &seed, &py_options))
+        return NULL;
+
+    // Update LHS control options
+    if(!lhs_update_control(&control, py_options))
+        return NULL;
+
+    // Create the NumPy array X, with one point (row) for each sample
+    npy_intp xdim[] = {n_points, n_dimen};
+    PyArrayObject *py_X =
+      (PyArrayObject *) PyArray_ZEROS(2, xdim, NPY_IPC, 0);
+    ipc_ *X = (ipc_ *) PyArray_DATA(py_X);
+
+    // Call lhs_ihs
+    ipc_ seed_ipc = seed;
+    lhs_ihs(n_dimen, n_points, &seed_ipc, X, &control, &inform, &data);
+
+    // Raise any status errors
+    if(!check_error_codes(inform.status)){
+        Py_DECREF(py_X);
+        return NULL;
+    }
+
+    // Return X and the updated seed
+    return Py_BuildValue("Ni", py_X, (int) seed_ipc);
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   LHS_GET_SEED   -*-*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_lhs_get_seed(PyObject *self){
+    ipc_ seed;
+
+    // Call lhs_get_seed
+    lhs_get_seed(&seed);
+
+    // Return the seed
+    return Py_BuildValue("i", (int) seed);
+}
+
 //  *-*-*-*-*-*-*-*-*-*-   LHS_INFORMATION   -*-*-*-*-*-*-*-*
 
 static PyObject* py_lhs_information(PyObject *self){
@@ -182,6 +234,9 @@ static PyObject* py_lhs_terminate(PyObject *self){
     // Call lhs_terminate
     lhs_terminate(&data, &control, &inform);
 
+    // require future calls start with lhs_initialize
+    init_called = false;
+
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
@@ -192,6 +247,8 @@ static PyObject* py_lhs_terminate(PyObject *self){
 /* lhs python module method table */
 static PyMethodDef lhs_module_methods[] = {
     {"initialize", (PyCFunction) py_lhs_initialize, METH_NOARGS,NULL},
+    {"ihs", (PyCFunction) py_lhs_ihs, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"get_seed", (PyCFunction) py_lhs_get_seed, METH_NOARGS, NULL},
     {"information", (PyCFunction) py_lhs_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_lhs_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

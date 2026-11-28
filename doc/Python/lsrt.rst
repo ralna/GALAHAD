@@ -99,7 +99,7 @@ functions
 
    .. function:: lsrt.solve_problem(status, m, n, power, weight, u, v)
 
-      Find the global moinimizer of the regularized quadratic objective 
+      Find the global minimizer of the regularized quadratic objective 
       function $r(x)$.
 
       **Parameters:**
@@ -122,7 +122,8 @@ functions
       power : float
           holds the regularization power, $p \geq 2$.
       weight : float
-          holds the strictly positive regularization weight, $\sigma$.
+          holds the non-negative regularization weight, $\sigma$. If
+          $\sigma = 0$, the linear least-squares problem is solved.
       u : ndarray(m)
           holds the result vector when initial or return status = 1, 2 or
           4 (see below).
@@ -200,7 +201,7 @@ functions
 
             * **-3**
 
-              The restriction n > 0, m > 0, $p \geq 2$ or $\sigma > 0$ 
+              The restriction n > 0, m > 0, $p \geq 2$ or $\sigma \geq 0$ 
               has been violated.
 
             * **-18**
@@ -231,7 +232,7 @@ functions
           obj : float
              the value of the objective function.
           multiplier : float
-             the multiplier, $\lambda = \sigma \|x\|^(p-2)$.
+             the multiplier, $\lambda = \sigma \|x\|^{p-2}$.
           x_norm : float
              the Euclidean norm of $x$.
           r_norm : float

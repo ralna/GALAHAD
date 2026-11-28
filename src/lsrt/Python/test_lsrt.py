@@ -17,7 +17,6 @@ b[:] = 1.0
 options = lsrt.initialize()
 
 # set some non-default options
-options['unitm'] = False
 options['print_level'] = 0
 #print("options:", options)
 
@@ -29,7 +28,7 @@ lsrt.load_options(options)
 print(" solve problem")
 status = 1
 weight = 1.0
-u = b
+u = b.copy()
 while status > 0:
   status, x, u, v = lsrt.solve_problem(status, m, n, power, weight, u, v)
   if status == 2: # u -> u + A v
@@ -40,7 +39,7 @@ while status > 0:
     for i in range(n):
       v[i] = v[i] + u[i] + (i+1) * u[n+i]
   elif status == 4: # reset r to b
-    u = b
+    u = b.copy()
 
 # get information
 

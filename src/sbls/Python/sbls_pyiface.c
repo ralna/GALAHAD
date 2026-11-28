@@ -656,7 +656,7 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
 static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_val, *py_A_val, *py_C_val;
     PyArrayObject *py_D = NULL;
-    double *H_val, *A_val, *C_val, *D;
+    double *H_val = NULL, *A_val = NULL, *C_val = NULL, *D = NULL;
     int n, m, H_ne, A_ne, C_ne;
 
     // Check that package has been initialised
@@ -672,27 +672,36 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
                                     &py_A_val, &C_ne, &py_C_val, &py_D ))
         return NULL;
 
-    // Check that array inputs are of correct type, size, and shape
-    if(!(check_array_double("H_val", py_H_val, H_ne) &&
-         check_array_double("A_val", py_A_val, A_ne) &&
-         check_array_double("C_val", py_C_val, C_ne)))
-        return NULL;
+    // Check that array inputs are of correct type, size, and shape.
+    // H_val and C_val may be None if there are no values to give (H_ne or
+    // C_ne = 0), as for the 'identity', 'zero' and 'none' storage schemes,
+    // and A_val may be None for the 'absent' scheme (A_ne = 0)
+    if(H_ne > 0 || (PyObject *) py_H_val != Py_None){
+        if(!check_array_double("H_val", py_H_val, H_ne))
+            return NULL;
+        H_val = (double *) PyArray_DATA(py_H_val);
+    }
+    if(A_ne > 0 || (PyObject *) py_A_val != Py_None){
+        if(!check_array_double("A_val", py_A_val, A_ne))
+            return NULL;
+        A_val = (double *) PyArray_DATA(py_A_val);
+    }
+    if(C_ne > 0 || (PyObject *) py_C_val != Py_None){
+        if(!check_array_double("C_val", py_C_val, C_ne))
+            return NULL;
+        C_val = (double *) PyArray_DATA(py_C_val);
+    }
 
-    // Get array data pointers
-    H_val = (double *) PyArray_DATA(py_H_val);
-    A_val = (double *) PyArray_DATA(py_A_val);
-    C_val = (double *) PyArray_DATA(py_C_val);
+    // D is optional, and may be omitted or None
+    if(py_D != NULL && (PyObject *) py_D != Py_None){
+        if(!check_array_double("D", py_D, n))
+            return NULL;
+        D = (double *) PyArray_DATA(py_D);
+    }
 
     // Call sbls_factorize_matrix
-    //if(py_D != NULL) D = (double *) PyArray_DATA(py_D);
-    if (py_D == NULL) {
-      sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val,
-                            C_ne, C_val, NULL);
-    } else {
-      D = (double *) PyArray_DATA(py_D);
-      sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val,
-                            C_ne, C_val, D);
-    }
+    sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val,
+                          C_ne, C_val, D);
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
@@ -719,7 +728,7 @@ static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args, PyObject *
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-    if(!check_array_double("b", py_sol, n + m))
+    if(!check_array_double("rhs", py_sol, n + m))
         return NULL;
 
     // Get array data pointers
@@ -737,7 +746,7 @@ static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args, PyObject *
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x
+    // Return x (rhs overwritten)
     return Py_BuildValue("O", py_sol);
 }
 

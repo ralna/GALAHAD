@@ -134,7 +134,7 @@ functions
 
    .. function:: dps.solve_tr_problem(n, radius, f, g, H_ne, H_val)
 
-      Find the global moinimizer of the quadratic objective function $q(x)$
+      Find the global minimizer of the quadratic objective function $q(x)$
       within the trust-region.
 
       **Parameters:**
@@ -161,9 +161,9 @@ functions
           holds the values of the approximate minimizer $x$ after
           a successful call.
 
-   .. function:: rqs.solve_rq_problem(n, weight, power, f, g, H_ne, H_val)
+   .. function:: dps.solve_rq_problem(n, weight, power, f, g, H_ne, H_val)
 
-      Find the global moinimizer of the regularized quadratic objective 
+      Find the global minimizer of the regularized quadratic objective 
       function $r(x)$
 
       **Parameters:**
@@ -184,7 +184,7 @@ functions
       H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
-          ``rqs.load``.
+          ``dps.load``.
 
       **Returns:**
 
@@ -194,7 +194,7 @@ functions
 
    .. function:: dps.resolve_tr_problem(n, radius, f, g)
 
-      Find the global moinimizer of the quadratic objective function $q(x)$
+      Find the global minimizer of the quadratic objective function $q(x)$
       within the trust-region  after any of the non-matrix terms has changed.
 
       **Parameters:**
@@ -214,9 +214,9 @@ functions
           holds the values of the approximate minimizer $x$ after
           a successful call.
 
-   .. function:: rqs.resolve_rq_problem(n, weight, power, f, g)
+   .. function:: dps.resolve_rq_problem(n, weight, power, f, g)
 
-      Find the global moinimizer of the regularized quadratic objective 
+      Find the global minimizer of the regularized quadratic objective 
       function $r(x)$ after any of the non-matrix terms has changed.
 
       **Parameters:**
