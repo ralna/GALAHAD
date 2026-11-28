@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2026-11-08 AT 10:16 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 14:13 GMT.
 
 #include "galahad_modules.h"
 
@@ -773,13 +773,14 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, j, l, it, out, nroots, print_level
-      INTEGER ( KIND = ip_ ) :: max_order, n_lambda, in_n
+      INTEGER ( KIND = ip_ ) :: max_order, n_lambda, in_n, sbls_factorization
       REAL :: time_start, time_now, time_record
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record, lambda_n
       REAL ( KIND = rp_ ) :: lambda, lambda_l, lambda_u, delta_lambda
       REAL ( KIND = rp_ ) :: c_norm, c_norm_over_radius, v_norm2, w_norm2, val
       REAL ( KIND = rp_ ) :: beta, z_norm2, root1, root2, root3, lambda_pert
       REAL ( KIND = rp_ ) :: width, lambda_plus, a_one, a_inf, lambda_sinv
+      REAL ( KIND = rp_ ) :: lambda_l_safe
       REAL ( KIND = rp_ ), DIMENSION( 3 ) :: lambda_new
       REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
       LOGICAL :: printi, printt, printd, printh, psdef, try_zero, unit_s
@@ -1401,10 +1402,35 @@
       IF ( data%control%equality_problem )                                     &
         data%control%SBLS_control%factorization = 2
 
+!  record the factorization requested. The Schur-complement factorization
+!  needs lambda S to be nonsingular, and so it is replaced by a factorization
+!  of the augmented system whenever lambda = 0. As SBLS's automatic choice
+!  would then persist, record this choice as the Schur complement
+
+      sbls_factorization = data%control%SBLS_control%factorization
+      IF ( sbls_factorization == 0 ) sbls_factorization = 1
+
+!  record the largest value of lambda known to give ||x(lambda)||_S > radius,
+!  or for which K(lambda) is not positive definite, as estimates may raise
+!  lambda_l further
+
+      lambda_l_safe = lambda_l
+
       it = 0 ; in_n = 0
       DO
         it = it + 1
 !if(it>10)stop
+
+!  use the augmented system rather than the Schur complement when lambda = 0
+
+        IF ( .NOT. data%control%equality_problem .AND.                         &
+             sbls_factorization /= 2 ) THEN
+          IF ( lambda == zero ) THEN
+            data%control%SBLS_control%factorization = 2
+          ELSE
+            data%control%SBLS_control%factorization = sbls_factorization
+          END IF
+        END IF
 
 !  introduce lambda * S to form K(lambda)
 
@@ -1597,6 +1623,7 @@
           IF ( inform%x_norm > radius ) THEN
             region = 'L'
             lambda_l = MAX( lambda_l, lambda )
+            lambda_l_safe = MAX( lambda_l_safe, lambda )
 
 !  record that we are now in phase 2
 
@@ -1646,6 +1673,19 @@
             END IF
             IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )              &
               prefix, region, it, lambda_l, lambda, lambda_u
+
+!  the lower bound lambda_l has been raised by an estimate that rounding has
+!  made unreliable, since lambda lies in G. Restore the largest lower bound
+!  known to be valid, and bisect
+
+            IF ( lambda <= lambda_l .AND. lambda_l > lambda_l_safe ) THEN
+              lambda_l = lambda_l_safe
+              lambda = half * ( lambda_l + lambda_u )
+              lambda_pert = MAX( lambda, epsmch )
+              IF ( printi ) WRITE( out, "( A, ' lower bound reset, bisect',   &
+             &  ' to lambda =', ES22.15 )" ) prefix, lambda
+              CYCLE
+            END IF
 
 !  -----------------------------------------------------
 !  The solution lies in the interior of the trust-region
@@ -1812,13 +1852,24 @@
 !  compute the best Taylor improvement
 
             lambda_plus = MAXVAL( lambda_new( : n_lambda ) )
-            delta_lambda = lambda_plus - lambda
-            lambda = lambda_plus
-            lambda_pert = lambda
 
-!  improve the lower bound if possible
+!  if the estimate lies beyond the upper bound, rounding has made it
+!  unreliable, so bisect instead
 
-            lambda_l = MAX( lambda_l, lambda_plus )
+            IF ( lambda_plus > lambda_u ) THEN
+              lambda_plus = half * ( lambda_l + lambda_u )
+              delta_lambda = lambda_plus - lambda
+              lambda = lambda_plus
+              lambda_pert = lambda
+
+!  otherwise, improve the lower bound if possible
+
+            ELSE
+              delta_lambda = lambda_plus - lambda
+              lambda = lambda_plus
+              lambda_pert = lambda
+              lambda_l = MAX( lambda_l, lambda_plus )
+            END IF
 
 !  check that the best Taylor improvement is significant
 
@@ -1877,9 +1928,11 @@
             lambda_plus = MAXVAL( lambda_new( : n_lambda ) )
             delta_lambda = lambda_plus - lambda
 
-!  improve the lower bound if possible
+!  improve the lower bound if possible, unless the estimate lies beyond the
+!  upper bound, in which case rounding has made it unreliable
 
-            lambda_l = MAX( lambda_l, lambda_plus )
+            IF ( lambda_plus <= lambda_u )                                     &
+              lambda_l = MAX( lambda_l, lambda_plus )
 
 !  if lambda = 0 hasn't yet been tried, do so
 
@@ -1900,7 +1953,9 @@
               EXIT
             END IF
 
-            IF ( lambda_plus >= lambda_l ) THEN
+            IF ( lambda_plus > lambda_u ) THEN
+              lambda = half * ( lambda_l + lambda_u )
+            ELSE IF ( lambda_plus >= lambda_l ) THEN
               lambda = lambda_plus
             ELSE
               IF ( data%control%equality_problem ) THEN
@@ -1924,6 +1979,7 @@
             prefix, region, it, lambda_l, lambda, lambda_u
           try_zero = .FALSE.
           lambda_l = lambda
+          lambda_l_safe = MAX( lambda_l_safe, lambda )
 
 !  compute the next lambda
 

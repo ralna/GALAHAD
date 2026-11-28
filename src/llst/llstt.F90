@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 14:20 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LLST_test_program
    USE GALAHAD_KINDS_precision
@@ -17,6 +17,10 @@
    TYPE ( LLST_control_type ) :: control
    TYPE ( LLST_inform_type ) :: inform
    TYPE ( SMT_type ) :: A, S, A_dense, S_dense
+   TYPE ( SMT_type ) :: A4, S2
+   REAL ( KIND = rp_ ), DIMENSION( 2 ) :: X2, X2_star
+   REAL ( KIND = rp_ ), DIMENSION( 4 ) :: B4
+   REAL ( KIND = rp_ ) :: lambda_star, tol
 
    A%m = m ; A%n = n ; A%ne = 3 * m    ! A = ( I : Diag(1:n) : e )
    ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ), A%ptr( m + 1 ) )
@@ -206,6 +210,63 @@
        CALL LLST_terminate( data, control, inform ) ! delete workspace
      END DO
    END DO
+
+!  ==========================================================================
+!  the Schur-complement factorization of K(lambda) with lambda = 0, for
+!  A = ( I ; diag( 1, 2 ) ). Passes 1 and 2: b = ( 0.9, 0.8, 0.9, 2 ) and the
+!  radii 1.5 and 10, for which the solution is the least-squares solution
+!  x = ( 0.9, 0.96 ), with lambda = 0. Pass 3: b = ( 0.9, 1.2, 0.9, 1.2 ),
+!  radius 1 and S = diag( 1, 4 ) in co-ordinate storage, for which
+!  x = ( 0.6, 0.4 ) and lambda = 1
+!  ==========================================================================
+
+   WRITE( 6, "( /, ' ==== Schur complement with lambda = 0 ==== ', / )" )
+   CALL SMT_put( A4%type, 'COORDINATE', i )
+   A4%m = 4 ; A4%n = 2 ; A4%ne = 4
+   ALLOCATE( A4%row( 4 ), A4%col( 4 ), A4%val( 4 ) )
+   A4%row = (/ 1, 2, 3, 4 /) ; A4%col = (/ 1, 2, 1, 2 /)
+   A4%val = (/ one, one, one, 2.0_rp_ /)
+   CALL SMT_put( S2%type, 'COORDINATE', i )
+   S2%m = 2 ; S2%n = 2 ; S2%ne = 2
+   ALLOCATE( S2%row( 2 ), S2%col( 2 ), S2%val( 2 ) )
+   S2%row = (/ 1, 2 /) ; S2%col = (/ 1, 2 /) ; S2%val = (/ one, 4.0_rp_ /)
+   tol = SQRT( EPSILON( one ) )
+   DO pass = 1, 3
+     CALL LLST_initialize( data, control, inform )
+     control%definite_linear_solver = 'potr'
+     control%SBLS_control%symmetric_linear_solver = 'sytr'
+     control%SBLS_control%definite_linear_solver = 'potr'
+     control%SBLS_control%factorization = 1
+     IF ( pass == 1 .OR. pass == 2 ) THEN
+       IF ( pass == 1 ) THEN
+         radius = 1.5_rp_
+       ELSE
+         radius = 10.0_rp_
+       END IF
+       B4 = (/ 0.9_rp_, 0.8_rp_, 0.9_rp_, 2.0_rp_ /)
+       X2_star = (/ 0.9_rp_, 0.96_rp_ /) ; lambda_star = zero
+       CALL LLST_solve( 4_ip_, 2_ip_, radius, A4, B4, X2, data, control,      &
+                        inform )
+     ELSE
+       radius = one
+       B4 = (/ 0.9_rp_, 1.2_rp_, 0.9_rp_, 1.2_rp_ /)
+       X2_star = (/ 0.6_rp_, 0.4_rp_ /) ; lambda_star = one
+       CALL LLST_solve( 4_ip_, 2_ip_, radius, A4, B4, X2, data, control,      &
+                        inform, S = S2 )
+     END IF
+     WRITE( 6, "( ' pass ', I1, ' LLST_solve exit status = ', I0 )" )         &
+       pass, inform%status
+     IF ( inform%status /= 0 .OR. MAXVAL( ABS( X2 - X2_star ) ) > tol .OR.    &
+          ABS( inform%multiplier - lambda_star ) > tol ) THEN
+       WRITE( 6, "( ' x = ', 2ES12.4, ', lambda = ', ES12.4, ' FAILED' )" )   &
+         X2, inform%multiplier
+       STOP 1
+     END IF
+     CALL LLST_terminate( data, control, inform ) ! delete workspace
+   END DO
+   DEALLOCATE( A4%row, A4%col, A4%val, A4%type )
+   DEALLOCATE( S2%row, S2%col, S2%val, S2%type )
+
    DEALLOCATE( A%row, A%col, A%val, A%ptr, A%type, A_dense%val )
    DEALLOCATE( S%row, S%col, S%val, S%ptr, S%type, S_dense%val )
    CLOSE( unit = 23 )
