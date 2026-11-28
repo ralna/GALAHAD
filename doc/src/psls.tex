@@ -340,7 +340,9 @@ indicates the preconditioner required. Possible values are
          as {\tt HSL\_MI28} from HSL (see \S\ref{galmethod}).
 \itt{8}  $\bmP$ is an incomplete factorization of $\bmA$ due 
          to Munskgaard (forthcoming).
-\itt{>8} treated as {\tt 0}.
+\itt{other} values (including {\tt 8}, which is not yet available) give
+         an error return with {\tt inform\%status} =
+         {\tt GALAHAD\_error\_unknown\_precond} ({\tt -45}).
 \end{description}
 {\bf N.B.} Options 3--8 may require additional external software that 
 is not part of the package, and that must be obtained separately.

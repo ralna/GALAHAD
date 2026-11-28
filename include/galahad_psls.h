@@ -1,7 +1,7 @@
 //* \file galahad_psls.h */
 
 /*
- * THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 07:21 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_PSLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -287,7 +287,8 @@ struct psls_control_type {
     ///         as HSL_MI28 from HSL.
     /// \li 8  \f$P\f$ is an incomplete factorization of \f$A\f$ due
     ///         to Munskgaard (forthcoming).
-    /// \li >8 treated as 0.
+    /// \li other values (including 8, which is not yet available) give an
+    ///     error return with status = -45 (unknown preconditioner).
     ///
     /// <b>N.B.</b> Options 3-8 may require additional external software that
     /// is not part of the package, and that must be obtained separately.
