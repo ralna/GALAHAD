@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 07:07 GMT.
 
 #include "galahad_modules.h"
 
@@ -318,6 +318,7 @@
        INTEGER ( KIND = ip_ ) :: m, n, ne, matrix_ne, pardiso_mtype
        CHARACTER ( LEN = len_solver ) :: solver = '                    '
        LOGICAL :: set_res = .FALSE.
+       INTEGER ( KIND = ip_ ) :: getr_rank = - 1
 
        INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: PARDISO_PT
        INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: pardiso_iparm = - 1
@@ -1123,6 +1124,15 @@
          IF ( ABS( data%matrix_dense( i, i ) ) > epsmch ** 0.9 )               &
            inform%rank = inform%rank + 1
        END DO
+
+!  record the rank, as getr cannot solve with a rank-deficient matrix
+
+       data%getr_rank = inform%rank
+       IF ( inform%rank < MIN( data%m, data%n ) .AND.                          &
+            control%out > 0 .AND. control%print_level > 0 )                    &
+         WRITE( control%out, "( ' ULS warning: the matrix has rank ', I0,      &
+        &  ' < ', I0, ', so systems with it cannot be solved by getr' )" )     &
+           inform%rank, MIN( data%m, data%n )
        inform%entries_in_factors = INT( data%m * data%n, KIND = long_ )
        inform%status = GALAHAD_ok
 
@@ -1441,6 +1451,12 @@
 
        IF ( data%m /= data%n ) THEN
          inform%status = GALAHAD_unavailable_option ; RETURN
+       END IF
+
+!  getr cannot solve systems with a rank-deficient (singular) matrix
+
+       IF ( data%getr_rank < data%n ) THEN
+         inform%status = GALAHAD_error_solve ; RETURN
        END IF
        data%RHS( : data%n, 1 ) = RHS( : data%n )
        IF ( PRESENT( trans ) ) THEN

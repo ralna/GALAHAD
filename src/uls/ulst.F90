@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 07:10 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_ULS_TEST_PROGRAM
    USE GALAHAD_KINDS_precision
@@ -12,7 +12,7 @@
    INTEGER ( KIND = ip_ ) :: i, ordering, solver, type, s
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
    INTEGER ( KIND = ip_ ) :: ORDER( n )
-   REAL ( KIND = rp_ ) :: B( n ), X( n )
+   REAL ( KIND = rp_ ) :: B( n ), X( n ), B3( 3 ), X3( 3 )
 !  REAL ( KIND = rp_ ) :: B2( n, 2 ), X2( n, 2 )
    INTEGER ( KIND = ip_ ) :: ROWS( n ), COLS( n )
    INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
@@ -213,6 +213,35 @@
    WRITE( 6, "( '  unknown ' )", advance = 'no' )
    CALL ULS_initialize( 'unknown_solver', data, control, inform )
    WRITE( 6, "( 6X, I6 )" ) inform%status
+   CALL ULS_terminate( data, control, inform )
+
+!  getr cannot solve systems with a singular matrix, here
+!  A = ( 1 2 0 ; 2 4 0 ; 0 0 1 ) of rank 2, and must say so, even when the
+!  system A x = ( 1, 2, 1 ) is consistent
+
+   WRITE( 6, "( /, ' singular getr test' )" )
+   CALL ULS_initialize( 'getr', data, control, inform )
+   control%error = - 1 ; control%warning = - 1
+   control%out = - 1 ; control%print_level = - 1
+   matrix%m = 3 ; matrix%n = 3 ; matrix%ne = 5
+   CALL SMT_put( matrix%type, 'COORDINATE', s )
+   ALLOCATE( matrix%val( 5 ), matrix%row( 5 ), matrix%col( 5 ) )
+   matrix%row = (/ 1, 1, 2, 2, 3 /) ; matrix%col = (/ 1, 2, 1, 2, 3 /)
+   matrix%val = (/ 1.0_rp_, 2.0_rp_, 2.0_rp_, 4.0_rp_, 1.0_rp_ /)
+   CALL ULS_factorize( matrix, data, control, inform )
+   IF ( inform%status /= GALAHAD_ok .OR. inform%rank /= 2 ) THEN
+     WRITE( 6, "( ' factorize status = ', I0, ', rank = ', I0, ' FAILED' )" )  &
+       inform%status, inform%rank
+     STOP 1
+   END IF
+   B3 = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+   CALL ULS_solve( matrix, B3, X3, data, control, inform, .FALSE. )
+   IF ( inform%status /= GALAHAD_error_solve ) THEN
+     WRITE( 6, "( ' solve status = ', I0, ' FAILED' )" ) inform%status
+     STOP 1
+   END IF
+   WRITE( 6, "( ' failure reported' )" )
+   DEALLOCATE( matrix%val, matrix%row, matrix%col, matrix%type )
    CALL ULS_terminate( data, control, inform )
    STOP
    END PROGRAM GALAHAD_ULS_TEST_PROGRAM
