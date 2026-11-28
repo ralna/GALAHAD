@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 08:12 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 16:16 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_EQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -636,7 +636,14 @@
    p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL EQP_initialize( data, control, info )
-   CALL WHICH_sls( control )
+
+!  the inconsistency of the singular preconditioning system can only be
+!  detected if the linear solver reports it, as sytr does, so use sytr
+!  whichever solver has been selected for the other tests
+
+   control%FDC_control%symmetric_linear_solver = 'sytr'
+   control%SBLS_control%symmetric_linear_solver = 'sytr'
+   control%SBLS_control%definite_linear_solver = 'potr'
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == GALAHAD_error_unknown_solver .OR.                       &
         info%status == GALAHAD_unavailable_option ) THEN

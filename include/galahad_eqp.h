@@ -1,7 +1,7 @@
 //* \file galahad_eqp.h */
 
 /*
- * THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 07:33 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 16:16 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_EQP C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -113,7 +113,10 @@
   positive definite on the null space of \f$A\f$; if the preconditioning
   system turns out to be inconsistent, the problem may be unbounded below
   on the feasible set when \f$G = H\f$ (status = -7), and the
-  preconditioner is unsuitable otherwise (status = -15). In order to
+  preconditioner is unsuitable otherwise (status = -15). An inconsistent
+  system can only be detected if the symmetric linear solver reports it,
+  as sytr does; other solvers may instead use an arbitrary solution of the
+  singular system. In order to
   ensure that the minimizer obtained is
   finite, an additional, precautionary trust-region constraint \f$\|s\|
   \leq \Delta\f$ for some suitable positive radius \f$\Delta\f$ is

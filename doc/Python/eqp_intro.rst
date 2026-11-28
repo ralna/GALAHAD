@@ -52,7 +52,10 @@ provides a number of possibilities. The default, $G = H$, thus
 requires $H$ to be positive definite on the null space of $A$; if the
 preconditioning system turns out to be inconsistent, the problem may be
 unbounded below on the feasible set when $G = H$ (status = -7), and the
-preconditioner is unsuitable otherwise (status = -15). In order to ensure that the
+preconditioner is unsuitable otherwise (status = -15). An inconsistent
+system can only be detected if the symmetric linear solver reports it, as
+sytr does; other solvers may instead use an arbitrary solution of the
+singular system. In order to ensure that the
 minimizer obtained is finite, an additional, precautionary trust-region
 constraint $\|s\| \leq \Delta$ for some suitable positive radius 
 $\Delta$ is imposed, and the package ``GLTR`` is used to solve 
