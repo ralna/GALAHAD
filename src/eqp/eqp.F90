@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2026-11-08 AT 10:16 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 07:31 GMT.
 
 #include "galahad_modules.h"
 
@@ -2291,7 +2291,23 @@
           CALL SBLS_solve( n, m, A, data%C0, data%SBLS_data,                   &
              data%SBLS_control, inform%SBLS_inform, data%VECTOR )
 
-          IF ( inform%SBLS_inform%status < 0 ) THEN
+!  the constraints are consistent (the feasibility phase has succeeded), so
+!  an inconsistent preconditioning system means that G is not positive
+!  definite on the null space of A. When G = H, the problem is then
+!  unbounded below on the feasible set; otherwise the preconditioner is
+!  unsuitable
+
+          IF ( inform%SBLS_inform%status ==                                    &
+                 GALAHAD_error_primal_infeasible ) THEN
+            IF ( inform%SBLS_inform%preconditioner == 2 ) THEN
+              inform%status = GALAHAD_error_unbounded
+            ELSE
+              inform%status = GALAHAD_error_preconditioner
+            END IF
+            IF ( printt ) WRITE( out, "( /, A, ' the preconditioning system',  &
+           &  ' is inconsistent, status = ', I0 )" ) prefix, inform%status
+            RETURN
+          ELSE IF ( inform%SBLS_inform%status < 0 ) THEN
             inform%status = inform%SBLS_inform%status
             RETURN
           END IF

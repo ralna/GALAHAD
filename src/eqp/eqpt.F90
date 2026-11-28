@@ -1,8 +1,11 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 16:16 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_EQP_EXAMPLE
    USE GALAHAD_KINDS_precision
    USE GALAHAD_EQP_precision
+   USE GALAHAD_SYMBOLS, ONLY: GALAHAD_ok, GALAHAD_error_unknown_solver,        &
+                              GALAHAD_unavailable_option,                      &
+                              GALAHAD_error_primal_infeasible
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
@@ -609,6 +612,51 @@
    CALL EQP_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
    DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
+   DEALLOCATE( p%G, p%X, p%Y, p%Z, p%C )
+
+!  ======================================================================
+!  minimize 1 + g^T x subject to 2 x_1 + x_2 + 3 = 0 and x_2 + x_3 = 0,
+!  with H = 0 and g = ( 0, 2, 0 ). The constraints are consistent, but g is
+!  not in the range of A^T, so the problem is unbounded below along the
+!  null-space direction ( 1, -2, 2 ); this must not be reported as
+!  inconsistent constraints
+!  ======================================================================
+
+   WRITE( 6, "( /, ' unbounded problem test' )" )
+   n = 3 ; m = 2 ; a_ne = 4
+   ALLOCATE( p%G( n ), p%X( n ), p%Y( m ), p%Z( n ), p%C( m ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%f = 1.0_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+   p%C = (/ 3.0_rp_, 0.0_rp_ /)
+   CALL SMT_put( p%H%type, 'ZERO', smt_stat )
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = a_ne
+   p%A%row = (/ 1, 1, 2, 2 /) ; p%A%col = (/ 1, 2, 2, 3 /)
+   p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+   CALL EQP_initialize( data, control, info )
+
+!  the inconsistency of the singular preconditioning system can only be
+!  detected if the linear solver reports it, as sytr does, so use sytr
+!  whichever solver has been selected for the other tests
+
+   control%FDC_control%symmetric_linear_solver = 'sytr'
+   control%SBLS_control%symmetric_linear_solver = 'sytr'
+   control%SBLS_control%definite_linear_solver = 'potr'
+   CALL EQP_solve( p, data, control, info )
+   IF ( info%status == GALAHAD_error_unknown_solver .OR.                       &
+        info%status == GALAHAD_unavailable_option ) THEN
+     WRITE( 6, "( ' skipped, EQP_solve exit status = ', I0 )" ) info%status
+   ELSE IF ( info%status == GALAHAD_ok .OR.                                    &
+             info%status == GALAHAD_error_primal_infeasible ) THEN
+     WRITE( 6, "( ' EQP_solve exit status = ', I0, ' FAILED' )" ) info%status
+     STOP 1
+   ELSE
+     WRITE( 6, "( ' EQP_solve exit status = ', I0 )" ) info%status
+   END IF
+   CALL EQP_terminate( data, control, info )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type, p%H%type )
    DEALLOCATE( p%G, p%X, p%Y, p%Z, p%C )
    WRITE( 6, "( /, ' tests completed' )" )
 
