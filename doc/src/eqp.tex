@@ -1013,8 +1013,14 @@ The required constrained minimizer of $q(\bms)$ is obtained
 by implictly applying the preconditioned conjugate-gradient method
 in the null space of $\bmA$. Any preconditioner of the form
 \disp{ \bmK_{G} = \mat{cc}{ \bmG & \bmA^T \\ \bmA  & 0 }}
+for which $\bmG$ is positive definite on the null space of $\bmA$
 is suitable, and the \galahad\ package {\tt SBLS}
-provides a number of possibilities. In order to ensure that the
+provides a number of possibilities. The default, $\bmG = \bmH$, thus
+requires $\bmH$ to be positive definite on the null space of $\bmA$;
+if the preconditioning system turns out to be inconsistent, the problem
+may be unbounded below on the feasible set when $\bmG = \bmH$ (and an
+error return with {\tt inform\%status} = {\tt -7} occurs), and the
+preconditioner is unsuitable otherwise ({\tt inform\%status} = {\tt -15}). In order to ensure that the
 minimizer obtained is finite, an additional, precautionary trust-region
 constraint $\|s\| \leq \Delta$ for some suitable positive radius 
 $\Delta$ is imposed, and the \galahad\ package {\tt GLTR} is used to solve 
