@@ -1,9 +1,11 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 14:26 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 08:08 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_WCP_test_program
    USE GALAHAD_KINDS_precision
    USE GALAHAD_QPT_precision
    USE GALAHAD_WCP_precision
+   USE GALAHAD_SYMBOLS, ONLY: GALAHAD_error_unknown_solver,                  &
+                              GALAHAD_unavailable_option
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
@@ -579,20 +581,28 @@
    p%X = 0.0_rp_
    p%Y_l = 0.0_rp_ ; p%Z_l = 0.0_rp_ ; p%Y_u = 0.0_rp_ ; p%Z_u = 0.0_rp_
    CALL WCP_solve( p, data, control, info )
-   IF ( info%status /= 0 ) THEN
+
+!  skip the test if the linear solver requested is not available
+
+   IF ( info%status == GALAHAD_error_unknown_solver .OR.                       &
+        info%status == GALAHAD_unavailable_option ) THEN
+     WRITE( 6, "( ' skipped, WCP_solve exit status = ', I0 )" ) info%status
+   ELSE IF ( info%status /= 0 ) THEN
      WRITE( 6, "( ' WCP_solve exit status = ', I0, ' FAILED' )" ) info%status
      STOP 1
-   END IF
-   R = p%G - p%Z_l - p%Z_u
-   DO l = 1, a_ne
-     R( p%A%col( l ) ) = R( p%A%col( l ) ) - p%A%val( l ) *                    &
-       ( p%Y_l( p%A%row( l ) ) + p%Y_u( p%A%row( l ) ) )
-   END DO
-   IF ( MAXVAL( ABS( R ) ) > control%stop_d ) THEN
-     WRITE( 6, "( ' dual residual = ', ES8.1, ' FAILED' )" ) MAXVAL( ABS( R ) )
-     STOP 1
    ELSE
-     WRITE( 6, "( ' dual equations satisfied' )" )
+     R = p%G - p%Z_l - p%Z_u
+     DO l = 1, a_ne
+       R( p%A%col( l ) ) = R( p%A%col( l ) ) - p%A%val( l ) *                  &
+         ( p%Y_l( p%A%row( l ) ) + p%Y_u( p%A%row( l ) ) )
+     END DO
+     IF ( MAXVAL( ABS( R ) ) > control%stop_d ) THEN
+       WRITE( 6, "( ' dual residual = ', ES8.1, ' FAILED' )" )                 &
+         MAXVAL( ABS( R ) )
+       STOP 1
+     ELSE
+       WRITE( 6, "( ' dual equations satisfied' )" )
+     END IF
    END IF
    CALL WCP_terminate( data, control, info )
    DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type, p%G )
