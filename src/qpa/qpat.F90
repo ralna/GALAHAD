@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 13:13 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 09:28 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPA_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -42,7 +42,12 @@
 
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
-   TYPE ( QPA_data_type ) :: data
+
+!  QPA_data_type is large (over 0.5 Mbyte), and as the tests are compiled with
+!  -fopenmp, local variables would otherwise be placed on the stack, which
+!  may then overflow (for example on Windows, whose default stack is small)
+
+   TYPE ( QPA_data_type ), SAVE :: data
    TYPE ( QPA_control_type ) :: control
    TYPE ( QPA_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, smt_stat, i
@@ -1003,7 +1008,7 @@
    REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: rho
    LOGICAL, OPTIONAL, INTENT( OUT ) :: restored
    TYPE ( QPT_problem_type ) :: p
-   TYPE ( QPA_data_type ) :: data
+   TYPE ( QPA_data_type ), SAVE :: data
    TYPE ( QPA_control_type ) :: ctrl
    TYPE ( QPA_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: s, mm
@@ -1074,7 +1079,7 @@
 
    SUBROUTINE set_controls( control )
    TYPE ( QPA_control_type ), INTENT( OUT ) :: control
-   TYPE ( QPA_data_type ) :: data
+   TYPE ( QPA_data_type ), SAVE :: data
    TYPE ( QPA_inform_type ) :: inform
    CALL QPA_initialize( data, control, inform )
    CALL QPA_terminate( data, control, inform )
