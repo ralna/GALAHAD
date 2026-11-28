@@ -1,9 +1,11 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 08:08 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_WCP_test_program
    USE GALAHAD_KINDS_precision
    USE GALAHAD_QPT_precision
    USE GALAHAD_WCP_precision
+   USE GALAHAD_SYMBOLS, ONLY: GALAHAD_error_unknown_solver,                  &
+                              GALAHAD_unavailable_option
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
@@ -11,8 +13,9 @@
    TYPE ( WCP_control_type ) :: control
    TYPE ( WCP_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: i, n, m, a_ne, gradient_kind, data_storage_type
-   INTEGER ( KIND = ip_ ) :: status, smt_stat
+   INTEGER ( KIND = ip_ ) :: status, smt_stat, l
    INTEGER ( KIND = ip_ ) :: scratch_out = 56
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
    CHARACTER ( len = 1 ) :: st
 !  CHARACTER( 10 ) :: probname = "TESTDECK  "
 !  CHARACTER( 16 ) :: filename = "TESTDECK.SIF    "
@@ -550,6 +553,62 @@
    DEALLOCATE( p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y_l, p%Z_l, p%Y_u, p%Z_u, p%C )
    DEALLOCATE( p%A%type )
+
+!  ======================================================================
+!  check that the multipliers of equality constraints are returned. For
+!  g = ( 0, 2, 0 ), 1 <= 2 x_1 + x_2 <= 2, x_2 + x_3 = 2, -1 <= x_1 <= 1
+!  and x_3 <= 2, the well-centred point must satisfy the dual equations
+!  g = A^T ( y_l + y_u ) + z_l + z_u to within the dual accuracy required
+!  ======================================================================
+
+   WRITE( 6, "( /, ' equality multiplier test ', / )" )
+   n = 3 ; m = 2 ; a_ne = 4
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%C_l( m ), p%C_u( m ) )
+   ALLOCATE( p%X( n ), p%Y_l( m ), p%Z_l( n ), p%Y_u( m ), p%Z_u( n ) )
+   ALLOCATE( p%C( m ), R( n ) )
+   p%new_problem_structure = .TRUE.
+   p%n = n ; p%m = m ; p%gradient_kind = 2
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+   p%C_l = (/ 1.0_rp_, 2.0_rp_ /) ; p%C_u = (/ 2.0_rp_, 2.0_rp_ /)
+   p%X_l = (/ - 1.0_rp_, - infty, - infty /)
+   p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
+   CALL SMT_put( p%A%type, 'COORDINATE', smt_stat ) ; p%A%ne = a_ne
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   p%A%row = (/ 1, 1, 2, 2 /) ; p%A%col = (/ 1, 2, 2, 3 /)
+   CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
+   p%X = 0.0_rp_
+   p%Y_l = 0.0_rp_ ; p%Z_l = 0.0_rp_ ; p%Y_u = 0.0_rp_ ; p%Z_u = 0.0_rp_
+   CALL WCP_solve( p, data, control, info )
+
+!  skip the test if the linear solver requested is not available
+
+   IF ( info%status == GALAHAD_error_unknown_solver .OR.                       &
+        info%status == GALAHAD_unavailable_option ) THEN
+     WRITE( 6, "( ' skipped, WCP_solve exit status = ', I0 )" ) info%status
+   ELSE IF ( info%status /= 0 ) THEN
+     WRITE( 6, "( ' WCP_solve exit status = ', I0, ' FAILED' )" ) info%status
+     STOP 1
+   ELSE
+     R = p%G - p%Z_l - p%Z_u
+     DO l = 1, a_ne
+       R( p%A%col( l ) ) = R( p%A%col( l ) ) - p%A%val( l ) *                  &
+         ( p%Y_l( p%A%row( l ) ) + p%Y_u( p%A%row( l ) ) )
+     END DO
+     IF ( MAXVAL( ABS( R ) ) > control%stop_d ) THEN
+       WRITE( 6, "( ' dual residual = ', ES8.1, ' FAILED' )" )                 &
+         MAXVAL( ABS( R ) )
+       STOP 1
+     ELSE
+       WRITE( 6, "( ' dual equations satisfied' )" )
+     END IF
+   END IF
+   CALL WCP_terminate( data, control, info )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type, p%G )
+   DEALLOCATE( p%X_l, p%X_u, p%C_l, p%C_u )
+   DEALLOCATE( p%X, p%Y_l, p%Z_l, p%Y_u, p%Z_u, p%C, R )
+
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
