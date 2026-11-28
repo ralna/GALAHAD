@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2026-11-08 AT 10:16 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 14:22 GMT.
 
 #include "galahad_modules.h"
 
@@ -5972,6 +5972,13 @@
 !  Print details of the solution obtained
 
   600 CONTINUE
+
+!  the multipliers of the equality constraints are only held in Y during the
+!  iteration; record them in Y_l and Y_u, split by sign so that y_l >= 0 and
+!  y_u <= 0 (the equality constraints are not scaled)
+
+      Y_l( : dims%c_equality ) = MAX( Y( : dims%c_equality ), zero )
+      Y_u( : dims%c_equality ) = MIN( Y( : dims%c_equality ), zero )
 
 !  Compute the final objective function value
 
