@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 14:35 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 12:42 GMT.
 
 #include "galahad_modules.h"
 
@@ -2208,6 +2208,10 @@
 !  Stage 2 - Factorize (and possibly modify) P
 !  -------------------------------------------
 
+!  (control returns here if the Schnabel-Eskow factorization is replaced by
+!  the GMPS one, see below)
+
+  220 CONTINUE
       SELECT CASE ( inform%preconditioner )
 
 !  The diagonal matrix needs not be factorized
@@ -2297,6 +2301,23 @@
          &  'SLS_factorize: status = ', I0 )" ) prefix,                        &
              inform%SLS_inform%status
           inform%status = GALAHAD_error_factorization ;  GO TO 930 ; END IF
+
+!  not every solver provides the Schnabel-Eskow modifications, and those that
+!  do may not modify every small or negative pivot. If the resulting P is not
+!  positive definite (as far as the solver can tell), use the GMPS
+!  modification of the indefinite factorization instead
+
+        IF ( inform%SLS_inform%negative_eigenvalues > 0 .OR.                   &
+             ( inform%SLS_inform%rank >= 0 .AND.                               &
+               inform%SLS_inform%rank < data%n_sub ) ) THEN
+          IF ( printi ) WRITE( out, "( /, A, ' SE factorization using ', A,    &
+         &  ' is not positive definite, so the GMPS one is used instead' )" )  &
+             prefix, TRIM( control%symmetric_linear_solver )
+          CALL SLS_terminate( data%SLS_data, data%SLS_control,                 &
+                              inform%SLS_inform )
+          inform%preconditioner = preconditioner_full_gmps
+          GO TO 220
+        END IF
 
         inform%factorization_integer =                                         &
           MAX( inform%factorization_integer,                                   &

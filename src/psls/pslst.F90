@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 14:55 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 12:42 GMT.
 #include "galahad_modules.h"
    PROGRAM PSLS_TEST_PROGRAM
    USE GALAHAD_KINDS_precision
@@ -15,6 +15,62 @@
    INTEGER ( KIND = ip_ ) :: SUB( 3 ) = (/ 1, 3, 5 /)
    INTEGER ( KIND = ip_ ) :: i, s, stat_faf, stat_sol, prec
    CHARACTER ( LEN = 1 ) :: st
+   TYPE ( SMT_type ) :: A3
+   REAL ( KIND = rp_ ) :: X3( 3 ), P_inv( 3, 3 ), minor
+   LOGICAL :: skip
+
+!  -------------------------------------------------------------------
+!  the Schnabel-Eskow preconditioner must be positive definite, even
+!  for an indefinite matrix and a solver that does not modify its
+!  pivots (GMPS is then used instead). For the indefinite
+!  A = ( 1 0 0 ; 0 -2 1 ; 0 1 3 ), check that P^{-1} has positive leading
+!  principal minors
+!  -------------------------------------------------------------------
+
+   WRITE( 6, "( ' Schnabel-Eskow test' )" )
+   CALL SMT_put( A3%type, 'COORDINATE', s )
+   A3%n = 3 ; A3%ne = 4
+   ALLOCATE( A3%val( 4 ), A3%row( 4 ), A3%col( 4 ) )
+   A3%row = (/ 1, 2, 3, 3 /) ; A3%col = (/ 1, 2, 2, 3 /)
+   A3%val = (/ 1.0_rp_, - 2.0_rp_, 1.0_rp_, 3.0_rp_ /)
+   CALL PSLS_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   control%preconditioner = 4
+   CALL PSLS_form_and_factorize( A3, data, control, inform )
+
+!  skip the test if the solver cannot provide the GMPS modification, or
+!  cannot tell whether P is positive definite
+
+   skip = inform%status == GALAHAD_unavailable_option .OR.                     &
+          inform%status == GALAHAD_error_unknown_solver .OR.                   &
+          ( inform%status == GALAHAD_ok .AND. inform%preconditioner == 4 .AND. &
+            inform%SLS_inform%negative_eigenvalues < 0 )
+   IF ( skip ) THEN
+     WRITE( 6, "( ' skipped, status = ', I0 )" ) inform%status
+   ELSE IF ( inform%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' form status = ', I0, ' FAILED' )" ) inform%status
+     STOP 1
+   ELSE
+     DO i = 1, 3
+       X3 = 0.0_rp_ ; X3( i ) = 1.0_rp_
+       CALL PSLS_apply( X3, data, control, inform )
+       P_inv( : , i ) = X3
+     END DO
+     minor = P_inv( 1, 1 ) * P_inv( 2, 2 ) - P_inv( 1, 2 ) * P_inv( 2, 1 )
+     IF ( P_inv( 1, 1 ) <= 0.0_rp_ .OR. minor <= 0.0_rp_ .OR.                  &
+          P_inv( 1, 1 ) * ( P_inv( 2, 2 ) * P_inv( 3, 3 )                      &
+            - P_inv( 2, 3 ) * P_inv( 3, 2 ) )                                  &
+          - P_inv( 1, 2 ) * ( P_inv( 2, 1 ) * P_inv( 3, 3 )                    &
+            - P_inv( 2, 3 ) * P_inv( 3, 1 ) )                                  &
+          + P_inv( 1, 3 ) * ( P_inv( 2, 1 ) * P_inv( 3, 2 )                    &
+            - P_inv( 2, 2 ) * P_inv( 3, 1 ) ) <= 0.0_rp_ ) THEN
+       WRITE( 6, "( ' P is not positive definite FAILED' )" )
+       STOP 1
+     END IF
+     WRITE( 6, "( ' P positive definite', / )" )
+   END IF
+   CALL PSLS_terminate( data, control, inform )
+   DEALLOCATE( A3%val, A3%row, A3%col, A3%type )
 !  ---------------------------------------------
 !  test basic storage and preconditioner options
 !  ---------------------------------------------
