@@ -119,7 +119,7 @@ which preconditioner to use:
 
 * 8 $P$ is an incomplete factorization of $A$ due to Munskgaard (forthcoming).
 
-* >8 treated as 0.
+* other values (including 8, which is not yet available) give an error return with status = -45 (unknown preconditioner).
 
 **N.B.** Options 3-8 may require additional external software that is not part of the package, and that must be obtained separately.
 

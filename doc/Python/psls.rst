@@ -98,9 +98,10 @@ functions
                $P$ is an incomplete factorization of $A$ due  to
                Munskgaard (forthcoming).
 
-             * **>8**
+             * **other values**
 
-               treated as 0.  
+               (including 8, which is not yet available) give an error
+               return with status = -45 (unknown preconditioner).
 
              Options 3-8 may require
              additional external software that is not part of the
