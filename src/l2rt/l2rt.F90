@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 08:19 GMT.
 
 #include "galahad_modules.h"
 
@@ -1738,9 +1738,9 @@
         pi = y_norm
 
         IF ( p > two ) THEN
-          nu = TWO_NORM( RES )
+          nu = SQRT( TWO_NORM( RES ) ** 2 + mu * pi ** 2 )
           omega = pi ** ( p - two )
-          error = sigma * omega * ( nu / lambda ) - one
+          error = sigma * omega * ( nu / ( lambda - mu ) ) - one
         ELSE
           IF ( mu > zero ) THEN
             nu = SQRT( TWO_NORM( RES ) ** 2 + mu *  pi ** 2 )
@@ -1770,17 +1770,17 @@
 !  Compute the derivatives of pi and nu
 
           pi_prime = - ( h_norm / y_norm ) * h_norm
-          nu_prime = lambda * ( h_norm / nu ) * h_norm
-          prod = omega * ( nu / lambda )
+          nu_prime = ( lambda - mu ) * ( h_norm / nu ) * h_norm
+          prod = omega * ( nu / ( lambda - mu ) )
 
 !  Compute phi and its Newton correction
 
           phi = prod ** power - ( one / sigma ) ** power
           phi_prime = power * ( prod ** ( power - one ) ) *                    &
-            ( nu_prime * omega / lambda                                        &
+            ( nu_prime * omega / ( lambda - mu )                               &
               + ( p - two ) * ( pi ** ( p - three ) ) *                        &
-                  pi_prime * nu / lambda                                       &
-              - ( nu * omega / ( lambda ** 2 ) ) )
+                  pi_prime * nu / ( lambda - mu )                              &
+              - ( nu * omega / ( ( lambda - mu ) ** 2 ) ) )
         ELSE
 
 !  Compute the derivatives of pi and nu
@@ -1816,10 +1816,10 @@
 
 !  Compute psi and its Newton correction
 
-              prod = nu / lambda
+              prod = nu / ( lambda - mu )
               psi = prod ** power - one / ( sigma * omega ) ** power
               psi_prime = power * ( prod ** ( power - one ) *                  &
-                  ( nu_prime / lambda - nu /lambda ** 2 )                      &
+                  ( nu_prime / ( lambda - mu ) - nu / ( lambda - mu ) ** 2 )   &
                 - ( one / ( sigma * omega ) ** ( power-one ) ) *               &
                   ( ( two - p ) * pi_prime / ( sigma * pi ** ( p - one ) ) ) )
               dl_psi = - psi / psi_prime
@@ -1874,9 +1874,9 @@
         pi = y_norm
 
         IF ( p > two ) THEN
-          nu = TWO_NORM( RES )
+          nu = SQRT( TWO_NORM( RES ) ** 2 + mu * pi ** 2 )
           omega = pi ** ( p - two )
-          error = sigma * omega * ( nu / lambda ) - one
+          error = sigma * omega * ( nu / ( lambda - mu ) ) - one
         ELSE
           IF ( mu > zero ) THEN
             nu = SQRT( TWO_NORM( RES ) ** 2 + mu *  pi ** 2 )
@@ -1937,17 +1937,17 @@
 !  Compute the derivatives of pi and nu
 
           pi_prime = - ( h_norm / y_norm ) * h_norm
-          nu_prime = lambda * ( h_norm / nu ) * h_norm
-          prod = omega * ( nu / lambda )
+          nu_prime = ( lambda - mu ) * ( h_norm / nu ) * h_norm
+          prod = omega * ( nu / ( lambda - mu ) )
 
 !  Compute phi and its Newton correction
 
           phi = prod ** power - ( one / sigma ) ** power
           phi_prime = power * ( prod ** ( power - one ) ) *                    &
-            ( nu_prime * omega / lambda                                        &
+            ( nu_prime * omega / ( lambda - mu )                               &
               + ( p - two ) * ( pi ** ( p - three ) ) *                        &
-                  pi_prime * nu / lambda                                       &
-              - ( nu * omega / ( lambda ** 2 ) ) )
+                  pi_prime * nu / ( lambda - mu )                              &
+              - ( nu * omega / ( ( lambda - mu ) ** 2 ) ) )
         ELSE
 
 !  Compute the derivatives of pi and nu
@@ -1984,10 +1984,10 @@
 
 !  Compute psi and its Newton correction
 
-            prod = nu / lambda
+            prod = nu / ( lambda - mu )
             psi = prod ** power - one / ( sigma * omega ) ** power
             psi_prime = power * ( prod ** ( power - one ) *                    &
-                ( nu_prime / lambda - nu /lambda ** 2 )                        &
+                ( nu_prime / ( lambda - mu ) - nu / ( lambda - mu ) ** 2 )     &
               - ( one / ( sigma * omega ) ** ( power-one ) ) *                 &
                 ( ( two - p ) * pi_prime / ( sigma * pi ** ( p - one ) ) ) )
             dl_psi = - psi / psi_prime

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 12:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 08:21 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L2RT_test_deck
    USE GALAHAD_KINDS_precision
@@ -15,6 +15,9 @@
    REAL ( KIND = rp_ ), DIMENSION( m2 ) :: U2
    REAL ( KIND = rp_ ), DIMENSION( 0 ) :: X0, V0, U0
    REAL ( KIND = rp_ ) :: p, sigma, mu
+   REAL ( KIND = rp_ ) :: x_norm, nu, lambda
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: G
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: R
 
    TYPE ( L2RT_data_type ) :: data
    TYPE ( L2RT_control_type ) :: control
@@ -254,6 +257,63 @@
       CALL L2RT_terminate( data, control, inform ) !  delete internal workspace
    END DO
    CLOSE( unit = 23 )
+
+!  for p > 2, check that the shift mu is taken into account. The solution of
+!  min sqrt( ||A x - b||^2 + mu ||x||^2 ) + sigma / p ||x||^p, with
+!  A = ( I ; diag( 1, ..., n ) ) and b = 1, satisfies
+!  A^T ( A x - b ) + lambda x = 0 with
+!  lambda = mu + sigma ||x||^(p-2) sqrt( ||A x - b||^2 + mu ||x||^2 )
+
+   WRITE( 6, "( /, ' shifted problem test' )" )
+   p = 3.0_rp_ ; sigma = one ; mu = one
+   CALL L2RT_initialize( data, control, inform )
+   control%stop_relative = EPSILON( one ) ; control%stop_absolute = zero
+   inform%status = 1 ; U = one
+   DO
+     CALL L2RT_solve( m, n, p, sigma, mu, X, U, V, data, control, inform )
+     SELECT CASE( inform%status )
+     CASE( 2 )
+       U( : n ) = U( : n ) + V
+       DO i = 1, n
+         U( n + i ) = U( n + i ) + i * V( i )
+       END DO
+     CASE( 3 )
+       V = V + U( : n )
+       DO i = 1, n
+         V( i ) = V( i ) + i * U( n + i )
+       END DO
+     CASE ( 4 )
+        U = one
+     CASE DEFAULT
+        EXIT
+     END SELECT
+   END DO
+   IF ( inform%status /= GALAHAD_ok ) THEN
+     WRITE( 6, "( ' L2RT_solve exit status = ', I0, ' FAILED' )" )            &
+       inform%status
+     STOP 1
+   END IF
+   CALL L2RT_terminate( data, control, inform )
+
+!  the residual of the optimality conditions, relative to ||A^T b||
+
+   R( : n ) = X - one
+   DO i = 1, n
+     R( n + i ) = i * X( i ) - one
+   END DO
+   x_norm = SQRT( DOT_PRODUCT( X, X ) )
+   nu = SQRT( DOT_PRODUCT( R, R ) + mu * x_norm ** 2 )
+   lambda = mu + sigma * x_norm ** ( p - 2.0_rp_ ) * nu
+   DO i = 1, n
+     G( i ) = R( i ) + i * R( n + i ) + lambda * X( i )
+   END DO
+   IF ( MAXVAL( ABS( G ) ) >                                                   &
+          SQRT( EPSILON( one ) ) * REAL( n + 1, KIND = rp_ ) ) THEN
+     WRITE( 6, "( ' optimality residual = ', ES8.1, ' FAILED' )" )            &
+       MAXVAL( ABS( G ) )
+     STOP 1
+   END IF
+   WRITE( 6, "( ' optimality conditions satisfied' )" )
    WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_L2RT_test_deck
