@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 06:58 GMT.
 
 #include "galahad_modules.h"
 
@@ -1551,6 +1551,7 @@
       REAL ( KIND = rp_ ) :: new_perturbation, this_perturbation, r_a
       LOGICAL :: printi, printt, printp, printd
       LOGICAL :: c_stat_required, x_stat_required, penalty_objective, skip
+      LOGICAL :: direct_step
 
       out = control%out
       printi = out > 0 .AND. control%print_level >= 1
@@ -1571,7 +1572,8 @@
 !  use a direct method
 !  . . . . . . . . . .
 
-      IF ( control%subspace_direct ) THEN
+      direct_step = control%subspace_direct
+      IF ( direct_step ) THEN
         IF ( refactor ) THEN
 
 !  form the vector of primal-active right-hand sides of (S) in sol
@@ -1610,6 +1612,17 @@
           CALL SBLS_fredholm_alternative( n, A_sbls%m, A_sbls,                 &
                                           SBLS_data%efactors, SBLS_control,    &
                                           inform%SBLS_inform, SOL )
+
+!  if the linear solver cannot provide the Fredholm alternative, use the
+!  iterative method instead
+
+          IF ( inform%SBLS_inform%sls_solve_status ==                          &
+                 GALAHAD_unavailable_option ) THEN
+            IF ( printt ) WRITE( out, "( A, ' Fredholm alternative',           &
+           &  ' unavailable, so the iterative method is used' )" ) prefix
+            direct_step = .FALSE.
+            GO TO 110
+          END IF
           IF ( inform%SBLS_inform%status < 0 ) THEN
             IF ( printi ) WRITE( out,                                          &
                "( A, ' SBLS_fredholm_alternative, status = ', I0 )" )          &
@@ -1758,10 +1771,13 @@
           END IF
         END IF
 
-!  use an iterative method
+  110 END IF
+
+!  use an iterative method (this is also used if the direct method cannot
+!  provide the Fredholm alternative)
 !  . . . . . . . . . . . .
 
-      ELSE
+      IF ( .NOT. direct_step ) THEN
 
 !  record the dual gradient gc^d_k = b_F_k of q_k^d(y_F)
 

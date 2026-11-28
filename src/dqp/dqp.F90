@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-25 AT 08:17 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 11:26 GMT.
 
 #include "galahad_modules.h"
 
@@ -322,7 +322,10 @@
 
 !   if %subspace_direct is true, the subspace step will be calculated
 !    using a direct (factorization) method, while if it is false, an
-!    iterative (conjugate-gradient) method will be used.
+!    iterative (conjugate-gradient) method will be used. When the factorized
+!    system is singular, the direct method needs a linear solver that
+!    provides the Fredholm alternative (currently MA57, MA77 or MA97);
+!    with other solvers, the iterative method is used for such steps
 
         LOGICAL :: subspace_direct = .FALSE.
 
@@ -3216,6 +3219,7 @@
       LOGICAL :: stat_required, dolid, diagonal_h, composite_g
       LOGICAL :: identity_h, scaled_identity_h, fresh_start, first_iteration
       LOGICAL :: subspace_direct, subspace_direct_save, penalty_objective
+      LOGICAL :: direct_step, direct_failed
       LOGICAL :: active_set_recorded
       CHARACTER ( LEN = 1 ) :: skip
       CHARACTER ( LEN = 80 ) :: array_name
@@ -5524,7 +5528,8 @@
             "( A, ' direct exploration of subspace' )" ) prefix
         END IF
 
-        IF ( subspace_direct ) THEN
+        direct_step = subspace_direct ; direct_failed = .FALSE.
+        IF ( direct_step ) THEN
           IF ( control%subspace_alternate )                                    &
              subspace_direct = .NOT. subspace_direct
 
@@ -5760,6 +5765,19 @@
 !  prefix, MAXVAL( ABS( SOL( : n + m_sbls ) ) )
               growth = MAXVAL( ABS( SOL( : n + m_sbls ) ) ) / growth
               IF ( growth > control%max_growth ) refactor = .TRUE.
+            END IF
+
+!  if the linear solver cannot provide the Fredholm alternative for the
+!  singular system, compute the subspace step iteratively instead
+
+            IF ( inform%SBLS_inform%rank_def .AND.                             &
+                 inform%SBLS_inform%sls_solve_status ==                        &
+                   GALAHAD_unavailable_option ) THEN
+              IF ( printt ) WRITE( out, "( A, ' Fredholm alternative',         &
+             &  ' unavailable, so the subspace step is computed',              &
+             &  ' iteratively' )" ) prefix
+              direct_step = .FALSE. ; direct_failed = .TRUE.
+              GO TO 420
             END IF
             IF ( inform%SBLS_inform%status < 0 ) THEN
               IF ( printi ) WRITE( out,                                        &
@@ -6072,11 +6090,14 @@
           END IF
 !write(6,"( 'sol_y ', / ( 5ES12.4 ) )" ) SOL( n + 1 : n + m_sbls )
 
-!  use an iterative method to find the subspace
+  420   END IF
+
+!  use an iterative method to find the subspace (this is also used if the
+!  direct method cannot handle a singular system)
 !  . . . . . . . . . . . . . . . . . . . . . . .
 
-        ELSE
-          IF ( control%subspace_alternate )                                    &
+        IF ( .NOT. direct_step ) THEN
+          IF ( control%subspace_alternate .AND. .NOT. direct_failed )          &
              subspace_direct = .NOT. subspace_direct
 
 !  compute the dual residual r_k = g - J_F_k^T v_k  and store in SOL

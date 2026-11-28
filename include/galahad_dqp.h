@@ -1,7 +1,7 @@
 //* \file galahad_dqp.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 11:26 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DQP C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -542,7 +542,11 @@ struct dqp_control_type {
     /// \brief
     /// if .subspace_direct is true, the subspace step will be calculated
     /// using a direct (factorization) method, while if it is false, an
-    /// iterative (conjugate-gradient) method will be used.
+    /// iterative (conjugate-gradient) method will be used. When the
+    /// factorized system is singular, the direct method needs a linear
+    /// solver that provides the Fredholm alternative (currently MA57, MA77
+    /// or MA97); with other solvers, the iterative method is used for such
+    /// steps.
     bool subspace_direct;
 
     /// \brief

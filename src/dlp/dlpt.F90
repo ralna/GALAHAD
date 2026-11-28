@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 08:07 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 12:46 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -1094,6 +1094,54 @@
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,            &
                X_stat, C_stat )
    DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+
+!  ======================================================================
+!  check that the subspace steps may be computed directly. The systems
+!  involved are often singular, and then need the Fredholm alternative,
+!  which only some linear solvers provide; the others must fall back on
+!  the iterative method. The third random LP in the sequence above is
+!  solved as given (so the pounce applies) and as an l_1 penalty problem
+!  with rho = 10 (so the solution is found by extrapolation)
+!  ======================================================================
+
+   WRITE( 6, "( /, ' direct subspace tests ', / )" )
+   DO i = 0, 1
+     lp_seed = 12345
+     DO lp_trial = 1, 2
+       n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+       CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+       DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z )
+       DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+     END DO
+     lp_trial = 3
+     n = 10 * ( 1 + ( lp_trial + 2 ) / 3 ) ; m = n / 2
+     CALL LP_planted( p, n, m, lp_seed, lp_f_sol )
+     ALLOCATE( X_stat( n ), C_stat( m ) )
+     CALL DLP_initialize( data, control, info )
+     control%infinity = infty
+     control%symmetric_linear_solver = 'sytr '
+     control%definite_linear_solver = 'potr '
+     control%subspace_direct = .TRUE.
+     control%rho = 10.0_rp_ * REAL( i, rp_ )
+     CALL DLP_solve( p, data, control, info, C_stat, X_stat )
+     lp_f = DOT_PRODUCT( p%G( : n ), p%X( : n ) )
+     IF ( info%status /= GALAHAD_ok ) THEN
+       WRITE( 6, "( ' rho = ', F4.1, ': DLP_solve exit status = ', I0,        &
+      &             ' FAILED' )" ) control%rho, info%status
+       STOP 1
+     ELSE IF ( ABS( lp_f - lp_f_sol ) > SQRT( EPSILON( 1.0_rp_ ) ) *          &
+               MAX( 1.0_rp_, ABS( lp_f_sol ) ) ) THEN
+       WRITE( 6, "( ' rho = ', F4.1, ': objective error = ', ES8.1,           &
+      &             ' FAILED' )" ) control%rho, ABS( lp_f - lp_f_sol )
+       STOP 1
+     ELSE
+       WRITE( 6, "( ' rho = ', F4.1, ': solution correct' )" ) control%rho
+     END IF
+     CALL DLP_terminate( data, control, info )
+     DEALLOCATE( p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z,          &
+                 X_stat, C_stat )
+     DEALLOCATE( p%A%row, p%A%col, p%A%val, p%A%type, p%H%type )
+   END DO
 
    WRITE( 6, "( /, ' tests completed' )" )
 

@@ -500,7 +500,7 @@ if .exact_arc_search is true, an exact piecewise arc search will be performed. O
 
 	Bool subspace_direct
 
-if .subspace_direct is true, the subspace step will be calculated using a direct (factorization) method, while if it is false, an iterative (conjugate-gradient) method will be used.
+if .subspace_direct is true, the subspace step will be calculated using a direct (factorization) method, while if it is false, an iterative (conjugate-gradient) method will be used. When the factorized system is singular, the direct method needs a linear solver that provides the Fredholm alternative (currently MA57, MA77 or MA97); with other solvers, the iterative method is used for such steps.
 
 .. index:: pair: variable; subspace_alternate
 .. _doxid-structdqp__control__type_subspace_alternate:
