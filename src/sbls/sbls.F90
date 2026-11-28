@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 10:45 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 06:58 GMT.
 
 #include "galahad_modules.h"
 
@@ -521,6 +521,7 @@
         INTEGER ( KIND = ip_ ) :: last_n = no_last
         INTEGER ( KIND = ip_ ) :: last_npm = no_last
         INTEGER ( KIND = ip_ ) :: len_sol
+        LOGICAL :: factors_available = .FALSE.
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
@@ -598,6 +599,7 @@
       data%efactors%len_part_sol_workspace = - 1
       data%ifactors%len_sol_workspace = - 1
       data%nfactors%len_sol_workspace = - 1
+      data%factors_available = .FALSE.
 
       inform%status = GALAHAD_ok
       RETURN
@@ -1007,6 +1009,7 @@
       data%last_factorization = no_last
       data%last_n = no_last
       data%last_npm = no_last
+      data%factors_available = .FALSE.
 
 !  Deallocate all arrays allocated within SLS and ULS
 
@@ -1929,6 +1932,10 @@
       inform%perturbed = .FALSE.
       inform%norm_residual = - one
 
+!  the factors are only available once they have been formed successfully
+
+      data%factors_available = .FALSE.
+
 !  Check for faulty dimensions
 
       IF ( n <= 0 .OR. m < 0 .OR.                                              &
@@ -2036,6 +2043,7 @@
 
       data%last_preconditioner = inform%preconditioner
       data%last_factorization = inform%factorization
+      data%factors_available = inform%status >= GALAHAD_ok
 
 !  record total time
 
@@ -5133,6 +5141,12 @@
         WRITE( control%out, "( A, ' rhs = ', /, ( 5ES16.8 ) )" )               &
           prefix, SOL( : n + m )
 
+!  the factors must have been formed successfully
+
+      IF ( .NOT. data%factors_available ) THEN
+        inform%status = GALAHAD_error_call_order ; RETURN
+      END IF
+
 !  start timimg
 
       CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
@@ -5198,6 +5212,12 @@
 
       REAL :: time_start, time_now
       REAL ( KIND = rp_ ) :: clock_start, clock_now
+
+!  the factors must have been formed successfully
+
+      IF ( .NOT. data%factors_available ) THEN
+        inform%status = GALAHAD_error_call_order ; RETURN
+      END IF
 
 !  start timimg
 

@@ -1,8 +1,9 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 14:55 GMT.
 #include "galahad_modules.h"
    PROGRAM PSLS_TEST_PROGRAM
    USE GALAHAD_KINDS_precision
    USE GALAHAD_PSLS_precision
+   USE GALAHAD_SYMBOLS
    IMPLICIT NONE
    TYPE ( SMT_type ) :: matrix
    TYPE ( PSLS_data_type ) :: data
@@ -206,6 +207,29 @@
      CALL PSLS_terminate( data, control, inform )
    END DO
 !9 CONTINUE
+
+!  ----------------------------------------------------------------
+!  check that applying a preconditioner that could not be formed is
+!  reported as an error (preconditioner 9 does not exist)
+!  ----------------------------------------------------------------
+
+   WRITE( 6, "( /, ' apply after failure test' )" )
+   CALL PSLS_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   control%preconditioner = 9
+   CALL PSLS_form_and_factorize( matrix, data, control, inform )
+   stat_faf = inform%status
+   X = 1.0_rp_
+   CALL PSLS_apply( X, data, control, inform )
+   stat_sol = inform%status
+   WRITE( 6, "( ' status form  = ', I3, ' status apply = ', I3 )" )           &
+     stat_faf, stat_sol
+   IF ( stat_faf == GALAHAD_ok .OR.                                            &
+        stat_sol /= GALAHAD_error_call_order ) THEN
+     WRITE( 6, "( ' apply after failure test FAILED' )" )
+     STOP 1
+   END IF
+   CALL PSLS_terminate( data, control, inform )
    DEALLOCATE( matrix%type, matrix%val, matrix%row, matrix%col )
    STOP
 
