@@ -1,7 +1,7 @@
 //* \file galahad_bsc.h */
 
 /*
- * THIS VERSION: GALAHAD 5.3 - 2025-05-25 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 5.6 - 2026-11-27 AT 15:14 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BSC C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -425,9 +425,10 @@ void bsc_form_s( void **data,
 
  @param[out] S_ptr is a one-dimensional array of size m+1 
    (see bsc_import) and type ipc_, that holds the starting position of 
-   each row of the lower triangular part of the Schur complement \f$S\f$ in
-   the sparse row-wise storage scheme; in this case S_col and S_val are
-   compatible with this scheme. It will not be set if the array is NULL.
+   each column of the lower triangular part of the Schur complement
+   \f$S\f$, whose entries are stored column by column in S_row, S_col and
+   S_val, as well as the total number of entries plus one. It will not be
+   set if the array is NULL.
 
   @param[out] S_val is a one-dimensional array of size S_ne 
     (see bsc_import) and type rpc_,  that holds the values of the entries of 

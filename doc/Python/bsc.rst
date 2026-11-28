@@ -132,10 +132,10 @@ functions
       S_col : ndarray(S_ne)
           holds the column indices of $S$ in either the sparse co-ordinate, 
           or the sparse row-wise storage scheme.
-      S_ptr : ndarray(n+1)
-          holds the starting position of each row of $S$, as well as the 
-          total number of entries, in the sparse row-wise storage 
-          scheme.
+      S_ptr : ndarray(m+1)
+          holds the starting position of each column of the lower
+          triangle of $S$, whose entries are stored column by column, as
+          well as the total number of entries plus one.
       S_val : ndarray(S_ne)
           holds the values of the nonzeros in the matrix $S$.
 

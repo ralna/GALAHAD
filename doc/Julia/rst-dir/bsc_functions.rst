@@ -291,7 +291,7 @@ Form the Schur complement matrix, $S$.
         *
                 - S_ptr
 
-                - is a one-dimensional array of size n+1 and type INT that gives the starting position of each row the lower traingle of $S$, as well as the total number of entries, in the sparse row-wise storage scheme. If this scheme is not wanted, S_ptr can be NULL to save storage.
+                - is a one-dimensional array of size m+1 and type INT that gives the starting position of each column of the lower triangle of $S$, whose entries are stored column by column, as well as the total number of entries plus one. If this scheme is not wanted, S_ptr can be NULL to save storage.
 
         *
                 - S_val

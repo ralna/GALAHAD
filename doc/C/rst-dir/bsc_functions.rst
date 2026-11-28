@@ -471,7 +471,7 @@ Form the Schur complement matrix, $S$.
 	*
 		- S_ptr
 
-		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the starting position of each row the lower traingle of $S$, as well as the total number of entries, in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size m+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the starting position of each column of the lower triangle of $S$, whose entries are stored column by column, as well as the total number of entries plus one.
 
 	*
 		- S_val

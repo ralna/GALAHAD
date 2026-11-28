@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-05-25 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-11-28 AT 07:03 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BSC_interface_test
    USE GALAHAD_KINDS_precision
@@ -54,7 +54,7 @@
      CALL BSC_import( control, data, status, m, n,                             &
                       TRIM( A_type ), A_ne, A_row, A_col, A_ptr, S_ne )
      WRITE( 6, "( ' BSC_import exit status = ', I0 ) " ) status
-     ALLOCATE( S_val( S_ne ), S_row( S_ne ), S_col( S_ne ), S_ptr( n + 1 ) )
+     ALLOCATE( S_val( S_ne ), S_row( S_ne ), S_col( S_ne ), S_ptr( m + 1 ) )
      CALL BSC_form_s( data, status, A_val, S_row, S_col, S_val,                &
                       D = D, S_ptr = S_ptr )
      WRITE( 6, "( ' BSC_form_s exit status = ', I0 ) " ) status
